@@ -3,7 +3,7 @@
 <!--
 //
 // Created       : 1999 Dec 29 (Wed) 14:53:37 by Harold Carr.
-// Last Modified : 2004 Dec 07 (Tue) 21:15:02 by Harold Carr.
+// Last Modified : 2004 Dec 11 (Sat) 10:58:37 by Harold Carr.
 //
 -->
 
@@ -122,6 +122,11 @@
 
     <para>&license;</para>
   </appendix>
+
+  <para>llava is <emphasis>not</emphasis> associated with 
+  Sun Microsystems.</para>
+
+  <para><emphasis>Java is a trademark of Sun Microsystems.</emphasis></para>
 
   <para>&lastModified;</para>
 
