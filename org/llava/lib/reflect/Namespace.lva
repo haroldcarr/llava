@@ -1,3 +1,12 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
 ;;;;
 ;;;; Created       : 2004 Aug 27 (Fri) 18:33:43 by Harold Carr.
 ;;;; Last Modified : 2004 Dec 03 (Fri) 13:56:21 by Harold Carr.
@@ -7,50 +16,85 @@
 
 (import org.llava.lib.Lists) ; for build-list
 
+(-package- 
+ (description 
+  "Procedures for looking at package namespaces and their contents."))
+
+
 ;;; Bootstrap - need to get a namespace object.
 ;;; Do not want to change namespace so just use this one.
 (set! _%boot (package org.llava.lib.NamespaceUtil))
 
-;; list-packages
-;;   returns a list of package names for all packages that exist
+;;;
+;;; list-packages
+;;;
+
+(-doc-
+ (name list-packages)
+ (description "Returns a list of package names for all packages that exist."))
 
 (define list-packages 
   (lambda ()
-    (_%list-keys (keySet (_f 'fullNameNamespaceMap (_f 'classVariables _%boot))))))
+    (_%list-keys (keySet (-f 'fullNameNamespaceMap (-f 'classVariables _%boot))))))
 
-;; current-package
-;;   returns the name of the current package
+;;;
+;;; current-package
+;;;
+
+(-doc-
+ (name current-package)
+ (description "Returns the name of the current package."))
 
 (define current-package
   (lambda ()
-    (getName (_f 'currentNamespace (_f 'classVariables _%boot)))))
+    (getName (-f 'currentNamespace (-f 'classVariables _%boot)))))
 
-;; find-package 
-;;   given a package name
-;;   returns matching package or null if it does not exist
+;;;
+;;; find-package 
+;;;
+
+(-doc-
+ (name find-package)
+ (param symbol-or-string)
+ (description 
+  "Given a package name. 
+   Returns matching package or null if it does not exist."))
 
 (define find-package
   (lambda (name)
     (findNamespace _%boot (toString name))))
 
-;; list-imports
-;;   given a package or package name
-;;   if no argument is given then uses the current package
-;;   returns a list of package names imported into that package
-;;     in search order
+;;;
+;;; list-imports
+;;;
+
+(-doc-
+ (name list-imports)
+ (param optional-symbol-or-string)
+ (description
+  "Given a package or package name.
+   If no argument is given then uses the current package.
+   Returns a list of package names imported into that package in search order."))
 
 (define list-imports
   (lambda ns
       (let* ((NS         (_%handle_argument ns))
-	     (i          (iterator (_f 'refList NS)))
+	     (i          (iterator (-f 'refList NS)))
 	     (terminate? (lambda () (not (hasNext i))))
 	     (step       (lambda () (getName (next i)))))
 	(build-list terminate? step))))
 
-;; list-variables
-;;   given a package or package name
-;;   if no argument is given then uses the current package
-;;   returns a list of variable names contained in that package
+;;;
+;;; list-variables
+;;;
+
+(-doc-
+ (name list-variables)
+ (param optional-symbol-or-string)
+ (description
+  "Given a package or package name.
+   If no argument is given then uses the current package.
+   Returns a list of variable names contained in that package."))
 
 ;; REVISIT : If you start llava, import this package, then call list-variables
 ;; with no arguments you get: Error: java.util.ConcurrentModificationException
@@ -59,11 +103,20 @@
 
 (define list-variables 
   (lambda ns
-    (_%list-keys (keySet (_f 'map (_%handle_argument ns))))))
+    (_%list-keys (keySet (-f 'map (_%handle_argument ns))))))
 
-;; contains?
-;;   given a variable name and a package or package name
-;;   returns true if that variable exists in the given package, otherwise false
+;;;
+;;; contains?
+;;;
+
+(-doc-
+ (name contains?)
+ (param symbol-or-string)
+ (param optional-symbol-or-string)
+ (description
+  "Given a variable name and an optional package or package name.
+   Returns <code>true</code> if that variable exists in the given package.
+   Otherwise <code>false</code>."))
 
 (define contains? 
   (lambda (name . ns)
@@ -72,20 +125,44 @@
 	false
 	true)))
 
-;; which
-;;   given a variable name
-;;   returns the package name in which it exists if that package is
-;;     imported by the current package, otherwise false
+;;;
+;;; which
+;;;
 
-(define which
+(-doc-
+ (name which-package)
+ (name symbol)
+ (description
+  "Given a variable name.
+   Returns the package name in which it exists if that package is
+   imported by the current package.
+   Otherwise <code>false</code>."))
+
+(define which-package
   (lambda (var-name)
     (let ((import-list (list-imports (current-package))))
       import-list)))
 
-;; which-all
-;;   given a variable name
-;;   returns a list of package names for all packages that contain
-;;     a variable of the given name
+;;;
+;;; which-package-all
+;;;
+
+(-doc-
+ (name which-package-all)
+ (param symbol-or-string)
+ (description
+  "Given a variable name.
+   Returns a list of package names for all packages that contain
+   a variable of the given name."))
+
+(define which-package-all
+  (lambda (var-name)
+    (do ((result   '() (-if (member (toString var-name)
+				    (list-variables (car packages)))
+			    (cons (car packages) result)
+			    result))
+	 (packages (list-packages) (cdr packages)))
+	((null? packages) result))))
 
 ;; //////////////////////////////////////////////////
 ;; // Implementation
@@ -108,14 +185,20 @@
 	     (step       (lambda () (next i))))
 	(build-list terminate? step))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Test
+;;;
+
 (-comment-
 
 (import org.llava.lib.NamespaceUtil)
+(which-package-all '+)
 
-(_f 'map _%boot)
-(_f 'refList _%boot)
-(_f 'refList (find-package 'org.llava))
-(_f 'map (find-package 'org.llava))
+(-f 'map _%boot)
+(-f 'refList _%boot)
+(-f 'refList (find-package 'org.llava))
+(-f 'map (find-package 'org.llava))
 
 (list-imports _%boot)
 
@@ -125,16 +208,16 @@
 (contains? '+ 'org.llava)
 (contains? 'hc 'org.llava)
 
-(_f 'classVariables (find-package 'org.llava))
-(_f 'fullNameNamespaceMap (_f 'classVariables (find-package 'org.llava)))
+(-f 'classVariables (find-package 'org.llava))
+(-f 'fullNameNamespaceMap (-f 'classVariables (find-package 'org.llava)))
 
 (list-packages)
 
 (import org.llava.lib.Reflect)
 
 (display-object (find-package 'org.llava))
-(display-object (_f 'classVariables (find-package 'org.llava)))
-(display-object (_f 'fullNameNamespaceMap (_f 'classVariables (find-package 'org.llava))))
+(display-object (-f 'classVariables (find-package 'org.llava)))
+(display-object (-f 'fullNameNamespaceMap (-f 'classVariables (find-package 'org.llava))))
 )
 
 ;;; End of file.
