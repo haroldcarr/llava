@@ -88,10 +88,10 @@
 
 (define print-common
   (lambda (name args)
-    (-print " (" ) ;; READER BUG: "("
+    (-print "(" )
     (-print name)
     (for-each (lambda (a) (-print " " ) (-print a)) args)
-    (-print ") " ))) ;; READER BUG: ")"
+    (-print ") ")))
 
 (-comment-
 (load (s+ (user-home) "/.sync/.llava.org/.system/org/llava/impl/runtime/derived/DerivedLlavaDefineD.lva"))
