@@ -22,31 +22,27 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 
-import org.llava.impl.F;
+import org.llava.F;
+import org.llava.FC;
+import org.llava.FR;
+import org.llava.LlavaException;
+import org.llava.Pair;
+import org.llava.Procedure;
 import org.llava.Repl;
+
+import org.llava.compiler.Compiler;
 
 import org.llava.io.LlavaEOF;
 import org.llava.io.LlavaReader;
 import org.llava.io.LlavaWriter;
 
-import org.llava.lang.exceptions.BacktraceHandler;
-import org.llava.lang.exceptions.LlavaException;
-
-import org.llava.lang.types.Pair;
-import org.llava.lang.types.Procedure;
-
-import org.llava.compiler.Compiler;
-import org.llava.impl.compiler.FC;
-
+import org.llava.runtime.BacktraceHandler;
+import org.llava.runtime.Engine; // REVISIT
 import org.llava.runtime.EnvironmentTopLevel;
 import org.llava.runtime.EnvTopLevelInit;
 import org.llava.runtime.Evaluator;
-import org.llava.impl.runtime.FR;
 import org.llava.runtime.LlavaRuntime;
-
-import org.llava.impl.runtime.Engine; // REVISIT
-import org.llava.impl.runtime.FR; // REVISIT
-import org.llava.impl.runtime.env.Namespace; // REVISIT
+import org.llava.runtime.Namespace; // REVISIT
 
 public class ReplImpl
     implements
