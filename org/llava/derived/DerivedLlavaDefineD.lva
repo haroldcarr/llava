@@ -11,7 +11,7 @@
 		      (lambda ,(second b)
 			,(wrap-body a (second b) (cddr b))))) ;; @
 		 (else
-		  `'(define ,a ,b))))
+		  `(define ,a ,b))))
 	  (else
 	   `(define ,a ,(wrap-body (first a) (rest a) (cons b body)))))))
 
@@ -74,7 +74,6 @@
     (-print ") " ))) ;; READER BUG: ")"
 
 (-comment-
-(import  org.llava.lib.Define-d)
 (define-d a 3)
 (define-d (fact n)
   (cond ((<= n 0)
