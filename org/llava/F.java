@@ -71,7 +71,6 @@ import org.llava.runtime.UndefinedIdHandler;
 import org.llava.impl.runtime.ActivationFrameImpl;
 import org.llava.impl.runtime.BacktraceHandlerImpl;
 import org.llava.impl.runtime.EngineImpl;
-import org.llava.impl.runtime.EngineStepImpl; // REVISIT - remove
 import org.llava.impl.runtime.EnvTopLevelInitImpl;
 import org.llava.impl.runtime.LlavaRuntimeImpl;
 import org.llava.impl.runtime.UndefinedIdHandlerImpl;
@@ -470,7 +469,6 @@ public class F {
 
     private static Evaluator evaluatorFactory =
 	new EngineImpl();
-        //new EngineStepImpl(); // REVISIT
 
     public static Evaluator newEvaluator ()
     {
