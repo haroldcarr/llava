@@ -67,13 +67,9 @@ public class NamespaceImpl
 	return ns;
     }
 
-    /**
-     * "package" switches to the given package/class.
-     * If that package/class does not exist then it is created.
-     */
-    public Namespace _package (Object p, Object c)
+    public Namespace _package (Object packagePathAndName, Object className)
     {
-	String PC = p.toString() + "." + c.toString();
+	String PC = packagePathAndName.toString() + "." + className.toString();
 	if (nextPackageShouldBe != null) {
 	    if (! PC.equals(nextPackageShouldBe)) {
 		throw F.newLavaException("incorrect package: " + PC + 
@@ -82,6 +78,26 @@ public class NamespaceImpl
 	}
 	currentNamespace = findOrCreateNamespace(PC);
 	return currentNamespace;
+    }
+
+    public String _import (Object classPathAndName)
+	throws
+	    Exception
+    {
+	return _import(classPathAndName.toString());
+    }
+
+    public Object set (Object identifier, Object val)
+    {
+	return set(identifier.toString(), val);
+    }
+
+    public Object get (Object identifier)
+	throws
+	    Exception
+    {
+	// REVISIT - put name.toString() here.  It compiles.  Why?
+	return get(identifier.toString());
     }
 
     // --------------------------------------------------
@@ -230,13 +246,6 @@ else
 </pre>
     */
 
-    public String _import (Symbol name)
-	throws
-	    Exception
-    {
-	return _import(name.toString());
-    }
-
     public String _import (String name)
 	throws
 	    Exception
@@ -275,8 +284,6 @@ else
 	    return name;
 	}
     }
-
-
 
     public String importIntoCurrentPackage (String name)
 	throws
@@ -446,12 +453,7 @@ else
     // Support for ref/set
     //
 
-    public Object setE (Symbol x, Object val)
-    {
-	return setE(x.toString(), val);
-    }
-
-    public Object setE (String x, Object val)
+    public Object set (String x, Object val)
     {
 	if (isDottedP(x)) {
 	    throw F.newLavaException("setE!: no dots allowed: " + x);
@@ -460,14 +462,7 @@ else
 	return val;
     }
 
-    public Object refE (Symbol x)
-	throws
-	    Exception
-    {
-	return refE(x.toString());
-    }
-
-    public Object refE (String x)
+    public Object get (String x)
 	throws
 	    Exception
     {
@@ -510,22 +505,26 @@ else
      *
      */
 
-    public Object refNotDotted (String v)
+    public Object refNotDotted (String identifier)
     {
-	//(_print (list 'refNotDotted v))
+	//(_print (list 'refNotDotted identifier))
 	Vector refList = getRefList();
 	int size = refList.size();
 	for (int i = 0; i < size; i++) {
 	    NamespaceImpl current = (NamespaceImpl) refList.elementAt(i);
 	    Hashtable map = current.getMap();
-	    if (map.containsKey(v)) {
-		//(_print (list 'foundIn
-		//(getName (elementAt refList i))
-		//(get (getMap (elementAt refList i)) v)))
-		return map.get(v);
+	    Object result = map.get(identifier);
+	    if (result != null) {
+		return result;
+	    } else {
+		// Null is a valid value so need to differentiate
+		// whether it is a value or just not there.
+		if (map.containsKey(identifier)) {
+		    return result;
+		}
 	    }
 	}
-	throw F.newLavaException("undefined: " + v);
+	throw F.newLavaException("undefined: " + identifier);
     }
 
     public String classNameOf (String x)
@@ -533,7 +532,7 @@ else
 	return variableOf(x);
     }
 
-    public NamespaceImpl findMatch (String pc)
+    public NamespaceImpl findNamespaceInRefList (String pc)
     {
 	Vector refList = getRefList();
 	int size = refList.size();
@@ -556,8 +555,7 @@ else
 	String originalPC = pc;
 	// Enables .foo shorthand for built-in procedures.
 	pc = (pc.equals("") ? "lava.Lava" : pc);
-	NamespaceImpl ns = getCurrentNamespace().findMatch(pc);
-	//(_print (list "NS" ns m))
+	NamespaceImpl ns = getCurrentNamespace().findNamespaceInRefList(pc);
 	if ((ns != null) && ns.getMap().containsKey(m)) {
 	    return ns.refNotDotted(m);
 	}
@@ -591,7 +589,7 @@ else
 
     public Object newNotDotted (String x, Pair args)
     {
-	NamespaceImpl ns = getCurrentNamespace().findMatch(x);
+	NamespaceImpl ns = getCurrentNamespace().findNamespaceInRefList(x);
 	if (ns != null) {
 	    // REVISIT
 	    PrimNew primNew = FR1.newPrimNew();

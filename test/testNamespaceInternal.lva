@@ -3,52 +3,80 @@
 ;;;; Last Modified : 2004 Dec 22 (Wed) 10:37:38 by Harold Carr.
 ;;;;
 
+(_comment
+(load "ns.lva")
+(doTest)
+)
+
 (require 'test/test)
 
-(define *ns* (newNamespace (new 'testLava.proto.NamespaceImpl)))
+(define (package p c)
+  (_package *ns* p c))
+
+(define (importX name)
+  (_import *ns* name))
+
+(define (setE! var val)
+  (set *ns* var val))
+
+(define (refE var)
+  (get *ns* var))
+
+(define (newE class . args)
+  (newE *ns* class args))
+
+(define (initTest)
+  (define *ns* (newNamespace (new 'testLava.proto.NamespaceImpl))))
+
+(define (doTest)
+  (testFoundation)
+  (testPackage)
+  (testImport)
+  (testRefSet)
+  (testNew))
 
 ;;;;
 ;;;; Test foundation.
 ;;;;
 
-(_comment
-(begin
-(load "ns.lva")
-(begin-test)
+(define (testFoundation)
+  (load "ns.lva")
 
-(check 1
-       '("lava.Lava")
-       (getRefListNames (getRootNamespace *ns*)))
-(check 1
-       '("lava.Lava" "lava.REPL")
-       (getFullNameNamespaceMapKeys *ns*))
+  (initTest)
 
-(createNamespace *ns* "foo.bar")
-(check 2 
-       '("foo.bar" "lava.Lava" "lava.REPL")
-       (getFullNameNamespaceMapKeys *ns*))
+  (begin-test)
 
-(findOrCreateNamespace *ns* "foo.bar")
-(check 3
-       '("foo.bar" "lava.Lava" "lava.REPL")
-       (getFullNameNamespaceMapKeys *ns*))
-
-(check 4
-       '("foo.bar" "lava.Lava")
-       (getRefListNames (findNamespace *ns* "foo.bar")))
-
-(findOrCreateNamespace *ns* "bar.baz")
-(check 5
-       '("bar.baz" "foo.bar" "lava.Lava" "lava.REPL")
-       (getFullNameNamespaceMapKeys *ns*))
-
-(check 6
-       '("bar.baz" "lava.Lava")
-       (getRefListNames (findOrCreateNamespace *ns* "bar.baz")))
-
-(end-test)
-)
-)
+  (check 1
+	 '("lava.Lava")
+	 (getRefListNames (getRootNamespace *ns*)))
+  (check 1
+	 '("lava.Lava" "lava.REPL")
+	 (getFullNameNamespaceMapKeys *ns*))
+  
+  (createNamespace *ns* "foo.bar")
+  (check 2 
+	 '("foo.bar" "lava.Lava" "lava.REPL")
+	 (getFullNameNamespaceMapKeys *ns*))
+  
+  (findOrCreateNamespace *ns* "foo.bar")
+  (check 3
+	 '("foo.bar" "lava.Lava" "lava.REPL")
+	 (getFullNameNamespaceMapKeys *ns*))
+  
+  (check 4
+	 '("foo.bar" "lava.Lava")
+	 (getRefListNames (findNamespace *ns* "foo.bar")))
+  
+  (findOrCreateNamespace *ns* "bar.baz")
+  (check 5
+	 '("bar.baz" "foo.bar" "lava.Lava" "lava.REPL")
+	 (getFullNameNamespaceMapKeys *ns*))
+  
+  (check 6
+	 '("bar.baz" "lava.Lava")
+	 (getRefListNames (findOrCreateNamespace *ns* "bar.baz")))
+  
+  (end-test))
 
 ;-------------------------
 
@@ -56,55 +84,51 @@
 ;;;; Test "package".
 ;;;;
 
-(define (package p c)
-  (_package *ns* p c))
+(define (testPackage)
+  (load "ns.lva")
 
+  (initTest)
 
-(_comment
-(begin
-(load "ns.lva")
-(begin-test)
+  (begin-test)
 
-(check 1
-       '("lava.REPL" "lava.Lava")
-       (getRefListNames (getCurrentNamespace *ns*)))
-
-(package 'foo 'bar)
-(check 2 '("foo.bar" "lava.Lava" "lava.REPL")
-       (getFullNameNamespaceMapKeys *ns*))
-(check 3 '("foo.bar" "lava.Lava")
-       (getRefListNames (getCurrentNamespace *ns*)))
-
-(package 'foo 'bar)
-(check 2 '("foo.bar" "lava.Lava" "lava.REPL")
-       (getFullNameNamespaceMapKeys *ns*))
-(check 3 '("foo.bar" "lava.Lava")
-       (getRefListNames (getCurrentNamespace *ns*)))
-
-(package 'foo 'baz)
-(check 2 '("foo.bar" "foo.baz" "lava.Lava" "lava.REPL")
-       (getFullNameNamespaceMapKeys *ns*))
-(check 2  '("foo.baz" "lava.Lava")
-       (getRefListNames (getCurrentNamespace *ns*)))
-
-(package 'buz 'saw)
-(check 2 '("buz.saw" "foo.bar" "foo.baz" "lava.Lava" "lava.REPL")
-       (getFullNameNamespaceMapKeys *ns*))
-
-(check 1
-       '("buz.saw" "lava.Lava")
-       (getRefListNames (getCurrentNamespace *ns*)))
-
-(package "" 'Only)
-(check 1 '(".Only" "buz.saw" "foo.bar" "foo.baz" "lava.Lava" "lava.REPL")
-       (getFullNameNamespaceMapKeys *ns*))
-(check 1
-       '(".Only" "lava.Lava")
-       (getRefListNames (getCurrentNamespace *ns*)))
-
-(end-test)
-)
-)
+  (check 1
+	 '("lava.REPL" "lava.Lava")
+	 (getRefListNames (getCurrentNamespace *ns*)))
+  
+  (package 'foo 'bar)
+  (check 2 '("foo.bar" "lava.Lava" "lava.REPL")
+	 (getFullNameNamespaceMapKeys *ns*))
+  (check 3 '("foo.bar" "lava.Lava")
+	 (getRefListNames (getCurrentNamespace *ns*)))
+  
+  (package 'foo 'bar)
+  (check 2 '("foo.bar" "lava.Lava" "lava.REPL")
+	 (getFullNameNamespaceMapKeys *ns*))
+  (check 3 '("foo.bar" "lava.Lava")
+	 (getRefListNames (getCurrentNamespace *ns*)))
+  
+  (package 'foo 'baz)
+  (check 2 '("foo.bar" "foo.baz" "lava.Lava" "lava.REPL")
+	 (getFullNameNamespaceMapKeys *ns*))
+  (check 2  '("foo.baz" "lava.Lava")
+	 (getRefListNames (getCurrentNamespace *ns*)))
+  
+  (package 'buz 'saw)
+  (check 2 '("buz.saw" "foo.bar" "foo.baz" "lava.Lava" "lava.REPL")
+	 (getFullNameNamespaceMapKeys *ns*))
+  
+  (check 1
+	 '("buz.saw" "lava.Lava")
+	 (getRefListNames (getCurrentNamespace *ns*)))
+  
+  (package "" 'Only)
+  (check 1 '(".Only" "buz.saw" "foo.bar" "foo.baz" "lava.Lava" "lava.REPL")
+	 (getFullNameNamespaceMapKeys *ns*))
+  (check 1
+	 '(".Only" "lava.Lava")
+	 (getRefListNames (getCurrentNamespace *ns*)))
+  
+  (end-test))
 
 ;-------------------------
 
@@ -112,63 +136,60 @@
 ;;;; Test "import".
 ;;;;
 
-(define (importX name)
-  (_import *ns* name))
+(define (testImport)
+  (load "ns.lva")
 
-(_comment
-(begin
-(load "ns.lva")
-(begin-test)
+  (initTest)
 
-(check 1 '("lava.Lava" "lava.REPL") (getFullNameNamespaceMapKeys *ns*))
-(check 2 '("lava.REPL" "lava.Lava") 
-       (getRefListNames (getCurrentNamespace *ns*)))
+  (begin-test)
 
-(check 1 (string-append "(re)load: " (userHome)
-			"/.sync/.lsync/lava/testLava/proto/ns/one/One.lva")
-       (importX 'testLava.proto.ns.one.One))
-(check 2 (string-append "no change: " (userHome) 
-			"/.sync/.lsync/lava/testLava/proto/ns/one/One.lva")
-       (importX 'testLava.proto.ns.one.One))
-(check 3 '("lava.Lava" "lava.REPL"
-	   "testLava.proto.ns.one.One" "testLava.proto.ns.two.Two")
-       (getFullNameNamespaceMapKeys *ns*))
-(check 4
-       '("lava.REPL" "testLava.proto.ns.one.One" "lava.Lava")
-       (getRefListNames (getCurrentNamespace *ns*)))
-(check 5
-       '("testLava.proto.ns.one.One" "testLava.proto.ns.two.Two" "lava.Lava")
-       (getRefListNames (findNamespace *ns* "testLava.proto.ns.one.One")))
-(check 6
-       '("testLava.proto.ns.two.Two" "lava.Lava")
-       (getRefListNames (findNamespace *ns* "testLava.proto.ns.two.Two")))
+  (check 1 '("lava.Lava" "lava.REPL") (getFullNameNamespaceMapKeys *ns*))
+  (check 2 '("lava.REPL" "lava.Lava") 
+	 (getRefListNames (getCurrentNamespace *ns*)))
 
-(check 6 (string-append "no change: " (userHome) 
-			"/.sync/.lsync/lava/testLava/proto/ns/two/Two.lva")
-       (importX 'testLava.proto.ns.two.Two))
-(check 6 '("lava.Lava" "lava.REPL"
-	   "testLava.proto.ns.one.One" "testLava.proto.ns.two.Two")
-       (getFullNameNamespaceMapKeys *ns*))
-(check 7 '("lava.REPL" "testLava.proto.ns.one.One"
-	   "testLava.proto.ns.two.Two" "lava.Lava")
-       (getRefListNames (getCurrentNamespace *ns*)))
+  (check 1 (string-append "(re)load: " (userHome)
+			  "/.sync/.lsync/lava/testLava/proto/ns/one/One.lva")
+	 (importX 'testLava.proto.ns.one.One))
+  (check 2 (string-append "no change: " (userHome) 
+			  "/.sync/.lsync/lava/testLava/proto/ns/one/One.lva")
+	 (importX 'testLava.proto.ns.one.One))
+  (check 3 '("lava.Lava" "lava.REPL"
+	     "testLava.proto.ns.one.One" "testLava.proto.ns.two.Two")
+	 (getFullNameNamespaceMapKeys *ns*))
+  (check 4
+	 '("lava.REPL" "testLava.proto.ns.one.One" "lava.Lava")
+	 (getRefListNames (getCurrentNamespace *ns*)))
+  (check 5
+	 '("testLava.proto.ns.one.One" "testLava.proto.ns.two.Two" "lava.Lava")
+	 (getRefListNames (findNamespace *ns* "testLava.proto.ns.one.One")))
+  (check 6
+	 '("testLava.proto.ns.two.Two" "lava.Lava")
+	 (getRefListNames (findNamespace *ns* "testLava.proto.ns.two.Two")))
 
-(check 6 (string-append "no change: " (userHome)
-			"/.sync/.lsync/lava/testLava/proto/ns/two/Two.lva")
-       (importX 'testLava.proto.ns.two.Two))
-(check 8 '("lava.REPL" "testLava.proto.ns.one.One"
-	   "testLava.proto.ns.two.Two" "lava.Lava")
-       (getRefListNames (getCurrentNamespace *ns*)))
+  (check 6 (string-append "no change: " (userHome) 
+			  "/.sync/.lsync/lava/testLava/proto/ns/two/Two.lva")
+	 (importX 'testLava.proto.ns.two.Two))
+  (check 6 '("lava.Lava" "lava.REPL"
+	     "testLava.proto.ns.one.One" "testLava.proto.ns.two.Two")
+	 (getFullNameNamespaceMapKeys *ns*))
+  (check 7 '("lava.REPL" "testLava.proto.ns.one.One"
+	     "testLava.proto.ns.two.Two" "lava.Lava")
+	 (getRefListNames (getCurrentNamespace *ns*)))
 
-(check 9 "class java.util.Hashtable"
-       (importX 'java.util.Hashtable))
+  (check 6 (string-append "no change: " (userHome)
+			  "/.sync/.lsync/lava/testLava/proto/ns/two/Two.lva")
+	 (importX 'testLava.proto.ns.two.Two))
+  (check 8 '("lava.REPL" "testLava.proto.ns.one.One"
+	     "testLava.proto.ns.two.Two" "lava.Lava")
+	 (getRefListNames (getCurrentNamespace *ns*)))
 
-(check 9 "already loaded: class java.util.Hashtable"
-       (importX 'java.util.Hashtable))
+  (check 9 "class java.util.Hashtable"
+	 (importX 'java.util.Hashtable))
 
-(end-test)
-)
-)
+  (check 9 "already loaded: class java.util.Hashtable"
+	 (importX 'java.util.Hashtable))
+
+  (end-test))
 
 ;-------------------------
 
@@ -176,108 +197,102 @@
 ;;;; Test ref/set
 ;;;;
 
-(define (setE! var val)
-  (setE *ns* var val))
+(define (testRefSet)
+  (load "ns.lva")
 
-(define (refE var)
-  (refE *ns* var))
+  (initTest)
 
-(_comment
-(begin
-(load "ns.lva")
-(begin-test)
+  (begin-test)
 
-(package 'lava 'Lava)
-(check 0 '("lava.Lava") (getRefListNames (getCurrentNamespace *ns*)))
-(setE! 'a 'Lava-a)
-(check 0 'Lava-a (refE 'a))
-(check 0 'Lava-a (refE '.a))
-(check 0 'Lava-a (refE 'Lava.a))
-(check 0 'Lava-a (refE 'lava.Lava.a))
+  (package 'lava 'Lava)
+  (check 0 '("lava.Lava") (getRefListNames (getCurrentNamespace *ns*)))
+  (setE! 'a 'Lava-a)
+  (check 0 'Lava-a (refE 'a))
+  (check 0 'Lava-a (refE '.a))
+  (check 0 'Lava-a (refE 'Lava.a))
+  (check 0 'Lava-a (refE 'lava.Lava.a))
 
-(package 'lava 'REPL)
-(check 0 "lava.REPL" (getName (getCurrentNamespace *ns*)))
-(check 0 '("lava.REPL" "lava.Lava") 
-       (getRefListNames (getCurrentNamespace *ns*)))
-(check 0 'Lava-a (refE 'a))
-(check 1 'REPL-a (setE! 'a 'REPL-a))
-(check 2 'REPL-a (refE 'a))
-(check 2 'Lava-a (refE '.a))
-(check 2 'Lava-a (refE 'Lava.a))
-(check 2 'REPL-a (refE 'REPL.a))
-(check 2 'Lava-a (refE 'Lava.a))
-(check 2 'REPL-a (refE 'lava.REPL.a))
-(check 2 'Lava-a (refE 'lava.Lava.a))
+  (package 'lava 'REPL)
+  (check 0 "lava.REPL" (getName (getCurrentNamespace *ns*)))
+  (check 0 '("lava.REPL" "lava.Lava") 
+	 (getRefListNames (getCurrentNamespace *ns*)))
+  (check 0 'Lava-a (refE 'a))
+  (check 1 'REPL-a (setE! 'a 'REPL-a))
+  (check 2 'REPL-a (refE 'a))
+  (check 2 'Lava-a (refE '.a))
+  (check 2 'Lava-a (refE 'Lava.a))
+  (check 2 'REPL-a (refE 'REPL.a))
+  (check 2 'Lava-a (refE 'Lava.a))
+  (check 2 'REPL-a (refE 'lava.REPL.a))
+  (check 2 'Lava-a (refE 'lava.Lava.a))
 
-(package 'foo.bar 'Baz)
-(check 3 '("foo.bar.Baz" "lava.Lava")
-       (getRefListNames (getCurrentNamespace *ns*)))
-(check 3 'Lava-a (refE 'a))
-(setE! 'a 'Baz-a)
-(check 2 'Baz-a (refE 'a))
-(check 2 'Baz-a (refE 'Baz.a))
-(check 2 'Lava-a (refE '.a))
-(check 2 'Lava-a (refE 'Lava.a))
-(check 2 'Baz-a (refE 'foo.bar.Baz.a))
-(check 2 'Lava-a (refE 'lava.Lava.a))
-(check 2
-       "refDotted: undefined: REPL.a" 
-       (try (refE 'REPL.a) 
-	    (catch (java.lang.Exception e) (getMessage e))))
-(check 2
-       "refDotted: undefined: lava.REPL.a" 
-       (try (refE 'lava.REPL.a) 
-	    (catch (java.lang.Exception e) (getMessage e))))
+  (package 'foo.bar 'Baz)
+  (check 3 '("foo.bar.Baz" "lava.Lava")
+	 (getRefListNames (getCurrentNamespace *ns*)))
+  (check 3 'Lava-a (refE 'a))
+  (setE! 'a 'Baz-a)
+  (check 2 'Baz-a (refE 'a))
+  (check 2 'Baz-a (refE 'Baz.a))
+  (check 2 'Lava-a (refE '.a))
+  (check 2 'Lava-a (refE 'Lava.a))
+  (check 2 'Baz-a (refE 'foo.bar.Baz.a))
+  (check 2 'Lava-a (refE 'lava.Lava.a))
+  (check 2
+	 "refDotted: undefined: REPL.a" 
+	 (try (refE 'REPL.a) 
+	      (catch (java.lang.Exception e) (getMessage e))))
+  (check 2
+	 "refDotted: undefined: lava.REPL.a" 
+	 (try (refE 'lava.REPL.a) 
+	      (catch (java.lang.Exception e) (getMessage e))))
 
-(importX 'testLava.proto.ns.one.One)
-(check 3
-       '("foo.bar.Baz" "testLava.proto.ns.one.One" "lava.Lava")
-       (getRefListNames (getCurrentNamespace *ns*)))
-(check 4 'Baz-a (refE 'a))
-(check 4 'Lava-a (refE 'Lava.a))
-(check 4 'Lava-a (refE '.a))
+  (importX 'testLava.proto.ns.one.One)
+  (check 3
+	 '("foo.bar.Baz" "testLava.proto.ns.one.One" "lava.Lava")
+	 (getRefListNames (getCurrentNamespace *ns*)))
+  (check 4 'Baz-a (refE 'a))
+  (check 4 'Lava-a (refE 'Lava.a))
+  (check 4 'Lava-a (refE '.a))
 
-(package 'testLava.proto.ns.one 'One)
-(check 4 "testLava.proto.ns.one.One" (getName (getCurrentNamespace *ns*)))
-(check 4 'Lava-a (refE 'a))
-(check 4 'Lava-a (refE '.a))
-(setE! 'a 'One-a)
+  (package 'testLava.proto.ns.one 'One)
+  (check 4 "testLava.proto.ns.one.One" (getName (getCurrentNamespace *ns*)))
+  (check 4 'Lava-a (refE 'a))
+  (check 4 'Lava-a (refE '.a))
+  (setE! 'a 'One-a)
 
-(package 'foo.bar 'Baz)
-(check 4 "foo.bar.Baz" (getName (getCurrentNamespace *ns*)))
-(check 3
-       '("foo.bar.Baz" "testLava.proto.ns.one.One" "lava.Lava")
-       (getRefListNames (getCurrentNamespace *ns*)))
-(check 0 'Baz-a (refE 'a))
-(check 0 'Lava-a (refE '.a))
-(check 4 'Baz-a (refE 'a))
-(check 0 'One-a (refE 'One.a))
-(check 0 'Lava-a (refE 'Lava.a))
-(check 0 'One-a (refE 'testLava.proto.ns.one.One.a))
+  (package 'foo.bar 'Baz)
+  (check 4 "foo.bar.Baz" (getName (getCurrentNamespace *ns*)))
+  (check 3
+	 '("foo.bar.Baz" "testLava.proto.ns.one.One" "lava.Lava")
+	 (getRefListNames (getCurrentNamespace *ns*)))
+  (check 0 'Baz-a (refE 'a))
+  (check 0 'Lava-a (refE '.a))
+  (check 4 'Baz-a (refE 'a))
+  (check 0 'One-a (refE 'One.a))
+  (check 0 'Lava-a (refE 'Lava.a))
+  (check 0 'One-a (refE 'testLava.proto.ns.one.One.a))
 
-(package 'lava 'Lava)
-(check 0 '("lava.Lava") (getRefListNames (getCurrentNamespace *ns*)))
-(check 0 'Lava-a (refE 'a))
-(check 0 'Lava-a (refE '.a))
-(check 0 'Lava-a (refE 'lava.Lava.a))
-(check 2
-       "refDotted: undefined: One.a" 
-       (try (refE 'One.a) 
-	    (catch (java.lang.Exception e) (getMessage e))))
-(check 2
-       "refDotted: undefined: testLava.proto.ns.one.One.a"
-       (try (refE 'testLava.proto.ns.one.One.a) 
-	    (catch (java.lang.Exception e) (getMessage e))))
+  (package 'lava 'Lava)
+  (check 0 '("lava.Lava") (getRefListNames (getCurrentNamespace *ns*)))
+  (check 0 'Lava-a (refE 'a))
+  (check 0 'Lava-a (refE '.a))
+  (check 0 'Lava-a (refE 'lava.Lava.a))
+  (check 2
+	 "refDotted: undefined: One.a" 
+	 (try (refE 'One.a) 
+	      (catch (java.lang.Exception e) (getMessage e))))
+  (check 2
+	 "refDotted: undefined: testLava.proto.ns.one.One.a"
+	 (try (refE 'testLava.proto.ns.one.One.a) 
+	      (catch (java.lang.Exception e) (getMessage e))))
 
-(package "" 'Only)
-(setE! 'a 'Only-a)
-(check 0 'Only-a (refE 'a))
-(check 0 'Only-a (refE 'Only.a))
-;(check 0 'Lava-a (refE '.a))
+  (package "" 'Only)
+  (setE! 'a 'Only-a)
+  (check 0 'Only-a (refE 'a))
+  (check 0 'Only-a (refE 'Only.a))
+					;(check 0 'Lava-a (refE '.a))
 
-(end-test)
-)
-)
+  (end-test))
 
 ;-------------------------
 
@@ -285,20 +300,17 @@
 ;;;; Test new.
 ;;;;
 
-(define (newE class . args)
-  (newE *ns* class args))
+(define (testNew)
+  (load "ns.lva")
 
-(_comment
-(begin
-(load "ns.lva")
-(begin-test)
+  (initTest)
 
-(newE 'java.util.Hashtable)
-(importX 'java.util.Hashtable)
-(newE 'Hashtable)
+  (begin-test)
 
-(end-test)
-)
-)
+  (newE 'java.util.Hashtable)
+  (importX 'java.util.Hashtable)
+  (newE 'Hashtable)
+  
+  (end-test))
 
 ;;; End of file.
