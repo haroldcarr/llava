@@ -1,6 +1,6 @@
 /*
  * Created       : 2001 Mar 10 (Sat) 16:34:48 by Harold Carr.
- * Last Modified : 2001 Mar 31 (Sat) 22:31:38 by Harold Carr.
+ * Last Modified : 2001 Apr 29 (Sun) 15:17:13 by Harold Carr.
  */
 
 package org.jdom.output;
@@ -192,8 +192,24 @@ public class LXMLOutputter extends XMLOutputter {
             }
         }
 
+        // handle "" string same as empty
+        if (stringOnly) {
+            String elementText =
+                trimText ? element.getTextTrim() : element.getText();
+            if (elementText == null ||
+                elementText.equals("")) {
+                empty = true;
+            }
+        }
+
+        boolean attributesOnlyShorthand = false;
 	if (hasAttributes || hasNamespaceDeclarations) {
-	    out.write("((");
+	    if (empty) {
+		out.write("(~ ");
+		attributesOnlyShorthand = true;
+	    } else {
+		out.write("((");
+	    }
 	} else {
 	    out.write("(");
 	}
@@ -235,18 +251,10 @@ public class LXMLOutputter extends XMLOutputter {
 	    out.write(")");
 	}
 
-        // handle "" string same as empty
-        if (stringOnly) {
-            String elementText =
-                trimText ? element.getTextTrim() : element.getText();
-            if (elementText == null ||
-                elementText.equals("")) {
-                empty = true;
-            }
-        }
-        
         if (empty) {
-	    out.write(")");
+	    if (! attributesOnlyShorthand) {
+		out.write(")");
+	    }
             maybePrintln(out);
         } else {
             // we know it's not null or empty from above
