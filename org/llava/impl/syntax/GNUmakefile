@@ -9,7 +9,7 @@
 
 #
 # Created       : 2000 Jan 07 (Fri) 05:22:51 by Harold Carr.
-# Last Modified : 2004 Dec 07 (Tue) 18:18:41 by Harold Carr.
+# Last Modified : 2005 Mar 12 (Sat) 17:02:38 by Harold Carr.
 #
 
 TOPDIR		=	../../../..
@@ -18,8 +18,8 @@ PACKAGE		=	org.llava.impl.syntax
 PKGDIR		=	org/llava/impl/syntax
 
 FILES_java	= \
-	$(PKGDIR)/Syntax.java \
 	$(PKGDIR)/SyntaxDefineSyntax.java \
+	$(PKGDIR)/SyntaxImpl.java \
 	$(PKGDIR)/UserSyntax.java
 
 all :: classes

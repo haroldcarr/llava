@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 2000 Jan 07 (Fri) 06:18:21 by Harold Carr.
- * Last Modified : 2004 Dec 08 (Wed) 10:36:44 by Harold Carr.
+ * Last Modified : 2005 Mar 12 (Sat) 17:02:59 by Harold Carr.
  */
 
 package org.llava.impl.syntax;
@@ -26,7 +26,7 @@ import org.llava.impl.runtime.Code;
 
 public class UserSyntax
     extends 
-	Syntax 
+	SyntaxImpl
 {
     private Procedure macroLambda;
 

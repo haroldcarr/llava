@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 2000 Jan 07 (Fri) 06:39:08 by Harold Carr.
- * Last Modified : 2004 Dec 08 (Wed) 10:36:23 by Harold Carr.
+ * Last Modified : 2005 Mar 12 (Sat) 17:13:52 by Harold Carr.
  */
 
 package org.llava.impl.syntax;
@@ -31,7 +31,7 @@ import org.llava.impl.runtime.Code;
 
 public class SyntaxDefineSyntax
     extends 
-	Syntax
+	SyntaxImpl
 {
     public SyntaxDefineSyntax ()
     {
@@ -46,7 +46,7 @@ public class SyntaxDefineSyntax
     public Code compile (Compiler           compiler,
 			 Pair               x,
 			 EnvironmentLexical e, 
-			 LlavaRuntime        runtime)
+			 LlavaRuntime       runtime)
     {
 	Object macrobody = x.caddr();
 	Code code = compiler.compile(macrobody, e, runtime);

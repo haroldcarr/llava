@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 23 (Thu) 03:42:10 by Harold Carr.
- * Last Modified : 2004 Dec 08 (Wed) 10:30:04 by Harold Carr.
+ * Last Modified : 2005 Mar 12 (Sat) 17:16:24 by Harold Carr.
  */
 
 package org.llava.impl.compiler;
@@ -19,12 +19,12 @@ package org.llava.impl.compiler;
 import org.llava.F;
 import org.llava.Pair;
 import org.llava.Symbol;
+import org.llava.Syntax;
 import org.llava.compiler.Compiler;
 import org.llava.compiler.EnvironmentLexical;
 import org.llava.runtime.LlavaRuntime;
 
 import org.llava.impl.runtime.Code;
-import org.llava.impl.syntax.Syntax;
 import org.llava.impl.util.List;
 
 // REVISIT - coupling just for speed
