@@ -501,7 +501,7 @@ else
 		// No need to check if already imported since this procedure
 		// is only called in that case.
 		String expr = "(_%importAux '" + name + ")";
-		System.out.println(expr); // REVISIT
+		//System.out.println(expr); // REVISIT
 		getRepl().readCompileEval(expr);
 		((NamespaceImpl)getCurrentNamespace())
 		    .setClassAlreadyImported(true);
