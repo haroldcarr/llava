@@ -1,4 +1,10 @@
 (? xml (version "1.0") (encoding "UTF-8"))
+
+(!-- "
+Created       : 2004 Sep 10 (Fri) 22:41:59 by Harold Carr.
+Last Modified : 2004 Sep 11 (Sat) 07:42:55 by Harold Carr.
+")
+
 (!DOCTYPE xsl:transform)
 (xsl:transform (@ (xmlns:xsl "http://www.w3.org/1999/XSL/Transform")
 		  (xmlns:hc "http://haroldcarr.org/") 
@@ -10,27 +16,13 @@
    (body
     (xsl:for-each (@ (select "//refentry"))
         (xsl:sort (@ (order "ascending")
-		     (select "@id")))
-	(xsl:call-template (@ (name "lastIndexOf"))
-            (xsl:with-param (@ (name "string")
-			       (select "@id")))
-	    (xsl:with-param (@ (name "char")
-                               (select "'.'"))))
+		     (select "@procedure")))
+	(xsl:element (@ (name "a"))
+	   (xsl:attribute (@ (name "target")) main)
+	   (xsl:attribute (@ (name "href")) 
+               ./llava-site.html#(xsl:value-of (@ (select "@id"))))
+           (xsl:value-of (@ (select "@procedure"))))
 	(br)))))
-
-<!-- lastIndexOf  -->
-
- (xsl:template (@ (name "lastIndexOf"))
-    (xsl:param (@ (name "string")))
-    (xsl:param (@ (name "char")))
-    (xsl:choose
-      (xsl:when (@ (test "contains($string, $char)"))
-         (xsl:call-template (@ (name "lastIndexOf"))
-            (xsl:with-param (@ (name "string")
-                               (select "substring-after($string, $char)")))
-            (xsl:with-param (@ (name "char") (select "$char")))))
-      (xsl:otherwise
-         (xsl:value-of (@ (select "$string"))))))
 
 )
 
