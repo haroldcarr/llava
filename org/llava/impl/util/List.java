@@ -11,16 +11,50 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 22 (Wed) 06:15:52 by Harold Carr.
- * Last Modified : 2004 Dec 08 (Wed) 08:29:26 by Harold Carr.
+ * Last Modified : 2004 Dec 14 (Tue) 11:48:17 by Harold Carr.
  */
 
 package org.llava.impl.util;
+
+import java.lang.reflect.Array;
 
 import org.llava.F;
 import org.llava.Pair;
 
 public class List
 {
+    private static Object TRUE  = F.newBoolean(true);
+    private static Object FALSE = F.newBoolean(false);
+
+    public static Object equalp(Object first, Object second)
+    {
+	if (first == second) {
+	    return TRUE;
+	}
+	if (first == null || second == null) {
+	    return FALSE;
+	}
+	if (first.getClass().isArray() && second.getClass().isArray()) {
+	    return vectorEqualP(first, second);
+	}
+	return F.newBoolean(first.equals(second));
+    }
+
+    public static Object vectorEqualP(Object a, Object b)
+    {
+	int len = Array.getLength(a);
+	if (len != Array.getLength(b)) {
+	    return FALSE;
+	}
+	for (int i = 0; i < len; i++) {
+	    if (FALSE.equals(equalp(Array.get(a, i), Array.get(b, i)))) {
+		return FALSE;
+	    }
+	}
+	return TRUE;
+    }
+
+    
     /**
      *
      */
