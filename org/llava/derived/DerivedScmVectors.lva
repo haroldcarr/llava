@@ -9,53 +9,56 @@
 
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2004 Sep 09 (Thu) 21:25:51 by Harold Carr.
+;;;; Last Modified : 2004 Nov 26 (Fri) 17:05:38 by Harold Carr.
 ;;;;
 
-(package org.llava.lib.scm.Vectors)
+(define vector?
+  (lambda (x) 
+      (if (null? x)
+	  false
+	  (isArray (getClass x)))))
 
-(import org.llava.lib.Lists)
+(define make-vector
+  (lambda (k . fill)
+    (let ((v (-si 'newInstance 'java.lang.reflect.Array 
+		  (-si 'forName 'java.lang.Class "java.lang.Object")
+		  k)))
+      (if (not (null? fill))
+	  (do ((i 0 (+ i 1)))
+	      ((>= i k))
+	    (vector-set! v i (car fill))))
+      v)))
 
-(-package- (description "Scheme vector procedures."))
+(define vector-length
+  (lambda (v) (-si 'getLength 'java.lang.reflect.Array v)))
 
-;;;
-;;; list->vector
-;;;
+(define vector-ref
+  (lambda (v i) (-si 'get 'java.lang.reflect.Array v i)))
 
-(-doc-
- (name "list-&gt;vector")
- (param list))
+(define vector-set!
+  (lambda (v i x) 
+    (-si 'set 'java.lang.reflect.Array v i x)
+    x))
+
+(define vector->list
+  (lambda (v)
+    (let ((result '(_%dummy%_)))
+      (do ((len (-si 'getLength 'java.lang.reflect.Array v))
+	   (i 0 (+ i 1))
+	   (rptr result 
+		 (begin 
+		   (setCdr rptr 
+			   (cons (-si 'get 'java.lang.reflect.Array v i) '()))
+		   (cdr rptr))))
+	  ((>= i len) (cdr result))))))
 
 (define list->vector
   (lambda (l)
     (-si 'toArray 'org.llava.impl.util.List l)))
 
-;;;
-;;; vector->list
-;;;
-
-(-doc-
- (name "vector-&gt;list")
- (param vector))
-
-(define vector->list
-  (lambda (v)
-    (let ((len (-si 'getLength 'java.lang.reflect.Array v))
-	  (i 0))
-      (build-list (lambda () (>= i len))
-		  (lambda () 
-		    (let ((el (-si 'get 'java.lang.reflect.Array v i)))
-		      (set! i (+ i 1))
-		      el))))))
-
 (-comment-
-(load "ScmTypeProcs.lva")
-(load "import.lva")
 (isArray (getClass (listFiles (new 'java.io.File "."))))
-(toList (listFiles (new 'java.io.File ".")))
-(toList "foo")
 (vector->list (list->vector '(1 2 3)))
-(symbol? (string->symbol "bar"))
 )
 
 ;;; End of file.

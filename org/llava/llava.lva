@@ -1005,6 +1005,44 @@ share the static factory methods).
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section- (name "Vectors"))
+
+(-doc-
+ (name vector?)
+ (param obj)
+ (location org.llava))
+
+(-doc-
+ (name make-vector)
+ (param k)
+ (param optionalFill)
+ (location org.llava))
+
+(-doc-
+ (name vector-length)
+ (param vector))
+
+(-doc-
+ (name vector-ref)
+ (param vector)
+ (param k))
+
+(-doc-
+ (name vector-set!)
+ (param vector)
+ (param k)
+ (param obj))
+
+(-doc-
+ (name vector->list)
+ (param vector))
+
+(-doc-
+ (name list->vector)
+ (param vector))
+
+(-section-end-)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section- (name "Control Features"))
 
 (-doc-
