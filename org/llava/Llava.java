@@ -1,6 +1,6 @@
 /**
  * Created       : 1999 Dec 30 (Thu) 04:18:02 by Harold Carr.
- * Last Modified : 2000 Feb 16 (Wed) 16:48:37 by Harold Carr.
+ * Last Modified : 2001 Mar 12 (Mon) 18:30:59 by Harold Carr.
  */
 
 package lava;
@@ -28,6 +28,8 @@ import libLava.rt.FR;
 import libLava.r1.Engine; // REVISIT
 import libLava.r1.FR1; // REVISIT
 
+import libLava.r1.env.Namespace; // REVISIT
+
 public class Lava
 {
     private Evaluator           evaluator;
@@ -48,6 +50,13 @@ public class Lava
 
 	lava.loadUserLavaRC();
 
+	// REVISIT - wrong place
+	EnvironmentTopLevel env = lava.getEnvironmentTopLevel();
+	if (env instanceof Namespace) {
+	    ((Namespace)env)
+		.findNamespace(F.newSymbol("lava.Lava")).setIsSealed(true);
+	}
+
 	//newReplOnPort(4444); // REVISIT
 
 	lava.getRepl().loop();
@@ -61,6 +70,9 @@ public class Lava
     public Lava (InputStream in, OutputStream out, OutputStream err)
 
     {
+	//You can override defaults via -D or setting them here.
+	//System.setProperty("lava.io.LavaEOFClassName", "Bad");
+
 	// REVISIT: compiler is passed to handle system derived procedures.
 	// However this means the system cannot run without the compiler.
 	// But the compiler is so small who cares?
@@ -77,13 +89,13 @@ public class Lava
 				runtime,
 				compiler);
 
-	EnvTopLevelInit init = FR.newEnvTopLevelInit();
-	init.init(repl);
-	init.loadDerived(repl);
+	EnvTopLevelInit init = FR.newEnvTopLevelInit(repl);
+	init.init();
+	init.loadDerived();
 
 	backtraceHandler = FR1.newBacktraceHandler(); // REVISIT
-	environment.set(F.newSymbol(".jbt"), new JavaBacktrace());
-	environment.set(F.newSymbol(".bt"), new LavaBacktrace());
+	environment.set(F.newSymbol("_jbt"), new JavaBacktrace());
+	environment.set(F.newSymbol("_bt"), new LavaBacktrace());
     }
 
     public Object loadUserLavaRC ()

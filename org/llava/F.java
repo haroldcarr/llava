@@ -34,10 +34,36 @@ import libLava.rt.LavaRuntime;
 
 public class F {
 
+    public static Object createFromPropertiesOrUseDefault(
+				      String propertyNameToFind,
+				      String classNameDefault)
+    {
+	String className = System.getProperty(propertyNameToFind,
+					      classNameDefault);
+	Object object = null;
+	try {
+	    object = Class.forName(className).newInstance();
+	} catch (Exception e) {
+	    System.err.println("F.createFromPropertiesOrUseDefault(" +
+			       propertyNameToFind + ", " +
+			       classNameDefault + "), " +
+			       "exception while creating: " + className +
+			       " " + e);
+	    System.exit(-1);
+	}
+	return object;
+    }
+
     // LavaEOF
-    private static LavaEOF lavaEOFFactory = new LavaEOFImpl();
+    private static LavaEOF lavaEOFFactory = null; // new LavaEOFImpl();
 
     public static LavaEOF newLavaEOF() {
+	if (lavaEOFFactory == null) {
+	    lavaEOFFactory = 
+		(LavaEOF)
+		createFromPropertiesOrUseDefault("lava.io.LavaEOFClassName",
+						 "lava.io.LavaEOFImpl");
+	}
         return lavaEOFFactory.newLavaEOF();
     }
 
