@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2001 Mar 06 (Tue) 15:09:50 by Harold Carr.
-;;;; Last Modified : 2004 Sep 21 (Tue) 12:09:25 by Harold Carr.
+;;;; Last Modified : 2005 Feb 16 (Wed) 14:09:26 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.xml.L2X)
@@ -17,12 +17,22 @@
 (import org.llava.lib.cl.Control) ; dotimes
 (import org.llava.lib.io.FileWalker)
 
-;(import org.llava.lib.Control) 
-
 (-package- 
  (description
   "Transform a \"lispy\" version of XML (called \"lxml\") into angle bracket
    xml."))
+
+(define l->x-indent-amount 2)  ;; Used if indent is true.
+
+(define new-L->X
+  (lambda ()
+    (let ((fw (new-FileWalker)))
+      (set-dispatcher! fw l->x-dispatcher)
+      ;; Make newline and indent false by default so "mailto" attributes do not
+      ;; end up with space in them.  Turn to true for development.
+      (set-newline?! fw false)
+      (set-indent?! fw false)
+      fw)))
 
 ;;;;
 ;;;; --------------------------------------------------
@@ -38,37 +48,26 @@
 ;;;
 
 (define l->x
-  (lambda (lxml)
-    (file-walker-with-indent lxml 0)))
+  (lambda (fw lxml)
+    (file-walker-with-indent fw lxml 0)))
 
-;; Make newline and indent false by default so "mailto" attributes do not
-;; end up with space in them.  Turn to true for development.
-
-(file-walker-newline? false)
-(file-walker-indent? false)
-(define l->x-indent-amount 2) ; if above is true
-
-(define l->x-dispatch
-  (lambda (sexpr indent)
+(define l->x-dispatcher
+  (lambda (fw sexpr indent)
     (if (not (pair? sexpr))
-	(l->x-printText sexpr)
+	(l->x-printText fw sexpr)
 	(case (car sexpr)
-	  ((?)   (l->x-printProcessingInstruction sexpr indent))
+	  ((?)   (l->x-printProcessingInstruction fw sexpr indent))
 	  ((!)   (-println (string-append "ignoring: " (toString sexpr))))
 	  ((!DOCTYPE)
-                 (l->x-printDOCTYPE sexpr indent))
+                 (l->x-printDOCTYPE fw sexpr indent))
 	  ((!CDATA)
-                 (l->x-printCDATA sexpr indent))
-	  ((!--) (l->x-printComment sexpr indent))
-	  ((&&)  (l->x-printEntity sexpr indent))
-	  (else  (l->x-printElement sexpr indent))))))
-
-(set-file-walker-dispatcher! l->x-dispatch)
-(set-file-walker-print-header! (lambda (a b c) null))
-(set-file-walker-print-footer! (lambda (a b c) null))
+                 (l->x-printCDATA fw sexpr indent))
+	  ((!--) (l->x-printComment fw sexpr indent))
+	  ((&&)  (l->x-printEntity fw sexpr indent))
+	  (else  (l->x-printElement fw sexpr indent))))))
 
 (define l->x-printElement
-  (lambda (element indent)
+  (lambda (fw element indent)
     (let* ((hasAttributes (and (not (null? (cdr element)))
 			       (pair? (cdr element))
 			       (pair? (cadr element))
@@ -76,81 +75,81 @@
 	   (name (car element))
 	   (attributes (if hasAttributes (cdr (cadr element)) null))
 	   (body (if hasAttributes (cddr element) (cdr element))))
-      (file-walker-newline)
-      (file-walker-indent indent)
-      (file-walker-print "<")
-      (file-walker-print name)
-      (l->x-printAttributes attributes)
+      (file-walker-newline fw)
+      (file-walker-indent fw indent)
+      (file-walker-print fw "<")
+      (file-walker-print fw name)
+      (l->x-printAttributes fw attributes)
       (cond ((null? body)
-	     (file-walker-print "/>"))
+	     (file-walker-print fw "/>"))
 	    (else
-	     (file-walker-print ">")
-	     (file-walker-with-indent body (+ indent l->x-indent-amount))
-	     (file-walker-print "</")
-	     (file-walker-print name)
-	     (file-walker-print ">"))))))
+	     (file-walker-print fw ">")
+	     (file-walker-with-indent fw body (+ indent l->x-indent-amount))
+	     (file-walker-print fw "</")
+	     (file-walker-print fw name)
+	     (file-walker-print fw ">"))))))
 
 (define l->x-printEntity
-  (lambda (entity indent)
-    (file-walker-print " &")
-    (file-walker-print (cadr entity))
-    (file-walker-print "; ")))
+  (lambda (fw entity indent)
+    (file-walker-print fw " &")
+    (file-walker-print fw (cadr entity))
+    (file-walker-print fw "; ")))
 
 (define l->x-printProcessingInstruction
-  (lambda (pi indent)
+  (lambda (fw pi indent)
     ;; XML declaration must be on first line.
     (if (not (equals 'xml (cadr pi)))
-	(file-walker-newline))
-    (file-walker-indent indent)
-    (file-walker-print "<?")
-    (file-walker-print (cadr pi))
-    (l->x-printAttributes (cddr pi))
-    (file-walker-print "?>")))
+	(file-walker-newline fw))
+    (file-walker-indent fw indent)
+    (file-walker-print fw "<?")
+    (file-walker-print fw (cadr pi))
+    (l->x-printAttributes fw (cddr pi))
+    (file-walker-print fw "?>")))
 
 (define l->x-printAttributes
-  (lambda (attributes)
+  (lambda (fw attributes)
     (do ((atts attributes (cdr atts)))
 	((null? atts))
-      (file-walker-print " ")
-      (file-walker-print (caar atts))
-      (file-walker-print "=")
-      (file-walker-print "\"")
-      (file-walker-print (car (cdar atts)))
-      (file-walker-print "\""))))
+      (file-walker-print fw " ")
+      (file-walker-print fw (caar atts))
+      (file-walker-print fw "=")
+      (file-walker-print fw "\"")
+      (file-walker-print fw (car (cdar atts)))
+      (file-walker-print fw "\""))))
 
 (define l->x-printText 
-  (lambda (text)
-    (file-walker-print text)))
+  (lambda (fw text)
+    (file-walker-print fw text)))
 
 (define l->x-printComment
-  (lambda (comment indent)
-    (file-walker-newline)
-    (file-walker-indent indent)
-    (file-walker-print "<!-- ")
-    (for-each file-walker-print (cdr comment))
-    (file-walker-print " -->")))
+  (lambda (fw comment indent)
+    (file-walker-newline fw)
+    (file-walker-indent fw indent)
+    (file-walker-print fw "<!-- ")
+    (for-each (lambda (c) (file-walker-print fw c)) (cdr comment))
+    (file-walker-print fw " -->")))
 
 (define l->x-printDOCTYPE
-  (lambda (doctype indent)
-    (file-walker-newline)
-    (file-walker-indent indent)
-    (file-walker-print "<!DOCTYPE")
+  (lambda (fw doctype indent)
+    (file-walker-newline fw)
+    (file-walker-indent fw indent)
+    (file-walker-print fw "<!DOCTYPE")
     (do ((d (cdr doctype)            (cdr d))
 	 (s '(false false true true) (cdr s)))
 	((null? d))
-      (file-walker-print " ")
-      (if (car s) (file-walker-print "\""))
-      (file-walker-print (car d))
-      (if (car s) (file-walker-print "\"")))
-    (file-walker-print ">")))
+      (file-walker-print fw " ")
+      (if (car s) (file-walker-print fw "\""))
+      (file-walker-print fw (car d))
+      (if (car s) (file-walker-print fw "\"")))
+    (file-walker-print fw ">")))
 
 (define l->x-printCDATA
-  (lambda (cdata indent)
-    (file-walker-newline)
-    (file-walker-indent indent)
-    (file-walker-print "<![CDATA[")
-    (file-walker-print (cadr cdata))
-    (file-walker-print "]]>")))
+  (lambda (fw cdata indent)
+    (file-walker-newline fw)
+    (file-walker-indent fw indent)
+    (file-walker-print fw "<![CDATA[")
+    (file-walker-print fw (cadr cdata))
+    (file-walker-print fw "]]>")))
 
 ;;;
 ;;; Strings, Streams and files.
@@ -160,15 +159,19 @@
  (name "l-&gt;x-string"))
 
 (define l->x-string
-  (lambda (lxml)
-    (file-walker-string lxml)))
+  (lambda (fw lxml)
+    (file-walker-string fw lxml)))
 
 (-doc-
  (name "l-&gt;x-files"))
 
 (define l->x-files
   (lambda (inFileName outFileName)
-    (file-walker-files inFileName outFileName)))
+    (l->x-files* (new-L->X) inFileName outFileName)))
+
+(define l->x-files*
+  (lambda (fw inFileName outFileName)
+    (file-walker-files fw inFileName outFileName)))
 
 ;;;;
 ;;;; --------------------------------------------------
