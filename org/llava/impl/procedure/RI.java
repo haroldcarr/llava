@@ -1,6 +1,6 @@
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2000 Jan 29 (Sat) 15:39:40 by Harold Carr.
+ * Last Modified : 2000 Feb 16 (Wed) 03:36:29 by Harold Carr.
  */
 
 package libLava.r1.procedure.generic;
@@ -10,6 +10,10 @@ import java.util.Vector;
 import java.util.Hashtable;
 
 public class DI {
+
+    //
+    // New public API in progress.
+    //
 
     public static Object invoke (String   method,
 				 Object   targetObject, 
@@ -73,197 +77,12 @@ public class DI {
 	setField(targetClass, null, field, value);
 	return value;
     }
+
+    //
+    // Existing public API.
+    //
 				  
-				      
-
-    // True iff >= JDK1.1.  True implies reflection can be used.
-
-    /**/public static final boolean java11 = 
-	isClassPresent("java.lang.reflect.Method");
-
-    // True iff >= Java 2.  True implies non-public classes and members
-    // accessible.
-
-    /**/public static final boolean java2 = 
-	isClassPresent("java.lang.reflect.AccessibleObject");
-
-
-    /**/public static Object invoke(Object obj, String methodName, Object[] args) 
-	throws 
-	    NoSuchMethodException, 
-	    Throwable 
-    {
-	return invoke(obj.getClass(), obj, methodName, args); 
-    }
-
-    /**/public static Object invoke(Class myClass,
-				    Object obj,
-				    String methodName,
-				    Object[] args) 
-	throws 
-	    NoSuchMethodException,
-	    Throwable 
-    {
-	Class[] signature = classArray(args);    
-	Method method = lookupMethod(myClass, methodName, signature);
-	if (method == null)
-	    throw new NoSuchMethodException("no applicable method");
-	else {
-	    try {
-		return method.invoke(obj, args); }
-	    // pass exceptions upward.
-	    catch (InvocationTargetException e) {
-		throw(e.getTargetException()); }
-	}
-    }
-
-    /**/public static Object getMethod(Object obj,
-				       String methodName,
-				       Object[] args) 
-	throws
-	    NoSuchMethodException 
-    {
-	return getMethod(obj.getClass(), obj, methodName, args); 
-    }
-  
-
-    /**/public static Method getMethod(Class myClass,
-				       Object obj,
-				       String methodName,
-				       Object[] args) 
-	throws 
-	    NoSuchMethodException 
-    {
-	Class[] signature = classArray(args);    
-	return lookupMethod(myClass, methodName, signature);
-    }
-
-    static Method lookupMethod(Class targetClass,
-			       String name,
-			       Class[] argClasses) 
-	throws
-	    NoSuchMethodException 
-    {  
-	// first, see if there is an exact match
-
-	// ELIMINATED because it turns out a new method object is generated each time!  Yuck!
-	// I wonder if this is true for all VMs though.
-
-	//     try {
-	//       return targetClass.getMethod(name, argClasses); }
-	//     catch (NoSuchMethodException e) {	
-	//       if (!java2 && argClasses.length == 0) {  // if no args and no exact match, we're out of luck
-	// 	return null; }
-	//     }
-	// go the more complicated route
-	return lookupMethodCached(targetClass, name, argClasses); 
-    }
-
-    // +++ when JDK 1.2 comes out, use weak references
-    static Hashtable hash = new Hashtable();
-
-    // synchronized since the key is reused
-    static synchronized Method lookupMethodCached(Class target, 
-						  String name, 
-						  Class[] argClasses) 
-	throws 
-	    NoSuchMethodException  
-    {
-
-	MethodKey key = MethodKey.make(target, name, argClasses);
-	Object result = hash.get(key);
-	if (result == null) {
-	    Method nresult = lookupMethodLaboriously(target, name, argClasses);
-	    if (nresult == null)
-		return null;
-	    else {
-		key.keep();
-		hash.put(key, nresult);
-		return nresult; }}
-	else
-	    return (Method)result; }
-
-    static Method lookupMethodLaboriously(Class target,
-					  String name,
-					  Class[] argClasses) 
-	throws 
-	    NoSuchMethodException 
-    {
-
-	// first try for exact match
-	try {
-	    Method m = target.getMethod(name, argClasses); 
-	    if (java2) setAccessible(m, true);
-	    return m;
-	}
-	catch (NoSuchMethodException e) {	
-	    if (!java2 && argClasses.length == 0) {  // if no args and no exact match, out of luck
-		return null; }
-	}
-
-	// go the more complicated route
-	if (java2) 
-	    return lookupMethodLaboriously(new Vector(),
-					   target,
-					   name,
-					   argClasses);
-	else {
-	    Method[] methods = target.getMethods();
-	    Vector goodMethods = new Vector();
-	    for (int i = 0; i != methods.length; i++) {
-		if (name.equals(methods[i].getName()) &&
-		    matchClasses(methods[i].getParameterTypes(), argClasses))
-		    goodMethods.addElement(methods[i]);
-	    }
-	    switch (goodMethods.size()) {
-	    case 0: {
-		return null; }
-	    case 1: {
-		return (Method)goodMethods.firstElement(); }
-	    default: {
-		return mostSpecificMethod(goodMethods);
-	    }}
-	}
-    }
-
-    // jdk1.2 version 
-    static Method lookupMethodLaboriously(Vector goodMethods,
-					  Class target,
-					  String name,
-					  Class[] argClasses) 
-	throws 
-	    NoSuchMethodException 
-    {
-
-	if (target == null) {
-	    Method m;
-	    switch (goodMethods.size()) {
-	    case 0: {
-		return null; }
-	    case 1: {
-		m = (Method)goodMethods.firstElement(); }
-	    default: {
-		m = mostSpecificMethod(goodMethods);
-	    }}
-	    setAccessible(m, true);
-	    return m;
-	}
-	else {
-	    Method[] methods = target.getDeclaredMethods();
-	    for (int i = 0; i != methods.length; i++) {
-		Class[] paramTypes = methods[i].getParameterTypes();
-		if (name.equals(methods[i].getName()) &&
-		    matchClasses(paramTypes, argClasses))
-		    goodMethods.addElement(methods[i]);
-	    }
-	    return lookupMethodLaboriously(goodMethods,
-					   target.getSuperclass(),
-					   name,
-					   argClasses);
-	}
-    }
-
-    /**/public static Object create(Class myClass, Object[] args) 
+    public static Object create(Class myClass, Object[] args) 
 	throws 
 	    Throwable 
     {
@@ -294,10 +113,38 @@ public class DI {
 	}
     }
 
+    public static Object invoke(Object obj, String methodName, Object[] args) 
+	throws 
+	    NoSuchMethodException, 
+	    Throwable 
+    {
+	return invoke(obj.getClass(), obj, methodName, args); 
+    }
 
-    /**/public static void setField(Object object,
-				    String fieldName,
-				    Object value)
+    public static Object invoke(Class myClass,
+				Object obj,
+				String methodName,
+				Object[] args) 
+	throws 
+	    NoSuchMethodException,
+	    Throwable 
+    {
+	Class[] signature = classArray(args);    
+	Method method = lookupMethod(myClass, methodName, signature);
+	if (method == null)
+	    throw new NoSuchMethodException("no applicable method");
+	else {
+	    try {
+		return method.invoke(obj, args); }
+	    // pass exceptions upward.
+	    catch (InvocationTargetException e) {
+		throw(e.getTargetException()); }
+	}
+    }
+
+    public static void setField(Object object,
+				String fieldName,
+				Object value)
 	throws 
 	    IllegalAccessException, 
 	    NoSuchFieldException 
@@ -307,10 +154,10 @@ public class DI {
     }
 
 
-    /**/public static void setField(Class myClass,
-				    Object object,
-				    String fieldName,
-				    Object value)
+    public static void setField(Class myClass,
+				Object object,
+				String fieldName,
+				Object value)
 	throws
 	    IllegalAccessException, 
 	    NoSuchFieldException 
@@ -319,7 +166,7 @@ public class DI {
 	field.set(object, value); 
     }
 
-    /**/public static Object getField(Object object, String fieldName) 
+    public static Object getField(Object object, String fieldName) 
 	throws 
 	    IllegalAccessException,
 	    NoSuchFieldException 
@@ -327,15 +174,152 @@ public class DI {
 	return getField(object.getClass(), object, fieldName);
     }
 
-    /**/public static Object getField(Class myClass,
-				      Object object,
-				      String fieldName) 
+    public static Object getField(Class myClass,
+				  Object object,
+				  String fieldName) 
 	throws
 	    IllegalAccessException,
 	    NoSuchFieldException 
     {
 	Field field = fieldLookup(myClass, fieldName);
 	return field.get(object); 
+    }
+
+    //
+    // Implementation.
+    //
+
+    private static Object getMethod(Object obj,
+				   String methodName,
+				   Object[] args) 
+	throws
+	    NoSuchMethodException 
+    {
+	return getMethod(obj.getClass(), obj, methodName, args); 
+    }
+  
+
+    private static Method getMethod(Class myClass,
+				    Object obj,
+				    String methodName,
+				    Object[] args) 
+	throws 
+	    NoSuchMethodException 
+    {
+	Class[] signature = classArray(args);    
+	return lookupMethod(myClass, methodName, signature);
+    }
+
+    private static Method lookupMethod(Class targetClass,
+				       String name,
+				       Class[] argClasses) 
+	throws
+	    NoSuchMethodException 
+    {  
+	return lookupMethodCached(targetClass, name, argClasses); 
+    }
+
+    // synchronized since the key is reused
+    private static synchronized Method lookupMethodCached(Class target, 
+							  String name, 
+							  Class[] argClasses) 
+	throws 
+	    NoSuchMethodException  
+    {
+
+	MethodKey key = MethodKey.make(target, name, argClasses);
+	Object result = hash.get(key);
+	if (result == null) {
+	    Method nresult = lookupMethodLaboriously(target, name, argClasses);
+	    if (nresult == null)
+		return null;
+	    else {
+		key.keep();
+		hash.put(key, nresult);
+		return nresult; }}
+	else
+	    return (Method)result; }
+
+    private static Method lookupMethodLaboriously(Class target,
+						  String name,
+						  Class[] argClasses) 
+	throws 
+	    NoSuchMethodException 
+    {
+
+	// first try for exact match
+	try {
+	    Method m = target.getMethod(name, argClasses); 
+	    if (java2) setAccessible(m, true);
+	    return m;
+	}
+	catch (NoSuchMethodException e) {	
+	    if (!java2 && argClasses.length == 0) {
+		// if no args and no exact match, out of luck
+		return null; 
+	    }
+	}
+
+	// go the more complicated route
+	if (java2) 
+	    return lookupMethodLaboriously(new Vector(),
+					   target,
+					   name,
+					   argClasses);
+	else {
+	    Method[] methods = target.getMethods();
+	    Vector goodMethods = new Vector();
+	    for (int i = 0; i != methods.length; i++) {
+		if (name.equals(methods[i].getName()) &&
+		    matchClasses(methods[i].getParameterTypes(), argClasses))
+		    goodMethods.addElement(methods[i]);
+	    }
+	    switch (goodMethods.size()) {
+	    case 0: {
+		return null; }
+	    case 1: {
+		return (Method)goodMethods.firstElement(); }
+	    default: {
+		return mostSpecificMethod(goodMethods);
+	    }}
+	}
+    }
+
+    // jdk1.2 version 
+    private static Method lookupMethodLaboriously(Vector goodMethods,
+						  Class target,
+						  String name,
+						  Class[] argClasses) 
+	throws 
+	    NoSuchMethodException 
+    {
+
+	if (target == null) {
+	    Method m;
+	    switch (goodMethods.size()) {
+	    case 0: {
+		return null; }
+	    case 1: {
+		m = (Method)goodMethods.firstElement(); }
+	    default: {
+		m = mostSpecificMethod(goodMethods);
+	    }}
+	    setAccessible(m, true);
+	    return m;
+	}
+	else {
+	    Method[] methods = target.getDeclaredMethods();
+	    for (int i = 0; i != methods.length; i++) {
+		Class[] paramTypes = methods[i].getParameterTypes();
+		if (name.equals(methods[i].getName()) &&
+		    matchClasses(paramTypes, argClasses))
+		    goodMethods.addElement(methods[i]);
+	    }
+	    return lookupMethodLaboriously(goodMethods,
+					   target.getSuperclass(),
+					   name,
+					   argClasses);
+	}
     }
 
     static Field fieldLookup(Class myClass, String fieldName) 
@@ -378,9 +362,10 @@ public class DI {
 
 
     // go thru reflection so I can compile this damned thing under 1.1
-    static Method setAccessibleMethod = null;
+    private static Method setAccessibleMethod = null;
 
-    static void setAccessible(Object thing, boolean accessible) {
+    private static void setAccessible(Object thing, boolean accessible) 
+    {
 	try {
 	    if (setAccessibleMethod == null) {
 		Class aclass = Class.forName("java.lang.reflect.AccessibleObject");
@@ -394,19 +379,71 @@ public class DI {
 	}
     }
 
-    //// Utilities
-
-    // 1st arg is from method, 2nd is actual parameters
-    static boolean matchClasses(Class[] mclasses, Class[] pclasses) {
-	if (mclasses.length == pclasses.length) {
-	    for (int i = 0; i != mclasses.length; i++) {
-		if (!matchClass(mclasses[i], pclasses[i])) {
-		    return false; }
-	    }
-	    return true;
+    private static boolean matchClasses(Class[] argClasses, 
+					Class[] parmClasses) 
+    {
+	if (argClasses.length != parmClasses.length) {
+	    return false;
 	}
+	for (int i = 0; i != argClasses.length; i++) {
+	    if (!matchClass(argClasses[i], parmClasses[i])) {
+		return false; }
+	}
+	return true;
+    }
+
+    // Called by moreSpecific so parmClass could be primitive.
+
+    private static boolean matchClass(Class argClass, Class parmClass) 
+    {
+	if (parmClass.isPrimitive())
+	    parmClass = wrappedClass(parmClass);
+	if (argClass.isPrimitive()) {
+	    return 
+		wrappedClass(argClass) == parmClass ||
+		isPrimAssignableFrom(argClass, parmClass);
+	}
+	else
+	    // argClass is a reference type (reduces to isAssignableFrom)
+	    return 
+		argClass == parmClass ||
+		argClass.isAssignableFrom(parmClass) || 
+		parmClass == NullClass;
+    }
+
+
+    // argClass is a primitive Class, parmClass is a wrapper Class
+    // Assumes argClass and parmClass are not "identical" (modulo wrapping).
+    // see Widening Primitve Conversions in JLS 5.1.2.
+
+    private static boolean isPrimAssignableFrom(Class argClass,
+						Class parmClass) 
+    {
+	if (parmClass == ByteClass)
+	    return
+		argClass == shortClass   ||
+		argClass == integerClass ||
+		argClass == longClass    ||
+		argClass == floatClass   ||
+		argClass == doubleClass;
+	else if (parmClass == IntegerClass || parmClass == ShortClass || parmClass == CharacterClass)
+	    return
+		argClass == integerClass ||
+		argClass == longClass    ||
+		argClass == floatClass   ||
+		argClass == doubleClass;
+	else if (parmClass == LongClass || parmClass == FloatClass)
+	    return
+		argClass == floatClass ||
+		argClass == doubleClass;
 	return false;
     }
+
+    // REVISIT - use weak references
+    static Hashtable hash = new Hashtable();
+
+    /**/public static final boolean java2 = 
+	isClassPresent("java.lang.reflect.AccessibleObject");
 
     static Class NullClass;
     static Class nullClass;
@@ -454,74 +491,21 @@ public class DI {
 	}
     }
       
-    // 1st arg is from method, 2nd is from actual parameter
-    // also called by moreSpecific (so pclass could be primitive)
-    // note that this reduces to isAssignableFrom for reference classes
-    static boolean matchClass(Class mclass, Class pclass) {
-	if (pclass.isPrimitive())
-	    pclass = wrappedClass(pclass);
-	if (mclass.isPrimitive()) {
-	    return 
-		wrappedClass(mclass) == pclass ||
-		isPrimAssignableFrom(mclass, pclass);
-	}
-	else			// mclass is a reference type
-	    return 
-		mclass == pclass ||
-		mclass.isAssignableFrom(pclass) || 
-		pclass == NullClass;
-    }
-
-
-    // mclass is a primitive Class, pclass is a wrapper Class
-    // this assumes that mclass and pclass are not "identical" (modulo wrapping)
-    // see JLS 5.1.2 (Widening Primitve Conversions)
-    static boolean isPrimAssignableFrom(Class mclass, Class pclass) {
-	if (pclass == ByteClass)
-	    return
-		mclass == shortClass ||
-		mclass == integerClass ||
-		mclass == longClass ||
-		mclass == floatClass ||
-		mclass == doubleClass;
-	else if (pclass == IntegerClass || pclass == ShortClass || pclass == CharacterClass)
-	    return
-		mclass == integerClass ||
-		mclass == longClass ||
-		mclass == floatClass ||
-		mclass == doubleClass;
-	else if (pclass == LongClass || pclass == FloatClass)
-	    return
-		mclass == floatClass ||
-		mclass == doubleClass;
-	return false;
-    }
-	
-
-    static Class wrappedClass(Class clazz) {
+    private static Class wrappedClass(Class clazz) 
+    {
 	if (clazz.isPrimitive()) {
 	    Class wrappedClass;
-	    if (clazz == booleanClass)
-		wrappedClass = BooleanClass;
-	    else if (clazz == integerClass)
-		wrappedClass = IntegerClass;
-	    else if (clazz == characterClass)
-		wrappedClass = CharacterClass;
-	    else if (clazz == byteClass)
-		wrappedClass = ByteClass;
-	    else if (clazz == shortClass)
-		wrappedClass = ShortClass;
-	    else if (clazz == longClass)
-		wrappedClass = LongClass;
-	    else if (clazz == floatClass)
-		wrappedClass = FloatClass;
-	    else if (clazz == doubleClass)
-		wrappedClass = DoubleClass;
-	    else throw new Error("Unknown primitive type" + clazz);
-	    return wrappedClass;
+	    if (clazz == booleanClass)   return BooleanClass;
+	    if (clazz == integerClass)   return IntegerClass;
+	    if (clazz == characterClass) return CharacterClass;
+	    if (clazz == byteClass)      return ByteClass;
+	    if (clazz == shortClass)     return ShortClass;
+	    if (clazz == longClass)      return LongClass;
+	    if (clazz == floatClass)     return FloatClass;
+	    if (clazz == doubleClass)    return DoubleClass;
+	    throw new Error("DI.wrappedClass: unknown type" + clazz);
 	}
-	else 
-	    return clazz;
+	return clazz;
     }
   
     static Constructor mostSpecific(Vector constructors) 
@@ -580,7 +564,8 @@ public class DI {
     }
 
     // true if c1 is more specific than c2
-    static boolean moreSpecific(Method c1, Method c2) {
+    private static boolean moreSpecific(Method c1, Method c2) 
+    {
 	if (!matchClass(c2.getDeclaringClass(), c1.getDeclaringClass())) // needed for jdk12 only
 	    return false;
 	Class[] p1 = c1.getParameterTypes();
@@ -595,14 +580,16 @@ public class DI {
     }
 
     // given an array of objects, return an array of corresponding classes
-    static Class[] classArray(Object[] args) {
+    private static Class[] classArray(Object[] args) 
+    {
 	Class[] classes = new Class[args.length];
 	for (int i = 0; i != args.length; i = i + 1)
 	    classes[i] = ((args[i] == null) ? NullClass : args[i].getClass());
 	return classes; 
     }
 
-    static boolean isClassPresent(String className) {
+    private static boolean isClassPresent(String className) 
+    {
 	try {
 	    Class.forName(className);
 	}
@@ -611,9 +598,11 @@ public class DI {
 	}
 	return true;
     }
-} // end class DI
+}
 
-//// these objects are used as keys to search the method cache.
+/*
+ * Keys to method cache.
+ */
 
 class MethodKey {
     Class target;
