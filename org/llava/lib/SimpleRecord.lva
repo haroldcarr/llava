@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2004 Nov 24 (Wed) 07:42:48 by Harold Carr.
-;;;; Last Modified : 2004 Dec 14 (Tue) 10:35:05 by Harold Carr.
+;;;; Last Modified : 2004 Dec 14 (Tue) 10:50:29 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.SimpleRecord)
@@ -66,42 +66,18 @@
 	       (lambda args
 		 (do ((r (-si 'toArray 'org.llava.impl.util.List 
 			      (cons 'record (cons ',record-name ',slot-names))))
-		      (sn ',setter-names (cdr sn)))
-		     ((null? sn) r)
+		      (i 2 (+ i 1)) ;; 2 -> skip 'record and record-name
+		      (len (+ 2 (length ',slot-names))))
+		     ((>= i len) r)
 		   (cond ((null? args)
-			  (apply (eval (car sn)) (list r null)))
+			  (-si 'set 'java.lang.reflect.Array r i null))
 			 (else
-			  (apply (eval (car sn)) (list r (car args)))
+			  (-si 'set 'java.lang.reflect.Array r i (car args))
 			  (set! args (cdr args)))))))))
       `(begin
 	 ,constructor
 	 ,@setters
 	 ,@getters
 	 ',record-name))))
-
-(-comment-
-(import org.llava.lib.SimpleRecord)
-(define-simple-record r x y z)
-(set! r (make-r))
-r
-(set-y! r 2)
-r
-(set! r (make-r 1 2 3))
-r
-(get-z r)
-(set-z! r 'vv)
-r
-
-(package foo)
-(import org.llava.lib.SimpleRecord)
-(define-simple-record r x y z)
-(make-r)
-(package bar)
-(import foo)
-(define (test) (make-r))
-(package baz)
-(import bar)
-(test)
-)
 
 ;;; End of file.
