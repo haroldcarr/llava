@@ -9,7 +9,6 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 22 (Wed) 06:15:52 by Harold Carr.
  * Last Modified : 2004 Dec 08 (Wed) 09:01:11 by Harold Carr.
@@ -108,6 +107,18 @@ public class List
 	    array[i] = pptr.car();
 	}
 	return array;
+    }
+
+    public static Pair vector2list(Object v)
+    {
+	Pair result = List.list("dummy");
+	Pair rptr   = result;
+	int len     = java.lang.reflect.Array.getLength(v);
+	for (int i = 0; i < len; i++) {
+	    rptr.setCdr(List.list(java.lang.reflect.Array.get(v, i)));
+	    rptr = (Pair) rptr.cdr();	    
+	}
+	return (Pair) result.cdr();
     }
 }
 
