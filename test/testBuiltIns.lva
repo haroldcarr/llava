@@ -7,10 +7,9 @@
 ;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
 ;;;;---------------------------------------------------------------------------
 
-
 ;;;
 ;;; Created       : 1999 Dec 25 (Sat) 22:10:35 by Harold Carr.
-;;; Last Modified : 2004 Sep 06 (Mon) 00:28:44 by Harold Carr.
+;;; Last Modified : 2004 Dec 05 (Sun) 18:32:03 by Harold Carr.
 ;;;
 
 (begin
@@ -25,6 +24,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test if
 
+(-println "if->:")
+
 (check 'testIf1 'f (if false 't 'f))
 ;; REVISIT - how to test
 ;(check 'testIf2 't (if 1 't 'f))
@@ -35,12 +36,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test print of lambdas with names
 
+(-println "lambda with names->:")
+
 (define foo (lambda (x) x))
 (check 'lambdaName (toString foo) (toString foo)) ;; REVISIT "Lambda foo"
 ;(check 'lambdaRename (toString 'REVISIT) ((lambda (x) (set! x foo)  (set! foo 3)  x) 'dummy))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test new and generic.
+
+(-println "new and generic->:")
 
 ;; NB. do not use doubleValue here - TestGeneric makes it null.
 (check 'newAndGeneric 
@@ -50,12 +55,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test static invocation.
 
+(-println "static invocation->:")
+
 ; REVISIT 1.3.0
 
 (-println (-si 'getProperty 'java.lang.System (toString 'java.version)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test field access
+
+(-println "field access->:")
 
 (define test (new 'org.llava.impl.runtime.procedure.primitive.java.PrimNew))
 ;; REVISIT - no more singleton field
@@ -81,6 +90,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test WrapJavaPrimitive
 
+(-println "wrap Java primitive->:")
+
 (define _%instanceof
   (lambda (obj type)
     (isInstance (-si 'forName 'java.lang.Class (toString type)) obj)))
@@ -97,6 +108,8 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test equality
+
+(-println "equality->:")
 
 (check 'equality1   true (eq? null null))
 (check 'equality1.1 true (eq? null null))
@@ -115,6 +128,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test list operations
 
+(-println "list->:")
+
 (check 'list0 '() (list))
 (check 'list1 '(1) (list 1))
 (check 'list2 '(1 2) (list 1 2))
@@ -131,6 +146,8 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test numerics operators
+
+(-println "numerics->:")
 
 (define test-numerics
   (lambda (arg-lists)
@@ -177,6 +194,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test tail recursion
 
+(-println "tail recursion->:")
+
 (define (printList x)
   (if (eq? x null)
       (dprintln 'done)
@@ -198,6 +217,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test map
 
+(-println "map->:")
+
 (check 'map1
        '(1 2 3)
        (map + '(1 2 3)))
@@ -216,6 +237,8 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test generic procedure definition
+
+(-println "generic->:")
 
 (define x 3)
 (define x (lambda (x) x))
@@ -242,11 +265,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test dotted
 
+(-println "dotted->:")
+
 (define (foo a b . rest) (list a b rest))
 (check 'dotted1 '(1 2 (3 4 5)) (foo 1 2 3 4 5))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test macros
+
+(-println "macros->:")
 
 ;; REVISIT - since this is in a begin everything is first compiled
 ;; then executed.  But if the following is called "foo" then
@@ -263,6 +290,8 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test derived
+
+(-println "derived->:")
 
 (check 'derived1 
        '(-if true (begin true) (cond))
@@ -345,11 +374,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test misc
 
+(-println "misc->:")
+
 (check "-println" true (null? (-println null)))
 (check "-comment-" null (-comment- (throw (new 'java.lang.Exception))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test eval
+
+(-println "eval->:")
 
 (check 'eval1 eval (eval 'eval))
 ;; REVISIT - interaction of eval and local environments
@@ -365,6 +398,8 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test quasiquote
+
+(-println "quasiquote->:")
 
 ;; 1.1
 (check "quasi1" 1 (apply quasiquote '(quasiquote 1)))
@@ -413,6 +448,8 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Test call/cc
+
+(-println "call/cc->:")
 
 (define (tc x)
  (list 'r1
@@ -523,6 +560,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; test throw
 
+(-println "throw->:")
+
 (-comment-
 ;; revisit
 (check "throw1"
@@ -540,6 +579,8 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; test try
+
+(-println "try->:")
 
 (define (test_%try tryProcedure)
   (_%try 
@@ -609,80 +650,85 @@
 			      (new 'java.lang.AbstractMethodError "ab"))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Test require/provide
-
-(-comment-
-
-(require 'org/llava/lib/system/win32p)
-
-(define userHome 
-  (-si 'getProperty 'java.lang.System "user.home"))
-
-(check "provided1"
-       '("org/llava/lib/system/win32p" "org/llava/lib/test/test")
-       (provided))
-(check "reset-provided1"
-       null
-       (reset-provided))
-(check "provided2"
-       null
-       (provided))
-(check "load-library1"
-       (string-append userHome
-		      "/.sync/.llava.org/.system/org/llava/lib/test/do-not-provide.lva")
-       (toLowerCase (load-library 'org/llava/lib/test/do-not-provide)))
-(check "provided3"
-       null
-       (provided))
-(check "provided?1"
-       false
-       (provided? 'org/llava/lib/cl/control/setq))
-(check "require1"
-       (string-append userHome
-		      "/.sync/.llava.org/.system/org/llava/lib/cl/control/setq.lva")
-       (toLowerCase (require 'org/llava/lib/cl/control/setq)))
-(check "provided4"
-       '("org/llava/lib/cl/control/setq" "org/llava/lib/cl/symbols/gensym")
-       (provided))
-(check "provided?2"
-       true
-       (provided? 'org/llava/lib/cl/control/setq))
-(check "require2"
-       null
-       (require 'org/llava/lib/cl/control/setq))
-
-;; REVISIT - load-path, push-on-load-path, append-to-load-path
-)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test import
 
-(-comment-
-REVISIT - reenable this test
+(-println "import->:")
 
-(require 'org/llava/lib/java/lang/import)
-
-(import 'java.lang.Double 'constructor)
+;;(import java.lang.Double constructor) ;; REVISIT
+(import java.lang.Double)
 ;; REVISIT - no floats
-(check "import1" 34.0 (java.lang.Double "34"))
-(import 'java.lang.Double 'MAX_VALUE)
-(check "import2" (java.lang.Double.MAX_VALUE) (java.lang.Double.MAX_VALUE))
+;;(check "import1" 34.0 (java.lang.Double "34"))
+(check "import1" 34.0 (Double "34"))
+;;(import 'java.lang.Double 'MAX_VALUE) ;; REVISIT
+;;(check "import2" (java.lang.Double.MAX_VALUE) (java.lang.Double.MAX_VALUE))
+(check "import2" (Double.MAX_VALUE) (Double.MAX_VALUE))
 ;; REVISIT - cannot do this in version >= 1.3.0
 ;(check "import3"
 ;       (java.lang.Double.MAX_VALUE)
 ;       (java.lang.Double.MAX_VALUE! (java.lang.Double.MAX_VALUE))) 
-(import 'java.util.Vector 'constructor 'addElement 'contains 'toString)
-(define v (java.util.Vector))
+;; REVISIT
+;;(import 'java.util.Vector 'constructor 'addElement 'contains 'toString)
+(import java.util.Vector)
+;;(define v (java.util.Vector)) ;; REVISIT
+(define v (Vector))
 (check "import4" true (isEmpty v))
-(import 'java.lang.System 'out)
+;;(import 'java.lang.System 'out) ;; REVISIT
+(import java.lang.System)
 (define o (java.lang.System.out))
 (addElement v o)
 (check "import5" false (isEmpty v))
 (check "import6" true (contains v o))
 (toString v)
-(import 'java.lang.Integer 'parseInt)
+;;(import 'java.lang.Integer 'parseInt) ;; REVISIIT
+(import java.lang.Integer)
 (check "import7" 34 (java.lang.Integer.parseInt "34"))
-)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; read/write
+
+(-println "read/write->:")
+
+(define test-filename "/tmp/test.junk")
+
+(define data 
+  (list 'a 3 3.4 null true false "foo" '(b . c) #\c '`(a ,b ,@(3 4))))
+            
+(define data-after-display
+  '(a 3 3.4 null true false foo (b . c) c (quasiquote (a (unquote b) (unquote-splicing (3 4))))))
+   
+(define vector-data #(1 2 (3 . 4) "five" #\6))
+
+(set! pw (new 'java.io.PrintWriter 
+	      (new 'java.io.FileOutputStream test-filename)))
+
+(display data pw)
+(newline pw)
+(newline pw)
+(write data pw)
+(newline pw)
+(newline pw)
+(write vector-data pw)
+(newline pw)
+(close pw)
+
+(set! r (new 'java.io.InputStreamReader
+	     (new 'java.io.FileInputStream test-filename)))
+(set! data-read (llava-read r))
+(check "read/write1" data-after-display data-read)
+
+(set! data-read (llava-read r))
+(check "read/write2" data data-read)
+
+(set! result true)
+(map (lambda (x y)
+       (if (not (equal? x y))
+	   (set! result false)))
+     data data-read)
+
+(check "read/write3" true result)
+
+(close r)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test threads and synchronization
