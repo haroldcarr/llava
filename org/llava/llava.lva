@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2004 Sep 05 (Sun) 11:27:57 by Harold Carr.
-;;;; Last Modified : 2004 Dec 14 (Tue) 13:17:53 by Harold Carr.
+;;;; Last Modified : 2004 Dec 18 (Sat) 23:57:16 by Harold Carr.
 ;;;;
 
 (-package-
@@ -1219,6 +1219,12 @@ share the static factory methods).
 
 (-doc-
  (name -newline)
+ (param " . ")
+ (param optional-java.io.PrinterWriter)
+ (location org.llava))
+
+(-doc-
+ (name -flush)
  (param " . ")
  (param optional-java.io.PrinterWriter)
  (location org.llava))
