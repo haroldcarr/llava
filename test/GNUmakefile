@@ -9,7 +9,7 @@
 
 #
 # Created       : 1999 Dec 18 (Sat) 16:15:20 by Harold Carr.
-# Last Modified : 2004 Dec 07 (Tue) 20:38:40 by Harold Carr.
+# Last Modified : 2005 Feb 07 (Mon) 22:26:56 by Harold Carr.
 #
 
 TOPDIR		=	..
@@ -22,12 +22,14 @@ PKGDIR		=	test
 
 #OCLIENT		=	$(PACKAGE).Test
 CLIENT		=	$(PACKAGE).Test
+CLIENT1		=	$(PACKAGE).TestJavaToLlava
 
 FILES_java	= \
 	$(PKGDIR)/Test.java \
 	$(PKGDIR)/TestCompilerAndEngine.java \
 	$(PKGDIR)/TestEnv.java \
 	$(PKGDIR)/TestGeneric.java \
+	$(PKGDIR)/TestJavaToLlava.java \
 	$(PKGDIR)/TestReader.java \
 	$(PKGDIR)/TestReflection.java \
 	$(PKGDIR)/TestTop.java
