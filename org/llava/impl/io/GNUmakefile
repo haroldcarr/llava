@@ -10,7 +10,7 @@
 
 #
 # Created       : 1999 Dec 18 (Sat) 16:10:32 by Harold Carr.
-# Last Modified : 2004 Sep 03 (Fri) 15:39:17 by Harold Carr.
+# Last Modified : 2004 Dec 04 (Sat) 11:17:42 by Harold Carr.
 #
 
 TOPDIR		=	../../../..
@@ -19,7 +19,8 @@ PACKAGE		=	org.llava.impl.io
 PKGDIR		=	org/llava/impl/io
 
 FILES_java	= \
-	$(PKGDIR)/LlavaReaderImpl.java
+	$(PKGDIR)/LlavaReaderImpl.java \
+	$(PKGDIR)/LlavaWriterImpl.java
 
 all :: classes
 

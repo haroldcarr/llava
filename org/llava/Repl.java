@@ -12,7 +12,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 29 (Wed) 20:09:32 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:32:32 by Harold Carr.
+ * Last Modified : 2004 Dec 04 (Sat) 23:20:41 by Harold Carr.
  */
 
 package org.llava;
@@ -24,6 +24,7 @@ import java.io.Reader;
 
 import org.llava.io.LlavaEOF;
 import org.llava.io.LlavaReader;
+import org.llava.io.LlavaWriter;
 
 import org.llava.lang.exceptions.LlavaException;
 
@@ -36,10 +37,10 @@ import org.llava.runtime.LlavaRuntime;
 public interface Repl
 {
     public Repl newRepl (LlavaReader  reader,
-			 PrintWriter out,
-			 PrintWriter err,
+			 LlavaWriter  out,
+			 LlavaWriter  err,
 			 LlavaRuntime runtime,
-			 Compiler    compiler);
+			 Compiler     compiler);
 
     public Repl newRepl ();
 

@@ -27,6 +27,7 @@ import org.llava.Repl;
 
 import org.llava.io.LlavaEOF;
 import org.llava.io.LlavaReader;
+import org.llava.io.LlavaWriter;
 
 import org.llava.lang.exceptions.BacktraceHandler;
 import org.llava.lang.exceptions.LlavaException;
@@ -52,8 +53,8 @@ public class ReplImpl
 	Repl
 {
     private LlavaReader         reader;
-    private PrintWriter         out;
-    private PrintWriter         err;
+    private LlavaWriter         writer;
+    private LlavaWriter         errWriter;
     private LlavaRuntime        runtime;
     private EnvironmentTopLevel env;
     private Evaluator           evaluator;
@@ -74,14 +75,14 @@ public class ReplImpl
     // order: promptCallback, reader, env, compiler, evaluator, printCallback
     // printCallback handles actual output.
     private ReplImpl (LlavaReader  reader,
-		      PrintWriter  out,
-		      PrintWriter  err,
+		      LlavaWriter  writer,
+		      LlavaWriter  errWriter,
 		      LlavaRuntime runtime,
 		      Compiler     compiler)
     {
 	this.reader    = reader;
-	this.out       = out;
-	this.err       = err;
+	this.writer    = writer;
+	this.errWriter = errWriter;
 	this.compiler  = compiler;
 	this.env       = runtime.getEnvironment();
 	this.evaluator = runtime.getEvaluator();
@@ -102,8 +103,8 @@ public class ReplImpl
 	// But the compiler is so small who cares?
 
 	this.reader    = F.newLlavaReader(new InputStreamReader(in));
-	this.out       = new PrintWriter(out);
-	this.err       = new PrintWriter(err);
+	this.writer    = F.newLlavaWriter(new PrintWriter(out));
+	this.errWriter = F.newLlavaWriter(new PrintWriter(err));
 	this.compiler  = FC.newCompiler();
 	this.env       = FR.newEnvironmentTopLevel();
 	this.evaluator = FR.newEvaluator();
@@ -134,12 +135,12 @@ public class ReplImpl
     }
 
     public Repl newRepl (LlavaReader  reader,
-			 PrintWriter  out,
-			 PrintWriter  err,
+			 LlavaWriter  writer,
+			 LlavaWriter  errWriter,
 			 LlavaRuntime runtime,
 			 Compiler     compiler)
     {
-	return new ReplImpl(reader, out, err, runtime, compiler);
+	return new ReplImpl(reader, writer, errWriter, runtime, compiler);
     }
 
     public Repl newRepl ()
@@ -190,8 +191,8 @@ public class ReplImpl
     // REVISIT: Callback object handles actual output.
     public void prompt (String prompt)
     {
-	out.print(prompt);
-	out.flush();
+	writer.getPrintWriter().print(prompt);
+	writer.getPrintWriter().flush();
     }
 
     public Object readCompileEval ()
@@ -244,11 +245,11 @@ public class ReplImpl
     public Object printResult (Object result)
     {
 	if (telnetCRLFOutput) {
-	    out.println("\r");
+	    writer.getPrintWriter().println("\r");
 	}
-	out.print(result);
+	writer.write(result);
 	if (telnetCRLFOutput) {
-	    out.print("\r");
+	    writer.getPrintWriter().print("\r");
 	}
 	return result;
     }
@@ -278,8 +279,8 @@ public class ReplImpl
     public void informAboutException ()
     {
 	Throwable t = lastException.getThrowable();
-	err.println("Error: " + t.toString());
-	err.flush();
+	errWriter.getPrintWriter().println("Error: " + t.toString());
+	errWriter.getPrintWriter().flush();
     }
 
     public LlavaException getLastException ()
@@ -294,15 +295,16 @@ public class ReplImpl
 
     public void outputVersionMessage ()
     {
-	out.println(F.newLlavaVersion());
-	out.flush();
+	writer.getPrintWriter().println(F.newLlavaVersion());
+	writer.getPrintWriter().flush();
     }
 
     public void outputVersionMessage (long startupTime)
     {
 	outputVersionMessage();
-	out.println("Startup time: " + startupTime + " ms.");
-	out.flush();
+	writer.getPrintWriter()
+	    .println("Startup time: " + startupTime + " ms.");
+	writer.getPrintWriter().flush();
     }
 
     public Compiler            getCompiler            () { return compiler; }
@@ -317,8 +319,9 @@ public class ReplImpl
 	public Object apply (Pair args, Engine engine)
 	{
 	    if (getLastException() != null) {
-		getLastException().getThrowable().printStackTrace(err);
-		err.flush();
+		getLastException().getThrowable()
+		    .printStackTrace(errWriter.getPrintWriter());
+		errWriter.getPrintWriter().flush();
 	    }
 	    return null;
 	}
@@ -333,8 +336,9 @@ public class ReplImpl
 	public Object apply (Pair args, Engine engine)
 	{
 	    if (getLastException() != null) {
-		getLastException().printBacktrace(backtraceHandler, err);
-		err.flush();
+		getLastException().printBacktrace(backtraceHandler, 
+						  errWriter.getPrintWriter());
+		errWriter.getPrintWriter().flush();
 	    }
 	    return null;
 	}
