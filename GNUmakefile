@@ -100,7 +100,7 @@ scrub :: FORCE
 # NOTE: the echo MUST add a newline or MAINCLASS is not parsed.
 jar: $(JARDIR)
 	cd $(CLASSDESTDIR); \
-	rm -f main-class.txt; \
+	rm -f $(MAINCLASSTXT); \
 	echo $(MAINCLASS) > $(MAINCLASSTXT); \
 	$(JAR) -cvmf $(MAINCLASSTXT) $(JARDIR)/llava.jar org
 
