@@ -1,7 +1,20 @@
 ;;;;
 ;;;; Created       : 1999 Dec 18 (Sat) 17:14:40 by Harold Carr.
-;;;; Last Modified : 2004 Dec 10 (Fri) 21:45:23 by Harold Carr.
+;;;; Last Modified : 2004 Dec 10 (Fri) 22:00:14 by Harold Carr.
 ;;;;
+
+(define (read)
+  (-i 'read _%reader))
+
+(define -read
+  (lambda in
+    (if (null? in)
+        (-i 'read _%reader)
+        (-i 'read _%reader (car in)))))
+
+(define eof-object?
+  (lambda (x)
+    (equals (-i 'getEOFObject _%reader) x)))
 
 (define (write msg . out)
   (if (null? out)
@@ -66,58 +79,5 @@
   (lambda out
     (-i 'println (if (null? out) (getPrintWriter _%writer) (car out)))
     null))
-
-(define (read . in)
-  (if (null? in)
-      (-i 'read _%reader)
-      (-i 'read _%reader (car in))))
-
-(define -read
-  (lambda in
-    (if (null? in)
-        (-i 'read _%reader)
-        (-i 'read _%reader (car in)))))
-
-(define eof-object?
-  (lambda (x)
-    (equals (-i 'getEOFObject _%reader) x)))
-
-(-comment-
-(load (s+ (user-home) "/.sync/.llava.org/.system/org/llava/derived/DerivedLlavaIO.lva"))
-
-(-write null)
-(-write #(2))
-(-writeln null)
-(-writeln #(2))
-(-print null)
-(-print #(3))
-(-println null)
-(-println #(3))
-(newline)
-
-(begin
-(set! *pw*
-      (new 'java.io.PrintWriter (new 'java.io.FileOutputStream "/tmp/junk")))
-(begin (display " -01- " *pw*)  (-write null *pw*))
-(newline *pw*)
-(begin (display " -02- " *pw*)  (-write #(1) *pw*))
-(newline *pw*)
-(begin (display " -03- " *pw*)  (-writeln null *pw*))
-(begin (display " -04- " *pw*)  (-writeln #(2) *pw*))
-(begin (display " -05- " *pw*)  (-print null *pw*))
-(newline *pw*)
-(begin (display " -06- " *pw*)  (-print #(3) *pw*))
-(newline *pw*)
-(begin (display " -07- " *pw*)  (-println null *pw*))
-(begin (display " -08- " *pw*)  (-println #(4) *pw*))
-(close *pw*)
-)
-
-(set! *sr* (new 'java.io.InputStreamReader
-		(new 'java.io.FileInputStream "/tmp/junk")))
-(-read *sr*)
-(close *sr*)
-
-)
 
 ;;; End of file.
