@@ -1,6 +1,6 @@
 /**
  * Created       : 2000 Jan 07 (Fri) 22:40:51 by Harold Carr.
- * Last Modified : 2001 Mar 26 (Mon) 15:24:07 by Harold Carr.
+ * Last Modified : 2002 Oct 12 (Sat) 06:54:17 by Harold Carr.
  */
 
 package lavaProfile.runtime.procedure.primitive.lava;
@@ -30,7 +30,7 @@ public class PrimAppend
 	    return super.apply(args, engine);
 	} catch (UndefinedIdException e) {
 	    if (args == null) {
-		return null;;
+		return null;
 	    }
 	    Pair lists = List.reverse(args);
 	    Pair result = (Pair)lists.car();
