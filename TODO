@@ -1,18 +1,36 @@
 Created       : 1999 Dec 18 (Sat) 17:14:40 by Harold Carr.
-Last Modified : 2000 Oct 22 (Sun) 14:00:37 by .
+Last Modified : 2001 Nov 17 (Sat) 09:46:10 by Harold Carr.
 
 To do:
 
+* Fix reader error: (string-append " (" "3" ")")
+
+* (package foo Bar) => (name-space foo.Bar)
+
+* Todo in namespaceimpl.
+
+* Think about built-ins/lib using hypens so no need to be Java/dynamic.
+
+* Need to be able to coerce to short, byte
+	e.g., try creating a org.omg.IOP.Encoding
+
 * Check out how to deal with inner class creation/refer from lava syntax level.
+
+* DII - NullPointerException when static invoke on dynamic method/class:
+eg: (_si 'getFullNameNamespaceMapKeys 'testLava.proto.NamespaceImpl)
 
 ------------------------------------------------------------------------------
 Before initial release:
 
+* reader: "," does unquote
+
+* # reading when not character: e.g., #160 -> 160 #newline -> 'newline
+
+* test load from emacs with (_comment
+
 * checkNumArgs
 
 * PrimNot
-
-* case-eval-l should be case-eval-r
 
 * 1. Rewrite DII (i.e., dynvoke - call it Reflect, or DII).
 	DII and DIIImpl.  -> PrimInvoke (etc.) will then need DII instance.
@@ -81,6 +99,39 @@ Example:
 
 That is because Lava is apply the syntax procedure for setq
 to the list (1 34) but the expander expects two arguments.
+
+------------------------------------------------------------------------------
+Create classes on the fly:
+
+(package
+ (import java.util.Hashtable)
+ (public class MyPair
+	 (implements some.Interface) // either full name or name-space support
+	 (extends    some.Class)
+   (private Object _car)             // only private fields
+   (private Object _cdr)
+   (private Hashtable _shared)
+   (public (MyPair car cdr)
+	   (set! _car car)
+	   (set! _cdr cdr))
+   (public Object (car) _car)
+   (public Object (cdr) _cdr)
+   (public Object (set-car! v) (set! _car v) v)
+   (public Object (set-cdr! v) (set! _cdr v) v)))
+
+Compile MyPair to a byte-coded interface.
+
+Then proxy:
+
+(let ((_car null)
+      (_cdr null)
+      (_shared null))
+  // proxy stuff here
+  )
+
+Need new support for:
+
+(new 'MyPair 'a 'b)
 
 ------------------------------------------------------------------------------
 Someday:

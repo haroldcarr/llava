@@ -1,3 +1,35 @@
+2001-03-26  Harold Carr  <carr@cs.utah.edu>
+
+	* Repartitioned large-grained package structure such
+	that the core just contains interfaces (and some default
+	implementations) while language profiles (only Lava for now, but
+	r5rs later?) contain the actual implementation.
+
+2001-03-14  Harold Carr  <carr@cs.utah.edu>
+
+	* Converted libraries from provide/require to package/import.
+
+2001-03-13  Harold Carr  <carr@cs.utah.edu>
+
+	* Modified LambdaImpl, ActivationFrame (and Namespace)
+	  such that a lambda captures the namespace it is defined in
+	  so that when it runs it uses that namespace to resolve
+	  references.
+
+2001-03-05  Harold Carr  <carr@cs.utah.edu>
+
+	* Began integrating package system into Lava as a pluggable
+	  EnvironmentTopLevel.  Tests work with either environment 
+	  implementation.
+
+2001-03-02  Harold Carr  <carr@cs.utah.edu>
+
+	* Translated prototype "package" system Lisp code to Java.
+
+2000-10-21  Harold Carr  <carr@cs.utah.edu>
+
+	* Began prototyping "package/import" system.
+
 2000-02-26  Harold Carr  <carr@cs.utah.edu>
 
 	* Added PrimCurrentTimeMillis (could be derived but want direct).
@@ -303,7 +335,7 @@
 	See k2j.kawa.
 
 Created       : 1999 Dec 15 (Wed) 19:57:16 by Harold Carr.
-Last Modified : 2000 Mar 20 (Mon) 16:29:01 by Harold Carr.
+Last Modified : 2001 Mar 26 (Mon) 16:12:31 by Harold Carr.
 
 Order for presentation:
 

@@ -12,7 +12,7 @@ PWDCOLON	=	$(shell hcMakeDriveColon $(PWD))
 # Subdirectories
 #
 
-SUBDIRS		=	lava libLava testLava
+SUBDIRS		=	lava lavaProfile testLava
 
 all optimized debug clean clobber ::
 	@for i in $(SUBDIRS) ; do \
@@ -53,11 +53,11 @@ jd javadoc:
 	$(JAVADOC) -verbose -d $(JAVADOCDIR) -sourcepath $(PWDCOLON) \
 	lava \
 	lava.comprun \
-	libLava.r1.code \
-	libLava.c1 \
-	libLava.co.c1 \
-	libLava.r1 \
-	libLava.r1.env \
+	lavaProfile.runtime.code \
+	lavaProfile.compiler \
+	lava.compiler.c1 \
+	lavaProfile.runtime \
+	lavaProfile.runtime.env \
 	lava.lang \
 	lava.io \
 	lava.lang.types
