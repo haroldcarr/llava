@@ -9,18 +9,16 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 23 (Thu) 04:54:03 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:35:46 by Harold Carr.
+ * Last Modified : 2004 Dec 04 (Sat) 23:43:29 by Harold Carr.
  */
 
 package test;
 
-import java.io.PrintWriter;
-
 import org.llava.impl.F;
 import org.llava.io.LlavaReader;
+import org.llava.io.LlavaWriter;
 import org.llava.lang.exceptions.LlavaException;
 import org.llava.impl.util.List;
 import org.llava.Repl;
@@ -40,15 +38,16 @@ public class TestCompilerAndEngine
     /* Used by other test files. */
     public static EnvironmentTopLevel topEnvironment =
 	FR.newEnvironmentTopLevel();
-    static Evaluator evaluator = FR.newEvaluator();
+    static Evaluator evaluator  = FR.newEvaluator();
     static LlavaRuntime runtime = FR.newLlavaRuntime(topEnvironment, evaluator);
-    static Compiler compiler   = FC.newCompiler();
+    static Compiler compiler    = FC.newCompiler();
     static LlavaReader reader   = F.newLlavaReader();
+    static LlavaWriter writer   = F.newLlavaWriter();
 
     static Repl repl = 
 	F.newRepl(reader, 
-		  new PrintWriter(System.out), 
-		  new PrintWriter(System.err),
+		  writer,
+		  writer,
 		  runtime, 
 		  compiler);
 
