@@ -9,7 +9,7 @@
 
 #
 # Created       : 1999 Dec 15 (Wed) 16:30:21 by Harold Carr.
-# Last Modified : 2004 Sep 04 (Sat) 08:20:48 by Harold Carr.
+# Last Modified : 2004 Nov 30 (Tue) 22:44:32 by Harold Carr.
 #
 
 TOPDIR		=	../..
@@ -23,7 +23,7 @@ FILES_java	= \
 
 all :: classes 
 
-SUBDIRS		=	compiler impl io lang runtime
+SUBDIRS		=	compiler impl io lang lib runtime
 
 all optimized debug clean clobber ::
 	@for i in $(SUBDIRS) ; do \
