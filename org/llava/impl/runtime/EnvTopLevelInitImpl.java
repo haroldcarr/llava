@@ -9,7 +9,6 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 30 (Thu) 06:34:36 by Harold Carr.
  * Last Modified : 2004 Dec 08 (Wed) 08:56:20 by Harold Carr.
@@ -132,6 +131,8 @@ public class EnvTopLevelInitImpl
 	set(env, "current-time-millis",FR.newPrimCurrentTimeMillis());
 	set(env, "instanceof",      FR.newPrimInstanceof((Namespace)env));
 	set(env, "not",             FR.newPrimNot());
+	set(env, "_%reader",        repl.getLlavaReader());
+	set(env, "_%writer",        repl.getLlavaWriter());
 
 	//
 	// Install primitive Llava procedures.
@@ -237,20 +238,25 @@ public class EnvTopLevelInitImpl
 
 	    repl.readCompileEval(
 "(define (display msg)" +
-"  (print (-sf 'out 'java.lang.System) " +
-"	 (if (null? msg)" +
-"	     \"null\"" +
-"	     (toString msg)))" +
+"  (print (getPrintWriter _%writer) (if (null? msg) \"null\" msg))" +
+"  null)"
+                                );
+
+
+	    repl.readCompileEval(
+"(define (write msg . out)" +
+"  (if (null? out)" +
+"      (write _%writer msg)" +
+"      (write _%writer msg (car out)))" +
 "  null)"
                                 );
 
 
 	    repl.readCompileEval(
 "(define (newline)" +
-"  (println (-sf 'out 'java.lang.System))" +
+"  (println (getPrintWriter _%writer))" +
 "  null)"
                                 );
-
 
 	    repl.readCompileEval(
 "(define -println" +
@@ -258,7 +264,6 @@ public class EnvTopLevelInitImpl
 "    (println (-sf 'out 'java.lang.System) (if (null? x) \"null\" x))" +
 "    x))"
                                 );
-
 
 	    repl.readCompileEval(
 "(define -print" +
