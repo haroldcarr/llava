@@ -5,10 +5,14 @@
 
 ;; Think about:
 ;; * From any package you must import to enable BOTH short and long references.
+;;   In other words, only can ref imported things.
 ;; * Have import precompute as much reflection as possible on all methods
 ;;   on each class to avoid full DI.
-
-
+;; * try/catch should know about current imports (like new does - or rather will)
+;; * Same goes for instanceof.  What else?
+;; * Use classpath to search for .lva/.class files.
+;;   For each path first look for .lva then .class if not found
+;;   then next path if not found.
 
 (require 'test/test)
 
@@ -27,10 +31,11 @@
 ;; explicitly remove this reference - both because it doesn't
 ;; exist so it is null - and if it did exist would cause a circular
 ;; lookup.
-(set! *topLevelNamespace* (createNamespace "topLevelNamespace"))
+;; REVISIT: access to lava.Lava.foo via .foo
+(set! *topLevelNamespace* (createNamespace "lava.Lava"))
 (remove (getRefList *topLevelNamespace*) 1)
 
-(define *replNamespace* (createNamespace "REPL"))
+(define *replNamespace* (createNamespace "lava.REPL"))
 (define *currentNamespace* *replNamespace*)
 
 (define (findNamespace x)
@@ -56,7 +61,7 @@
 (begin-test)
 
 (check 1
-       '("topLevelNamespace")
+       '("lava.Lava")
        (getRefListNames *topLevelNamespace*))
 *fullNameNamespaceMap*
 (check 2 2 (size *fullNameNamespaceMap*))
@@ -67,13 +72,13 @@
 *fullNameNamespaceMap*
 (check 4 3 (size *fullNameNamespaceMap*))
 (check 5
-       '("foo.bar" "topLevelNamespace")
+       '("foo.bar" "lava.Lava")
        (getRefListNames (findOrCreateNamespace "foo.bar")))
 (findOrCreateNamespace "bar.baz")
 *fullNameNamespaceMap*
 (check 4 4 (size *fullNameNamespaceMap*))
 (check 6
-       '("bar.baz" "topLevelNamespace")
+       '("bar.baz" "lava.Lava")
        (getRefListNames (findOrCreateNamespace "bar.baz")))
 (end-test)
 )
@@ -98,7 +103,7 @@
 (load "ns.lva")
 (begin-test)
 (check 1
-       '("REPL" "topLevelNamespace")
+       '("lava.REPL" "lava.Lava")
        (getRefListNames *currentNamespace*))
 *fullNameNamespaceMap*
 (check 2 2 (size *fullNameNamespaceMap*))
@@ -106,26 +111,31 @@
 *fullNameNamespaceMap*
 (check 3 3 (size *fullNameNamespaceMap*))
 (check 4 
-       '("foo.bar" "topLevelNamespace")
+       '("foo.bar" "lava.Lava")
        (getRefListNames *currentNamespace*))
 (package 'foo 'bar)
 *fullNameNamespaceMap*
 (check 3 3 (size *fullNameNamespaceMap*))
 (check 4 
-       '("foo.bar" "topLevelNamespace")
+       '("foo.bar" "lava.Lava")
        (getRefListNames *currentNamespace*))
 (package 'foo 'baz)
 *fullNameNamespaceMap*
 (check 3 4 (size *fullNameNamespaceMap*))
 (check 2
-       '("foo.baz" "topLevelNamespace")
+       '("foo.baz" "lava.Lava")
        (getRefListNames *currentNamespace*))
 (package 'buz 'saw)
 *fullNameNamespaceMap*
 (check 3 5 (size *fullNameNamespaceMap*))
 (check 1
-       '("buz.saw" "topLevelNamespace")
+       '("buz.saw" "lava.Lava")
        (getRefListNames *currentNamespace*))
+(package "" 'Only)
+(check 1
+       '(".Only" "lava.Lava")
+       (getRefListNames *currentNamespace*))
+
 (end-test)
 )
 )
@@ -183,28 +193,28 @@
 *fullNameNamespaceMap*
 (check 1 2 (size *fullNameNamespaceMap*))
 (check 2
-       '("REPL" "topLevelNamespace")
+       '("lava.REPL" "lava.Lava")
        (getRefListNames *currentNamespace*))
 (importX 'testLava.ns.one.One)
 *fullNameNamespaceMap*
 (check 3 4 (size *fullNameNamespaceMap*))
 (check 4
-       '("REPL" "testLava.ns.one.One" "topLevelNamespace")
+       '("lava.REPL" "testLava.ns.one.One" "lava.Lava")
        (getRefListNames *currentNamespace*))
 (check 5
-       '("testLava.ns.one.One" "testLava.ns.two.Two" "topLevelNamespace")
+       '("testLava.ns.one.One" "testLava.ns.two.Two" "lava.Lava")
        (getRefListNames (findNamespace "testLava.ns.one.One")))
 (check 6
-       '("testLava.ns.two.Two" "topLevelNamespace")
+       '("testLava.ns.two.Two" "lava.Lava")
        (getRefListNames (findNamespace "testLava.ns.two.Two")))
 
 (importX 'testLava.ns.two.Two)
 (check 7
-       '("REPL" "testLava.ns.one.One" "testLava.ns.two.Two" "topLevelNamespace")
+       '("lava.REPL" "testLava.ns.one.One" "testLava.ns.two.Two" "lava.Lava")
        (getRefListNames *currentNamespace*))
 (importX 'testLava.ns.two.Two)
 (check 8
-       '("REPL" "testLava.ns.one.One" "testLava.ns.two.Two" "topLevelNamespace")
+       '("lava.REPL" "testLava.ns.one.One" "testLava.ns.two.Two" "lava.Lava")
        (getRefListNames *currentNamespace*))
 (end-test)
 )
@@ -242,11 +252,41 @@
       (refDotted (packageAndClassOf x) (variableOf x))
       (refNotDotted x)))
 
+;;;
+;;; This is the critical routine.
+;;; Possibilities:
+;;; 1. Only look in current namespace.
+;;;    But this means you do not pick up builtin lava variables.
+;;; 2. Look in current namespace.
+;;;    If not found look in lava namespace.
+;;;    But this means all lava imported functions must have
+;;;    at least its "class" name (e.g., Aif.aif).
+;;;    This most closely resembles static class methods/fields accessed.
+;;;    But it is inconvenient in terms of Lisp.
+;;; 3. Go through refList until found or undefined.
+;;;    
+
 (define (refNotDotted x)
   (.print (list 'refNotDotted x))
-  (if (containsKey (getMap *currentNamespace*) x)
-      (get (getMap *currentNamespace*) x)
-      (error (string-append "undefined: " x))))
+  (cond (;; #1 and 2
+	 (containsKey (getMap *currentNamespace*) x)
+	 (get (getMap *currentNamespace*) x))
+	;;(;; #2
+	;; (containsKey (getMap *topLevelNamespace*) x)
+	;; (get (getMap *topLevelNamespace*) x))
+	(;; #3
+	 (let ((refList (getRefList *currentNamespace*)))
+	   (call/cc
+	    (lambda (return)
+	      (do ((i 0 (+ i 1)))
+		  ((= i (size refList)) false)
+		(cond ((containsKey (getMap (elementAt refList i)) x)
+		       (.print (list 'foundIn
+				     (getName (elementAt refList i))
+				     (get (getMap (elementAt refList i)) x)))
+		       (return (get (getMap (elementAt refList i)) x)))))))))
+	(else
+	 (error (string-append "undefined: " x)))))
 
 (define (classNameOf x)
   (variableOf x))
@@ -289,29 +329,56 @@
 (begin
 (load "ns.lva")
 (begin-test)
-(check 1 34 (setE! 'a 34))
-(check 2 34 (refE 'a))
+(check 1 'REPL-a (setE! 'a 'REPL-a))
+(check 2 'REPL-a (refE 'a))
 (check 3
-       '("REPL" "topLevelNamespace")
+       '("lava.REPL" "lava.Lava")
        (getRefListNames *currentNamespace*))
 (package 'foo.bar 'Baz)
 (check 3
-       '("foo.bar.Baz" "topLevelNamespace")
+       '("foo.bar.Baz" "lava.Lava")
        (getRefListNames *currentNamespace*))
-(setE! 'a 69)
-(check 2 69 (refE 'a))
-(check 2 69 (refE 'foo.bar.Baz.a))
-(check 2 34 (refE 'REPL.a))
+(setE! 'a 'Baz-a)
+(check 2 'Baz-a (refE 'a))
+(check 2 'Baz-a (refE 'foo.bar.Baz.a))
+(check 2
+       "refDotted: undefined: REPL.a" 
+       (try (refE 'REPL.a) (catch (java.lang.Exception e) (getMessage e))))
 (importX 'testLava.ns.one.One)
 (check 3
-       '("foo.bar.Baz" "testLava.ns.one.One" "topLevelNamespace")
+       '("foo.bar.Baz" "testLava.ns.one.One" "lava.Lava")
        (getRefListNames *currentNamespace*))
 (package 'testLava.ns.one 'One)
 (check 4 "testLava.ns.one.One" (getName *currentNamespace*))
-(setE! 'foo -69)
+(setE! 'a 'One-a)
 (package 'foo.bar 'Baz)
 (check 4 "foo.bar.Baz" (getName *currentNamespace*))
-(refE 'One.foo)
+(check 0 'One-a (refE 'One.a))
+
+;; *****
+(set! *currentNamespace* (findNamespace "lava.Lava"))
+(setE! 'a 'Lava-a)
+(check 0 'Lava-a (refE 'a))
+(check 0 
+       '"refDotted: undefined: .a"
+       (try (refE '.a) (catch (java.lang.Exception e) (getMessage e))))
+(check 0 'Lava-a (refE 'lava.Lava.a))
+(package 'foo.bar 'Baz)
+(check 3
+       '("foo.bar.Baz" "testLava.ns.one.One" "lava.Lava")
+       (getRefListNames *currentNamespace*))
+(check 0 'Baz-a (refE 'a))
+(check 0 
+       '"refDotted: undefined: .a"
+       (try (refE '.a) (catch (java.lang.Exception e) (getMessage e))))
+(check 0 'One-a (refE 'One.a))
+(check 0 'One-a (refE 'testLava.ns.one.One.a))
+(check 0 'REPL-a (refE 'lava.REPL.a))
+(package "" 'Only)
+(setE! 'a 'Only-a)
+(check 0 'Only-a (refE 'a))
+(check 0 'Only-a (refE 'Only.a))
+(check 0 'Lava-a (refE '.a))
 (end-test)
 )
 )
@@ -331,10 +398,14 @@
 	(else (error (string-append "Undefined: " x))))))
 
 (.comment
+(begin
+(begin-test)
 (load "ns.lva")
 (newE 'java.util.Hashtable)
 (importX 'java.util.Hashtable)
 (newE 'Hashtable)
+(end-test)
+)
 )
 
 ;;; End of file.
