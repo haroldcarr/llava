@@ -7,10 +7,6 @@
 ;;
 ;; - Implement importJavaClassIntoCurrentPackage
 ;;
-;; - Use classpath to search for .lva/.class files.
-;;   For each path first look for .lva then .class if not found
-;;   then next path if not found.
-;;
 ;; - try/catch should know about current imports
 ;;   (like new does - or rather will)
 ;;
@@ -19,6 +15,9 @@
 ;; - Convert to Java.
 ;;
 ;; - Integrate with Lava.
+;;
+;; - new, try/catch/instanceof should take short names if imported
+;;   long names regardless.
 
 ;; Think about:
 ;;
@@ -49,7 +48,6 @@
         (createNamespace name)
 	ns)))
 
-
 ;; N.B.: Each namespace always contains the topLevelNamespace
 ;; at the end of its refList.  During initialization we need to
 ;; explicitly remove this reference - both because it doesn't
@@ -61,11 +59,9 @@
 (set! *rootNamespace* (createNamespace "lava.Lava"))
 (remove (getRefList *rootNamespace*) 1)
 
-
 ;; The system starts in the REPL namespace.
 
 (define *replNamespace* (createNamespace "lava.REPL"))
-
 
 ;; package switches the current namespace.
 
@@ -85,8 +81,7 @@
 		 (- i 1)))
 	((= i -1) result))))
 
-
-;; For testing only.  Returns results in alpha order.
+;; For testing only.  Results in alpha order.
 
 (define (getFullNameNamespaceMapKeys)
   (do ((keys (keys *fullNameNamespaceMap*))
@@ -185,72 +180,79 @@
        '(".Only" "lava.Lava")
        (getRefListNames *currentNamespace*))
 
-
 (end-test)
 )
 )
 
 ;-------------------------
 
+(define (importX name)
+  (set! name (toString name))
+  (if (alreadyImportedInPackage? name *currentNamespace*)
+      (alreadyImportedInCurrentPackage name)
+      (importIntoCurrentPackage name)))
+
+(define (alreadyImportedInCurrentPackage name)
+  ;; No need to import again. 
+  ;; Stops infinite loading for packages which import each other.
+  ;; Pick up any changes since last load.
+  (or (loadLavaFileIfTouched name) ; Does not handle erasures.
+      name))
+
 (define (alreadyImportedInPackage? name package)
   (not (eq? (member name (getRefListNames package)) false)))
 
-(define (importX name)
-  (set! name (toString name))
-  (let ((loadName (replace name #\. #\/)))
-    (if (alreadyImportedInPackage? name *currentNamespace*)
-	(alreadyImportedInCurrentPackage name loadName)
-	(importIntoCurrentPackage name loadName))))
+(define (importIntoCurrentPackage name)
+  (cond ((handleExistsInFullNameNamespaceMap name))
+	((importJavaClassIntoCurrentPackage name))
+	((importLavaFileIntoCurrentPackage name))
+	(else (error "importIntoCurrentPackage: should not happen."))))
 
-(define (alreadyImportedInCurrentPackage name loadName)
-  ;; No need to import again.  Stops infinite loading for
-  ;; packages which import each other.
-  ;;
-  ;; REVISIT: Load .lva if touched since load time to pick up changes
-  ;; (doesn't handle erasures).
-  true)
+(define (handleExistsInFullNameNamespaceMap name)
+  (cond ((existsInFullNameNamespaceMap name)
+	 ;; This is useful so one can interactively create packages
+	 ;; and have them import each other.
+	 (addToRefList)
+	 (or (loadLavaFileIfTouched name) ; Does not handle erasures.
+	     name))
+	(else false)))
 
-(define (importIntoCurrentPackage name loadName)
-  (if (not (importLavaFileIntoCurrentPackage name loadName))
-      (importJavaClassIntoCurrentPackage name loadName)))
+(define (existsInFullNameNamespaceMap name) false)
 
-(define (importLavaFileIntoCurrentPackage name loadName)
-  (let ((result false))
+(define (importJavaClassIntoCurrentPackage name)
+  (try 
+   (let* ((class (_si 'forName 'java.lang.Class name))
+	  (savedNamespace *currentNamespace*))
+     ;; REVISIT - probably only use create since it can't exist at this point.
+     (set! *currentNameSpace* (findOrCreateNamespace name))
+     (try
+      (_print "here we would import the static methods and fields")
+      (finally (set! *currentNameSpace* savedNamespace)))
+     (string-append "class " name))
+   (catch (java.lang.ClassNotFoundException e) false)))
+
+(define (importLavaFileIntoCurrentPackage name)
+  (let ((pathStream (classPathStream))
+	(loadName (replace name #\. #\/)))
+    (call/cc 
+     (lambda (return)
+       (do ((currentPath (pathStream) (pathStream)))
+	   ((null? currentPath)
+	    (error (string-append "Does not exist: " name)))
+	 (importLavaFileIntoCurrentPackageAux
+	  name loadName currentPath return))))))
+
+(define (importLavaFileIntoCurrentPackageAux name loadName currentPath return)
+  (let ((loadPathAndName (string-append currentPath "/" loadName ".lva")))
     (try
      (begin
-       ;; The imported package needs to be imported into the current
-       ;; package.
-       ;;
-       ;; REVISIT:
-       ;;   If already loaded then 
-       ;;     load if touched
-       ;;     add to refList.
-       ;;   This is useful so one can interactively create packages
-       ;;   and have them import each other.
-       ;;
-       ;; If not already loaded then
-       ;;   try a .lva file load first.
        (importXAux 
 	name
 	(lambda ()
 	  ;; Depends on package procedure doing set! *currentNamespace*.
-	  (require loadName)))
-       (set! result true))
-      (catch (java.lang.Exception ex)
-	     (_print (list 'Exception ex))))))
-
-(define (importJavaClassIntoCurrentPackage name loadName)
-  ;; REVISIT: This statement will need a try/catch to reset current.
-  (set! *currentNameSpace* (findOrCreateNamespace name))
-  ;; REVISIT: If class and already loaded do nothing
-  ;; since you can't reload classes nothing changes
-  (importXAux 
-   name
-   (lambda ()
-     (_print (string-append "need to importX " name))
-     (throw 
-      (new 'java.lang.Exception
-	   "static loading not implemented")))))
+	  (load loadPathAndName)))
+       (return loadPathAndName))
+     (catch (java.io.FileNotFoundException e) false))))
 
 (define (importXAux name proc)
   (let ((savedPackage #f))
@@ -265,7 +267,20 @@
      (finally
       (set! *currentNamespace* savedPackage)
       (set! *nextPackageShouldBe* '())))))
-  
+
+(define (loadLavaFileIfTouched name) false)
+
+(define (classPathStream)
+  (let* ((separator (_si 'getProperty 'java.lang.System "path.separator"))
+	 (pathTokens
+	  (new 'java.util.StringTokenizer
+	       (_si 'getProperty 'java.lang.System "java.class.path")
+	       separator)))
+    (lambda ()
+      (if (hasMoreTokens pathTokens)
+	  (nextToken pathTokens)
+	  '()))))
+
 (_comment
 (begin
 (load "ns.lva")
@@ -288,21 +303,21 @@
        '("testLava.proto.ns.two.Two" "lava.Lava")
        (getRefListNames (findNamespace "testLava.proto.ns.two.Two")))
 
-
 (importX 'testLava.proto.ns.two.Two)
 (check 6 '("lava.Lava" "lava.REPL"
 	   "testLava.proto.ns.one.One" "testLava.proto.ns.two.Two")
        (getFullNameNamespaceMapKeys))
-(check 7
-       '("lava.REPL" "testLava.proto.ns.one.One"
-	 "testLava.proto.ns.two.Two" "lava.Lava")
+(check 7 '("lava.REPL" "testLava.proto.ns.one.One"
+	   "testLava.proto.ns.two.Two" "lava.Lava")
        (getRefListNames *currentNamespace*))
 
 (importX 'testLava.proto.ns.two.Two)
-(check 8
-       '("lava.REPL" "testLava.proto.ns.one.One"
-	 "testLava.proto.ns.two.Two" "lava.Lava")
+(check 8 '("lava.REPL" "testLava.proto.ns.one.One"
+	   "testLava.proto.ns.two.Two" "lava.Lava")
        (getRefListNames *currentNamespace*))
+
+(check 9 "class java.util.Hashtable"
+       (importX 'java.util.Hashtable))
 
 (end-test)
 )
@@ -507,7 +522,7 @@
 
 (newE 'java.util.Hashtable)
 (importX 'java.util.Hashtable)
-(newE 'Hashtable)
+;(newE 'Hashtable)
 
 (end-test)
 )
