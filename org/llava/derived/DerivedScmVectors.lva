@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2004 Nov 26 (Fri) 17:05:38 by Harold Carr.
+;;;; Last Modified : 2004 Nov 27 (Sat) 07:50:40 by Harold Carr.
 ;;;;
 
 (define vector?
@@ -28,6 +28,15 @@
 	      ((>= i k))
 	    (vector-set! v i (car fill))))
       v)))
+
+(define (vector . values)
+  (let* ((len  (length values))
+	 (vect (make-vector len)))
+    (do ((v values (cdr v))
+	 (i 0 (+ i 1)))
+	((null? v))
+      (vector-set! vect i (car v)))
+    vect))
 
 (define vector-length
   (lambda (v) (-si 'getLength 'java.lang.reflect.Array v)))
