@@ -20,9 +20,12 @@ import lava.lang.exceptions.LavaException;
 import lava.lang.types.Pair;
 import lava.lang.types.Symbol;
 
-import libLava.r1.Engine;
+import libLava.rt.EnvironmentTopLevel;
+import libLava.rt.FR;
+import libLava.rt.UndefinedIdHandler;
+import libLava.r1.Engine; // REVISIT
 import libLava.r1.FR1;
-import libLava.r1.procedure.primitive.java.PrimNew;
+import libLava.r1.procedure.primitive.java.PrimNew; // REVISIT
 
 
 // TODO:
@@ -46,18 +49,84 @@ import libLava.r1.procedure.primitive.java.PrimNew;
 
 public class NamespaceImpl
     implements
+	EnvironmentTopLevel,
 	Namespace
 {
     //
-    // The interface methods.
+    // EnvironmentTopLevel interface methods.
     //
 
-    public Namespace newNamespace ()
+    public EnvironmentTopLevel newEnvironmentTopLevel ()
     {
-	NamespaceImpl ns = new NamespaceImpl();
-	ns.init();
+	// REVISIT - wasted space when making factory.
+	EnvironmentTopLevel ns = new NamespaceImpl();
+	ns.initialize();
 	return ns;
     }
+
+    // REVISIT - remove this.  And remove calls to it.
+    public void initialize ()
+    {
+	undefinedIdHandler = FR.newUndefinedIdHandler();
+
+	NOT_FOUND = new Object();
+
+	fullNameNamespaceMap = new Hashtable();
+
+	// N.B.: Each namespace always contains the topLevelNamespace
+	// at the end of its refList.  During initialization we need to
+	// explicitly remove this reference - both because it doesn't
+	// exist so it is null - and if it did exist would cause a circular
+	// lookup.
+
+	rootNamespace = createNamespace("lava.Lava");
+	rootNamespace.getRefList().remove(1);
+
+	// The system starts in the REPL namespace.
+
+	replNamespace = createNamespace("lava.REPL");
+	currentNamespace = replNamespace;
+    }
+
+    /**
+     * Gets the value of the given identifier:
+     * - if .<id> from the root namespace.
+     * - if <foo>.<bar>.<id> from the specified namespace.
+     * - if <id> then search from current through its reference list.
+     */
+    public Object get (Symbol identifier)
+    {
+	return get(identifier.toString(), false);
+    }
+
+    public Object getNoError (Symbol identifier)
+    {
+	return get(identifier.toString(), true);
+    }
+
+    /**
+     * Sets the value of the given identifier in the current namespace to
+     * the given value.
+     * Returns the given value.
+     */
+    public Object set (Symbol identifier, Object val)
+    {
+	return set(identifier.toString(), val);
+    }
+
+    public UndefinedIdHandler getUndefinedIdHandler ()
+    {
+	return undefinedIdHandler;
+    }
+
+    public UndefinedIdHandler setUndefinedIdHandler (UndefinedIdHandler handler)
+    {
+	return undefinedIdHandler = handler;
+    }
+
+    //
+    // Namespace interface methods.
+    //
 
     public Namespace _package (Object packagePathAndName, Object className)
     {
@@ -75,16 +144,6 @@ public class NamespaceImpl
     public String _import (Object classPathAndName)
     {
 	return _import(classPathAndName.toString());
-    }
-
-    public Object set (Object identifier, Object val)
-    {
-	return set(identifier.toString(), val);
-    }
-
-    public Object get (Object identifier)
-    {
-	return get(identifier.toString());
     }
 
     // --------------------------------------------------
@@ -125,6 +184,8 @@ public class NamespaceImpl
 
     private static Object NOT_FOUND;
 
+    private static UndefinedIdHandler undefinedIdHandler;
+
     // -------------------------
 
     //
@@ -137,38 +198,13 @@ public class NamespaceImpl
     // Non-zero if namespace has an associated .lva file.
     private long fileLastModified;
     // true if namespace has an associated .class file.
-    private boolean classAlreadyImported; 
+    private boolean classAlreadyImported;
 
     // -------------------------
 
     //
     // Foundation.
     //
-
-    //
-    // Class Initialization.
-    //
-
-    public void init ()
-    {
-	NOT_FOUND = new Object();
-
-	fullNameNamespaceMap = new Hashtable();
-
-	// N.B.: Each namespace always contains the topLevelNamespace
-	// at the end of its refList.  During initialization we need to
-	// explicitly remove this reference - both because it doesn't
-	// exist so it is null - and if it did exist would cause a circular
-	// lookup.
-
-	rootNamespace = createNamespace("lava.Lava");
-	rootNamespace.getRefList().remove(1);
-
-	// The system starts in the REPL namespace.
-
-	replNamespace = createNamespace("lava.REPL");
-	currentNamespace = replNamespace;
-    }
 
     public NamespaceImpl ()
     {
@@ -462,13 +498,15 @@ else
 	return val;
     }
 
-    public Object get (String identifier)
+    public Object get (String identifier, boolean ignoreUndefined)
     {
 	if (isDottedP(identifier)) {
 	    return refDotted(packageAndClassOf(identifier),
-			     variableOf(identifier));
+			     variableOf(identifier),
+			     ignoreUndefined);
 	} else {
-	    return getCurrentNamespace().refNotDotted(identifier);
+	    return getCurrentNamespace().refNotDotted(identifier, 
+						      ignoreUndefined);
 	}
     }
 
@@ -505,7 +543,7 @@ else
      *
      */
 
-    public Object refNotDotted (String identifier)
+    public Object refNotDotted (String identifier, boolean ignoreUndefined)
     {
 	Vector refList = getRefList();
 	int size = refList.size();
@@ -517,7 +555,10 @@ else
 		return result;
 	    }
 	}
-	throw F.newLavaException("undefined: " + identifier);
+	return
+	    ignoreUndefined ?
+	    null :
+	    undefinedIdHandler.handle(this, F.newSymbol(identifier));
     }
 
     public Object lookupInMap(Hashtable map, String identifier,
@@ -560,7 +601,8 @@ else
     }
 
     public Object refDotted(String packagePathAndNameAndClassname, 
-			    String identifier)
+			    String identifier,
+			    boolean ignoreUndefined)
     {
 	String pc = packagePathAndNameAndClassname;
 	String originalPC = pc;
@@ -573,8 +615,13 @@ else
 		return result;
 	    }
 	}
-	throw F.newLavaException("refDotted: undefined: " +
-				 originalPC + "." + identifier);
+	return
+	    ignoreUndefined ?
+	    null :
+	    undefinedIdHandler.handle(this, 
+				      F.newSymbol(originalPC 
+						  + "." 
+						  + identifier));
     }
 
     // --------------------------------------------------
@@ -708,6 +755,11 @@ else
 	    result = F.cons(arrayList.get(i), result);
 	}
 	return result;
+    }
+
+    public String toString ()
+    {
+	return "{NamespaceImpl:" + name + "}";
     }
 }
 
