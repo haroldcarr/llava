@@ -133,7 +133,11 @@ public class F {
     private static Pair pairFactory = new PairImpl();
 
     public static Pair newPair(Object car, Object cdr) {
-        return pairFactory.newPair(car, cdr);
+	return new PairImpl(car, cdr);
+	// REVISIT - somehow, pairFactory is null when this is
+	// called from 	org.llava.impl.io.LlavaReaderImpl.<init>
+	// during startup to create the STRING field.
+        // return pairFactory.newPair(car, cdr);
     }
 
     public static Pair cons(Object car, Object cdr) {
