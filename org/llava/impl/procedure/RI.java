@@ -1,6 +1,6 @@
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2000 Feb 16 (Wed) 23:21:45 by Harold Carr.
+ * Last Modified : 2000 Feb 17 (Thu) 00:04:26 by Harold Carr.
  */
 
 package libLava.r1.procedure.generic;
@@ -143,45 +143,27 @@ public class DI {
     //
 
     //
-    // Instance creation.
+    // Instance creation and method invocation.
     //
 
-    // This only exists to improve readability of public API.
     private static Object newInstanceInternal (Class targetClass,
 					       Object[] args) 
 	throws 
+	    NoSuchMethodException,
 	    Throwable 
     {
-	Class[] argTypes = getClasses(args);    
-	Constructor[] constructors = targetClass.getDeclaredConstructors();
-	Vector candidates = new Vector();
-	for (int i = 0; i < constructors.length; i++) {
-	    if (equalTypes(constructors[i].getParameterTypes(), argTypes)) {
-		candidates.addElement(constructors[i]);
-	    }
+	Constructor constructor=findConstructor(targetClass, getClasses(args));
+
+	if (constructor == null) {
+	    throw new NoSuchMethodException(targetClass.getName());
 	}
-	Constructor constructor;
-	switch (candidates.size()) {
-	case 0:
-	    throw new NoSuchMethodException("no applicable constructor");
-	case 1:
-	    constructor = (Constructor)candidates.firstElement();
-	    break;
-	default:
-	    constructor = mostSpecificConstructor(candidates);
-	    break;
-	}
-	constructor.setAccessible(true);
+
 	try {
 	    return constructor.newInstance(args);
 	} catch (InvocationTargetException e) {
 	    throw(e.getTargetException()); 
 	}
     }
-
-    //
-    // Method invocation.
-    //
 
     private static Object invokeInternal (String methodName,
 					  Class targetClass,
@@ -194,7 +176,7 @@ public class DI {
 	Method method = findMethod(methodName, targetClass, getClasses(args));
 
 	if (method == null) {
-	    throw new NoSuchMethodException("DI.invoke: " + methodName);
+	    throw new NoSuchMethodException(methodName);
 	}
 
 	try {
@@ -207,8 +189,8 @@ public class DI {
     private static synchronized Method findMethod (String methodName, 
 						   Class targetClass, 
 						   Class[] argTypes) 
-	throws 
-	    NoSuchMethodException  
+	throws
+	    NoSuchMethodException
     {
 	// synchronized because the key is reused.
 	MethodKey key = MethodKey.newMethodKey(methodName, targetClass, argTypes);
@@ -250,8 +232,9 @@ public class DI {
 	throws 
 	    NoSuchMethodException 
     {
-	Vector candidates =
-	    collectCandidatesFromSupers(methodName, targetClass, argTypes);
+	Vector candidates = collectCandidateMethodsFromSupers(methodName,
+							      targetClass,
+							      argTypes);
 	
 	Method method;
 	switch (candidates.size()) {
@@ -268,9 +251,31 @@ public class DI {
 	return method;
     }
 
-    private static Vector collectCandidatesFromSupers(String methodName,
-						      Class targetClass,
-						      Class[] argTypes)
+    private static Constructor findConstructor (Class targetClass,
+						Class[] argTypes)
+	throws
+	    NoSuchMethodException
+    {
+	Vector candidates =collectCandidateConstructors(targetClass, argTypes);
+
+	Constructor constructor;
+	switch (candidates.size()) {
+	case 0:
+	    return null;
+	case 1:
+	    constructor = (Constructor)candidates.firstElement();
+	    break;
+	default:
+	    constructor = mostSpecificConstructor(candidates);
+	    break;
+	}
+	constructor.setAccessible(true);
+	return constructor;
+    }
+
+    private static Vector collectCandidateMethodsFromSupers(String methodName,
+							    Class targetClass,
+							    Class[] argTypes)
 	throws
 	    NoSuchMethodException
     {
@@ -288,6 +293,102 @@ public class DI {
 	    }
 	}
 	return candidates;
+    }
+
+    private static Vector collectCandidateConstructors(Class targetClass,
+						       Class[] argTypes)
+    {
+	Vector candidates = new Vector();
+	Constructor[] constructors = targetClass.getDeclaredConstructors();
+	for (int i = 0; i < constructors.length; i++) {
+	    if (equalTypes(constructors[i].getParameterTypes(), argTypes)) {
+		candidates.addElement(constructors[i]);
+	    }
+	}
+	return candidates;
+    }
+
+    //
+    // Picking most specific constructors/methods from similar candidates.
+    //
+
+    private static Constructor mostSpecificConstructor (Vector constructors) 
+	throws
+	    NoSuchMethodException
+    {
+	for (int i = 0; i < constructors.size(); i++) {
+	    for (int j = 0; j < constructors.size(); j++) {
+		if ((i != j) &&
+		    (isMoreSpecific((Constructor)constructors.elementAt(i), 
+				    (Constructor)constructors.elementAt(j)))) 
+                {
+		    constructors.removeElementAt(j);
+		    if (i > j) {
+			i--;
+		    }
+		    j--;
+		}
+	    }
+	}
+	if (constructors.size() == 1) {
+	    return (Constructor)constructors.elementAt(0);
+	}
+	throw new NoSuchMethodException("more than one most specific constructor");
+    }
+
+    private static Method mostSpecificMethod (Vector methods) 
+	throws
+	    NoSuchMethodException 
+    {
+	for (int i = 0; i < methods.size(); i++) {
+	    for (int j = 0; j < methods.size(); j++) {
+		if ((i != j) &&
+		    (isMoreSpecific((Method)methods.elementAt(i),
+				    (Method)methods.elementAt(j)))) 
+                {
+		    methods.removeElementAt(j);
+		    if (i > j) {
+			i--;
+		    }
+		    j--;
+		}
+	    }
+	}
+	if (methods.size() == 1) {
+	    return (Method)methods.elementAt(0);
+	}
+	throw new NoSuchMethodException("more than one most specific method");
+    }
+
+    private static boolean isMoreSpecific (Constructor c1, Constructor c2) 
+    {
+	// True IFF c1 is more specific than c2.
+	Class[] parmTypes1 = c1.getParameterTypes();
+	Class[] parmTypes2 = c2.getParameterTypes();
+	int n = parmTypes1.length;
+	for (int i = 0; i < n; i++) {
+	    if (equalType(parmTypes1[i], parmTypes2[i])) {
+		return false;
+	    }
+	}
+	return true;
+    }
+
+    private static boolean isMoreSpecific (Method m1, Method m2) 
+    {
+	// True IFF m11 is more specific than m2
+	if (! equalType(m2.getDeclaringClass(), m1.getDeclaringClass())) {
+	    return false;
+	}
+	Class[] parmTypes1 = m1.getParameterTypes();
+	Class[] parmTypes2 = m2.getParameterTypes();
+	int n = parmTypes1.length;
+	for (int i = 0; i < n; i++) {
+	    if (! equalType(parmTypes2[i], parmTypes1[i])) {
+		return false;
+	    }
+	}
+	return true;
     }
 
     //
@@ -372,7 +473,7 @@ public class DI {
 
     private static boolean equalType (Class parmType, Class argType) 
     {
-	// Also used by moreSpecific so argType could be primitive.
+	// Also used by isMoreSpecific so argType could be primitive.
 	if (argType.isPrimitive()) {
 	    argType = wrapPrim(argType);
 	}
@@ -420,91 +521,6 @@ public class DI {
 	}
 
 	return false;
-    }
-
-    //
-    // Picking most specific constructors/methods from similar candidates.
-    //
-
-    private static Constructor mostSpecificConstructor (Vector constructors) 
-	throws
-	    Throwable 
-    {
-	for (int i = 0; i < constructors.size(); i++) {
-	    for (int j = 0; j < constructors.size(); j++) {
-		if ((i != j) &&
-		    (moreSpecific((Constructor)constructors.elementAt(i), 
-				  (Constructor)constructors.elementAt(j)))) 
-                {
-		    constructors.removeElementAt(j);
-		    if (i > j) {
-			i--;
-		    }
-		    j--;
-		}
-	    }
-	}
-	if (constructors.size() == 1) {
-	    return (Constructor)constructors.elementAt(0);
-	}
-	throw new NoSuchMethodException("more than one most specific constructor");
-    }
-
-    private static Method mostSpecificMethod (Vector methods) 
-	throws
-	    NoSuchMethodException 
-    {
-	for (int i = 0; i < methods.size(); i++) {
-	    for (int j = 0; j < methods.size(); j++) {
-		if ((i != j) &&
-		    (moreSpecific((Method)methods.elementAt(i),
-				  (Method)methods.elementAt(j)))) 
-                {
-		    methods.removeElementAt(j);
-		    if (i > j) {
-			i--;
-		    }
-		    j--;
-		}
-	    }
-	}
-	if (methods.size() == 1) {
-	    return (Method)methods.elementAt(0);
-	}
-	throw new NoSuchMethodException("more than one most specific method");
-    }
-
-    // True IFF c1 is more specific than c2
-
-    private static boolean moreSpecific (Constructor c1, Constructor c2) 
-    {
-	Class[] parmTypes1 = c1.getParameterTypes();
-	Class[] parmTypes2 = c2.getParameterTypes();
-	int n = parmTypes1.length;
-	for (int i = 0; i < n; i++) {
-	    if (equalType(parmTypes1[i], parmTypes2[i])) {
-		return false;
-	    }
-	}
-	return true;
-    }
-
-    // True IFF c1 is more specific than c2
-
-    private static boolean moreSpecific (Method m1, Method m2) 
-    {
-	if (! equalType(m2.getDeclaringClass(), m1.getDeclaringClass())) {
-	    return false;
-	}
-	Class[] parmTypes1 = m1.getParameterTypes();
-	Class[] parmTypes2 = m2.getParameterTypes();
-	int n = parmTypes1.length;
-	for (int i = 0; i < n; i++) {
-	    if (! equalType(parmTypes2[i], parmTypes1[i])) {
-		return false;
-	    }
-	}
-	return true;
     }
 
     //
@@ -659,5 +675,3 @@ class MethodKey
 }
 
 // End of file.
-
-
