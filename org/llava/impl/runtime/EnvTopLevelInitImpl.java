@@ -237,11 +237,13 @@ public class EnvTopLevelInitImpl
 
 
 	    repl.readCompileEval(
-"(define (display msg)" +
-"  (print (getPrintWriter _%writer) (if (null? msg) \"null\" msg))" +
+"(define (display msg . out)" +
+"  (set! msg (if (null? msg) \"null\" msg))" +
+"  (if (null? out)" +
+"      (print (getPrintWriter _%writer) msg)" +
+"      (print (car out) msg))" +
 "  null)"
                                 );
-
 
 	    repl.readCompileEval(
 "(define (write msg . out)" +
@@ -251,11 +253,18 @@ public class EnvTopLevelInitImpl
 "  null)"
                                 );
 
+	    repl.readCompileEval(
+"(define (newline . out)" +
+"  (println (if (null? out) (getPrintWriter _%writer) (car out)))" +
+"  null)"
+                                );
 
 	    repl.readCompileEval(
-"(define (newline)" +
-"  (println (getPrintWriter _%writer))" +
-"  null)"
+"(define llava-read" +
+"  (lambda in" +
+"    (if (null? in)" +
+"        (read _%reader)" +
+"        (read _%reader (car in)))))"
                                 );
 
 	    repl.readCompileEval(
@@ -271,7 +280,6 @@ public class EnvTopLevelInitImpl
 "    (print (-sf 'out 'java.lang.System) (if (null? x) \"null\" x))" +
 "    x))"
                                 );
-
 
 	    repl.readCompileEval(
 "(define-syntax -comment-" +

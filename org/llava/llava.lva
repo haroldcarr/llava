@@ -796,13 +796,18 @@ share the static factory methods).
  (name eq?)
  (param obj1)
  (param obj2)
- (location org.llava))
+ (location org.llava)
+ (description
+  "Equivalent to Java <code>==</code>."))
 
 (-doc-
  (name equal?)
  (param obj1)
  (param obj2)
- (location org.llava))
+ (location org.llava)
+ (description
+  "Equivalent to Java <code>equals</code>.  Note: this means it
+   does not check equality of vectors."))
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1144,23 +1149,35 @@ share the static factory methods).
 (-section- (name "Input and Output"))
 
 (-doc-
- (name display)
- (param obj)
- (location org.llava)
- (description
-  "Examples:"
-  (example "(display '(\"foo\" #\c #(1 2))) prints (foo c [Ljava.lang.Object;@988707)")))
+ (name llava-read)
+ (param " . ")
+ (param optional-java.io.Reader)
+ (location org.llava))
 
 (-doc-
  (name write)
  (param obj)
+ (param " . ")
+ (param optional-java.io.PrinterWriter)
  (location org.llava)
  (description
   "Examples:"
-  (example "(display '(\"foo\" #\c #(1 2))) prints (\"foo\" #\c #(1 2))")))
+  (example "(write '(\"foo\" #\\c #(1 2))) prints (\"foo\" #\\c #(1 2))")))
+
+(-doc-
+ (name display)
+ (param obj)
+ (param " . ")
+ (param optional-java.io.PrinterWriter)
+ (location org.llava)
+ (description
+  "Examples:"
+  (example "(display '(\"foo\" #\\c #(1 2))) prints (foo c [Ljava.lang.Object;@988707)")))
 
 (-doc-
  (name newline)
+ (param " . ")
+ (param optional-java.io.PrinterWriter)
  (location org.llava))
 
 (-doc-
