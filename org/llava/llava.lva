@@ -18,7 +18,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section- 
- (name "Notation and Terminology")
+ (name "Notation, Terminology and Convections")
  (description
   "<bridgehead> Entry format</bridgehead>
 
@@ -40,7 +40,7 @@
    feature is already imported and <emphasis>location</emphasis>
    simply gives the package location of the feature.
 
-   <bridgehead> Evaluation examples</bridgehead>
+   <bridgehead>Evaluation examples</bridgehead>
 
    The symbol &lva-et; used in program examples should be read
    \"evaluates to.\"  For example,"
@@ -48,7 +48,12 @@
   (example "(* 5 8)  &lva-et;    40")
 
   "means that the expression <code>(* 5 8)</code> evalutes to the
-   object <code>40</code>."))
+   object <code>40</code>.
+
+   <bridgehead>llava file suffix</bridgehead>
+
+   By convention, llava files end with a <code>.lva</code> suffix.
+   e.g., <code>foo.lva</code>"))
 
 (-section-end-) ;; Notation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -221,7 +226,17 @@
    the generic procedure <parameter>body</parameter> will be called:"
 
   (example
-   "((lambda (requiredArg1 requiredArg2 . optionalArgs) body) 1 2)")))
+   "((lambda (requiredArg1 requiredArg2 . optionalArgs) body) 1 2)")
+
+  "Example:"
+
+  (example
+"(define (getMessage x)
+  (cdr x))
+
+(getMessage '(1 2 3)) &lva-et; (2 3)
+
+(getMessage (new 'java.lang.Exception \"test msg\")) &lva-et; test msg")))
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -528,28 +543,42 @@ share the static factory methods).
 
    A semicolon (<code>;</code>) indicates the start of a
    comment.  The comment continues to the end of the line on which
-   the semicolon appears.
+   the semicolon appears."))
 
-   A block comment is anything appearing inside the syntax:
-   <code>(-comment- ...)</code>.
+  (-doc-
+   (name -comment-)
+   (parameter "&lt;expression&gt;")
+   (parameter ...)
+   (description
+    "A block comment is anything appearing inside the syntax:
+   <code>(-comment- ...)</code>."))
 
-   <code>(-package- ...)</code> and <code>(-doc- ...)</code> are also
-   block comments.  They are recognized by
-   <code>org.llava.lib.LlavaDoc</code>.
+  (-doc-
+   (name -package-)
+   (parameter "&lt;expression&gt;")
+   (parameter ...)
+   (description
+    "A block comment.  Recognized by <code>org.llava.lib.LlavaDoc</code>."))
 
+  (-doc-
+   (name -doc-)
+   (parameter "&lt;expression&gt;")
+   (parameter ...)
+   (description 
+    "A block comment. Recognized by <code>org.llava.lib.LlavaDoc</code>."
 
-   <bridgehead>Other notations</bridgehead>
+   "<bridgehead>Other notations</bridgehead>"
 
-   <code>. + -</code> As in R5RS.
-   <code>(  )</code> Used for grouping and to notate lists, as in R5RS.
-   <code>'</code> Indicates literal data, as in R5RS.
-   <code>`</code> Indicates almost constant data, as in R5RS.
-   <code>, ,@</code> Used in conjunction with backquote, as in R5RS.
-   <code>\"</code> Used to delimit strings, as in R5RS.
-   <code>\\</code> As in R5RS.
-   <code>true false</code> These are the boolean constants.
-   <code>#\\</code> Introduces a character constants, as in R5RS.
-   <code>#(</code> Introduces a vector constant, as in R5RS."))
+   "<code>. + -</code> Used in numbers and identifiers, as in R5RS."
+   "<code>(  )</code> Used for grouping and to notate lists, as in R5RS."
+   "<code>'</code> Indicates literal data, as in R5RS."
+   "<code>`</code> Indicates almost constant data, as in R5RS."
+   "<code>, ,@</code> Used in conjunction with backquote, as in R5RS."
+   "<code>\"</code> Used to delimit strings, as in R5RS."
+   "<code>\\</code> Used in character constants and as an escape within string constants, as in R5RS."
+   "<code>true false</code> These are the boolean constants."
+   "<code>#\\</code> Introduces a character constants, as in R5RS."
+   "<code>#(</code> Introduces a vector constant, as in R5RS."))
 
 (-section-end-) ; Lexical Conventions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -557,13 +586,16 @@ share the static factory methods).
 (-section- (name "Expressions"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(-section- (name "Primitive Expression Types"))
+(-section- 
+ (name "Primitive Expression Types")
+ (description
+  "&lt;variable&gt;"
+  "-- syntax"
+  "An expression consisting of a identifier is a variable reference."))
 
-(-doc-
- (name "&lt;variable&gt;")
- (category syntax)
- (description 
-  "An expression consisting of a variable is a variable reference."))
+(-comment-
+ "Cannot use -doc- for variable because it comes out (variable) 
+  - ie with parenthesis")
 
 (-doc-
  (name quote)
