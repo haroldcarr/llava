@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2000 Feb 10 (Thu) 03:17:11 by Harold Carr.
-;;;; Last Modified : 2005 Feb 21 (Mon) 16:58:47 by Harold Carr.
+;;;; Last Modified : 2005 Mar 24 (Thu) 11:30:38 by Harold Carr.
 ;;;;
 
 ;; Core Java 2 V1 p 209-214
@@ -80,7 +80,7 @@
 	   (cond (newline? (-newline) (-newline)))
 	   (vector-for-each (lambda (p) 
 			      (-print " ")
-			      (-print p) 
+			      (-write p) 
 			      (cond (newline? (-newline) (-newline))))
 			    parts)))))
 
@@ -94,7 +94,7 @@
 			      (-print " ")
 			      (-print field)
 			      (-print " = ")
-			      (-print (get field object))
+			      (-write (get field object))
 			      (-newline))
 			    fields)))))
 
