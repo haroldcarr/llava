@@ -1,6 +1,6 @@
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2000 Feb 17 (Thu) 00:04:26 by Harold Carr.
+ * Last Modified : 2000 Feb 17 (Thu) 00:22:28 by Harold Carr.
  */
 
 package libLava.r1.procedure.generic;
@@ -256,7 +256,7 @@ public class DI {
 	throws
 	    NoSuchMethodException
     {
-	Vector candidates =collectCandidateConstructors(targetClass, argTypes);
+	Vector candidates = collectCandidateConstructors(targetClass,argTypes);
 
 	Constructor constructor;
 	switch (candidates.size()) {
@@ -271,6 +271,20 @@ public class DI {
 	}
 	constructor.setAccessible(true);
 	return constructor;
+    }
+
+    private static Vector collectCandidateConstructors(Class targetClass,
+						       Class[] argTypes)
+    {
+	Vector candidates = new Vector();
+
+	Constructor[] constructors = targetClass.getDeclaredConstructors();
+	for (int i = 0; i < constructors.length; i++) {
+	    if (equalTypes(constructors[i].getParameterTypes(), argTypes)) {
+		candidates.addElement(constructors[i]);
+	    }
+	}
+	return candidates;
     }
 
     private static Vector collectCandidateMethodsFromSupers(String methodName,
@@ -290,19 +304,6 @@ public class DI {
 		{
 		    candidates.addElement(methods[i]);
 		}
-	    }
-	}
-	return candidates;
-    }
-
-    private static Vector collectCandidateConstructors(Class targetClass,
-						       Class[] argTypes)
-    {
-	Vector candidates = new Vector();
-	Constructor[] constructors = targetClass.getDeclaredConstructors();
-	for (int i = 0; i < constructors.length; i++) {
-	    if (equalTypes(constructors[i].getParameterTypes(), argTypes)) {
-		candidates.addElement(constructors[i]);
 	    }
 	}
 	return candidates;
@@ -675,3 +676,4 @@ class MethodKey
 }
 
 // End of file.
+
