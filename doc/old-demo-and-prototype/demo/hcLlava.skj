@@ -1,6 +1,6 @@
 ;;;;
 ;;;; Created       : 1999 Jun 10 (Thu) 20:56:18 by Harold Carr.
-;;;; Last Modified : 1999 Jun 16 (Wed) 00:27:27 by Harold Carr.
+;;;; Last Modified : 1999 Jun 16 (Wed) 21:48:55 by Harold Carr.
 ;;;;
 
 ;;;;
@@ -10,10 +10,12 @@
 (defmacro hcSkijMakePredicate (name test)
   `(defun ,name (item)
      (and (consp item)
-	  (or (eq (first item) ',test)
-	      (eq (first item) '/**)
-	      (eq (first item) '/*)
-	      (eq (first item) '//)))))
+	  (member (first item) '(,test /** /* //)))))
+
+(defmacro hcSkijPopStream ()
+  `(progn
+     (setq stream (rest stream))
+     (setq item   (first stream))))
 
 (defmacro hcSkijMakeParseItem (name predicate)
   `(defun ,name (stream)
@@ -21,11 +23,10 @@
 	   (item (first stream)))
        (while (,predicate item)
 	 (setq result (cons item result))
-	 (setq stream (rest stream))
-	 (setq item (first stream)))
+	 (hcSkijPopStream))
        (values (reverse result) stream))))
 
-(hcSkijMakePredicate hcSkijCommentP    //)
+(hcSkijMakePredicate hcSkijCommentP    //) ; finds all comment forms
 (hcSkijMakePredicate hcSkijPackageP    package)
 (hcSkijMakePredicate hcSkijImportP     import)
 (hcSkijMakePredicate hcSkijImplementsP implements)
@@ -35,84 +36,75 @@
 (hcSkijMakeParseItem hcSkijParsePackage hcSkijPackageP)
 (hcSkijMakeParseItem hcSkijParseImport  hcSkijImportP)
 
+(defmacro hcSkijGetImplementsOrExtends (implementsOrExtends)
+  `(progn
+     (setq ,implementsOrExtends (first stream))
+     (setq stream (rest stream))))
+
 (defun hcSkijParseClassHeader (stream)
-  (let ((name '())
+  (let ((name       '())
 	(implements '())
-	(extends '()))
-    (if (or (not (eq (first stream) 'public))
+	(extends    '()))
+    (if (or (not (eq (first  stream) 'public))
 	    (not (eq (second stream) 'class)))
 	(error "Expecting public class, got: %s %s" 
 	       (first stream) (second stream)))
     (setq name (third stream))
     (setq stream (rest (rest (rest stream))))
-    ;; Brute force.
     (cond ((hcSkijImplementsP (first stream))
-	   (setq implements (first stream))
-	   (setq stream (rest stream))
+	   (hcSkijGetImplementsOrExtends implements)
 	   (cond ((hcSkijExtendsP (first stream))
-		  (setq extends (first stream))
-		  (setq stream (rest stream)))))
+		  (hcSkijGetImplementsOrExtends extends))))
 	  ((hcSkijExtendsP (first stream))
-	   (setq extends (first stream))
-	   (setq stream (rest stream))
+	   (hcSkijGetImplementsOrExtends extends)
 	   (cond ((hcSkijImplementsP (first stream))
-		  (setq implements (first stream))
-		  (setq stream (rest stream))))))
+		  (hcSkijGetImplementsOrExtends implements)))))
     (values (list name implements extends) stream)))
 
 (defun hcSkijParseClassMembers (publicClassName stream)
   (hcSkijParseClassMember publicClassName '() (first stream) (rest stream)))
 
-(defun hcSkijParseClassMember (publicClassName accumulator next remaining)
+(defun hcSkijParseClassMember (publicClassName accumulator stream remaining)
   (let ((visibility "")
-	(static "")
-	(returnType "")
-	(name '())
-	(args '())
-	(throws "")
-	(body '())
-	(result '())
-	(item (car next)))
-    (cond ((hcSkijCommentP next)
-	   (setq result next))
+	(static     "")
+	(returnType '())
+	(name       '())
+	(args       '())
+	(throws     '())
+	(body       '())
+	(result     '())
+	(item       (car stream)))
+    (cond ((hcSkijCommentP stream)
+	   (setq result stream))
 	  (t
 	   (cond ((member item '(public protected private))
 		  (setq visibility item)
-		  (setq next (rest next))
-		  (setq item (car next))))
+		  (hcSkijPopStream)))
 	   (cond ((eq item 'static)
 		  (setq static item)
-		  (setq next (rest next))
-		  (setq item (car next))))
+		  (hcSkijPopStream)))
 	   (cond ((symbolp item)
 		  (setq returnType item)
-		  (setq next (rest next))
-		  (setq item (car next))
+		  (hcSkijPopStream)
 		  (let ((tmp (hcSkijParseNameAndParams item)))
 		    (setq name (first tmp))
 		    (setq args (second tmp))
-		    (setq next (rest next))
-		    (setq item (car next))))
+		    (hcSkijPopStream)))
 		 ((and (consp item)
 		       (eq (car item) publicClassName))
+		  ;; A Constructor.
 		  (let ((tmp (hcSkijParseNameAndParams item)))
 		    (setq name (first tmp))
 		    (setq args (second tmp))
-		    (setq next (rest next))
-		    (setq item (first next))))
+		    (hcSkijPopStream)))
 		 (t
 		  (error "Expecting name and parameters, got: %s" item)))
 	   (cond ((hcSkijThrowsP item)
 		  (setq throws item)
-		  (setq next (rest next))
-		  (setq item (first next))))
-	   (setq body next)
-	   (setq result `(,visibility
-			  ,returnType
-			  ,name
-			  ,args
-			  ,throws
-			  ,body))))
+		  (hcSkijPopStream)))
+	   (setq body stream)
+	   (setq result
+		 `(,visibility ,static ,returnType ,name ,args ,throws ,body))))
     (setq accumulator (cons result accumulator))
     (cond ((null remaining)
 	   (reverse accumulator))
@@ -130,9 +122,10 @@
 	 (package (first tmp1))
 	 (tmp2 (hcSkijParseImport (second tmp1)))
 	 (import (first tmp2))
-	 (tmp3 (hcSkijParseClassHeader (first (second tmp2)))) ;; NB. first
+	 ;; NB. first to get inside the class and make a new stream.
+	 (tmp3 (hcSkijParseClassHeader (first (second tmp2))))
 	 (classHeader (first tmp3))
-	 (members (hcSkijParseClassMembers (first (first tmp3))(second tmp3))))
+	 (members (hcSkijParseClassMembers (first classHeader) (second tmp3))))
     `((package     ,package)
       (import      ,import)
       (classHeader ,classHeader)
@@ -141,6 +134,154 @@
 ;;;;
 ;;;; Java file generator.
 ;;;;
+
+(defun hcSkijGenerateComment (comment javaBuffer skijBuffer)
+  (let* ((commentType (car comment))
+	 (subsequent  (if (member commentType '(/** /*)) '* '//))
+	 (end         (if (member commentType '(/** /*)) '*/ '//))
+	 (needsSpaceP (if (member commentType '(/** /*)) t nil)))
+    (hcSkijTerpri javaBuffer)
+    (hcSkijTerpri javaBuffer)
+    (hcSkijPrinc commentType javaBuffer)
+    (setq comment (cdr comment))
+    (while comment
+      (hcSkijTerpri javaBuffer)
+      (if needsSpaceP (hcSkijPrinc " " javaBuffer))
+      (hcSkijPrinc (format "%s %s" subsequent (car comment)) javaBuffer)
+      (setq comment (cdr comment)))
+    (hcSkijTerpri javaBuffer)
+    (if needsSpaceP (hcSkijPrinc " " javaBuffer))
+    (hcSkijPrinc end javaBuffer)
+    (hcSkijTerpri javaBuffer)))
+
+(defun hcSkijGeneratePackage (parsed javaBuffer skijBuffer)
+  (let ((package (hcSkijSelect 'package parsed)))
+    (while package
+      (cond ((hcSkijCommentP (car package))
+	     (hcSkijGenerateComment (car package) javaBuffer skijBuffer))
+	    (t
+	     (hcSkijTerpri javaBuffer)
+	     (hcSkijPrinc (format "%s %s;"
+			    (first (car package))
+			    (second (car package)))
+			  javaBuffer)))
+      (setq package (cdr package)))))
+
+(defun hcSkijGenerateImport (parsed javaBuffer skijBuffer)
+  (hcSkijTerpri javaBuffer)
+  (hcSkijTerpri javaBuffer)
+  (hcSkijPrinc "// Start of imports needed by framework." javaBuffer)
+  (hcSkijTerpri javaBuffer)
+  (hcSkijPrinc "import com.ibm.jikes.skij.Cons;" javaBuffer)
+  (hcSkijTerpri javaBuffer)
+  (hcSkijPrinc "import com.ibm.jikes.skij.Scheme;" javaBuffer)
+  (hcSkijTerpri javaBuffer)
+  (hcSkijPrinc "import com.ibm.jikes.skij.SchemeException;" javaBuffer)
+  (hcSkijTerpri javaBuffer)
+  (hcSkijPrinc "// End of imports needed by framework." javaBuffer)
+  (hcSkijTerpri javaBuffer)
+  (let ((import (hcSkijSelect 'import parsed)))
+    (while import
+      (cond ((hcSkijCommentP (car import))
+	     (hcSkijGenerateComment (car import) javaBuffer skijBuffer))
+	    (t
+	     (hcSkijTerpri javaBuffer)
+	     (hcSkijPrinc (format "%s %s;"
+			    (first (car import))
+			    (second (car import)))
+			  javaBuffer)))
+      (setq import (cdr import)))))
+
+(defun hcSkijGenerateClassHeader (parsed javaBuffer skijBuffer)
+  (let ((classHeader (hcSkijSelect 'classHeader parsed)))
+    (hcSkijTerpri javaBuffer)
+    (hcSkijTerpri javaBuffer)
+    (hcSkijPrinc (format "public class %s" (first classHeader))
+		 javaBuffer)
+    (hcSkijPrintContents (second classHeader)
+			 #'(lambda () (hcSkijTerpri javaBuffer))
+			 #'(lambda () nil)
+			 javaBuffer)
+    (hcSkijPrintContents (third classHeader)
+			 #'(lambda () (hcSkijTerpri javaBuffer))
+			 #'(lambda () nil)
+			 javaBuffer)
+    (hcSkijTerpri javaBuffer)
+    (hcSkijPrinc "{" javaBuffer)))
+
+(defun hcSkijGenerateMembers (parsed javaBuffer skijBuffer)
+  (let ((members (hcSkijSelect 'members parsed)))
+    (while members
+      (cond ((hcSkijCommentP (car members))
+	     (hcSkijGenerateComment (car members) javaBuffer skijBuffer))
+	    (t
+	     (hcSkijGenerateMember (car members) javaBuffer skijBuffer)))
+      (setq members (cdr members)))))
+
+(defun hcSkijGenerateMember (member javaBuffer skijBuffer)
+  (hcSkijTerpri javaBuffer)
+  (hcSkijPrinc
+   (format "%s %s %s %s" 
+	   (first member) 
+	   (second member)
+	   (if (third member)
+	       (third member)
+	     "") 
+	   (fourth member))
+   javaBuffer)
+  (hcSkijGenerateParameters (fifth member) javaBuffer)
+  (cond ((sixth member)
+	 (hcSkijTerpri javaBuffer)
+	 (hcSkijPrinc "throws" javaBuffer)
+	 (hcSkijPrintContents (cdr (sixth member))
+			      #'(lambda () (hcSkijTerpri javaBuffer))
+			      #'(lambda () nil)
+			      javaBuffer)))
+  (hcSkijTerpri javaBuffer)
+  (hcSkijPrinc "{" javaBuffer)
+  (hcSkijGenerateBody member javaBuffer skijBuffer)
+  (hcSkijTerpri javaBuffer)
+  (hcSkijPrinc "}" javaBuffer))
+
+(defun hcSkijMakeParameterString (params withTypesP)
+  (let ((result ""))
+    (while params
+      (setq result
+	    (concat result
+		    (if withTypesP
+			(format "%s %s"
+				(first (first params)) (second (first params)))
+		      (format "%s" (second (first params))))))
+      (setq params (rest params))
+      (if params
+	  (setq result (concat result ", "))))
+    result))
+
+(defun hcSkijGenerateParameters (params javaBuffer)
+  (hcSkijPrinc "(" javaBuffer)
+  (hcSkijPrinc (hcSkijMakeParameterString params t) javaBuffer)
+  (hcSkijPrinc ")" javaBuffer))
+
+(defun hcSkijGenerateBody (member javaBuffer skijBuffer)
+  (hcSkijTerpri javaBuffer)
+  (hcSkijPrinc "return" javaBuffer)
+  (hcSkijTerpri javaBuffer)
+  (cond ((third member)
+	 (hcSkijPrinc (format "(%s) " (third member)) javaBuffer)
+	 (hcSkijTerpri javaBuffer)))
+  (hcSkijPrinc (format "Scheme.procedure(\"%sImpl\").apply(Cons.list(this%s %s));"
+		 (fourth member)
+		 (if (fifth member) "," "")
+		 (hcSkijMakeParameterString (fifth member) nil))
+	       javaBuffer))
+
+(defun hcSkijGenerateCloseClass (parsed javaBuffer skijBuffer)
+  (hcSkijTerpri javaBuffer)
+  (hcSkijPrinc "}" javaBuffer)
+  (hcSkijTerpri javaBuffer)
+  (hcSkijTerpri javaBuffer)
+  (hcSkijPrinc "// End of file." javaBuffer)
+  (hcSkijTerpri javaBuffer))
 
 ;;;;
 ;;;; Skij file generator.
@@ -154,69 +295,19 @@
   `(define-java-class-e ',def))
 
 (defun define-java-class-e (def)
-  (let ((parsed (hcSkijParse def)))
-    (hcSkijGeneratePackage parsed)
-    (hcSkijGenerateImport  parsed)
-    (hcSkijGenerateClassHeader  parsed)
-    (hcSkijGenerateMembers parsed)
-    (hcSkijGenerateCloseClass parsed)))
-
-(defun hcSkijGenerateComment (comment)
-  (princ comment)
-  (terpri))
-
-(defun hcSkijGeneratePackage (parsed)
-  (let ((package (hcSkijSelect 'package parsed)))
-    (while package
-      (cond ((hcSkijCommentP (car package))
-	     (hcSkijGenerateComment (car package)))
-	    (t
-	     (princ (car package))
-	     (princ ";")
-	     (terpri)))
-      (setq package (cdr package)))))
-
-(defun hcSkijGenerateImport (parsed)
-  (let ((import (hcSkijSelect 'import parsed)))
-    (while import
-      (cond ((hcSkijCommentP (car import))
-	     (hcSkijGenerateComment (car import)))
-	    (t
-	     (princ (car import))
-	     (princ ";")
-	     (terpri)))
-      (setq import (cdr import)))))
-
-(defun hcSkijGenerateClassHeader (parsed)
-  (let ((classHeader (hcSkijSelect 'classHeader parsed)))
-    (princ 'public) (princ " ") 
-    (princ 'class) (princ " ") 
-    (princ (first classHeader))
-    (hcSkijPrintContents (second classHeader)
-			 #'(lambda () (terpri))
-			 #'(lambda () nil))
-    (hcSkijPrintContents (third classHeader)
-			 #'(lambda () (terpri))
-			 #'(lambda () nil))
-    (terpri)
-    (princ "{")))
-
-(defun hcSkijGenerateMembers (parsed)
-  (let ((members (hcSkijSelect 'members parsed)))
-    (while members
-      (hcSkijGenerateMember (car members))
-      (setq members (cdr members)))))
-
-(defun hcSkijGenerateMember (member)
-  (terpri)
-  (hcSkijPrintContents member
-		       #'(lambda () nil)
-		       #'(lambda () (princ " "))))
-
-(defun hcSkijGenerateCloseClass (parsed)
-  (terpri)
-  (princ "}")
-  (terpri))
+  (let ((parsed (hcSkijParse def))
+	(javaBuffer (get-buffer-create "j.java"))
+	(skijBuffer (get-buffer-create "s")))
+    (mapc #'(lambda (procedure)
+	      (funcall procedure parsed javaBuffer skijBuffer))
+	  '(hcSkijGeneratePackage
+	    hcSkijGenerateImport
+	    hcSkijGenerateClassHeader
+	    hcSkijGenerateMembers
+	    hcSkijGenerateCloseClass))
+    (with-current-buffer javaBuffer
+      (java-mode)
+      (indent-region (point-min) (point-max) nil))))
 
 ;;;;
 ;;;; Utilities.
@@ -229,6 +320,9 @@
 (defun second (x) (cadr x))
 (defun third (x) (caddr x))
 (defun fourth (x) (car (cdddr x)))
+(defun fifth (x) (cadr (cdddr x)))
+(defun sixth (x) (car (cddr (cdddr x))))
+(defun seventh (x) (cadr (cddr (cdddr x))))
 (defun caddr (x) (cadr (cdr x)))
 (defun cdddr (x) (cddr (cdr x)))
 (defun values (&rest x) x)
@@ -238,12 +332,18 @@
 	((eq this (caar that)) (car (cdr (car that))))
 	(t (hcSkijSelect this (cdr that)))))
 
-(defun hcSkijPrintContents (contents beforeEachItem afterEachItem)
+(defun hcSkijPrintContents (contents beforeEachItem afterEachItem stream)
   (mapc #'(lambda (x) 
 	    (funcall beforeEachItem)
-	    (princ x)
+	    (hcSkijPrinc x stream)
 	    (funcall afterEachItem))
 	contents))
+
+(defun hcSkijTerpri (stream)
+  (terpri stream))
+
+(defun hcSkijPrinc (item stream)
+  (princ item stream))
 
 ;;;;
 ;;;; Test
@@ -255,26 +355,37 @@
   (/** "Comment before package."
        "Each line in a string.")
   (package hc.util)
-  (/* "Comment before import.")
+  (/* "Comment before import."
+      "Another line.")
   (import com.ibm.jikes.skij.*)
   (import java.util.Hashtable)
-  (// "Comment before class.")
+  (// "Comment before class."
+      "Another line.")
   (public class Baz (implements Foo)
 	            (extends Wombat)
 	  (/** "The constructor.")
 	  (public (Baz) (System.out.println "YES"))
 	  (/* "A static method.")
 	  (public static Object
-		  (bar (Object x))
-		  (throws SchemeException)
+		  (bar (Object x) (Hashtable y))
+		  (throws SchemeException Exception)
 		  `(public static Object bar ,x))
 	  (// "A virtual method")
 	  (public Object 
 		  (baz (Object x))
 		  (throws SchemeException)
-		  `(public Object baz ,x)))
+		  `(public Object baz ,x))))
 
-)
+(load-file "hcSkij.el")
+
+(define-java-class
+  (package hc.util)
+  (public class FooImplGen (implements Foo)
+	  (public String (bar (String x))
+		  (throws SchemeException)
+		  (whatever))))
+
 )
 
 ;;; End of file.
+
