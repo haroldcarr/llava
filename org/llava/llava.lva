@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2004 Sep 05 (Sun) 11:27:57 by Harold Carr.
-;;;; Last Modified : 2005 Feb 07 (Mon) 09:33:48 by Harold Carr.
+;;;; Last Modified : 2005 Feb 07 (Mon) 10:30:40 by Harold Carr.
 ;;;;
 
 (-package-
@@ -67,33 +67,38 @@
  (param obj)
  (param ...)
  (category syntax)
+ (location org.llava)
  (description
   "Examples:"
   (example
+
 "(new 'java.util.Date)
 (new 'java.lang.Integer 3)")
+
   "Note: if the class has been imported then you can call
    the constructor directly:"
+
   (example
 "(import java.lang.Integer)
-(Integer 3)
+(Integer 3)")
 
-or you can use new shorthand:
-
-(new 'Integer 3)"
-)
+  "or you can use <code>new</code> shorthand:"
   (example
-"Also note, even though new is syntax, all arguments are evaluated.")))
+"(new 'Integer 3)")
+
+  "Also note, even though <code>new</code> is syntax, all arguments
+   are evaluated."))
 
 (-doc-
  (name new*)
  (param packagePathAndClassName)
  (param obj)
  (param ...)
+ (location org.llava)
  (description
-  "Like syntax new except it is a procedure and it must be given
+  "Like syntax <code>new</code> except it is a procedure and it must be given
   the full package and classname (i.e., it does not accept imported
-  shorthand like new)."))
+  shorthand like <code>new</code>)."))
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -107,6 +112,7 @@ or you can use new shorthand:
  (param targetObj)
  (param obj)
  (param ...)
+ (location org.llava)
  (description
   "Examples:"
 
@@ -143,6 +149,7 @@ or you can use new shorthand:
  (param classOrClassName)
  (param obj)
  (param ...)
+ (location org.llava)
  (description
   "Examples:"
 
@@ -154,9 +161,12 @@ or you can use new shorthand:
 
   (example
 "(import java.lang.Integer)
-(parseInt \"ff\" 16)
-or
-(Integer.parseInt \"ff\" 16)")))
+(parseInt \"ff\" 16)")
+
+  "or"
+
+  (example
+"(Integer.parseInt \"ff\" 16)")))
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -169,6 +179,7 @@ or
  (param fieldName)
  (param targetObj)
  (param optionalSetterValue)
+ (location org.llava)
  (description
   "Examples:"
   
@@ -195,6 +206,7 @@ or
  (param fieldName)
  (param classOrClassName)
  (param optionalSetterValue)
+ (location org.llava)
  (description
   "Examples:"
 
@@ -209,11 +221,12 @@ or
   (example
 "(import java.lang.System)
 (out)
-(out! 0)
+(out! 0)")
 
-or, preferred
+  "or, preferred"
 
-(System.out)")))
+  (example
+"(System.out)")))
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -232,6 +245,7 @@ or, preferred
  (param " ) ")
  (param body)
  (category syntax)
+ (location org.llava)
  (description
   "Binds a procedure to <parameter>variable</parameter> that,
       when called, will first use Java reflection to find a method on
@@ -288,6 +302,7 @@ or, preferred
  (param body)
  (param " ) ")
  (category syntax)
+ (location org.llava)
  (description
   "Binds a procedure to <parameter>variable</parameter> that,
       when called, will always execute <parameter>body</parameter>
@@ -344,7 +359,8 @@ or, preferred
  (name synchronized)
  (param lock-obj)
  (param expression1)
- (param ...))
+ (param ...)
+ (location org.llava))
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -367,6 +383,7 @@ or, preferred
  (name package)
  (param symbol)
  (category syntax)
+ (location org.llava)
  (description
   "<function>package</function> creates a namespace with the
    given name if it does not exist."
@@ -379,6 +396,7 @@ or, preferred
  (name import)
  (param symbol)
  (category syntax)
+ (location org.llava)
  (description
   "<function>import</function> searches the roots of
    <code>CLASSPATH</code> for files ending in *<code>.lva</code>
@@ -405,24 +423,41 @@ or, preferred
    static methods and fields (both static and virtual):"
 
   (example
-"(import java.lang.System)
-then
-(java.lang.System.out)
-and
-(System.out)
-	equivalent to (-sf 'out 'java.lang.System)
+"(import java.lang.System)")
 
-(import java.lang.Integer)
-then
-(java.lang.Integer.TYPE)
-and
-(Integer.TYPE)
-	equivalent to (-sf 'TYPE 'java.lang.Integer)
+  "then"
 
-(java.lang.Integer.parseInt \"ff\" 16)
-and
-(Integer.parseInt \"ff\" 16)
-        equivalent to (-si 'parseInt 'java.lang.Integer \"ff\" 16)")
+  (example
+"(java.lang.System.out)")
+
+  "and"
+
+  (example
+"(System.out)
+	;; both equivalent to (-sf 'out 'java.lang.System)")
+
+  (example
+"(import java.lang.Integer)")
+
+  "then"
+
+  (example
+"(java.lang.Integer.TYPE)")
+
+  "and"
+
+  (example
+"(Integer.TYPE)
+	;; both equivalent to (-sf 'TYPE 'java.lang.Integer)")
+
+  (example
+"(java.lang.Integer.parseInt \"ff\" 16)")
+
+  "and"
+
+  (example
+"(Integer.parseInt \"ff\" 16)
+        ;; both equivalent to (-si 'parseInt 'java.lang.Integer \"ff\" 16)")
 
   "Note: these definitions take places in the current
    package.  In the future this will change such that a llava
@@ -440,6 +475,7 @@ and
  (name instanceof)
  (param obj)
  (param symbol-or-string)
+ (location org.llava)
  (description
   "Example:"
   (example
@@ -452,7 +488,8 @@ and
 (instanceof (new 'Hashtable) 'Hashtable) &lva-et; true")))
 
 (-doc-
- (name current-time-millis))
+ (name current-time-millis)
+ (location org.llava))
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -462,6 +499,7 @@ and
 
 (-doc-
  (name -bt)
+ (location org.llava)
  (description
   "Prints a backtrace of the llava stack for the last
    exception.  Note: the top of the stack is at the bottom of the
@@ -469,6 +507,7 @@ and
 
 (-doc-
  (name -jbt)
+ (location org.llava)
  (description
   "Prints a backtrace of the Java stack for the last
    exception.  Note: the top of the stack is at the top of the
@@ -478,6 +517,7 @@ and
  (name define-d)
  (param ...)
  (category syntax)
+ (location org.llava)
  (description
   "Equivalent to <code>define</code> when defining generic and lambda
    procedures except procedures defined with <code>define-d</code> print
@@ -488,6 +528,7 @@ and
 (-doc-
  (name set-define-d-indent!)
  (param false-or-integer)
+ (location org.llava)
  (description
   "Controls the indentation of the call stack tracing of procedures
   defined with <code>define-d</code>.  If <code>false</code> then no
@@ -603,6 +644,7 @@ share the static factory methods).
    (parameter "&lt;expression&gt;")
    (parameter ...)
    (category syntax)
+   (location org.llava)
    (description
     "A block comment is anything appearing inside the syntax:
    <code>(-comment- ...)</code>."))
@@ -612,6 +654,7 @@ share the static factory methods).
    (parameter "&lt;expression&gt;")
    (parameter ...)
    (category syntax)
+   (location org.llava)
    (description
     "A block comment.  Recognized by <code>org.llava.lib.LlavaDoc</code>."))
 
@@ -620,6 +663,7 @@ share the static factory methods).
    (parameter "&lt;expression&gt;")
    (parameter ...)
    (category syntax)
+   (location org.llava)
    (description 
     "A block comment. Recognized by <code>org.llava.lib.LlavaDoc</code>."
 
@@ -1087,26 +1131,31 @@ share the static factory methods).
 
 (-doc-
  (name vector-length)
- (param vector))
+ (param vector)
+ (location org.llava))
 
 (-doc-
  (name vector-ref)
  (param vector)
- (param k))
+ (param k)
+ (location org.llava))
 
 (-doc-
  (name vector-set!)
  (param vector)
  (param k)
- (param obj))
+ (param obj)
+ (location org.llava))
 
 (-doc-
  (name vector->list)
- (param vector))
+ (param vector)
+ (location org.llava))
 
 (-doc-
  (name list->vector)
- (param vector))
+ (param vector)
+ (location org.llava))
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
