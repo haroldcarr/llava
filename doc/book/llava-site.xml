@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+
+<!--
+//
+// Created       : 1999 Dec 29 (Wed) 14:53:37 by Harold Carr.
+// Last Modified : 2004 Aug 25 (Wed) 10:34:38 by Harold Carr.
+//
+-->
+
+<!DOCTYPE book SYSTEM "/usr/local/hc/xml/docbook/docbook-xml-4.3/docbookx.dtd"
+[
+<!ENTITY ch01-QuickStart SYSTEM "ch01-QuickStart.xml">
+<!ENTITY lastModified    SYSTEM "LastModified.txt">
+<!ENTITY license         SYSTEM "License.xml">
+<!ENTITY version         SYSTEM "../VERSION">
+]>
+
+  <book id="llava">
+  <!-- <title>&version;</title> -->
+  <subtitle> 
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="http://llava.org/images/atitlan.jpg"
+      	         format="JPG" scale="100" />
+    </imageobject>
+  </mediaobject>
+  </subtitle> 
+
+  <bookinfo>
+    <legalnotice>
+      <para>llava</para>
+      <para>Lisp + jAVA = lava (but lava.org already taken, thus:
+      llava)</para>
+    </legalnotice>
+  </bookinfo>
+
+<!--
+  <bookinfo>
+    <copyright>
+      <year>2004</year>
+      <holder>Harold Carr</holder>
+    </copyright>
+
+    <legalnotice><para>This work is licensed under the Creative
+        Commons Attribution License. To view a copy of this license,
+        visit http://creativecommons.org/licenses/by/2.0/ or send a
+        letter to Creative Commons, 559 Nathan Abbott Way, Stanford,
+        California 94305, USA.</para></legalnotice>
+  </bookinfo>
+-->
+
+  <!-- External entity refs -->
+  &ch01-QuickStart;
+
+<!--
+  &foreword;
+  &ch01;
+  &ch02;
+  &ch03;
+  &ch04;
+  &ch05;
+  &ch06;
+  &ch07;
+  &ch08;
+  &ch09;
+  &appa;
+  &appb;
+  &appc;
+  &appd;
+  &license;
+  &colo;
+-->
+
+  <appendix id="copyrightAndLicense">
+    <title>Copyright and License</title>
+
+    <para>Copyright 2004 Harold Carr</para>
+
+    <para>&license;</para>
+  </appendix>
+
+  <para>&lastModified;</para>
+
+  </book>
+
+<!-- End of file -->
