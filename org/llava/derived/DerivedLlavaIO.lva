@@ -1,6 +1,6 @@
 ;;;;
 ;;;; Created       : 1999 Dec 18 (Sat) 17:14:40 by Harold Carr.
-;;;; Last Modified : 2004 Dec 18 (Sat) 23:53:48 by Harold Carr.
+;;;; Last Modified : 2005 Feb 19 (Sat) 12:18:10 by Harold Carr.
 ;;;;
 
 (define -read
@@ -15,20 +15,24 @@
 
 (define -write
   (lambda (msg . out)
-    (if (null? out)
-	(-i 'write _%writer msg)
-	(-i 'write _%writer msg (car out)))
+    (cond ((null? out)
+	   (-i 'write _%writer msg)
+	   (-flush))
+	  (else
+	   (-i 'write _%writer msg (car out))
+	   (-flush (car out))))
     msg))
 
 (define -writeln
   (lambda (msg . out)
-    (if (null? out)
-	(begin
-	  (-i 'write _%writer msg)
-	  (-newline))
-	(begin
-	  (-i 'write _%writer msg (car out))
-	  (-newline (car out))))
+    (cond ((null? out)
+	   (-i 'write _%writer msg)
+	   (-newline)
+	   (-flush))
+	  (else
+	   (-i 'write _%writer msg (car out))
+	   (-newline (car out))
+	   (-flush (car out))))
     msg))
 
 (define set-vector-print-length!
@@ -38,9 +42,12 @@
 (define -print
   (lambda (msg . out)
     (let ((n-msg (if (null? msg) "null" msg)))
-      (if (null? out)
-	  (-i 'print (getPrintWriter _%writer) n-msg)
-	  (-i 'print (car out) n-msg)))
+      (cond ((null? out)
+	     (-i 'print (getPrintWriter _%writer) n-msg)
+	     (-flush))
+	    (else
+	     (-i 'print (car out) n-msg)
+	     (-flush (car out)))))
     msg))
 
 (define -println
@@ -56,13 +63,14 @@
 		    null)))
       (if no-args?
 	  (-newline)
-	  (if (null? out)
-	      (begin
-		(-i 'print (getPrintWriter _%writer) n-msg)
-		(-newline))
-	      (begin
-		(-i 'print out n-msg)
-		(-newline out)))))
+	  (cond ((null? out)
+		 (-i 'print (getPrintWriter _%writer) n-msg)
+		 (-newline)
+		 (-flush))
+		(else
+		 (-i 'print out n-msg)
+		 (-newline out)
+		 (-flush out)))))
     (if (pair? msg-and-out) (first msg-and-out) null)))
 
 (define -newline 
