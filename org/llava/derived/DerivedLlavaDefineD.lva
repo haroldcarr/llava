@@ -1,3 +1,12 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
 ;;;;
 ;;;; Created       : 2004 Nov 25 (Thu) 14:56:00 by Harold Carr.
 ;;;; Last Modified : 2004 Dec 07 (Tue) 22:05:52 by Harold Carr.
@@ -22,13 +31,24 @@
 	   (_%error%_ false))
        (try
 	(begin
-	  (print-enter ',name ,@args)
+	  (print-enter ',name ,@(process-args args))
 	  (set! _%result_% (begin ,@body)))
 	(catch (java.lang.Throwable t)
 	 (set! _%error%_ t)
 	 (throw t))
 	(finally
-	 (print-exit _%error%_ _%result_% ',name ,@args))))))
+	 (print-exit _%error%_ _%result_% ',name ,@(process-args args)))))))
+
+(define process-args
+  (lambda (args) 
+    (let ((result '(_%dummy%_)))
+      (do ((a args (cdr a))
+	   (rptr result (begin (setCdr rptr (cons (car a) '()))
+			       (cdr rptr))))
+	  ((not (pair? a))
+	   (if (not (null? a))
+	       (setCdr rptr (cons a '())))
+	   (cdr result))))))
 
 (define print-enter
   (lambda (name . args)
@@ -74,7 +94,11 @@
     (-print ") " ))) ;; READER BUG: ")"
 
 (-comment-
+(load (s+ (user-home) "/.sync/.llava.org/.system/org/llava/impl/runtime/derived/DerivedLlavaDefineD.lva"))
+(define-d (f a n) n)
+(define-d (f a . n) n)
 (define-d a 3)
+(define-d test (lambda (a . opt) (list a opt)))
 (define-d (fact n)
   (cond ((<= n 0)
 	 (error (s+ "fact: illegal argument: " n)))
@@ -89,7 +113,23 @@
 (set-define-d-indent! 3)
 (set-define-d-indent! 1)
 
-)
+(define-d (a n . acc)
+  (if (= n 0)
+      acc
+      (a (- n 1) 
+	 (+ n (first acc))
+	 (* n (second acc)))))
+(a 10 0 1)
 
+(define-d b
+  (lambda args
+    (if (= (first args) 0)
+	(rest args)
+	(b (- (first args) 1)
+	   (+ (first args) (second args))
+	   (* (first args) (third args))))))
+(b 10 0 1)
+
+)
 
 ;;; End of file.
