@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 2000 Jan 11 (Tue) 21:23:51 by Harold Carr.
- * Last Modified : 2004 Dec 14 (Tue) 12:10:46 by Harold Carr.
+ * Last Modified : 2005 Feb 21 (Mon) 17:22:54 by Harold Carr.
  */
 
 package test;
@@ -111,15 +111,15 @@ public class TestTop
 	    // Run the library tests.
 
 	    libTest(libDir + "/cl/Control.lva");
-	    libTest(libDir + "/cl/Macros.lva");
-	    libTest(libDir + "/cl/Symbols.lva");
+	    libTest(libDir + "/cl/Macro.lva");
+	    libTest(libDir + "/cl/Symbol.lva");
 
 	    libTest(libDir + "/Control.lva");
-	    libTest(libDir + "/Lists.lva");
+	    libTest(libDir + "/List.lva");
 	    libTest(libDir + "/Program.lva");
 	    libTest(libDir + "/SimpleRecord.lva");
-	    libTest(libDir + "/Strings.lva");
-	    libTest(libDir + "/Vectors.lva");
+	    libTest(libDir + "/String.lva");
+	    libTest(libDir + "/Vector.lva");
 
 	} catch (Throwable t) {
 	    Test.bad("top", "this should not happen", t);

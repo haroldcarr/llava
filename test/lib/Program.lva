@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 1998 Dec 05 (Sat) 21:41:11 by Harold Carr.
-;;;; Last Modified : 2004 Dec 07 (Tue) 20:39:44 by Harold Carr.
+;;;; Last Modified : 2005 Feb 21 (Mon) 17:00:01 by Harold Carr.
 ;;;;
 
 (import org.llava.lib.test.Test)
@@ -32,7 +32,7 @@
        (-expected- #f "123" 4 0 '(a b)))
 
 (import org.llava.lib.Control)
-(import org.llava.lib.Lists)
+(import org.llava.lib.List)
 
 (define test--expected-
   (lambda (s a b c)

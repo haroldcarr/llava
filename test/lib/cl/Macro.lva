@@ -9,10 +9,10 @@
 
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2004 Dec 07 (Tue) 20:39:12 by Harold Carr.
+;;;; Last Modified : 2005 Feb 21 (Mon) 17:00:44 by Harold Carr.
 ;;;;
 
-(import org.llava.lib.cl.Macros)
+(import org.llava.lib.cl.Macro)
 (import org.llava.lib.test.Test)
 
 (begin-test 'cl/macros/defmacro)

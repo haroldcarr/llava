@@ -19,27 +19,27 @@ PKGDIR		=	org/llava/lib
 
 RESOURCE_FILES	= \
 	$(PKGDIR)/Control.lva \
-	$(PKGDIR)/Exceptions.lva \
-	$(PKGDIR)/Lists.lva \
+	$(PKGDIR)/Exception.lva \
+	$(PKGDIR)/List.lva \
 	$(PKGDIR)/LlavaDoc.lva \
-	$(PKGDIR)/Macros.lva \
+	$(PKGDIR)/Macro.lva \
 	$(PKGDIR)/Program.lva \
 	$(PKGDIR)/SimpleRecord.lva \
-	$(PKGDIR)/Strings.lva \
-	$(PKGDIR)/Threads.lva \
-	$(PKGDIR)/Vectors.lva \
+	$(PKGDIR)/String.lva \
+	$(PKGDIR)/Thread.lva \
+	$(PKGDIR)/Vector.lva \
 	$(PKGDIR)/cl/Control.lva \
-	$(PKGDIR)/cl/Macros.lva \
-	$(PKGDIR)/cl/Sequences.lva \
-	$(PKGDIR)/cl/Symbols.lva \
+	$(PKGDIR)/cl/Macro.lva \
+	$(PKGDIR)/cl/Sequence.lva \
+	$(PKGDIR)/cl/Symbol.lva \
 	$(PKGDIR)/io/DirectoryWalker.lva \
 	$(PKGDIR)/io/FileWalker.lva \
 	$(PKGDIR)/java/Lang.lva \
 	$(PKGDIR)/reflect/Namespace.lva \
 	$(PKGDIR)/reflect/Reflect.lva \
-	$(PKGDIR)/scm/Lists.lva \
-	$(PKGDIR)/scm/Predicates.lva \
-	$(PKGDIR)/scm/Strings.lva \
+	$(PKGDIR)/scm/List.lva \
+	$(PKGDIR)/scm/Predicate.lva \
+	$(PKGDIR)/scm/String.lva \
 	$(PKGDIR)/test/Test.lva \
 	$(PKGDIR)/xml/L2X.lva \
 	$(PKGDIR)/xml/XSLT.lva

@@ -1,6 +1,6 @@
 ;;;;
 ;;;; Created       : 2004 Sep 08 (Wed) 22:06:46 by Harold Carr.
-;;;; Last Modified : 2004 Sep 08 (Wed) 23:48:24 by Harold Carr.
+;;;; Last Modified : 2005 Feb 21 (Mon) 17:13:54 by Harold Carr.
 ;;;;
 
 -doc- for llavadoc only
@@ -81,7 +81,7 @@ generates:
 
 Library file:
 
-(package org.foo.Lists)
+(package org.foo.List)
 
 (-package-
  (description "..."))
@@ -91,8 +91,8 @@ Library file:
 
 generates:
 
-<section id="org.foo.Lists">
-  <title>org.foo.Lists</title>
+<section id="org.foo.List">
+  <title>org.foo.List</title>
   ...description...
   <refentry>...</refentry>
 </section>

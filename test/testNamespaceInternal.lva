@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2000 Oct 21 (Sat) 10:46:48 by Harold Carr.  
-;;;; Last Modified : 2004 Dec 22 (Wed) 16:32:07 by Harold Carr.
+;;;; Last Modified : 2005 Feb 21 (Mon) 17:07:20 by Harold Carr.
 ;;;;
 
 (-comment-
@@ -372,7 +372,7 @@
 			(catch (java.lang.Throwable e) 
 			       (getMessage e)))))
       (-println 'BAD))
-  (if (not (symbol? (org.llava.lib.cl.Symbols.gensym)))
+  (if (not (symbol? (org.llava.lib.cl.Symbol.gensym)))
       (-println 'BAD))
 
   (define (dotimes a) a)

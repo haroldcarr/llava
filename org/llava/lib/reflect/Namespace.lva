@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2004 Aug 27 (Fri) 18:33:43 by Harold Carr.
-;;;; Last Modified : 2004 Dec 03 (Fri) 13:52:29 by Harold Carr.
+;;;; Last Modified : 2005 Feb 21 (Mon) 16:58:40 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.reflect.Namespace)
@@ -19,7 +19,7 @@
 
 (set! _%boot (package org.llava.lib.reflect.Namespace))
 
-(import org.llava.lib.Lists) ; for build-list
+(import org.llava.lib.List) ; for build-list
 
 (-package- 
  (description 

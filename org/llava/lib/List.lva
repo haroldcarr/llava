@@ -9,13 +9,13 @@
 
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2004 Dec 08 (Wed) 10:26:43 by Harold Carr.
+;;;; Last Modified : 2005 Feb 21 (Mon) 16:56:18 by Harold Carr.
 ;;;;
 
-(package org.llava.lib.Lists)
+(package org.llava.lib.List)
 
 (import org.llava.lib.Control)
-(import org.llava.lib.scm.Strings)
+(import org.llava.lib.scm.String)
 
 (-package- (description "Useful list utilities."))
 
@@ -40,7 +40,7 @@
 		 lst))))
 
 (-comment-
-(import org.llava.lib.Lists)
+(import org.llava.lib.List)
 (add-between 'x '(a 34 34.5 "s" #\c))
 )
 
@@ -77,7 +77,7 @@
 )
 
 (-comment-
-(import org.llava.lib.Lists)
+(import org.llava.lib.List)
 (let* ((lst '(1 2 3))
        (terminate? (lambda () (null? lst)))
        (step (lambda () (let ((result (* (car lst) 10)))

@@ -9,10 +9,10 @@
 
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2004 Dec 07 (Tue) 20:39:18 by Harold Carr.
+;;;; Last Modified : 2005 Feb 21 (Mon) 17:00:52 by Harold Carr.
 ;;;;
 
-(import org.llava.lib.cl.Symbols)
+(import org.llava.lib.cl.Symbol)
 (import org.llava.lib.test.Test)
 
 (begin-test 'cl/symbols/gensym)

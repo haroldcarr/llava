@@ -9,10 +9,10 @@
 
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2004 Sep 09 (Thu) 21:13:20 by Harold Carr.
+;;;; Last Modified : 2005 Feb 21 (Mon) 16:55:59 by Harold Carr.
 ;;;;
 
-(package org.llava.lib.Exceptions)
+(package org.llava.lib.Exception)
 
 (-package- (description "Procedures for handling or generating exceptions."))
 
@@ -69,7 +69,7 @@
     (try (thunk) (catch (java.lang.Exception e) '()))))
 
 (-comment-
-(import org.llava.lib.Exceptions)
+(import org.llava.lib.Exception)
 (apply-fail-on-false (lambda (x) (pair? x)) '(x))
 (apply-fail-on-false (lambda (x) (pair? x)) '((x)))
 )

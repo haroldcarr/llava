@@ -9,11 +9,11 @@
 
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2004 Dec 07 (Tue) 20:39:54 by Harold Carr.
+;;;; Last Modified : 2005 Feb 21 (Mon) 17:00:24 by Harold Carr.
 ;;;;
 
 (import org.llava.lib.test.Test)
-(import org.llava.lib.Strings)
+(import org.llava.lib.String)
 
 (begin-test 'strings/list2string-with-space)
 

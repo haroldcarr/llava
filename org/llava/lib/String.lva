@@ -9,12 +9,12 @@
 
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2004 Sep 09 (Thu) 21:18:24 by Harold Carr.
+;;;; Last Modified : 2005 Feb 21 (Mon) 16:57:33 by Harold Carr.
 ;;;;
 
-(package org.llava.lib.Strings)
+(package org.llava.lib.String)
 
-(import org.llava.lib.Lists)
+(import org.llava.lib.List)
 
 (-package- (description "Procedures to manipulate strings."))
 

@@ -9,14 +9,14 @@
 
 ;;;;
 ;;;; Created       : 2000 Feb 10 (Thu) 03:17:11 by Harold Carr.
-;;;; Last Modified : 2004 Dec 12 (Sun) 12:52:53 by Harold Carr.
+;;;; Last Modified : 2005 Feb 21 (Mon) 16:58:47 by Harold Carr.
 ;;;;
 
 ;; Core Java 2 V1 p 209-214
 
 (package org.llava.lib.reflect.Reflect)
 
-(import org.llava.lib.Vectors)
+(import org.llava.lib.Vector)
 
 (-package- (description "Reflective display and equality."))
 

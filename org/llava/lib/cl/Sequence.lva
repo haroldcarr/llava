@@ -9,10 +9,10 @@
 
 ;;;;
 ;;;; Created       : 2004 Jan 13 (Tue) 20:37:33 by Harold Carr.
-;;;; Last Modified : 2004 Nov 27 (Sat) 11:02:29 by Harold Carr.
+;;;; Last Modified : 2005 Feb 21 (Mon) 16:58:15 by Harold Carr.
 ;;;;
 
-(package org.llava.lib.cl.Sequences)
+(package org.llava.lib.cl.Sequence)
 
 (-package- (description "Common LISP sequence procedures."))
 

@@ -9,11 +9,11 @@
 
 ;;;;
 ;;;; Created       : 2000 Feb 10 (Thu) 04:12:22 by Harold Carr.
-;;;; Last Modified : 2004 Dec 14 (Tue) 12:28:29 by Harold Carr.
+;;;; Last Modified : 2005 Feb 21 (Mon) 17:00:33 by Harold Carr.
 ;;;;
 
 (import org.llava.lib.test.Test)
-(import org.llava.lib.Vectors)
+(import org.llava.lib.Vector)
 
 (begin-test 'vectors/vector-map)
 

@@ -9,10 +9,10 @@
 
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2004 Dec 07 (Tue) 18:38:28 by Harold Carr.
+;;;; Last Modified : 2005 Feb 21 (Mon) 16:58:21 by Harold Carr.
 ;;;;
 
-(package org.llava.lib.cl.Symbols)
+(package org.llava.lib.cl.Symbol)
 
 (-package- (description "Common LISP symbols utilities."))
 

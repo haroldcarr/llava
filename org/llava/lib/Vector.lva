@@ -9,10 +9,10 @@
 
 ;;;;
 ;;;; Created       : 2000 Feb 10 (Thu) 21:41:00 by Harold Carr.
-;;;; Last Modified : 2004 Dec 14 (Tue) 12:26:36 by Harold Carr.
+;;;; Last Modified : 2005 Feb 21 (Mon) 16:57:49 by Harold Carr.
 ;;;;
 
-(package org.llava.lib.Vectors)
+(package org.llava.lib.Vector)
 
 (import org.llava.lib.java.Lang)
 

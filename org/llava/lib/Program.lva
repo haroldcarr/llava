@@ -9,12 +9,12 @@
 
 ;;;;
 ;;;; Created       : 1998 Dec 05 (Sat) 21:41:11 by Harold Carr.
-;;;; Last Modified : 2004 Dec 07 (Tue) 18:38:21 by Harold Carr.
+;;;; Last Modified : 2005 Feb 21 (Mon) 16:57:01 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.Program)
 
-(import org.llava.lib.Lists)
+(import org.llava.lib.List)
 
 (-package- (description "Syntax for defining procedures and variables."))
 
@@ -34,7 +34,7 @@
 
 (define-syntax define-with-setter
   (lambda (nameAndArgs . body)
-    (let* ((g (org.llava.lib.cl.Symbols.gensym))
+    (let* ((g (org.llava.lib.cl.Symbol.gensym))
 	   (name (car nameAndArgs))
 	   (args (cdr nameAndArgs))
 	   (setter (string->symbol (s+ "set-" (toString name) "!")))
@@ -64,7 +64,7 @@
 
 (define-syntax define-indirect-variable
   (lambda (name init)
-    (let ((g (org.llava.lib.cl.Symbols.gensym)))
+    (let ((g (org.llava.lib.cl.Symbol.gensym)))
       `(let ((,g ,init))
 	 (define ,name
 	   (lambda x
@@ -127,7 +127,7 @@
 (foo #f "123" 4 0 '(a b))
 
 (getRefListNames (package org.llava.lib.Repl))
-(import org.llava.lib.Lists)
+(import org.llava.lib.List)
 (getRefListNames (package org.llava.lib.Repl))
 (import org.llava.lib.Control)
 (getRefListNames (package org.llava.lib.Repl))

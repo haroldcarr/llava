@@ -9,10 +9,10 @@
 
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2004 Sep 09 (Thu) 21:21:08 by Harold Carr.
+;;;; Last Modified : 2005 Feb 21 (Mon) 16:58:09 by Harold Carr.
 ;;;;
 
-(package org.llava.lib.cl.Macros)
+(package org.llava.lib.cl.Macro)
 
 (-package- (description "Common LISP macros."))
 

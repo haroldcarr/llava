@@ -9,7 +9,7 @@
 
 ;;;
 ;;; Created       : 1999 Dec 25 (Sat) 22:10:35 by Harold Carr.
-;;; Last Modified : 2005 Feb 06 (Sun) 16:49:14 by Harold Carr.
+;;; Last Modified : 2005 Feb 21 (Mon) 17:01:20 by Harold Carr.
 ;;;
 
 ;;(begin
@@ -749,7 +749,7 @@
        (tprintln "*****DISABLED*****"))
       (else
        
-(import org.llava.lib.Threads)
+(import org.llava.lib.Thread)
 
 (define current-time 
   (lambda () 

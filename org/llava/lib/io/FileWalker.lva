@@ -9,14 +9,14 @@
 
 ;;;;
 ;;;; Created       : 2001 Mar 06 (Tue) 15:09:50 by Harold Carr.
-;;;; Last Modified : 2005 Feb 19 (Sat) 12:09:35 by Harold Carr.
+;;;; Last Modified : 2005 Feb 21 (Mon) 16:58:32 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.io.FileWalker)
 
 (import org.llava.lib.SimpleRecord)
 (import org.llava.lib.cl.Control) ; dotimes
-(import org.llava.lib.cl.Symbols) ; gensym
+(import org.llava.lib.cl.Symbol) ; gensym
 
 (-package-
  (description "Generic procedures to walk the contents of a file."))

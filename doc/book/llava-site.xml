@@ -3,7 +3,7 @@
 <!--
 //
 // Created       : 1999 Dec 29 (Wed) 14:53:37 by Harold Carr.
-// Last Modified : 2005 Feb 16 (Wed) 16:20:24 by Harold Carr.
+// Last Modified : 2005 Feb 21 (Mon) 17:13:20 by Harold Carr.
 //
 -->
 
@@ -22,20 +22,20 @@
 <!ENTITY builtins        SYSTEM "../.generated/org/llava/llava.xml">
 
 <!ENTITY lib-control     SYSTEM "../.generated/org/llava/lib/Control.xml">
-<!ENTITY lib-exceptions  SYSTEM "../.generated/org/llava/lib/Exceptions.xml">
-<!ENTITY lib-lists       SYSTEM "../.generated/org/llava/lib/Lists.xml">
+<!ENTITY lib-Exception  SYSTEM "../.generated/org/llava/lib/Exception.xml">
+<!ENTITY lib-List       SYSTEM "../.generated/org/llava/lib/List.xml">
 <!ENTITY lib-llava-doc   SYSTEM "../.generated/org/llava/lib/LlavaDoc.xml">
-<!ENTITY lib-macros      SYSTEM "../.generated/org/llava/lib/Macros.xml">
+<!ENTITY lib-Macro      SYSTEM "../.generated/org/llava/lib/Macro.xml">
 <!ENTITY lib-program     SYSTEM "../.generated/org/llava/lib/Program.xml">
-<!ENTITY lib-strings     SYSTEM "../.generated/org/llava/lib/Strings.xml">
-<!ENTITY lib-threads     SYSTEM "../.generated/org/llava/lib/Threads.xml">
-<!ENTITY lib-vectors     SYSTEM "../.generated/org/llava/lib/Vectors.xml">
+<!ENTITY lib-String     SYSTEM "../.generated/org/llava/lib/String.xml">
+<!ENTITY lib-Thread     SYSTEM "../.generated/org/llava/lib/Thread.xml">
+<!ENTITY lib-Vector     SYSTEM "../.generated/org/llava/lib/Vector.xml">
 
 
 <!ENTITY lib-cl-control SYSTEM "../.generated/org/llava/lib/cl/Control.xml">
-<!ENTITY lib-cl-macros  SYSTEM "../.generated/org/llava/lib/cl/Macros.xml">
-<!ENTITY lib-cl-symbols SYSTEM "../.generated/org/llava/lib/cl/Symbols.xml">
-<!ENTITY lib-cl-sequences SYSTEM "../.generated/org/llava/lib/cl/Sequences.xml">
+<!ENTITY lib-cl-Macro  SYSTEM "../.generated/org/llava/lib/cl/Macro.xml">
+<!ENTITY lib-cl-Symbol SYSTEM "../.generated/org/llava/lib/cl/Symbol.xml">
+<!ENTITY lib-cl-Sequence SYSTEM "../.generated/org/llava/lib/cl/Sequence.xml">
 
 
 <!ENTITY lib-io-directorwalker SYSTEM "../.generated/org/llava/lib/io/DirectoryWalker.xml">
@@ -48,10 +48,10 @@
 <!ENTITY  lib-reflect-reflect SYSTEM "../.generated/org/llava/lib/reflect/Reflect.xml">
 
 
-<!ENTITY lib-scm-lists SYSTEM "../.generated/org/llava/lib/scm/Lists.xml">
-<!ENTITY lib-scm-predicates SYSTEM "../.generated/org/llava/lib/scm/Predicates.xml">
-<!ENTITY lib-scm-strings SYSTEM "../.generated/org/llava/lib/scm/Strings.xml">
-<!ENTITY lib-scm-vectors SYSTEM "../.generated/org/llava/lib/scm/Vectors.xml">
+<!ENTITY lib-scm-List SYSTEM "../.generated/org/llava/lib/scm/List.xml">
+<!ENTITY lib-scm-Predicate SYSTEM "../.generated/org/llava/lib/scm/Predicate.xml">
+<!ENTITY lib-scm-String SYSTEM "../.generated/org/llava/lib/scm/String.xml">
+<!ENTITY lib-scm-Vector SYSTEM "../.generated/org/llava/lib/scm/Vector.xml">
 
 <!ENTITY lib-test-test SYSTEM "../.generated/org/llava/lib/test/Test.xml">
 

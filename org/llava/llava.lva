@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2004 Sep 05 (Sun) 11:27:57 by Harold Carr.
-;;;; Last Modified : 2005 Feb 07 (Mon) 10:30:40 by Harold Carr.
+;;;; Last Modified : 2005 Feb 21 (Mon) 16:59:29 by Harold Carr.
 ;;;;
 
 (-package-
@@ -353,7 +353,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section-
  (name Concurrency)
- (description "Also see <code>org.llava.lib.Threads</code>"))
+ (description "Also see <code>org.llava.lib.Thread</code>"))
 
 (-doc-
  (name synchronized)
@@ -368,7 +368,7 @@
 (-section-
  (name Macros)
  (description
-  "Same as Common LISP. See <code>org.llava.lib.cl.Macros</code>."))
+  "Same as Common LISP. See <code>org.llava.lib.cl.Macro</code>."))
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
