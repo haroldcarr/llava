@@ -9,10 +9,10 @@
 
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2004 Sep 09 (Thu) 21:25:06 by Harold Carr.
+;;;; Last Modified : 2005 Feb 21 (Mon) 16:59:02 by Harold Carr.
 ;;;;
 
-(package org.llava.lib.scm.Predicates)
+(package org.llava.lib.scm.Predicate)
 
 (-package- (description "Scheme type predicates."))
 

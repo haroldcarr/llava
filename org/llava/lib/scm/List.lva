@@ -9,10 +9,10 @@
 
 ;;;;
 ;;;; Created       : 2004 Sep 03 (Fri) 21:11:19 by Harold Carr.
-;;;; Last Modified : 2004 Sep 12 (Sun) 23:58:24 by Harold Carr.
+;;;; Last Modified : 2005 Feb 21 (Mon) 16:58:53 by Harold Carr.
 ;;;;
 
-(package org.llava.lib.scm.Lists)
+(package org.llava.lib.scm.List)
 
 (-package- (description "Scheme list procedures."))
 
