@@ -1,14 +1,15 @@
 /**
  * Created       : 2001 Mar 05 (Mon) 10:55:19 by Harold Carr.
- * Last Modified : 2001 Mar 05 (Mon) 11:52:26 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 14:45:52 by Harold Carr.
  */
 
-package libLava.r1.procedure.primitive.java;
+package lavaProfile.runtime.procedure.primitive.java;
 
 import lava.lang.types.Pair;
-import libLava.r1.Engine;
-import libLava.r1.env.Namespace;
-import libLava.r1.procedure.primitive.PrimitiveProcedure;
+import lava.lang.types.Symbol;
+import lavaProfile.runtime.Engine;
+import lavaProfile.runtime.env.Namespace;
+import lavaProfile.runtime.procedure.primitive.PrimitiveProcedure;
 
 public class PrimPackage
     extends
@@ -33,7 +34,7 @@ public class PrimPackage
     public Object apply (Pair args, Engine engine)
     {
 	checkNumArgs(args, 2);
-	return namespace._package(args.first(), args.second());
+	return namespace._package((Symbol)args.first(), (Symbol)args.second());
     }
 }
 

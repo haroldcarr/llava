@@ -1,15 +1,15 @@
 /**
  * Created       : 1999 Dec 30 (Thu) 16:16:57 by Harold Carr.
- * Last Modified : 2000 Feb 26 (Sat) 22:53:03 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 14:45:01 by Harold Carr.
  */
 
-package libLava.r1.procedure.primitive;
+package lavaProfile.runtime.procedure.primitive;
 
 import lava.lang.types.Pair;
 import lava.lang.types.Procedure;
 import lava.lang.types.Symbol;
-import libLava.r1.Engine;
-import libLava.r1.FR1;
+import lavaProfile.runtime.Engine;
+import lavaProfile.runtime.FR;
 
 public abstract class PrimitiveProcedure
     implements
@@ -31,7 +31,7 @@ public abstract class PrimitiveProcedure
 	if (((n == 0) && (args != null)) ||
 	    ((n != 0) && ((args == null) || (args.length() != n))))
         {
-		throw FR1.newWrongNumberOfArgumentsException(getName());
+		throw FR.newWrongNumberOfArgumentsException(getName());
 	}
     }
 

@@ -1,13 +1,13 @@
 /**
  * Created       : 1999 Dec 23 (Thu) 18:22:20 by Harold Carr.
- * Last Modified : 2000 Jan 29 (Sat) 15:38:51 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 14:42:14 by Harold Carr.
  */
 
-package libLava.r1.code;
+package lavaProfile.runtime.code;
 
-import libLava.r1.env.ActivationFrame;
-import libLava.r1.Engine;
-import libLava.r1.FR1;
+import lavaProfile.runtime.env.ActivationFrame;
+import lavaProfile.runtime.Engine;
+import lavaProfile.runtime.FR;
 
 public class CodeLambda
     extends Code
@@ -44,7 +44,7 @@ public class CodeLambda
 
     public Object run (ActivationFrame frame, Engine engine)
     {
-	return FR1.newLambda(numRequired, isDotted, codeSequence, frame);
+	return FR.newLambda(numRequired, isDotted, codeSequence, frame);
     }
 }
 

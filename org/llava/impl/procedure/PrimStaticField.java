@@ -1,17 +1,17 @@
 /**
  * Created       : 1999 Dec 30 (Thu) 18:17:06 by Harold Carr.
- * Last Modified : 2000 Feb 16 (Wed) 21:36:04 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:19:44 by Harold Carr.
  */
 
-package libLava.r1.procedure.primitive.lava;
+package lavaProfile.runtime.procedure.primitive.lava;
 
-import lava.F;
+import lavaProfile.F;
 import lava.lang.types.Pair;
 import lava.lang.types.Symbol;
-import libLava.r1.Engine;
-import libLava.r1.procedure.generic.DI;
-import libLava.r1.procedure.generic.GenericProcedureImpl; // REVISIT
-import libLava.r1.procedure.primitive.PrimitiveProcedure;
+import lavaProfile.runtime.Engine;
+import lavaProfile.runtime.procedure.generic.DI;
+import lavaProfile.runtime.procedure.generic.GenericProcedureImpl; // REVISIT
+import lavaProfile.runtime.procedure.primitive.PrimitiveProcedure;
 
 public class PrimStaticField
     extends

@@ -1,12 +1,12 @@
 /**
  * Created       : 2000 Jan 10 (Mon) 02:55:04 by Harold Carr.
- * Last Modified : 2000 Jan 29 (Sat) 15:38:59 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 14:42:31 by Harold Carr.
  */
 
-package libLava.r1.code;
+package lavaProfile.runtime.code;
 
-import libLava.r1.env.ActivationFrame;
-import libLava.r1.Engine;
+import lavaProfile.runtime.env.ActivationFrame;
+import lavaProfile.runtime.Engine;
 
 public class CodeSchemeIf
     extends CodeIf

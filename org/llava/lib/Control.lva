@@ -1,6 +1,6 @@
 ;;;;
 ;;;; Created       : 1998 Dec 05 (Sat) 21:41:11 by Harold Carr.
-;;;; Last Modified : 2000 Jan 21 (Fri) 23:30:19 by Harold Carr.
+;;;; Last Modified : 2000 Oct 29 (Sun) 21:43:31 by .
 ;;;;
 
 (require 'cl/symbols/gensym)
@@ -17,11 +17,11 @@
 	 (cond ,@(map (lambda (case) 
 			(if (eq? (car case) 'else)
 			    case
-			    `((or ,@(.%instanceof-ify g_object (car case)))
+			    `((or ,@(_%instanceof-ify g_object (car case)))
 			      ,@(cdr case))))
 		      cases))))))
 
-(define .%instanceof-ify
+(define _%instanceof-ify
   (lambda (object types)
     (map (lambda (type) `(instanceof ,object ',type)) types)))
 

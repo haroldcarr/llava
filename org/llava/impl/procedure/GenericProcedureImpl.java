@@ -1,17 +1,17 @@
 /**
  * Created       : 1999 Dec 28 (Tue) 03:42:27 by Harold Carr.
- * Last Modified : 2000 Feb 26 (Sat) 22:53:06 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:23:57 by Harold Carr.
  */
 
-package libLava.r1.procedure.generic;
+package lavaProfile.runtime.procedure.generic;
 
-import lava.F;
+import lavaProfile.F;
 import lava.lang.types.Pair;
-import lava.util.List;
-import libLava.r1.Engine;
-import libLava.r1.FR1;
-import libLava.r1.procedure.Lambda;
-import libLava.r1.procedure.generic.DI;
+import lavaProfile.util.List;
+import lavaProfile.runtime.Engine;
+import lavaProfile.runtime.FR;
+import lavaProfile.runtime.procedure.Lambda;
+import lavaProfile.runtime.procedure.generic.DI;
 
 public class GenericProcedureImpl
     implements
@@ -29,7 +29,7 @@ public class GenericProcedureImpl
     {
 	this.name = name;
 	if (wrapJavaPrimitive == null) {
-	    wrapJavaPrimitive = FR1.newWrapJavaPrimitive();
+	    wrapJavaPrimitive = FR.newWrapJavaPrimitive();
 	}
     }
 
@@ -70,7 +70,7 @@ public class GenericProcedureImpl
 	    if (getDefaultLambda() != null) {
 		return getDefaultLambda().apply(args, engine);
 	    } else {
-		throw FR1.newUndefinedIdException(name); // REVISIT
+		throw FR.newUndefinedIdException(name); // REVISIT
 	    }
 	} catch (ThreadDeath td) {
 	    // REVISIT - do not wrap so it shows up in automatic
@@ -97,7 +97,7 @@ public class GenericProcedureImpl
 	if (((n == 0) && (args != null)) ||
 	    ((n != 0) && ((args == null) || (args.length() != n))))
         {
-		throw FR1.newWrongNumberOfArgumentsException(getName());
+		throw FR.newWrongNumberOfArgumentsException(getName());
 	}
     }
 
@@ -114,8 +114,14 @@ public class GenericProcedureImpl
 
     public String toString ()
     {
-	// REVISIT - duplicate of code in LambdaImpl.
-	return "{" + getClass().getName() + " " + name + "}";
+	// REVISIT: duplicated in GenericProcedureImpl, LambdaImpl, Syntax
+	String result = "{" + getClass().getName() + " " + name;
+	result += 
+	    ((getDefaultLambda() != null) 
+	     ? " " + getDefaultLambda().toString()
+	     : "")
+	    + "}";
+	return result;
     }
 }
 

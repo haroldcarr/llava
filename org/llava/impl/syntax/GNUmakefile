@@ -1,12 +1,12 @@
 #
 # Created       : 2000 Jan 07 (Fri) 05:22:51 by Harold Carr.
-# Last Modified : 2000 Jan 29 (Sat) 15:53:06 by Harold Carr.
+# Last Modified : 2001 Mar 26 (Mon) 15:01:48 by Harold Carr.
 #
 
 TOPDIR		=	../../..
 
-PACKAGE		=	libLava.r1.syntax
-PKGDIR		=	libLava/r1/syntax
+PACKAGE		=	lavaProfile.runtime.syntax
+PKGDIR		=	lavaProfile/runtime/syntax
 
 FILES_java	= \
 	$(PKGDIR)/Syntax.java \

@@ -1,14 +1,14 @@
 /**
  * Created       : 1999 Dec 30 (Thu) 19:23:33 by Harold Carr.
- * Last Modified : 2000 Feb 21 (Mon) 01:40:23 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:19:47 by Harold Carr.
  */
 
-package libLava.r1.procedure.primitive.lava.opt;
+package lavaProfile.runtime.procedure.primitive.lava.opt;
 
-import lava.F;
+import lavaProfile.F;
 import lava.lang.types.Pair;
-import libLava.r1.Engine;
-import libLava.r1.procedure.primitive.PrimitiveProcedure;
+import lavaProfile.runtime.Engine;
+import lavaProfile.runtime.procedure.primitive.PrimitiveProcedure;
 
 public class PrimNullP
     extends

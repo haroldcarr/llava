@@ -1,6 +1,6 @@
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2000 Jan 22 (Sat) 17:11:01 by Harold Carr.
+;;;; Last Modified : 2001 Mar 07 (Wed) 14:54:35 by Harold Carr.
 ;;;;
 
 (require 'test/test)
@@ -25,9 +25,9 @@
 
 (end-test 'cl/control/dotimes)
 
-(.comment
+(_comment
 (require 'cl/control/dotimes)
-(macroexpand '(dotimes (i (+ 2 3)) (.print i)))
+(macroexpand '(dotimes (i (+ 2 3)) (_println i)))
 )
 
 ;;; End of file.

@@ -1,9 +1,9 @@
 /**
  * Created       : 1999 Dec 21 (Tue) 00:12:36 by Harold Carr.
- * Last Modified : 2000 Jan 29 (Sat) 15:37:43 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 14:38:54 by Harold Carr.
  */
 
-package libLava.c1;
+package lavaProfile.compiler;
 
 import lava.lang.types.Pair;
 import lava.lang.types.Symbol;

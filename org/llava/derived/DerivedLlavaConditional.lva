@@ -1,12 +1,12 @@
 ;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2000 Jan 21 (Fri) 20:43:05 by Harold Carr.
+;;;; Last Modified : 2000 Oct 29 (Sun) 21:54:49 by .
 ;;;;
 
 ;;; Safe car and cdr.
 
-(define .%scar (lambda (x) (if (null? x) '() (car x))))
-(define .%scdr (lambda (x) (if (null? x) '() (cdr x))))
+(define _%scar (lambda (x) (if (null? x) '() (car x))))
+(define _%scdr (lambda (x) (if (null? x) '() (cdr x))))
 
 ;; REVISIT  handling of ==>
 ;; REVISIT collapse cadr s
@@ -15,20 +15,20 @@
   (lambda args  
     (if (null? args) 
 	false 
-	(if (equal? (.%scar (.%scar args)) 'else) 
-	    (cons 'begin (.%scdr (.%scar args))) 
-	    (if (equal? (.%scar (.%scdr (.%scar args))) '=>) 
-		(list '(lambda (x e c) (.if x (e x) (c))) 
-		      (.%scar (.%scar args)) 
-		      (.%scar (.%scdr (.%scdr (.%scar args)))) 
-		      (cons 'lambda (list () (cons 'cond (.%scdr args))))) 
-		(if (null? (.%scdr (.%scar args))) 
-		    (list '(lambda (x c) (.if x x (c))) 
-			  (.%scar (.%scar args)) 
-			  (cons 'lambda (list () (cons 'cond (.%scdr args))))) 
-		    (list '.if (.%scar (.%scar args)) 
-			  (cons 'begin (.%scdr (.%scar args))) 
-			  (cons 'cond (.%scdr args)))))))))
+	(if (equal? (_%scar (_%scar args)) 'else) 
+	    (cons 'begin (_%scdr (_%scar args))) 
+	    (if (equal? (_%scar (_%scdr (_%scar args))) '=>) 
+		(list '(lambda (x e c) (_if x (e x) (c))) 
+		      (_%scar (_%scar args)) 
+		      (_%scar (_%scdr (_%scdr (_%scar args)))) 
+		      (cons 'lambda (list () (cons 'cond (_%scdr args))))) 
+		(if (null? (_%scdr (_%scar args))) 
+		    (list '(lambda (x c) (_if x x (c))) 
+			  (_%scar (_%scar args)) 
+			  (cons 'lambda (list () (cons 'cond (_%scdr args))))) 
+		    (list '_if (_%scar (_%scar args)) 
+			  (cons 'begin (_%scdr (_%scar args))) 
+			  (cons 'cond (_%scdr args)))))))))
 
 (define-syntax or
   (lambda args
@@ -40,7 +40,7 @@
   (lambda args
     (cond ((null? args) true)
 	  ((null? (cdr args)) (car args))
-	  (else (list '.if (car args) (cons 'and (cdr args)) false)))))
+	  (else (list '_if (car args) (cons 'and (cdr args)) false)))))
 
 ;;; End of file.
 

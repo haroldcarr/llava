@@ -1,12 +1,12 @@
 #
 # Created       : 1999 Dec 28 (Tue) 04:50:52 by Harold Carr.
-# Last Modified : 2000 Jan 29 (Sat) 15:52:31 by Harold Carr.
+# Last Modified : 2001 Mar 26 (Mon) 14:58:45 by Harold Carr.
 #
 
 TOPDIR		=	../../../..
 
-PACKAGE		=	libLava.r1.procedure.generic
-PKGDIR		=	libLava/r1/procedure/generic
+PACKAGE		=	lavaProfile.runtime.procedure.generic
+PKGDIR		=	lavaProfile/runtime/procedure/generic
 
 FILES_java	= \
 	$(PKGDIR)/DI.java \

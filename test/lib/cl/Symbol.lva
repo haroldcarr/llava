@@ -1,6 +1,6 @@
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2000 Jan 25 (Tue) 17:49:00 by Harold Carr.
+;;;; Last Modified : 2000 Oct 29 (Sun) 22:01:02 by .
 ;;;;
 
 (require 'test/test)
@@ -13,20 +13,20 @@
 (define this-gensym '())
 
 (check "gensym0"
-       ".%_G_0"
+       "_%_G_0"
        (toString (set! this-gensym (gensym))))
 
 (check "gensym1"
        false
-       (eq? '.%_G_0 this-gensym))
+       (eq? '_%_G_0 this-gensym))
 
 (check "gentemp2"
-       ".%_G_1"
+       "_%_G_1"
        (toString (set! this-gensym (gentemp))))
 
 (check "gentemp2.1"
        true
-       (eq? '.%_G_1 this-gensym))
+       (eq? '_%_G_1 this-gensym))
 
 (check "gensym3"
        "gensym-test-2"

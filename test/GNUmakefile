@@ -1,6 +1,6 @@
 #
 # Created       : 1999 Dec 18 (Sat) 16:15:20 by Harold Carr.
-# Last Modified : 2000 Oct 23 (Mon) 18:06:53 by .
+# Last Modified : 2001 Jul 20 (Fri) 01:26:43 by Harold Carr.
 #
 
 TOPDIR		=	..
@@ -15,14 +15,13 @@ PKGDIR		=	testLava
 CLIENT		=	$(PACKAGE).Test
 
 FILES_java	= \
-	$(PKGDIR)/Namespace.java \
 	$(PKGDIR)/Test.java \
 	$(PKGDIR)/TestCompilerAndEngine.java \
 	$(PKGDIR)/TestEnv.java \
 	$(PKGDIR)/TestGeneric.java \
 	$(PKGDIR)/TestReader.java \
 	$(PKGDIR)/TestReflection.java \
-	$(PKGDIR)/TestTop.java 
+	$(PKGDIR)/TestTop.java
 
 all :: classes
 

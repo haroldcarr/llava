@@ -1,16 +1,17 @@
 /**
  * Created       : 1999 Dec 25 (Sat) 19:08:58 by Harold Carr.
- * Last Modified : 2000 Feb 17 (Thu) 00:38:42 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:28:53 by Harold Carr.
  */
 
-package libLava.r1.env;
+package lavaProfile.runtime.env;
 
-import lava.F;
+import lavaProfile.F;
+import lava.Repl;
 import lava.lang.types.Procedure;
 import lava.lang.types.Symbol;
-import libLava.rt.EnvironmentTopLevel;
-import libLava.rt.FR;
-import libLava.rt.UndefinedIdHandler;
+import lava.runtime.EnvironmentTopLevel;
+import lavaProfile.runtime.FR;
+import lava.runtime.UndefinedIdHandler;
 
 public class EnvironmentTopLevelImpl 
     implements
@@ -26,9 +27,9 @@ public class EnvironmentTopLevelImpl
     {
     }
 
-    private EnvironmentTopLevelImpl (int size)
+    public EnvironmentTopLevelImpl (int size)
     {
-	this.undefinedIdHandler = FR.newUndefinedIdHandler();
+	undefinedIdHandler = FR.newUndefinedIdHandler();
 	values = new Object[size];
 	fillWithUndefined(values, 0, size);
     }
@@ -97,6 +98,15 @@ public class EnvironmentTopLevelImpl
     {
 	return undefinedIdHandler = handler;
     }
+
+    /**
+     * Not used in this version.
+     */
+    public Repl setRepl (Repl repl) 
+    {
+	return repl;
+    }
+	
 
     public String toString ()
     {

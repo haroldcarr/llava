@@ -1,11 +1,23 @@
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2000 Feb 06 (Sun) 22:18:29 by Harold Carr.
+;;;; Last Modified : 2001 Mar 13 (Tue) 09:11:20 by Harold Carr.
 ;;;;
 
 (require 'cl/symbols/gensym)
 
+(_comment
+(package cl.control dotimes)
+
+(import cl.symbols.gensym)
+)
+
 ;; TODO - missing result
+
+;; REVISIT - you must fully qualify gensym since only
+;; the macro will be imported.  When the macro runs in a different
+;; package, that package will not reference the gensym package.
+;; You still need to import gensym here to make sure the package is loaded
+;; so its fully qualified reference is defined.
 
 (define-syntax dotimes
   (lambda (iAndStop . body)

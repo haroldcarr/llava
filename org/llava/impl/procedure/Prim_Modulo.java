@@ -26,10 +26,9 @@ public class Prim_Modulo
     public Object apply (Pair args, Engine engine)
     {
 	checkNumArgs(args, 2);
-	return
-	    ((Integer)args.car()).intValue() 
-	    % 
-	    ((Integer)args.cadr()).intValue();
+	return F.newInteger(((Integer)args.car()).intValue() 
+			    % 
+			    ((Integer)args.cadr()).intValue());
 	    
     }
 }

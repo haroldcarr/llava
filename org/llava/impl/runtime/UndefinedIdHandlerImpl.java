@@ -1,14 +1,14 @@
 /**
  * Created       : 1999 Dec 28 (Tue) 00:27:53 by Harold Carr.
- * Last Modified : 2000 Jan 29 (Sat) 15:39:22 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 14:43:38 by Harold Carr.
  */
 
-package libLava.r1.env;
+package lavaProfile.runtime.env;
 
 import lava.lang.types.Symbol;
-import libLava.rt.EnvironmentTopLevel;
-import libLava.r1.FR1;
-import libLava.rt.UndefinedIdHandler;
+import lava.runtime.EnvironmentTopLevel;
+import lavaProfile.runtime.FR;
+import lava.runtime.UndefinedIdHandler;
 
 public class UndefinedIdHandlerImpl
     implements
@@ -30,7 +30,7 @@ public class UndefinedIdHandlerImpl
 
     public Object handle (EnvironmentTopLevel env, Symbol identifier)
     {
-	throw FR1.newUndefinedIdException(identifier);
+	throw FR.newUndefinedIdException(identifier);
     }
 }
 

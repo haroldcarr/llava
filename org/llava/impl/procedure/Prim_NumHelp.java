@@ -4,9 +4,9 @@
  * @author Modified by Timothy J. Hickey, http://www.cs.brandeis.edu/~tim
 **/
 
-package libLava.r1.procedure.primitive.java;
+package lavaProfile.runtime.procedure.primitive.java;
 
-import lava.F;
+import lavaProfile.F;
 import lava.lang.types.Pair;
 
 public class Prim_NumHelp

@@ -1,24 +1,24 @@
 /**
  * Created       : 1999 Dec 23 (Thu) 03:42:10 by Harold Carr.
- * Last Modified : 2000 Feb 21 (Mon) 07:31:28 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:23:46 by Harold Carr.
  */
 
-package libLava.c1;
+package lavaProfile.compiler;
 
-import lava.F;
+import lavaProfile.F;
 import lava.lang.types.Pair;
 import lava.lang.types.Symbol;
-import lava.util.List;
-import libLava.co.Compiler;
-import libLava.c1.EnvironmentLexical;
-import libLava.rt.LavaRuntime;
-import libLava.r1.FR1;
-import libLava.r1.code.Code;
-import libLava.r1.syntax.Syntax;
+import lavaProfile.util.List;
+import lava.compiler.Compiler;
+import lavaProfile.compiler.EnvironmentLexical;
+import lava.runtime.LavaRuntime;
+import lavaProfile.runtime.FR;
+import lavaProfile.runtime.code.Code;
+import lavaProfile.runtime.syntax.Syntax;
 
 // REVISIT - coupling just for speed
-import libLava.r1.Engine;
-import libLava.r1.env.ActivationFrame;
+import lavaProfile.runtime.Engine;
+import lavaProfile.runtime.env.ActivationFrame;
 
 // REVISIT: Add syntax checking
 
@@ -44,16 +44,16 @@ public class CompilerImpl
     public Compiler newCompiler ()
     {
 	CompilerImpl instance = new CompilerImpl();
-	instance.environment = FC1.newEnvironmentLexical(null);
+	instance.environment = FC.newEnvironmentLexical(null);
 
 	instance.ASSIGNEMENT_SYMBOL    = F.newSymbol("set!");
 	instance.BEGIN_SYMBOL          = F.newSymbol("begin");
 	instance.DEFINE_SYMBOL         = F.newSymbol("define");
-	instance.DEFGENINTERNAL_SYMBOL = F.newSymbol(".%defGenInternal");
+	instance.DEFGENINTERNAL_SYMBOL = F.newSymbol("_%defGenInternal");
 	instance.IF_SYMBOL             = F.newSymbol("if");
 	instance.LAMBDA_SYMBOL         = F.newSymbol("lambda");
 	instance.QUOTE_SYMBOL          = F.newSymbol("quote");
-	instance.SCHEME_IF_SYMBOL      = F.newSymbol(".if");
+	instance.SCHEME_IF_SYMBOL      = F.newSymbol("_if");
 
 	return instance;
     }
@@ -112,7 +112,7 @@ public class CompilerImpl
     {
 	Code procCode = compile(x.car(), env, runtime);
 	Code argsCode  = compileApplicationArgs((Pair)x.cdr(), env, runtime);
-	return FR1.newCodeApplication(x, procCode, argsCode);
+	return FR.newCodeApplication(x, procCode, argsCode);
     }
 
     public Code compileApplicationArgs (Pair args, EnvironmentLexical env, LavaRuntime runtime)
@@ -126,7 +126,7 @@ public class CompilerImpl
 	    Code codeFirst = compile(args.car(), env, runtime);
 	    Pair rest = (Pair)args.cdr();
 	    Code codeRest = compileApplicationArgs(rest, env, runtime);
-	    return FR1.newCodeApplicationArgs(args, codeFirst, codeRest);
+	    return FR.newCodeApplicationArgs(args, codeFirst, codeRest);
 	}
 
 	Pair allArgs = args;
@@ -185,11 +185,11 @@ public class CompilerImpl
 	    int level = ((EnvironmentLexical.LocalVariable)kind).getLevel();
 	    int slot  = ((EnvironmentLexical.LocalVariable)kind).getSlot();
 	    if (level == 0) {
-		return FR1.newCodeAssignment(x, slot, codeValue);
+		return FR.newCodeAssignment(x, slot, codeValue);
 	    }
-	    return FR1.newCodeAssignmentDeep(x, level, slot, codeValue);
+	    return FR.newCodeAssignmentDeep(x, level, slot, codeValue);
 	}
-	return FR1.newCodeAssignmentTopLevel(x, identifier, codeValue);
+	return FR.newCodeAssignmentTopLevel(x, identifier, codeValue);
     }
 
     public Code compileDefine (Pair x, EnvironmentLexical env, LavaRuntime runtime)
@@ -200,10 +200,10 @@ public class CompilerImpl
 	if (nameOrNameAndParms instanceof Symbol) {
 	    identifier = (Symbol) nameOrNameAndParms;
 	    Code codeValue = compile(((Pair)rest.cdr()).car(), env, runtime);
-	    return FR1.newCodeAssignmentTopLevel(x, identifier, codeValue);
+	    return FR.newCodeAssignmentTopLevel(x, identifier, codeValue);
 	} else {
 	    // Compiles it as:
-	    // (begin (define x (lambda () ...)) (.%defGenInternal x))
+	    // (begin (define x (lambda () ...)) (_%defGenInternal x))
 	    Pair nameAndParms = (Pair) nameOrNameAndParms;
 	    identifier = (Symbol) nameAndParms.car();
 	    Object parms = nameAndParms.cdr();
@@ -230,9 +230,9 @@ public class CompilerImpl
 	              compileLiteral(null, null);
 
 	if (isScheme) {
-	    return FR1.newCodeSchemeIf(x, testCode, thenCode, elseCode);
+	    return FR.newCodeSchemeIf(x, testCode, thenCode, elseCode);
 	}
-	return FR1.newCodeIf(x, testCode, thenCode, elseCode);
+	return FR.newCodeIf(x, testCode, thenCode, elseCode);
     }
 
     public Code compileLambda (Pair x, EnvironmentLexical env, LavaRuntime runtime)
@@ -270,12 +270,12 @@ public class CompilerImpl
 
 	EnvironmentLexical lambdaEnv = env.extend(parameters);
 	Code codeSequence = compileSequenceAux(body, lambdaEnv, runtime);
-	return FR1.newCodeLambda(x, numRequired, isDotted, codeSequence);
+	return FR.newCodeLambda(x, numRequired, isDotted, codeSequence);
     }
 
     public Code compileLiteral (Object source, Object x)
     {
-	return FR1.newCodeLiteral(source, x);
+	return FR.newCodeLiteral(source, x);
     }
 
     public Code compileReference (Symbol x, EnvironmentLexical env, LavaRuntime runtime)
@@ -285,11 +285,11 @@ public class CompilerImpl
 	    int level = ((EnvironmentLexical.LocalVariable)kind).getLevel();
 	    int slot  = ((EnvironmentLexical.LocalVariable)kind).getSlot();
 	    if (level == 0) {
-		return FR1.newCodeReference(x, slot);
+		return FR.newCodeReference(x, slot);
 	    }
-	    return FR1.newCodeReferenceDeep(x, level, slot);
+	    return FR.newCodeReferenceDeep(x, level, slot);
 	}
-	return FR1.newCodeReferenceTopLevel(x);
+	return FR.newCodeReferenceTopLevel(x);
     }
 
     public Code compileSequence (Pair x, EnvironmentLexical env, LavaRuntime runtime)
@@ -309,7 +309,7 @@ public class CompilerImpl
 	    // (begin e1 ... en)
 	    Code codeFirst =compile(exprs.car(), env, runtime);
 	    Code codeRest  =compileSequenceAux((Pair)exprs.cdr(), env, runtime);
-	    return FR1.newCodeSequence(exprs, codeFirst, codeRest);
+	    return FR.newCodeSequence(exprs, codeFirst, codeRest);
 	}
     }
 }

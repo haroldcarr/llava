@@ -1,15 +1,15 @@
 /**
  * Created       : 1999 Dec 23 (Thu) 18:36:42 by Harold Carr.
- * Last Modified : 2000 Feb 20 (Sun) 23:22:05 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:19:10 by Harold Carr.
  */
 
-package libLava.r1.procedure.primitive.java.opt;
+package lavaProfile.runtime.procedure.primitive.java.opt;
 
-import lava.F;
+import lavaProfile.F;
 import lava.lang.types.Pair;
 import lava.lang.types.Symbol;
-import libLava.r1.Engine;
-import libLava.r1.procedure.generic.GenericProcedureImpl;
+import lavaProfile.runtime.Engine;
+import lavaProfile.runtime.procedure.generic.GenericProcedureImpl;
 
 public class PrimNot
     extends

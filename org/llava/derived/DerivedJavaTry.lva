@@ -1,16 +1,16 @@
 ;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2000 Jan 21 (Fri) 20:42:54 by Harold Carr.
+;;;; Last Modified : 2000 Oct 29 (Sun) 21:53:38 by .
 ;;;;
 
 ;;; REVISIT - gensym let vars
 
 (define-syntax try
   (lambda exprs-catch-finally
-    (let ((tryExprs     (.%getTryExpressions     exprs-catch-finally))
-	  (catchClauses (.%getCatchClauses       exprs-catch-finally))
-	  (finallyExprs (.%getFinallyExpressions exprs-catch-finally)))
-      `(.%try
+    (let ((tryExprs     (_%getTryExpressions     exprs-catch-finally))
+	  (catchClauses (_%getCatchClauses       exprs-catch-finally))
+	  (finallyExprs (_%getFinallyExpressions exprs-catch-finally)))
+      `(_%try
 	(lambda () ,@tryExprs)
 	(lambda (t)
 	  (let ((g2 (if (instanceof t 'lava.lang.exceptions.LavaException)
@@ -20,8 +20,8 @@
 		  (else (throw t)))))
 	(lambda () ,@finallyExprs)))))
 
-(define (.%getTryExpressions exprs)
-  (.%appendResults (lambda (x) (if (or (not (pair? x)) ; ref ok
+(define (_%getTryExpressions exprs)
+  (_%appendResults (lambda (x) (if (or (not (pair? x)) ; ref ok
 				       (and (not (eq? (car x) 'catch))
 					    (not (eq? (car x) 'finally))))
 				   ;;  extra list level for appendResults
@@ -29,16 +29,16 @@
 				   '()))
 		   exprs))
 
-(define (.%getCatchClauses catch-finally)
-  (.%appendResults (lambda (x) (if (and (pair? x)
+(define (_%getCatchClauses catch-finally)
+  (_%appendResults (lambda (x) (if (and (pair? x)
 					(eq? (car x) 'catch))
 				   `(((instanceof g2 ',(car (cadr x)))
 				      (let ((,(cadr (cadr x)) g2)) ,@(cddr x))))
 				   '()))
 		   catch-finally))
 
-(define (.%getFinallyExpressions catch-finally)
-  (.%appendResults (lambda (x) (if (and (pair? x)
+(define (_%getFinallyExpressions catch-finally)
+  (_%appendResults (lambda (x) (if (and (pair? x)
 					(eq? (car x) 'finally))
 				   (cdr x)
 				   '()))
@@ -46,7 +46,7 @@
 
 ;; removes empty lists
 
-(define (.%appendResults proc lst)
+(define (_%appendResults proc lst)
   (apply append (map proc lst)))
 
 ;;; End of file.

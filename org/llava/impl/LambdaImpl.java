@@ -1,16 +1,18 @@
 /**
  * Created       : 1999 Dec 23 (Thu) 18:36:42 by Harold Carr.
- * Last Modified : 2000 Feb 11 (Fri) 06:16:09 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:23:55 by Harold Carr.
  */
 
-package libLava.r1.procedure;
+package lavaProfile.runtime.procedure;
 
-import lava.F;
+import lavaProfile.F;
 import lava.lang.types.Pair;
-import lava.util.List;
-import libLava.r1.code.Code;
-import libLava.r1.env.ActivationFrame;
-import libLava.r1.Engine;
+import lavaProfile.util.List;
+import lava.runtime.EnvironmentTopLevel;
+import lavaProfile.runtime.code.Code;
+import lavaProfile.runtime.env.ActivationFrame;
+import lavaProfile.runtime.env.Namespace;
+import lavaProfile.runtime.Engine;
 
 public class LambdaImpl
     implements
@@ -21,6 +23,7 @@ public class LambdaImpl
     private boolean         isDotted;
     private Code            code;
     private ActivationFrame savedFrame;
+    private Namespace       namespace;
 
     public LambdaImpl ()
     {
@@ -36,6 +39,20 @@ public class LambdaImpl
 	this.isDotted = isDotted;
 	this.code = code;
 	this.savedFrame = savedFrame;
+	// If the frame is associated with a namespace, use it.
+	// This takes care of LET being expanded inside during runtime.
+	// The resulting LAMBDAs need to be created in the saved namespace,
+	// not the current runtime namespace (which could be
+	// a wrong package).
+	this.namespace = savedFrame.getNamespace();
+	if (namespace == null) {
+	    // This is the usual case of creating lambdas during load.
+	    EnvironmentTopLevel env = savedFrame.getEnvironmentTopLevel();
+	    this.namespace = 
+		env instanceof Namespace 
+		? ((Namespace)env).getCurrentNamespace()
+		: null;
+	}
     }
 
     public Lambda newLambda (int numRequired,
@@ -60,7 +77,7 @@ public class LambdaImpl
 	} else if (isDotted) {
 	    args = collectDottedArgs(numRequired, args);
 	}
-	return engine.tailCall(code, savedFrame.extend(args));
+	return engine.tailCall(code, savedFrame.extend(args, namespace));
     }
 
     public String getName ()
@@ -80,8 +97,12 @@ public class LambdaImpl
 
     public String toString ()
     {
-	// REVISIT - duplicate of code in Syntax.
-	return "{" + getClass().getName() + " " + name + "}";
+	// REVISIT: duplicated in GenericProcedureImpl, LambdaImpl, Syntax
+	// REVISIT - not quite - need to update to namespace.
+	String result = "{" + getClass().getName() + " " + name;
+	result +=
+	    ((namespace != null) ? " " + namespace.toString() : "") + "}";
+	return result;
     }
 
     private Pair collectDottedArgs (int numRequired, Pair args) 

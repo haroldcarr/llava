@@ -1,9 +1,9 @@
 /**
  * Created       : 1999 Dec 28 (Tue) 00:27:53 by Harold Carr.
- * Last Modified : 2000 Jan 10 (Mon) 18:43:13 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 14:07:21 by Harold Carr.
  */
 
-package libLava.rt;
+package lava.runtime;
 
 import lava.lang.types.Symbol;
 

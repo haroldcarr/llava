@@ -1,10 +1,18 @@
 ;;;;
 ;;;; Created       : 2000 Jan 24 (Mon) 20:42:21 by Harold Carr.
-;;;; Last Modified : 2000 Jan 24 (Mon) 20:42:30 by Harold Carr.
+;;;; Last Modified : 2001 Mar 10 (Sat) 19:52:20 by Harold Carr.
 ;;;;
 
 (define-syntax synchronized
   (lambda (lock . body)
-    `(.%synchronized ,lock (lambda () ,@body))))
+    `(_%synchronized ,lock (lambda () ,@body))))
+
+(define-syntax import
+  (lambda (classPathAndName)
+    `(_%import ',classPathAndName)))
+
+(define-syntax package
+  (lambda (packagePathAndName className)
+    `(_%package ',packagePathAndName ',className)))
 
 ;;; End of file.

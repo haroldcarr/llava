@@ -1,23 +1,23 @@
 ;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2000 Feb 20 (Sun) 22:32:45 by Harold Carr.
+;;;; Last Modified : 2000 Oct 29 (Sun) 21:53:11 by .
 ;;;;
 
 ;made into primitive for speed
 
 ;(define instanceof
 ;  (lambda (obj type)
-;    (isInstance (.si 'forName 'java.lang.Class (toString type)) obj)))
+;    (isInstance (_si 'forName 'java.lang.Class (toString type)) obj)))
 
 ;;; End of file.;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2000 Feb 21 (Mon) 01:52:16 by Harold Carr.
+;;;; Last Modified : 2001 Mar 26 (Mon) 15:18:30 by Harold Carr.
 ;;;;
 
 ;made into primitives for speed
 
 ;(define not
-;  (lambda (x) (.if x false true)))
+;  (lambda (x) (_if x false true)))
 
 ;(define null?
 ;  (lambda (x) (eq? x null)))
@@ -26,14 +26,14 @@
 ;  (lambda (exp) (instanceof exp 'lava.lang.types.Pair)))
 
 ;(define string->symbol
-;  (lambda (x) (.si 'newSymbol 'lava.F x)))
+;  (lambda (x) (_si 'newSymbol 'lavaProfile.F x)))
 
 ;(define symbol?
 ;  (lambda (exp) (instanceof exp 'lava.lang.types.Symbol)))
 
 ;;; End of file.;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2000 Feb 20 (Sun) 22:35:42 by Harold Carr.
+;;;; Last Modified : 2000 Oct 29 (Sun) 21:55:03 by .
 ;;;;
 
 ;; map made into primitive for speed.
@@ -42,22 +42,22 @@
 ;  (if (null? lists)
 ;      '() 
 ;      (if (null? (cdr lists))
-;	  (.%mapone f (car lists)) 
-;	  (.%mapmany f lists))))
+;	  (_%mapone f (car lists)) 
+;	  (_%mapmany f lists))))
 ;
-;(define .%mapone
+;(define _%mapone
 ;  (lambda (f x)  
 ;    (if (null? x)
 ;	'() 
 ;	(cons (f (car x))
-;	      (.%mapone f (cdr x))))))
+;	      (_%mapone f (cdr x))))))
 ;
-;(define .%mapmany
+;(define _%mapmany
 ;  (lambda (f xs)  
 ;    (if (null? (car xs))
 ;	'() 
-;	(cons (apply f (.%mapone car xs))
-;	      (.%mapmany f (.%mapone cdr xs))))))
+;	(cons (apply f (_%mapone car xs))
+;	      (_%mapmany f (_%mapone cdr xs))))))
 ;
 
 ;;; REVISIT
@@ -67,13 +67,13 @@
 ;;;; End of file.
 ;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2000 Jan 21 (Fri) 20:43:05 by Harold Carr.
+;;;; Last Modified : 2000 Oct 29 (Sun) 21:54:49 by .
 ;;;;
 
 ;;; Safe car and cdr.
 
-(define .%scar (lambda (x) (if (null? x) '() (car x))))
-(define .%scdr (lambda (x) (if (null? x) '() (cdr x))))
+(define _%scar (lambda (x) (if (null? x) '() (car x))))
+(define _%scdr (lambda (x) (if (null? x) '() (cdr x))))
 
 ;; REVISIT  handling of ==>
 ;; REVISIT collapse cadr s
@@ -82,20 +82,20 @@
   (lambda args  
     (if (null? args) 
 	false 
-	(if (equal? (.%scar (.%scar args)) 'else) 
-	    (cons 'begin (.%scdr (.%scar args))) 
-	    (if (equal? (.%scar (.%scdr (.%scar args))) '=>) 
-		(list '(lambda (x e c) (.if x (e x) (c))) 
-		      (.%scar (.%scar args)) 
-		      (.%scar (.%scdr (.%scdr (.%scar args)))) 
-		      (cons 'lambda (list () (cons 'cond (.%scdr args))))) 
-		(if (null? (.%scdr (.%scar args))) 
-		    (list '(lambda (x c) (.if x x (c))) 
-			  (.%scar (.%scar args)) 
-			  (cons 'lambda (list () (cons 'cond (.%scdr args))))) 
-		    (list '.if (.%scar (.%scar args)) 
-			  (cons 'begin (.%scdr (.%scar args))) 
-			  (cons 'cond (.%scdr args)))))))))
+	(if (equal? (_%scar (_%scar args)) 'else) 
+	    (cons 'begin (_%scdr (_%scar args))) 
+	    (if (equal? (_%scar (_%scdr (_%scar args))) '=>) 
+		(list '(lambda (x e c) (_if x (e x) (c))) 
+		      (_%scar (_%scar args)) 
+		      (_%scar (_%scdr (_%scdr (_%scar args)))) 
+		      (cons 'lambda (list () (cons 'cond (_%scdr args))))) 
+		(if (null? (_%scdr (_%scar args))) 
+		    (list '(lambda (x c) (_if x x (c))) 
+			  (_%scar (_%scar args)) 
+			  (cons 'lambda (list () (cons 'cond (_%scdr args))))) 
+		    (list '_if (_%scar (_%scar args)) 
+			  (cons 'begin (_%scdr (_%scar args))) 
+			  (cons 'cond (_%scdr args)))))))))
 
 (define-syntax or
   (lambda args
@@ -107,98 +107,98 @@
   (lambda args
     (cond ((null? args) true)
 	  ((null? (cdr args)) (car args))
-	  (else (list '.if (car args) (cons 'and (cdr args)) false)))))
+	  (else (list '_if (car args) (cons 'and (cdr args)) false)))))
 
 ;;; End of file.
 
 ;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2000 Feb 04 (Fri) 07:02:27 by Harold Carr.
+;;;; Last Modified : 2001 Mar 07 (Wed) 14:54:17 by Harold Carr.
 ;;;;
 
 (define-syntax quasiquote
   (lambda (x)
-    (.%expand-quasiquote x 0)))
+    (_%expand-quasiquote x 0)))
 
-(define .%expand-quasiquote
+(define _%expand-quasiquote
   (lambda (exp nesting)
     (cond
      ((not (pair? exp))
-      ;;(.print 1)
-      (if (.%constant? exp) 
+      ;;(_println 1)
+      (if (_%constant? exp) 
 	  (begin 
-	    ;;(.print 1.1)
+	    ;;(_println 1.1)
 	    exp)
 	  (begin 
-	    ;;(.print 1.2)
-	    (.list 'quote exp))))
+	    ;;(_println 1.2)
+	    (_list 'quote exp))))
      ((and (eq? (car exp) 'unquote) 
 	   (equal? (length exp) 2))
-      ;;(.print 2)
+      ;;(_println 2)
       (if (equal? nesting 0)
 	  (begin 
-	    ;;(.print 2.1)
+	    ;;(_println 2.1)
 	    (car (cdr exp)))
 	  (begin
-	    ;;(.print 2.2)
-	    (.%combine-skeletons ''unquote
-			       (.%expand-quasiquote (cdr exp) (- nesting 1))
+	    ;;(_println 2.2)
+	    (_%combine-skeletons ''unquote
+			       (_%expand-quasiquote (cdr exp) (- nesting 1))
 			       exp))))
      ((and (eq? (car exp) 'quasiquote)
 	   (equal? (length exp) 2))
-      ;;(.print 3)
-      (.%combine-skeletons ''quasiquote
-			 (.%expand-quasiquote (cdr exp) (+ nesting 1))
+      ;;(_println 3)
+      (_%combine-skeletons ''quasiquote
+			 (_%expand-quasiquote (cdr exp) (+ nesting 1))
 			 exp))
      ((and (pair? (car exp))
 	   (eq? (car (car exp)) 'unquote-splicing)
 	   (equal? (length (car exp)) 2))
-      ;;(.print 4)
+      ;;(_println 4)
       (if (equal? nesting 0)
 	  (begin
-	    ;;(.print 4.1)
-	    (.list 'append (car (cdr (car exp)))
-		  (.%expand-quasiquote (cdr exp) nesting)))
+	    ;;(_println 4.1)
+	    (_list 'append (car (cdr (car exp)))
+		  (_%expand-quasiquote (cdr exp) nesting)))
 	  (begin
-	    ;;(.print 4.2)
-	    (.%combine-skeletons (.%expand-quasiquote (car exp) (- nesting 1))
-			       (.%expand-quasiquote (cdr exp) nesting)
+	    ;;(_println 4.2)
+	    (_%combine-skeletons (_%expand-quasiquote (car exp) (- nesting 1))
+			       (_%expand-quasiquote (cdr exp) nesting)
 			       exp))))
      (else 
-      ;;(.print 5)
-      (.%combine-skeletons (.%expand-quasiquote (car exp) nesting)
-			 (.%expand-quasiquote (cdr exp) nesting)
+      ;;(_println 5)
+      (_%combine-skeletons (_%expand-quasiquote (car exp) nesting)
+			 (_%expand-quasiquote (cdr exp) nesting)
 			 exp)))))
 
-(define .%constant?
+(define _%constant?
   (lambda (exp)
     (if (pair? exp)
 	(eq? (car exp) 'quote)
 	(not (symbol? exp)))))
 
-(define .%combine-skeletons
+(define _%combine-skeletons
   (lambda (left right exp)
     (cond
-     ((and (.%constant? left) (.%constant? right))
-      ;; (.print'cb1)
+     ((and (_%constant? left) (_%constant? right))
+      ;; (_println'cb1)
       (if (and (equal? (eval left ) (car exp))
 	       (equal? (eval right) (cdr exp)))
 	  (begin 
-	    ;;(.print 'cb1.1)
-	    (.list 'quote exp))
+	    ;;(_println 'cb1.1)
+	    (_list 'quote exp))
 	  (begin 
-	    ;;(.print 'cb1.2) 
-	    (.list 'quote (cons (eval left )
+	    ;;(_println 'cb1.2) 
+	    (_list 'quote (cons (eval left )
 			       (eval right))))))
      ((null? right)
-      ;;(.print 'cb2)
-      (.list '.list left))
-     ((and (pair? right) (eq? (car right) '.list))
-      ;;(.print 'cb3)
-      (cons '.list (cons left (cdr right))))
+      ;;(_println 'cb2)
+      (_list '_list left))
+     ((and (pair? right) (eq? (car right) '_list))
+      ;;(_println 'cb3)
+      (cons '_list (cons left (cdr right))))
      (else 
-      ;;(.print 'cb4)
-      (.list 'cons left right)))))
+      ;;(_println 'cb4)
+      (_list 'cons left right)))))
 
 ;;; End of file.;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
@@ -227,10 +227,10 @@
 
 ;;; End of file.;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 05:58:33 by Harold Carr.
-;;;; Last Modified : 2000 Jan 21 (Fri) 20:43:02 by Harold Carr.
+;;;; Last Modified : 2000 Oct 29 (Sun) 21:53:45 by .
 ;;;;
 
-(define .%do-case 
+(define _%do-case 
   (lambda (case)
     (cond ((not (pair? case)) (error "bad syntax in case" case))
 	  ((eq? (first case) 'else) case)
@@ -238,7 +238,7 @@
 
 (define-syntax case
   (lambda (exp . cases)
-    `(let ((__exp__ ,exp)) (cond . ,(map .%do-case cases)))))
+    `(let ((__exp__ ,exp)) (cond . ,(map _%do-case cases)))))
 
 ;;; End of file.
 ;;;;
@@ -286,17 +286,17 @@
 
 ;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2000 Jan 21 (Fri) 20:42:54 by Harold Carr.
+;;;; Last Modified : 2000 Oct 29 (Sun) 21:53:38 by .
 ;;;;
 
 ;;; REVISIT - gensym let vars
 
 (define-syntax try
   (lambda exprs-catch-finally
-    (let ((tryExprs     (.%getTryExpressions     exprs-catch-finally))
-	  (catchClauses (.%getCatchClauses       exprs-catch-finally))
-	  (finallyExprs (.%getFinallyExpressions exprs-catch-finally)))
-      `(.%try
+    (let ((tryExprs     (_%getTryExpressions     exprs-catch-finally))
+	  (catchClauses (_%getCatchClauses       exprs-catch-finally))
+	  (finallyExprs (_%getFinallyExpressions exprs-catch-finally)))
+      `(_%try
 	(lambda () ,@tryExprs)
 	(lambda (t)
 	  (let ((g2 (if (instanceof t 'lava.lang.exceptions.LavaException)
@@ -306,8 +306,8 @@
 		  (else (throw t)))))
 	(lambda () ,@finallyExprs)))))
 
-(define (.%getTryExpressions exprs)
-  (.%appendResults (lambda (x) (if (or (not (pair? x)) ; ref ok
+(define (_%getTryExpressions exprs)
+  (_%appendResults (lambda (x) (if (or (not (pair? x)) ; ref ok
 				       (and (not (eq? (car x) 'catch))
 					    (not (eq? (car x) 'finally))))
 				   ;;  extra list level for appendResults
@@ -315,16 +315,16 @@
 				   '()))
 		   exprs))
 
-(define (.%getCatchClauses catch-finally)
-  (.%appendResults (lambda (x) (if (and (pair? x)
+(define (_%getCatchClauses catch-finally)
+  (_%appendResults (lambda (x) (if (and (pair? x)
 					(eq? (car x) 'catch))
 				   `(((instanceof g2 ',(car (cadr x)))
 				      (let ((,(cadr (cadr x)) g2)) ,@(cddr x))))
 				   '()))
 		   catch-finally))
 
-(define (.%getFinallyExpressions catch-finally)
-  (.%appendResults (lambda (x) (if (and (pair? x)
+(define (_%getFinallyExpressions catch-finally)
+  (_%appendResults (lambda (x) (if (and (pair? x)
 					(eq? (car x) 'finally))
 				   (cdr x)
 				   '()))
@@ -332,23 +332,31 @@
 
 ;; removes empty lists
 
-(define (.%appendResults proc lst)
+(define (_%appendResults proc lst)
   (apply append (map proc lst)))
 
 ;;; End of file.
 
 ;;;;
 ;;;; Created       : 2000 Jan 24 (Mon) 20:42:21 by Harold Carr.
-;;;; Last Modified : 2000 Jan 24 (Mon) 20:42:30 by Harold Carr.
+;;;; Last Modified : 2001 Mar 10 (Sat) 19:52:20 by Harold Carr.
 ;;;;
 
 (define-syntax synchronized
   (lambda (lock . body)
-    `(.%synchronized ,lock (lambda () ,@body))))
+    `(_%synchronized ,lock (lambda () ,@body))))
+
+(define-syntax import
+  (lambda (classPathAndName)
+    `(_%import ',classPathAndName)))
+
+(define-syntax package
+  (lambda (packagePathAndName className)
+    `(_%package ',packagePathAndName ',className)))
 
 ;;; End of file.;;;;
 ;;;; Created       : 1999 Feb 10 (Wed) 21:35:48 by Harold Carr.
-;;;; Last Modified : 2000 Jan 30 (Sun) 18:07:35 by Harold Carr.
+;;;; Last Modified : 2001 Mar 26 (Mon) 15:36:55 by Harold Carr.
 ;;;;
 
 ;;;
@@ -361,12 +369,12 @@
 ;;; This is the most interesting part.
 ;;; It dynamically figures out where the */lib directory is located.
 
-(define .%getLibPath
+(define _%getLibPath
   (lambda ()
     (let* ((LavaPath
 	    ;; getResource returns either "file:<path>" or "jar:file:<path>"
 	    ;; getFile returns either "<path>" or "file:<path>"
-	    (getFile (getResource (.si 'forName 'java.lang.Class "lava.Lava")
+	    (getFile (getResource (_si 'forName 'java.lang.Class "lavaProfile.Lava")
 				  "Lava.class")))
 	   (i -1))
       (cond ((not (equal? (set! i (indexOf LavaPath "lava/.classes")) -1))
@@ -377,9 +385,9 @@
 	     (string-append (substring LavaPath 6 i) "lava/lib"))
 	    (else
 	     ;; REVISIT
-	     (.print (list "Cannot initialize require path." LavaPath)))))))
+	     (_println (list "Cannot initialize require path." LavaPath)))))))
 
-(let ((load-path    (list (.%getLibPath)))
+(let ((load-path    (list (_%getLibPath)))
       (provided '()))
 
   (define load-path
@@ -408,7 +416,7 @@
 
   (define provided?
     (lambda (name)
-      (.if (member (toString name) provided) #t #f)))
+      (_if (member (toString name) provided) #t #f)))
 
   (define (provide name)
     (let ((sname (toString name)))
@@ -417,18 +425,18 @@
       name))
 
   (define (require name)
-    (.%require (toString name) load-path))
+    (_%require (toString name) load-path))
 
   (define load-library
     (lambda (name)
-      (.%load-library (toString name) load-path)))
+      (_%load-library (toString name) load-path)))
 
-  (define .%require
+  (define _%require
     (lambda (name loadPath)
       (if (not (provided? name))
-	  (.%load-library name loadPath))))
+	  (_%load-library name loadPath))))
 
-  (define .%load-library
+  (define _%load-library
     (lambda (name loadPath)
       (call/cc
        (lambda (return)
@@ -445,7 +453,7 @@
 
 )
 
-(.comment
+(_comment
 (load "RequireProvide.lva")
 provided
 (require "foo")
@@ -464,5 +472,321 @@ provided
 ;; under control of a Java debug stepper.
 
 ;; Intentionally blank.
+
+;;; End of file.
+;;;;
+;;;; Created       : 1998 Dec 13 (Sun) 09:18:12 by Harold Carr.
+;;;; Last Modified : 2001 Mar 08 (Thu) 21:01:07 by Harold Carr.
+;;;;
+;;;; Provides import
+;;;;
+
+; Given a Java class:
+;
+;     *****
+;
+; then
+;
+;     (import '*****)
+;
+; results in the following procedure definitions:
+;
+;     *****
+;
+; Alternatively, rather than define all public constructors, methods
+; fields, one can specify the subset to be defined:
+;
+;     (import '***** '*****)
+;
+
+(define-syntax _%setq
+  (lambda (var val)
+    `(let ((_lazy_hygenie_ ,val))
+       (set! ,var _lazy_hygenie_)
+       _lazy_hygenie_)))
+
+;;;;
+;;;; First we define a few by hand to be used by "import" and friends.
+;;;;
+
+(define _%java_lang_Class_forName 
+  (lambda (className)
+    (if (symbol? className) (set! className (toString className)))  
+    (_si 'forName 'java.lang.Class className)))
+
+(define _%java_lang_reflect_Modifier_isPublic 
+  (lambda (int)
+    (_si 'isPublic 'java.lang.reflect.Modifier int)))
+
+(define _%java_lang_reflect_Modifier_isStatic
+  (lambda (int)
+    (_si 'isStatic 'java.lang.reflect.Modifier int)))
+
+(define _%java_lang_reflect_Array_get
+  (lambda (o i)
+    (_si 'get 'java.lang.reflect.Array o i)))
+
+(define _%java_lang_reflect_Array_getLength 
+  (lambda (o)
+    (_si 'getLength 'java.lang.reflect.Array o)))
+
+;;;
+;;; _%isPublic? _%isStatic?
+;;;
+
+(define _%isPublic?
+  (lambda (x)
+    (_%java_lang_reflect_Modifier_isPublic (getModifiers x))))
+
+(define _%isStatic?
+  (lambda (x)
+    (_%java_lang_reflect_Modifier_isStatic (getModifiers x))))
+
+;;;
+;;; _%isMemberOfArray
+;;;
+;;; false if not present.  Otherwise the first element which passes the test.
+;;;
+
+(define _%isMemberOfArray
+  (lambda (test array)
+    (call/cc
+     (lambda (return)
+       (do ((len (_%java_lang_reflect_Array_getLength array))
+	    (i 0 (+ i 1)))
+	   ((>= i len) (return false))
+	 (let ((el (_%java_lang_reflect_Array_get array i)))
+	   (if (test el)
+	       (return el))))))))
+
+;;;
+;;; _%mapJavaArray
+;;;
+
+(define _%mapJavaArray 
+  (lambda (proc array)
+    (let ((result '(dummy)))
+      (do ((len (_%java_lang_reflect_Array_getLength array))
+	   (rptr result
+		 (begin
+		   (setCdr rptr
+			   (cons (proc (_%java_lang_reflect_Array_get array i))
+				 '()))
+		   (cdr rptr)))
+	   (i 0 (+ i 1)))
+	  ((>= i len) (cdr result))))))
+
+;;;
+;;; For defining the procedures.  Also for debugging.
+;;;
+
+(define *_%evalDefineCMF* 'eval)
+(define _%evalDefineCMFWrite (lambda (form) (_println form) form))
+(define _%evalDefineCMFEval  (lambda (form) (eval form)))
+
+(define _%evalDefineCMF
+  (lambda (form)
+    (case *_%evalDefineCMF*
+      ((write    ) (_%evalDefineCMFWrite form))
+      ((eval     ) (_%evalDefineCMFEval  form))
+      ((writeEval) (_%evalDefineCMFEval  (_%evalDefineCMFWrite form)))
+      ((none     ) 'none)
+      (else (error (string-append "_%evalDefineCMF - unknown: "
+				  (toString form)))))))
+
+; Uncomment for debug.
+(set! *_%evalDefineCMF* 'writeEval)
+;(set! *_%evalDefineCMF* 'write)
+
+;;;
+;;; Always useful.
+;;;
+
+(define _%makeSymOrStr
+  (lambda (symOrStr . args)
+    (let ((result (apply string-append
+			 (map (lambda (x)
+				(if (symbol? x)
+				    (toString x)
+				    x))
+			      args))))
+      (if (eq? symOrStr 'symbol)
+	  (string->symbol result)
+	  result))))
+
+;;;
+;;; Determines whether procedures are defined as
+;;;
+;;;     (define (java.lang.Float.valueOf . args) ...)
+;;;
+;;; or
+;;;
+;;;     (define (valueOf . args) ...)
+;;;
+;;; The first is useful when not using a package system.
+;;; The second is the default and assume you are already in
+;;; the correct package.
+;;;
+
+(define _%fullName? false)
+
+;;;
+;;; Useful for browsing the methods of a class.
+;;;
+
+(define _%showVirtual? false)
+
+;;;
+;;; import
+;;;
+;;; The main procedure.
+;;;
+
+(define _%importAux
+  (lambda (className . methodOrFieldNames)
+    (let* ((class
+	    (_%java_lang_Class_forName (_%makeSymOrStr 'string className)))
+	   (constructors (getConstructors    class))
+	   (methods      (getDeclaredMethods class))
+	   (fields       (getDeclaredFields  class)))
+      (if (null? methodOrFieldNames)
+	  (_%defineAllCMF className class constructors methods fields)
+	  (for-each
+	   (lambda (methodOrFieldName)
+	     (_%defineCMF
+	      className
+	      (_%makeSymOrStr 'symbol methodOrFieldName)
+	      class constructors methods fields))
+	   methodOrFieldNames)))
+    true))
+
+;; Define an individual constructor, method or field.
+
+(define _%defineCMF
+  (lambda (className methodOrFieldName class constructors methods fields)
+    (if (eq? methodOrFieldName 'constructor)
+	(_%defineC className class constructors)
+	(_%defineMF className methodOrFieldName class methods fields))))
+
+;; Define an individual constructor.
+
+(define _%defineC
+  (lambda (className class constructors)
+    "Use new"))
+(_comment
+    (if (and (not (equal? 0
+			  (_%java_lang_reflect_Array_getLength constructors)))
+	     (not (equal? 0 
+			  (length (apply 
+				   append
+				   (_%mapJavaArray
+				    (lambda (x)
+				      (if (_%isPublic? x) '(true) '()))
+				    constructors))))))
+	(_%evalDefineCMF
+	 `(define (,className . args) (apply new (cons ',className args))))
+	(error 
+	 (string-append "No constructor for class: " (toString className))))
+)
+
+
+;; Define an individual method or field.
+
+(define _%defineMF
+  (lambda (className methodOrFieldName class methods fields)
+    (let* ((nameString (_%makeSymOrStr 'string methodOrFieldName))
+	   (test       (lambda (el) (equal? (getName el) nameString)))
+	   (el         '()))
+      (cond ((_%setq el (_%isMemberOfArray test methods))
+	     (if (_%isPublic? el) 
+		 (_%defineM className methodOrFieldName class el)))
+	    ((_%setq el (_%isMemberOfArray test fields))
+	     (if (_%isPublic? el) 
+		 (_%defineF className methodOrFieldName class el)))
+	    (else
+	     (error (string-append "Unknown method or field: "
+				   (toString className)
+				   " "
+				   (toString methodOrFieldName))))))))
+
+;; Define an individual method.
+
+(define _%defineM
+  (lambda (className methodName class method)
+    (set! methodName (if _%fullName? 
+			 (_%makeSymOrStr 'symbol  className "." methodName)
+			 methodName))
+    ;; Only static methods since virtual are picked up automatically.
+    (if (_%isStatic? method)
+	(_%evalDefineCMF
+	 ;; REVISIT - no need to use apply? - maybe to get value of methodName
+	 `(define (,methodName . args)
+	    (apply _si (cons ',methodName (cons ',className args)))))
+	(if _%showVirtual?
+	    (_%evalDefineCMF methodName)))))
+
+;; Define an individual field.
+
+(define _%defineF 
+  (lambda (className fieldName class field)
+    (let* ((isStatic (_%isStatic? field))
+	   (name     (if (and _%fullName? isStatic)
+			 (_%makeSymOrStr 'symbol className "." fieldName)
+			 fieldName))
+	   (name!    (_%makeSymOrStr 'symbol name "!"))
+	   (andArg   (if isStatic `(,name)  `(,name  o)))
+	   (andArg!  (if isStatic `(,name!) `(,name! o)))
+	   (andVal   (append andArg  '(v)))
+	   (andVal!  (append andArg! '(v))))
+      (_%evalDefineCMF
+       `(define ,andArg
+	  ,(if isStatic
+	       `(_sf ',fieldName ',className)
+	       `(_f  ',fieldName o))))
+      (_%evalDefineCMF
+       `(define ,andVal!
+	  ,(if isStatic
+	       `(_sf ',fieldName ',className v)
+	       `(_f  ',fieldName o           v)))))))
+
+; Define procedures for all public constructors, methods and fields.
+
+(define _%defineAllCMF
+  (lambda (className class constructors methods fields)
+    (let* ((methodNames (_%mapJavaArray (lambda (x) (getName x)) methods))
+	   (fieldNames  (_%mapJavaArray (lambda (x) (getName x)) fields))
+	   (methodAndFieldNames (append methodNames fieldNames))
+	   (importArgs
+	    (cons className
+		  (if (> (_%java_lang_reflect_Array_getLength constructors) 0)
+		      (cons 'constructor methodAndFieldNames)
+		      methodAndFieldNames))))
+      (apply _%importAux importArgs))))
+      
+(_comment
+
+(load "import.lva")
+;(set! *_%evalDefineCMF* 'write)
+;(set! *_%evalDefineCMF* 'writeEval)
+(_%import 'java.lang.Float)
+(import 'java.lang.Float 'constructor)
+(java.lang.Float "34")
+(java.lang.Float.MAX_VALUE)
+(java.lang.Float.MAX_VALUE! (java.lang.Float 3.4028235E38))
+(_%importAux 'java.util.Vector)
+(_%importAux 'java.util.Hashtable)
+(_%importAux 'java.lang.System 'out)
+(import 'java.lang.System 'constructor)
+(import 'java.lang.System 'bar)
+(import 'java.util.Vector 'constructor 'addElement 'contains 'toString)
+(define v (java.util.Vector))
+(isEmpty v)
+(define o (java.lang.System.out))
+(addElement v o)
+(isEmpty v)
+(contains v o)
+(toString v)
+)
+
 
 ;;; End of file.

@@ -1,13 +1,14 @@
 /**
  * Created       : 1999 Dec 23 (Thu) 03:37:52 by Harold Carr.
- * Last Modified : 2000 Feb 15 (Tue) 21:56:27 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:06:29 by Harold Carr.
  */
 
-package libLava.co;
+package lava.compiler;
 
-import libLava.c1.EnvironmentLexical; // REVISIT
-import libLava.rt.LavaRuntime;
-import libLava.r1.code.Code; // REVISIT
+import lava.runtime.LavaRuntime; // REVISIT
+
+import lavaProfile.compiler.EnvironmentLexical; // REVISIT
+import lavaProfile.runtime.code.Code; // REVISIT
 
 public interface Compiler
 {

@@ -3,22 +3,38 @@
  * Last Modified : 2004 Dec 08 (Wed) 17:18:05 by Harold Carr.
  */
 
-package lava;
+package lavaProfile;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 
-import lava.F;
+import lavaProfile.F;
 import lava.Repl;
+
 import lava.io.LavaEOF;
 import lava.io.LavaReader;
+
+import lava.lang.exceptions.BacktraceHandler;
 import lava.lang.exceptions.LavaException;
-import libLava.co.Compiler;
-import libLava.rt.EnvironmentTopLevel;
-import libLava.rt.Evaluator;
-import libLava.rt.LavaRuntime;
+
+import lava.lang.types.Pair;
+import lava.lang.types.Procedure;
+
+import lava.compiler.Compiler;
+import lavaProfile.compiler.FC;
+
+import lava.runtime.EnvironmentTopLevel;
+import lava.runtime.EnvTopLevelInit;
+import lava.runtime.Evaluator;
+import lavaProfile.runtime.FR;
+import lava.runtime.LavaRuntime;
+
+import lavaProfile.runtime.Engine; // REVISIT
+import lavaProfile.runtime.FR; // REVISIT
+import lavaProfile.runtime.env.Namespace; // REVISIT
 
 public class ReplImpl
     implements
@@ -34,6 +50,8 @@ public class ReplImpl
 
     private LavaException       lastException;
     private LavaEOF             EOF;
+
+    private BacktraceHandler    backtraceHandler;
     
     private boolean             telnetCRLFOutput = false;
 
@@ -54,10 +72,53 @@ public class ReplImpl
 	this.out       = out;
 	this.err       = err;
 	this.compiler  = compiler;
-	this.runtime   = runtime;
 	this.env       = runtime.getEnvironment();
 	this.evaluator = runtime.getEvaluator();
+	this.runtime   = runtime;
 	this.EOF       = F.newLavaEOF();
+
+	init();
+    }
+
+    private ReplImpl (InputStream in, OutputStream out, OutputStream err)
+    {
+
+	//You can override defaults via -D or setting them here.
+	//System.setProperty("lava.io.LavaEOFClassName", "Bad");
+
+	// REVISIT: compiler is passed to handle system derived procedures.
+	// However this means the system cannot run without the compiler.
+	// But the compiler is so small who cares?
+
+	this.reader    = F.newLavaReader(new InputStreamReader(in));
+	this.out       = new PrintWriter(out);
+	this.err       = new PrintWriter(err);
+	this.compiler  = FC.newCompiler();
+	this.env       = FR.newEnvironmentTopLevel();
+	this.evaluator = FR.newEvaluator();
+	this.runtime   = FR.newLavaRuntime(env, evaluator);
+	this.EOF       = F.newLavaEOF();
+
+	init();
+    }
+
+    private void init ()
+    {
+	EnvTopLevelInit init = FR.newEnvTopLevelInit(this);
+	init.init();
+	init.loadDerived();
+
+	backtraceHandler = FR.newBacktraceHandler(); // REVISIT
+	env.set(F.newSymbol("_jbt"), new JavaBacktrace());
+	env.set(F.newSymbol("_bt"), new LavaBacktrace());
+
+	if (env instanceof Namespace) {
+	    Namespace ns = (Namespace)env;
+	    // The root namespace is immutable.
+	    ns.findNamespace(F.newSymbol("lava.Lava")).setIsSealed(true);
+	    // The REPL starts in its own namespace.
+	    ns._package(F.newSymbol("lava"), F.newSymbol("Repl"));
+	}
     }
 
     public Repl newRepl (LavaReader  reader,
@@ -67,6 +128,16 @@ public class ReplImpl
 			 Compiler    compiler)
     {
 	return new ReplImpl(reader, out, err, runtime, compiler);
+    }
+
+    public Repl newRepl ()
+    {
+	return new ReplImpl(System.in, System.out, System.err);
+    }
+
+    public Repl newRepl (InputStream in, OutputStream out, OutputStream err)
+    {
+	return new ReplImpl(in, out, err);
     }
 
     public void loop ()
@@ -95,7 +166,13 @@ public class ReplImpl
     //          Or callback object given out to do (or not do) the prompt.
     public void prompt ()
     {
-	prompt("\nlava> ");
+	if (env instanceof Namespace) {
+	    prompt("\n"
+		   + ((Namespace)env).getCurrentNamespace().getName() 
+		   + "> ");
+	} else {
+	    prompt("\nlava> ");
+	}
     }
 
     // REVISIT: Callback object handles actual output.
@@ -164,6 +241,28 @@ public class ReplImpl
 	return result;
     }
 
+    public Object loadFile (String filename)
+    {
+	return readCompileEval("(load \"" + filename + "\")");
+    }
+
+    public void loadResource (String loaderClass, String resource)
+    {
+	try {
+	    Class lclass = Class.forName(loaderClass);
+	    InputStream in = lclass.getResourceAsStream(resource);
+	    if (in != null) {
+		readCompileEvalUntilEOF(new InputStreamReader(in));
+	    } else {
+		throw F.newLavaException("Resource file not found: " +
+					 loaderClass + " " + resource);
+	    }
+	} catch (ClassNotFoundException e) {
+	    throw F.newLavaException("Resource load class not found: " +
+				     loaderClass + " " + resource);
+	}
+    }
+
     public void informAboutException ()
     {
 	Throwable t = lastException.getThrowable();
@@ -194,27 +293,42 @@ public class ReplImpl
 	out.flush();
     }
 
-    public void loadResource (String loaderClass, String resource)
-    {
-	try {
-	    Class lclass = Class.forName(loaderClass);
-	    InputStream in = lclass.getResourceAsStream(resource);
-	    if (in != null) {
-		readCompileEvalUntilEOF(new InputStreamReader(in));
-	    } else {
-		throw F.newLavaException("Resource file not found: " +
-					 loaderClass + " " + resource);
-	    }
-	} catch (ClassNotFoundException e) {
-	    throw F.newLavaException("Resource load class not found: " +
-				     loaderClass + " " + resource);
-	}
-    }
-
+    public Compiler            getCompiler            () { return compiler; }
     public EnvironmentTopLevel getEnvironmentTopLevel () { return env; }
     public Evaluator           getEvaluator           () { return evaluator; }
-    public Compiler            getCompiler            () { return compiler; }
+    public LavaRuntime         getLavaRuntime         () { return runtime; }
 
+    public class JavaBacktrace
+	implements Procedure
+    {
+	private String name;
+	public Object apply (Pair args, Engine engine)
+	{
+	    if (getLastException() != null) {
+		getLastException().getThrowable().printStackTrace(err);
+		err.flush();
+	    }
+	    return null;
+	}
+	public String getName ()            { return name; }
+	public String setName (String name) { return this.name = name; }
+    }
+
+    public class LavaBacktrace
+	implements Procedure
+    {
+	private String name;
+	public Object apply (Pair args, Engine engine)
+	{
+	    if (getLastException() != null) {
+		getLastException().printBacktrace(backtraceHandler, err);
+		err.flush();
+	    }
+	    return null;
+	}
+	public String getName ()            { return name; }
+	public String setName (String name) { return this.name = name; }
+    }
 }
 
 // End of file.

@@ -3,28 +3,36 @@
  * Last Modified : 2000 Jan 25 (Tue) 17:15:16 by Harold Carr. 
  */
 
-package lava;
+package lavaProfile;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
+
 import lava.LavaVersion;
-import lava.LavaVersionImpl;
+import lavaProfile.LavaVersionImpl;
 import lava.Repl;
-import lava.ReplImpl;
+import lavaProfile.ReplImpl;
+
+import lava.compiler.Compiler;
+
 import lava.io.LavaEOF;
 import lava.io.LavaEOFImpl;
 import lava.io.LavaReader;
-import lava.io.LavaReaderImpl;
+import lavaProfile.io.LavaReaderImpl;
+
 import lava.lang.exceptions.LavaException;
 import lava.lang.exceptions.BacktraceHandler;
+
 import lava.lang.types.Pair;
 import lava.lang.types.PairImpl;
 import lava.lang.types.Symbol;
 import lava.lang.types.SymbolImpl;
-import libLava.co.Compiler;
-import libLava.rt.EnvironmentTopLevel;
-import libLava.rt.Evaluator;
-import libLava.rt.LavaRuntime;
+
+import lava.runtime.EnvironmentTopLevel;
+import lava.runtime.Evaluator;
+import lava.runtime.LavaRuntime;
 
 /**
  * Factory for lava.* pluggable classes. <p>
@@ -109,6 +117,14 @@ public class F {
 
     // Repl
     private static Repl replFactory = new ReplImpl();
+
+    public static Repl newRepl() {
+	return replFactory.newRepl();
+    }
+
+    public static Repl newRepl(InputStream in, OutputStream out, OutputStream err) {
+	return replFactory.newRepl(in, out, err);
+    }
 
     public static Repl newRepl(LavaReader reader, PrintWriter out, PrintWriter err, LavaRuntime runtime, Compiler compiler) {
         return replFactory.newRepl(reader, out, err, runtime, compiler);

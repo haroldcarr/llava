@@ -1,15 +1,15 @@
 /**
  * Created       : 1999 Dec 24 (Fri) 16:53:03 by Harold Carr.
- * Last Modified : 2000 Jan 29 (Sat) 15:38:40 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:18:16 by Harold Carr.
  */
 
-package libLava.r1.code;
+package lavaProfile.runtime.code;
 
-import lava.F;
+import lavaProfile.F;
 import lava.lang.types.Pair;
 import lava.lang.types.Procedure;
-import libLava.r1.env.ActivationFrame;
-import libLava.r1.Engine;
+import lavaProfile.runtime.env.ActivationFrame;
+import lavaProfile.runtime.Engine;
 
 public class CodeApplication
     extends

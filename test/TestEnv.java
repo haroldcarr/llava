@@ -1,36 +1,37 @@
 /**
  * Created       : 1999 Dec 21 (Tue) 20:01:34 by Harold Carr.
- * Last Modified : 2000 Feb 15 (Tue) 21:49:04 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:24:34 by Harold Carr.
  */
 
 package testLava;
 
-import lava.F;
+import lavaProfile.F;
 import lava.lang.exceptions.LavaException;
 import lava.lang.types.Symbol;
-import lava.util.List;
-import libLava.c1.*;
-import libLava.c1.FC1;
-import libLava.rt.EnvironmentTopLevel;
-import libLava.rt.FR;
-import libLava.r1.FR1;
-import libLava.r1.env.*;
-import libLava.r1.exceptions.UndefinedIdException;
+import lavaProfile.util.List;
+import lavaProfile.compiler.*;
+import lavaProfile.compiler.FC;
+import lava.runtime.EnvironmentTopLevel;
+import lavaProfile.runtime.FR;
+import lavaProfile.runtime.env.*;
+import lavaProfile.runtime.exceptions.UndefinedIdException;
 
 public class TestEnv
 {
     public static void testEnv ()
     {
+	Test.dsop("begin: testEnv");
 	testActivationFrame();
 	testEnvironmentLexical();
 	testEnvironmentTopLevel();
+	Test.dsop("begin: testEnv");
     }
 
     public static void testActivationFrame ()
     {
-	ActivationFrame frame2 = FR1.newActivationFrame(3);
-	ActivationFrame frame1 = frame2.extend(FR1.newActivationFrame(2));
-	ActivationFrame frame0 = frame1.extend(FR1.newActivationFrame(1));
+	ActivationFrame frame2 = FR.newActivationFrame(3);
+	ActivationFrame frame1 = frame2.extend(FR.newActivationFrame(2));
+	ActivationFrame frame0 = frame1.extend(FR.newActivationFrame(1));
 
 	frame0.set(0, 0, new Double(0.0));
 
@@ -78,7 +79,7 @@ public class TestEnv
 	Symbol TwoTwo  = F.newSymbol("2.2");
 
 	EnvironmentLexical env2 = 
-	    FC1.newEnvironmentLexical(List.list(TwoZero, TwoOne, TwoTwo));
+	    FC.newEnvironmentLexical(List.list(TwoZero, TwoOne, TwoTwo));
 	EnvironmentLexical env1 = env2.extend(List.list(OneZero, OneOne));
 	EnvironmentLexical env0 = env1.extend(List.list(ZeroZero));
 

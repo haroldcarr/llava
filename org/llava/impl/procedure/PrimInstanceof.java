@@ -1,15 +1,15 @@
 /**
  * Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
- * Last Modified : 2000 Feb 20 (Sun) 23:21:59 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:19:08 by Harold Carr.
  */
 
-package libLava.r1.procedure.primitive.java.opt;
+package lavaProfile.runtime.procedure.primitive.java.opt;
 
-import lava.F;
+import lavaProfile.F;
 import lava.lang.types.Pair;
-import libLava.r1.Engine;
-import libLava.r1.FR1;
-import libLava.r1.procedure.primitive.PrimitiveProcedure;
+import lavaProfile.runtime.Engine;
+import lavaProfile.runtime.FR;
+import lavaProfile.runtime.procedure.primitive.PrimitiveProcedure;
 
 public class PrimInstanceof
     extends

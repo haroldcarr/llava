@@ -1,6 +1,6 @@
 /**
  * Created       : 1999 Dec 23 (Thu) 00:11:38 by Harold Carr.
- * Last Modified : 1999 Dec 28 (Tue) 06:14:31 by Harold Carr.
+ * Last Modified : 2001 Mar 14 (Wed) 22:00:40 by Harold Carr.
  */
 
 package testLava;
@@ -11,7 +11,9 @@ public class TestReflection
 {
     public static void testReflection ()
     {
+	Test.dsop("begin: testReflection");
 	testUnwrapViaReflection();
+	Test.dsop("end: testReflection");
     }
 
     public static void testUnwrapViaReflection()

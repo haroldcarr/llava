@@ -1,16 +1,16 @@
 /**
  * Created       : 2000 Jan 17 (Mon) 02:47:11 by Harold Carr.
- * Last Modified : 2000 Jan 29 (Sat) 15:39:25 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:18:42 by Harold Carr.
  */
 
-package libLava.r1.exceptions;
+package lavaProfile.runtime.exceptions;
 
 import java.io.PrintWriter;
 
-import lava.F;
+import lavaProfile.F;
 import lava.lang.exceptions.BacktraceHandler;
 import lava.lang.types.Pair;
-import libLava.r1.env.ActivationFrameImpl;
+import lavaProfile.runtime.env.ActivationFrameImpl;
 
 public class BacktraceHandlerImpl
     implements

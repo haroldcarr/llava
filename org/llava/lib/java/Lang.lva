@@ -1,6 +1,6 @@
 ;;;;
 ;;;; Created       : 2000 Jan 19 (Wed) 22:05:40 by Harold Carr.
-;;;; Last Modified : 2000 Feb 21 (Mon) 17:15:03 by Harold Carr.
+;;;; Last Modified : 2000 Oct 29 (Sun) 21:43:13 by .
 ;;;;
 
 (define newArray
@@ -9,8 +9,8 @@
 	(error "multiple dimensions not implemented"))
     (let ((class (if (instanceof type 'java.lang.Class) 
 		     type
-		     (.si 'forName 'java.lang.Class (toString type)))))
-      (.si 'newInstance 'java.lang.reflect.Array class len))))
+		     (_si 'forName 'java.lang.Class (toString type)))))
+      (_si 'newInstance 'java.lang.reflect.Array class len))))
 
 (provide 'java/lang/newArray)
 

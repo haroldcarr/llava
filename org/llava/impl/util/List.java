@@ -3,9 +3,9 @@
  * Last Modified : 2004 Dec 08 (Wed) 09:01:11 by Harold Carr.
  */
 
-package lava.util;
+package lavaProfile.util;
 
-import lava.F;
+import lavaProfile.F;
 import lava.lang.types.Pair;
 
 public class List

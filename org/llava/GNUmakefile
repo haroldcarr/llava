@@ -1,6 +1,6 @@
 #
 # Created       : 1999 Dec 15 (Wed) 16:30:21 by Harold Carr.
-# Last Modified : 2000 Jan 19 (Wed) 17:39:40 by Harold Carr.
+# Last Modified : 2001 Mar 26 (Mon) 15:12:06 by Harold Carr.
 #
 
 TOPDIR		=	..
@@ -9,16 +9,12 @@ PACKAGE		=	lava
 PKGDIR		=	lava
 
 FILES_java	= \
-	$(PKGDIR)/F.java \
-	$(PKGDIR)/Lava.java \
 	$(PKGDIR)/LavaVersion.java \
-	$(PKGDIR)/LavaVersionImpl.java \
 	$(PKGDIR)/Repl.java \
-	$(PKGDIR)/ReplImpl.java
 
 all :: classes 
 
-SUBDIRS		=	io lang util
+SUBDIRS		=	compiler io lang runtime
 
 all optimized debug clean clobber ::
 	@for i in $(SUBDIRS) ; do \

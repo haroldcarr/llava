@@ -1,12 +1,12 @@
 ;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2000 Feb 21 (Mon) 01:52:16 by Harold Carr.
+;;;; Last Modified : 2001 Mar 26 (Mon) 15:18:30 by Harold Carr.
 ;;;;
 
 ;made into primitives for speed
 
 ;(define not
-;  (lambda (x) (.if x false true)))
+;  (lambda (x) (_if x false true)))
 
 ;(define null?
 ;  (lambda (x) (eq? x null)))
@@ -15,7 +15,7 @@
 ;  (lambda (exp) (instanceof exp 'lava.lang.types.Pair)))
 
 ;(define string->symbol
-;  (lambda (x) (.si 'newSymbol 'lava.F x)))
+;  (lambda (x) (_si 'newSymbol 'lavaProfile.F x)))
 
 ;(define symbol?
 ;  (lambda (exp) (instanceof exp 'lava.lang.types.Symbol)))

@@ -1,6 +1,6 @@
 ;;;;
 ;;;; Created       : 1998 Dec 13 (Sun) 09:18:12 by Harold Carr.
-;;;; Last Modified : 2001 Mar 06 (Tue) 09:16:23 by Harold Carr.
+;;;; Last Modified : 2001 Mar 08 (Thu) 21:01:07 by Harold Carr.
 ;;;;
 ;;;; Provides import
 ;;;;
@@ -105,7 +105,7 @@
 ;;;
 
 (define *_%evalDefineCMF* 'eval)
-(define _%evalDefineCMFWrite (lambda (form) (_print form) form))
+(define _%evalDefineCMFWrite (lambda (form) (_println form) form))
 (define _%evalDefineCMFEval  (lambda (form) (eval form)))
 
 (define _%evalDefineCMF
@@ -119,8 +119,8 @@
 				  (toString form)))))))
 
 ; Uncomment for debug.
-;(set! *_%evalDefineCMF* 'writeEval)
-(set! *_%evalDefineCMF* 'write)
+(set! *_%evalDefineCMF* 'writeEval)
+;(set! *_%evalDefineCMF* 'write)
 
 ;;;
 ;;; Always useful.
@@ -137,6 +137,28 @@
       (if (eq? symOrStr 'symbol)
 	  (string->symbol result)
 	  result))))
+
+;;;
+;;; Determines whether procedures are defined as
+;;;
+;;;     (define (java.lang.Float.valueOf . args) ...)
+;;;
+;;; or
+;;;
+;;;     (define (valueOf . args) ...)
+;;;
+;;; The first is useful when not using a package system.
+;;; The second is the default and assume you are already in
+;;; the correct package.
+;;;
+
+(define _%fullName? false)
+
+;;;
+;;; Useful for browsing the methods of a class.
+;;;
+
+(define _%showVirtual? false)
 
 ;;;
 ;;; import
@@ -188,8 +210,9 @@
 	(_%evalDefineCMF
 	 `(define (,className . args) (apply new (cons ',className args))))
 	(error 
-	 (string-append "No constructor for class: " (toString className))))))
+	 (string-append "No constructor for class: " (toString className))))
 )
+
 
 ;; Define an individual method or field.
 
@@ -214,18 +237,24 @@
 
 (define _%defineM
   (lambda (className methodName class method)
+    (set! methodName (if _%fullName? 
+			 (_%makeSymOrStr 'symbol  className "." methodName)
+			 methodName))
     ;; Only static methods since virtual are picked up automatically.
     (if (_%isStatic? method)
 	(_%evalDefineCMF
-	 `(define (,(_%makeSymOrStr 'symbol  className "." methodName) . args)
-	    (apply _si (cons ',methodName (cons ',className args))))))))
+	 ;; REVISIT - no need to use apply? - maybe to get value of methodName
+	 `(define (,methodName . args)
+	    (apply _si (cons ',methodName (cons ',className args)))))
+	(if _%showVirtual?
+	    (_%evalDefineCMF methodName)))))
 
 ;; Define an individual field.
 
 (define _%defineF 
   (lambda (className fieldName class field)
     (let* ((isStatic (_%isStatic? field))
-	   (name     (if isStatic
+	   (name     (if (and _%fullName? isStatic)
 			 (_%makeSymOrStr 'symbol className "." fieldName)
 			 fieldName))
 	   (name!    (_%makeSymOrStr 'symbol name "!"))
@@ -258,22 +287,19 @@
 		      methodAndFieldNames))))
       (apply _%importAux importArgs))))
       
-
-(provide 'java/lang/import)
-
-
 (_comment
 
 (load "import.lva")
 ;(set! *_%evalDefineCMF* 'write)
-(import 'java.lang.Float)
+;(set! *_%evalDefineCMF* 'writeEval)
+(_%import 'java.lang.Float)
 (import 'java.lang.Float 'constructor)
 (java.lang.Float "34")
 (java.lang.Float.MAX_VALUE)
 (java.lang.Float.MAX_VALUE! (java.lang.Float 3.4028235E38))
 (_%importAux 'java.util.Vector)
 (_%importAux 'java.util.Hashtable)
-(import 'java.lang.System 'out)
+(_%importAux 'java.lang.System 'out)
 (import 'java.lang.System 'constructor)
 (import 'java.lang.System 'bar)
 (import 'java.util.Vector 'constructor 'addElement 'contains 'toString)

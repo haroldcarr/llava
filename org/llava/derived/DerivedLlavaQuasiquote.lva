@@ -1,90 +1,90 @@
 ;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2000 Feb 04 (Fri) 07:02:27 by Harold Carr.
+;;;; Last Modified : 2001 Mar 07 (Wed) 14:54:17 by Harold Carr.
 ;;;;
 
 (define-syntax quasiquote
   (lambda (x)
-    (.%expand-quasiquote x 0)))
+    (_%expand-quasiquote x 0)))
 
-(define .%expand-quasiquote
+(define _%expand-quasiquote
   (lambda (exp nesting)
     (cond
      ((not (pair? exp))
-      ;;(.print 1)
-      (if (.%constant? exp) 
+      ;;(_println 1)
+      (if (_%constant? exp) 
 	  (begin 
-	    ;;(.print 1.1)
+	    ;;(_println 1.1)
 	    exp)
 	  (begin 
-	    ;;(.print 1.2)
-	    (.list 'quote exp))))
+	    ;;(_println 1.2)
+	    (_list 'quote exp))))
      ((and (eq? (car exp) 'unquote) 
 	   (equal? (length exp) 2))
-      ;;(.print 2)
+      ;;(_println 2)
       (if (equal? nesting 0)
 	  (begin 
-	    ;;(.print 2.1)
+	    ;;(_println 2.1)
 	    (car (cdr exp)))
 	  (begin
-	    ;;(.print 2.2)
-	    (.%combine-skeletons ''unquote
-			       (.%expand-quasiquote (cdr exp) (- nesting 1))
+	    ;;(_println 2.2)
+	    (_%combine-skeletons ''unquote
+			       (_%expand-quasiquote (cdr exp) (- nesting 1))
 			       exp))))
      ((and (eq? (car exp) 'quasiquote)
 	   (equal? (length exp) 2))
-      ;;(.print 3)
-      (.%combine-skeletons ''quasiquote
-			 (.%expand-quasiquote (cdr exp) (+ nesting 1))
+      ;;(_println 3)
+      (_%combine-skeletons ''quasiquote
+			 (_%expand-quasiquote (cdr exp) (+ nesting 1))
 			 exp))
      ((and (pair? (car exp))
 	   (eq? (car (car exp)) 'unquote-splicing)
 	   (equal? (length (car exp)) 2))
-      ;;(.print 4)
+      ;;(_println 4)
       (if (equal? nesting 0)
 	  (begin
-	    ;;(.print 4.1)
-	    (.list 'append (car (cdr (car exp)))
-		  (.%expand-quasiquote (cdr exp) nesting)))
+	    ;;(_println 4.1)
+	    (_list 'append (car (cdr (car exp)))
+		  (_%expand-quasiquote (cdr exp) nesting)))
 	  (begin
-	    ;;(.print 4.2)
-	    (.%combine-skeletons (.%expand-quasiquote (car exp) (- nesting 1))
-			       (.%expand-quasiquote (cdr exp) nesting)
+	    ;;(_println 4.2)
+	    (_%combine-skeletons (_%expand-quasiquote (car exp) (- nesting 1))
+			       (_%expand-quasiquote (cdr exp) nesting)
 			       exp))))
      (else 
-      ;;(.print 5)
-      (.%combine-skeletons (.%expand-quasiquote (car exp) nesting)
-			 (.%expand-quasiquote (cdr exp) nesting)
+      ;;(_println 5)
+      (_%combine-skeletons (_%expand-quasiquote (car exp) nesting)
+			 (_%expand-quasiquote (cdr exp) nesting)
 			 exp)))))
 
-(define .%constant?
+(define _%constant?
   (lambda (exp)
     (if (pair? exp)
 	(eq? (car exp) 'quote)
 	(not (symbol? exp)))))
 
-(define .%combine-skeletons
+(define _%combine-skeletons
   (lambda (left right exp)
     (cond
-     ((and (.%constant? left) (.%constant? right))
-      ;; (.print'cb1)
+     ((and (_%constant? left) (_%constant? right))
+      ;; (_println'cb1)
       (if (and (equal? (eval left ) (car exp))
 	       (equal? (eval right) (cdr exp)))
 	  (begin 
-	    ;;(.print 'cb1.1)
-	    (.list 'quote exp))
+	    ;;(_println 'cb1.1)
+	    (_list 'quote exp))
 	  (begin 
-	    ;;(.print 'cb1.2) 
-	    (.list 'quote (cons (eval left )
+	    ;;(_println 'cb1.2) 
+	    (_list 'quote (cons (eval left )
 			       (eval right))))))
      ((null? right)
-      ;;(.print 'cb2)
-      (.list '.list left))
-     ((and (pair? right) (eq? (car right) '.list))
-      ;;(.print 'cb3)
-      (cons '.list (cons left (cdr right))))
+      ;;(_println 'cb2)
+      (_list '_list left))
+     ((and (pair? right) (eq? (car right) '_list))
+      ;;(_println 'cb3)
+      (cons '_list (cons left (cdr right))))
      (else 
-      ;;(.print 'cb4)
-      (.list 'cons left right)))))
+      ;;(_println 'cb4)
+      (_list 'cons left right)))))
 
 ;;; End of file.

@@ -1,6 +1,6 @@
 ;;;;
 ;;;; Created       : 2000 Feb 10 (Thu) 03:17:11 by Harold Carr.
-;;;; Last Modified : 2000 Feb 10 (Thu) 05:43:45 by Harold Carr.
+;;;; Last Modified : 2000 Oct 29 (Sun) 21:45:13 by .
 ;;;;
 
 ;; Core Java 2 V1 p 209-214
@@ -10,7 +10,7 @@
 (define display-class
   (lambda (class-name)
     (set! class-name (toString class-name))
-    (let ((class (.si 'forName 'java.lang.Class class-name)))
+    (let ((class (_si 'forName 'java.lang.Class class-name)))
       (display-class-header class)
       (display-class-parts #t "Constructors" (getDeclaredConstructors class))
       (display-class-parts #t "Methods"      (getDeclaredMethods class))
@@ -21,7 +21,7 @@
     (let* ((class (getClass object))
 	   (fields (getDeclaredFields class)))
       (display-class-header class)
-      (.si 'setAccessible 'java.lang.reflect.AccessibleObject fields true)
+      (_si 'setAccessible 'java.lang.reflect.AccessibleObject fields true)
       (display-fields object fields))))
 
 (define display-class-header
@@ -65,12 +65,12 @@
 
 (provide 'lava/reflect/display-class)
 
-(.comment
+(_comment
 (load-library 'lava/reflect/display-class)
 (display-class 'java.lang.Double)
 (display-class 'java.lang.Class)
-(display-class (getName (getClass (.sf 'out 'java.lang.System))))
-(display-object (.sf 'out 'java.lang.System))
+(display-class (getName (getClass (_sf 'out 'java.lang.System))))
+(display-object (_sf 'out 'java.lang.System))
 )
 
 

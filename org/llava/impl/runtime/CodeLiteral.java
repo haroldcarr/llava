@@ -1,12 +1,12 @@
 /**
  * Created       : 1999 Dec 23 (Thu) 18:22:20 by Harold Carr.
- * Last Modified : 2000 Feb 18 (Fri) 18:29:26 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 14:42:17 by Harold Carr.
  */
 
-package libLava.r1.code;
+package lavaProfile.runtime.code;
 
-import libLava.r1.env.ActivationFrame;
-import libLava.r1.Engine;
+import lavaProfile.runtime.env.ActivationFrame;
+import lavaProfile.runtime.Engine;
 
 public class CodeLiteral
     extends Code

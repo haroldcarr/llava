@@ -1,12 +1,12 @@
 #
 # Created       : 2000 Jan 18 (Tue) 04:28:19 by Harold Carr.
-# Last Modified : 2000 Feb 21 (Mon) 17:07:08 by Harold Carr.
+# Last Modified : 2001 Mar 26 (Mon) 14:57:29 by Harold Carr.
 #
 
 TOPDIR		=	../../..
 
-PACKAGE		=	libLava.r1.derived
-PKGDIR		=	libLava/r1/derived
+PACKAGE		=	lavaProfile.runtime.derived
+PKGDIR		=	lavaProfile/runtime/derived
 
 # N.B.: This order *MUST* be kept in sync with order in
 #       EnvTopLevelInitImpl.
@@ -24,7 +24,8 @@ RESOURCE_FILES	= \
 	$(PKGDIR)/DerivedJavaTry.lva \
 	$(PKGDIR)/DerivedJavaSecond.lva \
 	$(PKGDIR)/RequireProvide.lva \
-	$(PKGDIR)/DerivedTest.lva
+	$(PKGDIR)/DerivedTest.lva \
+	$(PKGDIR)/import.lva 
 
 COLLECTED_RESOURCES	=	$(PKGDIR)/DerivedAll.lva
 

@@ -1,13 +1,12 @@
 /**
  * Created       : 1999 Dec 23 (Thu) 03:33:12 by Harold Carr.
- * Last Modified : 2000 Feb 11 (Fri) 06:15:51 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:06:47 by Harold Carr.
  */
 
-package libLava.r1.code;
+package lavaProfile.runtime.code;
 
-import lava.F;
-import libLava.r1.env.ActivationFrame;
-import libLava.r1.Engine;
+import lavaProfile.runtime.env.ActivationFrame;
+import lavaProfile.runtime.Engine;
 
 /**
  * A compiler is a factory for Code. <p>

@@ -1,17 +1,17 @@
 /**
  * Created       : 2000 Jan 14 (Fri) 14:57:59 by Harold Carr.
- * Last Modified : 2000 Feb 20 (Sun) 17:55:34 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:24:08 by Harold Carr.
  */
 
-package libLava.r1.procedure.primitive.lava;
+package lavaProfile.runtime.procedure.primitive.lava;
 
 import lava.lang.exceptions.LavaException;
 import lava.lang.types.Pair;
 import lava.lang.types.Procedure;
-import lava.util.List;
-import libLava.r1.FR1;
-import libLava.r1.Engine;
-import libLava.r1.procedure.primitive.PrimitiveProcedure;
+import lavaProfile.util.List;
+import lavaProfile.runtime.FR;
+import lavaProfile.runtime.Engine;
+import lavaProfile.runtime.procedure.primitive.PrimitiveProcedure;
 
 public class PrimCallCC
     extends
@@ -52,7 +52,7 @@ public class PrimCallCC
 	public Continuation () {}
 	public Object apply (Pair args, Engine engine) {
 	    if (args == null || args.length() != 1) {
-		throw FR1.newWrongNumberOfArgumentsException(name);
+		throw FR.newWrongNumberOfArgumentsException(name);
 	    }
 	    throw new ContinuationException(this, args.car());
 	}

@@ -1,13 +1,13 @@
 /**
  * Created       : 1999 Dec 23 (Thu) 18:36:42 by Harold Carr.
- * Last Modified : 2000 Jan 29 (Sat) 15:40:59 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 14:49:47 by Harold Carr.
  */
 
-package libLava.r1.procedure.primitive.lava;
+package lavaProfile.runtime.procedure.primitive.lava;
 
 import lava.lang.types.Pair;
-import libLava.r1.Engine;
-import libLava.r1.procedure.primitive.PrimitiveProcedure;
+import lavaProfile.runtime.Engine;
+import lavaProfile.runtime.procedure.primitive.PrimitiveProcedure;
 
 public class PrimStringAppend
     extends

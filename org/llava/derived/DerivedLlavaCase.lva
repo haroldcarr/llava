@@ -1,9 +1,9 @@
 ;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 05:58:33 by Harold Carr.
-;;;; Last Modified : 2000 Jan 21 (Fri) 20:43:02 by Harold Carr.
+;;;; Last Modified : 2000 Oct 29 (Sun) 21:53:45 by .
 ;;;;
 
-(define .%do-case 
+(define _%do-case 
   (lambda (case)
     (cond ((not (pair? case)) (error "bad syntax in case" case))
 	  ((eq? (first case) 'else) case)
@@ -11,6 +11,6 @@
 
 (define-syntax case
   (lambda (exp . cases)
-    `(let ((__exp__ ,exp)) (cond . ,(map .%do-case cases)))))
+    `(let ((__exp__ ,exp)) (cond . ,(map _%do-case cases)))))
 
 ;;; End of file.

@@ -1,6 +1,6 @@
 ;;;;
 ;;;; Created       : 2000 Feb 27 (Sun) 07:48:43 by Harold Carr.
-;;;; Last Modified : 2000 Feb 27 (Sun) 08:21:41 by Harold Carr.
+;;;; Last Modified : 2001 Mar 26 (Mon) 15:20:58 by Harold Carr.
 ;;;;
 
 (define build-list
@@ -19,7 +19,7 @@
 
 (define build-list2
   (lambda (n)
-    (.print 'build-list2)
+    (_println 'build-list2)
     (build-list-aux n '())))
 
 (define build-list3
@@ -27,7 +27,7 @@
     (letrec ((build-it (lambda (n acc) 
 			 (if (= n 0) 
 			     acc 
-			     (build-it (- n 1) (.si 'cons 'lava.F n acc))))))
+			     (build-it (- n 1) (_si 'cons 'lavaProfile.F n acc))))))
       (build-it n '()))))
 
 (begin

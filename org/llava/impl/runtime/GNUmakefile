@@ -1,19 +1,19 @@
 #
 # Created       : 1999 Dec 15 (Wed) 16:30:21 by Harold Carr.
-# Last Modified : 2000 Jan 29 (Sat) 15:48:32 by Harold Carr.
+# Last Modified : 2001 Mar 26 (Mon) 14:56:46 by Harold Carr.
 #
 
 TOPDIR		=	../..
 
-PACKAGE		=	libLava.r1
-PKGDIR		=	libLava/r1
+PACKAGE		=	lavaProfile.runtime
+PKGDIR		=	lavaProfile/runtime
 
 FILES_java	= \
 	$(PKGDIR)/Engine.java \
 	$(PKGDIR)/EngineImpl.java \
 	$(PKGDIR)/EngineStepImpl.java \
-	$(PKGDIR)/FR1.java \
 	$(PKGDIR)/EnvTopLevelInitImpl.java \
+	$(PKGDIR)/FR.java \
 	$(PKGDIR)/LavaRuntimeImpl.java
 
 all :: classes

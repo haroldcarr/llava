@@ -1,6 +1,6 @@
 #
 # Created       : 1999 Dec 18 (Sat) 16:10:32 by Harold Carr.
-# Last Modified : 2000 Jan 15 (Sat) 18:42:06 by Harold Carr.
+# Last Modified : 2001 Mar 26 (Mon) 15:11:51 by Harold Carr.
 #
 
 TOPDIR		=	../..
@@ -11,8 +11,7 @@ PKGDIR		=	lava/io
 FILES_java	= \
 	$(PKGDIR)/LavaEOF.java \
 	$(PKGDIR)/LavaEOFImpl.java \
-	$(PKGDIR)/LavaReader.java \
-	$(PKGDIR)/LavaReaderImpl.java
+	$(PKGDIR)/LavaReader.java
 
 all :: classes
 

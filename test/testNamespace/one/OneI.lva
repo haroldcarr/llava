@@ -1,8 +1,8 @@
-(package testNamespace.one One)
+(package testNamespace.one OneI)
 
-(import testNamespace.two.Two)
+(import testNamespace.two.TwoI)
 
-(letrec ((min (lambda args (minAux (car args) (cdr args))))
+(letrec ((minT (lambda args (minAux (car args) (cdr args))))
 	 (minAux (lambda (smallest args)
 		   (if (null? args)
 		       smallest
@@ -10,6 +10,6 @@
 				   (car args)
 				   smallest)
 			       (cdr args))))))
-  (set! 'min min))
+  (set! min minT))
 
 ;; End of file.

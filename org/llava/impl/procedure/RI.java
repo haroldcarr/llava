@@ -1,9 +1,9 @@
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2000 Feb 18 (Fri) 17:31:02 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 14:44:23 by Harold Carr.
  */
 
-package libLava.r1.procedure.generic;
+package lavaProfile.runtime.procedure.generic;
 
 import java.lang.reflect.*;
 import java.util.ArrayList;

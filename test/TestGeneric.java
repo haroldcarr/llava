@@ -1,15 +1,15 @@
 /**
  * Created       : 1999 Dec 28 (Tue) 05:43:41 by Harold Carr.
- * Last Modified : 2000 Feb 21 (Mon) 17:24:19 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:20:53 by Harold Carr.
  */
 
 /*
 Each of these says it takes an int.  Some will also take a long.
 
-(sleep (.si 'currentThread 'java.lang.Thread) (new 'java.lang.Integer 1000))
-(sleep (.si 'currentThread 'java.lang.Thread) (new 'java.lang.Long 1000))
-(.si 'toHexString 'java.lang.Integer (new 'java.lang.Integer 15))
-(.si 'toHexString 'java.lang.Integer (new 'java.lang.Long 15))
+(sleep (_si 'currentThread 'java.lang.Thread) (new 'java.lang.Integer 1000))
+(sleep (_si 'currentThread 'java.lang.Thread) (new 'java.lang.Long 1000))
+(_si 'toHexString 'java.lang.Integer (new 'java.lang.Integer 15))
+(_si 'toHexString 'java.lang.Integer (new 'java.lang.Long 15))
 (compareTo 22 (new 'java.lang.Integer 21))
 (compareTo 22 (new 'java.lang.Long 21))
 (charAt "abc" (new 'java.lang.Integer 1))
@@ -21,14 +21,14 @@ Each of these says it takes an int.  Some will also take a long.
 (import "java.lang.System")
 (System.currentTimeMillis)
 (invoke-static 'java.lang.System 'currentTimeMillis)
-(.si 'currentTimeMillis 'java.lang.System)
+(_si 'currentTimeMillis 'java.lang.System)
 (define *which* 'skij)
 (define *which* 'lava)
 (define *which* 'silk)
 (define (tt)
   (let ((t (case *which*
 	     ((skij) (invoke-static 'java.lang.System 'currentTimeMillis))
-	     ((lava) (.si 'currentTimeMillis 'java.lang.System))
+	     ((lava) (_si 'currentTimeMillis 'java.lang.System))
 	     ((silk) (System.currentTimeMillis))
 	     (else (error "NO")))))
     (display (list t (+ t 1)))
@@ -38,21 +38,23 @@ Each of these says it takes an int.  Some will also take a long.
 
 package testLava;
 
-import lava.F;
+import lavaProfile.F;
 import lava.lang.types.Symbol;
-import libLava.rt.EnvironmentTopLevel;
-import libLava.rt.UndefinedIdHandler;
-import libLava.r1.FR1;
-import libLava.r1.env.*;
-import libLava.r1.procedure.generic.DI;
-import libLava.r1.procedure.generic.GenericProcedure;
+import lava.runtime.EnvironmentTopLevel;
+import lava.runtime.UndefinedIdHandler;
+import lavaProfile.runtime.FR;
+import lavaProfile.runtime.env.*;
+import lavaProfile.runtime.procedure.generic.DI;
+import lavaProfile.runtime.procedure.generic.GenericProcedure;
 
 public class TestGeneric
 {
     public static void testGeneric ()
     {
+	Test.dsop("begin: testGeneric");
 	testDI();
 	testGenericProcedure();
+	Test.dsop("end: testGeneric");
     }
 
     public static void testGenericProcedure ()
@@ -60,7 +62,7 @@ public class TestGeneric
 	TestCompilerAndEngine.topEnvironment.setUndefinedIdHandler
 	    (new UndefinedIdHandlerImpl() { // REVISIT factory
 		    public Object handle(EnvironmentTopLevel env, Symbol id) {
-			GenericProcedure gp = FR1.newGenericProcedure();
+			GenericProcedure gp = FR.newGenericProcedure();
 			env.set(id, gp);
 			return gp;
 		    }
@@ -68,7 +70,7 @@ public class TestGeneric
             );
 
 	TestCompilerAndEngine.topEnvironment.set(F.newSymbol("new"),
-						 FR1.newPrimNew());
+						 FR.newPrimNewPrim());
 
 	Test.check("gen1", 
 		   new Integer(123),

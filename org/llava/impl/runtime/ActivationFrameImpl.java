@@ -1,15 +1,16 @@
 /**
  * Created       : 1999 Dec 21 (Tue) 00:12:36 by Harold Carr.
- * Last Modified : 2000 Jan 29 (Sat) 15:39:14 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:23:54 by Harold Carr.
  */
 
-package libLava.r1.env;
+package lavaProfile.runtime.env;
 
 import lava.lang.types.Pair;
 import lava.lang.types.Symbol;
-import lava.util.List;
-import libLava.rt.EnvironmentTopLevel;
-import libLava.r1.FR1;
+import lavaProfile.util.List;
+import lava.runtime.EnvironmentTopLevel;
+import lavaProfile.runtime.FR;
+import lavaProfile.runtime.env.Namespace;
 
 public class ActivationFrameImpl 
     implements
@@ -18,6 +19,7 @@ public class ActivationFrameImpl
     private ActivationFrame     next = null;
     private Object[]            args;
     private EnvironmentTopLevel top;
+    private Namespace           namespace;
 
     public ActivationFrameImpl ()
     {
@@ -36,6 +38,12 @@ public class ActivationFrameImpl
 
     private ActivationFrameImpl (Pair values)
     {
+	args = List.toArray(values);
+    }
+
+    private ActivationFrameImpl (Pair values, Namespace namespace)
+    {
+	this.namespace = namespace;
 	args = List.toArray(values);
     }
 
@@ -59,6 +67,11 @@ public class ActivationFrameImpl
 	return extend(new ActivationFrameImpl(args));
     }
 
+    public ActivationFrame extend (Pair args, Namespace namespace)
+    {
+	return extend(new ActivationFrameImpl(args, namespace));
+    }
+
     public ActivationFrame extend (ActivationFrame frame)
     {
 	((ActivationFrameImpl)frame).next = this;
@@ -66,9 +79,15 @@ public class ActivationFrameImpl
 	return frame;
     }
 
-    public Object get (Symbol symbol)
+    public Object get (Symbol identifier)
     {
-	return top.get(symbol);
+	if (namespace != null) {
+	    if (namespace.isDottedP(identifier)) {
+		return namespace.refDotted(identifier);
+	    }
+	    return namespace.refNotDotted(identifier);
+	} 
+	return top.get(identifier);
     }
 
     public Object get (int slot)
@@ -85,9 +104,15 @@ public class ActivationFrameImpl
 	}
     }
 
-    public Object set (Symbol symbol, Object value)
+    public Object set (Symbol identifier, Object value)
     {
-	return top.set(symbol, value);
+	if (namespace != null) {
+	    if (namespace.isDottedP(identifier)) {
+		return ((EnvironmentTopLevel)namespace).set(identifier, value);
+	    }
+	    return namespace.setNotDotted(identifier, value);
+	} 
+	return top.set(identifier, value);
     }
 
     public Object set (int slot, Object v)
@@ -102,6 +127,16 @@ public class ActivationFrameImpl
 	} else {
 	    return next.set(level - 1, slot, v);
 	}
+    }
+
+    public EnvironmentTopLevel getEnvironmentTopLevel ()
+    {
+	return top;
+    }
+
+    public Namespace getNamespace ()
+    {
+	return namespace;
     }
 
     public String toString ()

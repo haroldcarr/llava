@@ -1,18 +1,18 @@
 /**
  * Created       : 1999 Dec 30 (Thu) 17:43:07 by Harold Carr.
- * Last Modified : 2000 Feb 16 (Wed) 20:25:32 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:24:16 by Harold Carr.
  */
 
-package libLava.r1.procedure.primitive.lava;
+package lavaProfile.runtime.procedure.primitive.lava;
 
-import lava.F;
+import lavaProfile.F;
 import lava.lang.types.Pair;
 import lava.lang.types.Symbol;
-import lava.util.List;
-import libLava.r1.Engine;
-import libLava.r1.procedure.generic.DI;
-import libLava.r1.procedure.generic.GenericProcedureImpl; // REVISIT
-import libLava.r1.procedure.primitive.PrimitiveProcedure;
+import lavaProfile.util.List;
+import lavaProfile.runtime.Engine;
+import lavaProfile.runtime.procedure.generic.DI;
+import lavaProfile.runtime.procedure.generic.GenericProcedureImpl; // REVISIT
+import lavaProfile.runtime.procedure.primitive.PrimitiveProcedure;
 
 public class PrimStaticInvoke
     extends

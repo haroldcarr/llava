@@ -1,13 +1,13 @@
 /**
  * Created       : 2000 Jan 07 (Fri) 18:17:59 by Harold Carr.
- * Last Modified : 2000 Jan 29 (Sat) 15:38:34 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 14:41:37 by Harold Carr.
  */
 
-package libLava.r1;
+package lavaProfile.runtime;
 
-import libLava.rt.EnvironmentTopLevel;
-import libLava.rt.Evaluator;
-import libLava.rt.LavaRuntime;
+import lava.runtime.EnvironmentTopLevel;
+import lava.runtime.Evaluator;
+import lava.runtime.LavaRuntime;
 
 public class LavaRuntimeImpl
     implements

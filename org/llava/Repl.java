@@ -1,21 +1,25 @@
 /**
  * Created       : 1999 Dec 29 (Wed) 20:09:32 by Harold Carr.
- * Last Modified : 2000 Jan 29 (Sat) 16:24:51 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:05:44 by Harold Carr.
  */
 
 package lava;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 
-import lava.F;
 import lava.io.LavaEOF;
 import lava.io.LavaReader;
+
 import lava.lang.exceptions.LavaException;
-import libLava.co.Compiler;
-import libLava.rt.EnvironmentTopLevel;
-import libLava.rt.Evaluator;
-import libLava.rt.LavaRuntime;
+
+import lava.compiler.Compiler;
+
+import lava.runtime.EnvironmentTopLevel;
+import lava.runtime.Evaluator;
+import lava.runtime.LavaRuntime;
 
 public interface Repl
 {
@@ -24,6 +28,10 @@ public interface Repl
 			 PrintWriter err,
 			 LavaRuntime runtime,
 			 Compiler    compiler);
+
+    public Repl newRepl ();
+
+    public Repl newRepl (InputStream in, OutputStream out, OutputStream err);
 
     public void loop ();
 
@@ -51,6 +59,10 @@ public interface Repl
 
     public Object printResult (Object result);
 
+    public Object loadFile (String filename);
+
+    public void loadResource (String loaderClass, String resource);
+
     public void informAboutException ();
 
     public LavaException getLastException ();
@@ -61,11 +73,10 @@ public interface Repl
 
     public void outputVersionMessage (long startupTime);
 
-    public void loadResource (String loaderClass, String resource);
-
+    public Compiler            getCompiler            ();
     public EnvironmentTopLevel getEnvironmentTopLevel ();
     public Evaluator           getEvaluator           ();
-    public Compiler            getCompiler            ();
+    public LavaRuntime         getLavaRuntime         ();
 
 }
 

@@ -1,19 +1,18 @@
 /**
  * Created       : 2000 Jan 07 (Fri) 22:40:51 by Harold Carr.
- * Last Modified : 2000 Feb 20 (Sun) 17:58:59 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:26:54 by Harold Carr.
  */
 
-package libLava.r1.procedure.primitive.lava;
+package lavaProfile.runtime.procedure.primitive.lava;
 
-import lava.F;
+import lavaProfile.F;
 import lava.lang.types.Pair;
-import lava.util.List;
-import libLava.rt.FR;
-import libLava.r1.Engine;
-import libLava.r1.FR1;
-import libLava.r1.exceptions.UndefinedIdException;
-import libLava.r1.procedure.Lambda;
-import libLava.r1.procedure.primitive.PrimitiveProcedure;
+import lavaProfile.util.List;
+import lavaProfile.runtime.Engine;
+import lavaProfile.runtime.FR;
+import lavaProfile.runtime.exceptions.UndefinedIdException;
+import lavaProfile.runtime.procedure.Lambda;
+import lavaProfile.runtime.procedure.primitive.PrimitiveProcedure;
 
 public class PrimNewThread
     extends

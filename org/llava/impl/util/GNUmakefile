@@ -1,12 +1,12 @@
 #
 # Created       : 1999 Dec 29 (Wed) 15:08:56 by Harold Carr.
-# Last Modified : 2000 Feb 11 (Fri) 06:12:08 by Harold Carr.
+# Last Modified : 2001 Mar 26 (Mon) 15:12:40 by Harold Carr.
 #
 
 TOPDIR		=	../..
 
-PACKAGE		=	lava.util
-PKGDIR		=	lava/util
+PACKAGE		=	lavaProfile.util
+PKGDIR		=	lavaProfile/util
 
 FILES_java	= \
 	$(PKGDIR)/List.java

@@ -1,12 +1,12 @@
 /**
  * Created       : 1999 Dec 25 (Sat) 01:47:11 by Harold Carr.
- * Last Modified : 2000 Jan 29 (Sat) 15:38:56 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 14:42:24 by Harold Carr.
  */
 
-package libLava.r1.code;
+package lavaProfile.runtime.code;
 
-import libLava.r1.env.ActivationFrame;
-import libLava.r1.Engine;
+import lavaProfile.runtime.env.ActivationFrame;
+import lavaProfile.runtime.Engine;
 
 // REVISIT: It would be good to make this a subclass of CodeReference
 //          to share the slot member, but Java does not allow muliple

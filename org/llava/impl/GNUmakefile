@@ -1,14 +1,22 @@
 #
 # Created       : 1999 Dec 15 (Wed) 16:30:21 by Harold Carr.
-# Last Modified : 2000 Jan 29 (Sat) 15:44:01 by Harold Carr.
+# Last Modified : 2001 Mar 26 (Mon) 15:12:22 by Harold Carr.
 #
 
 TOPDIR		=	..
 
-PACKAGE		=	libLava
-PKGDIR		=	libLava
+PACKAGE		=	lavaProfile
+PKGDIR		=	lavaProfile
 
-SUBDIRS		=	co c1 rt r1
+FILES_java	= \
+	$(PKGDIR)/F.java \
+	$(PKGDIR)/Lava.java \
+	$(PKGDIR)/LavaVersionImpl.java \
+	$(PKGDIR)/ReplImpl.java
+
+all :: classes 
+
+SUBDIRS		=	compiler io runtime util
 
 all optimized debug clean clobber ::
 	@for i in $(SUBDIRS) ; do \

@@ -1,17 +1,17 @@
 /**
  * Created       : 2000 Jan 07 (Fri) 06:18:21 by Harold Carr.
- * Last Modified : 2000 Jan 29 (Sat) 15:41:12 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 14:50:38 by Harold Carr.
  */
 
-package libLava.r1.syntax;
+package lavaProfile.runtime.syntax;
 
 import lava.lang.types.Pair;
 import lava.lang.types.Procedure;
-import libLava.co.Compiler;
-import libLava.c1.EnvironmentLexical;
-import libLava.rt.LavaRuntime;
-import libLava.r1.Engine;
-import libLava.r1.code.Code;
+import lava.compiler.Compiler;
+import lavaProfile.compiler.EnvironmentLexical;
+import lava.runtime.LavaRuntime;
+import lavaProfile.runtime.Engine;
+import lavaProfile.runtime.code.Code;
 
 public class UserSyntax
     extends 

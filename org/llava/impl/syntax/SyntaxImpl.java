@@ -1,20 +1,20 @@
 /**
  * Created       : @author Peter Norvig, Copyright 1998, http://www.norvig.com/license.html 
- * Last Modified : 2000 Feb 11 (Fri) 06:17:36 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:24:18 by Harold Carr.
  */
 
-package libLava.r1.syntax;
+package lavaProfile.runtime.syntax;
 
-import lava.F;
+import lavaProfile.F;
 import lava.lang.types.Pair;
 import lava.lang.types.Procedure;
-import lava.util.List;
-import libLava.co.Compiler;
-import libLava.c1.EnvironmentLexical;
-import libLava.r1.FR1;
-import libLava.rt.LavaRuntime;
-import libLava.r1.Engine;
-import libLava.r1.code.Code;
+import lavaProfile.util.List;
+import lava.compiler.Compiler;
+import lavaProfile.compiler.EnvironmentLexical;
+import lavaProfile.runtime.FR;
+import lava.runtime.LavaRuntime;
+import lavaProfile.runtime.Engine;
+import lavaProfile.runtime.code.Code;
 
 public abstract class Syntax
     implements
@@ -49,7 +49,7 @@ public abstract class Syntax
 
     public String toString ()
     {
-	// REVISIT - duplicate of code in LambdaImpl
+	// REVISIT: duplicated in GenericProcedureImpl, LambdaImpl, Syntax
 	return "{" + getClass().getName() + " " + name + "}";
     }
 }

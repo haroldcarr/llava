@@ -1,11 +1,11 @@
 /**
  * Created       : 2000 Jan 10 (Mon) 02:06:49 by Harold Carr.
- * Last Modified : 2000 Jan 29 (Sat) 15:39:53 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:18:48 by Harold Carr.
  */
 
-package libLava.r1.procedure.generic;
+package lavaProfile.runtime.procedure.generic;
 
-import lava.F;
+import lavaProfile.F;
 
 public class WrapJavaPrimitiveImpl
     implements

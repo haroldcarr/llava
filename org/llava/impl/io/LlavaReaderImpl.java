@@ -1,18 +1,19 @@
 /**
  * Created       : 1999 Dec 17 (Fri) 20:11:43 by Harold Carr.
- * Last Modified : 2000 Jan 17 (Mon) 18:59:26 by Harold Carr.
+ * Last Modified : 2002 Jan 12 (Sat) 13:47:18 by Harold Carr.
  */
 
-package lava.io;
+package lavaProfile.io;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-import lava.F;
+import lavaProfile.F;
+import lava.io.LavaEOF;
 import lava.io.LavaReader;
 import lava.lang.types.*;
-import lava.util.List;
+import lavaProfile.util.List;
 
 public class LavaReaderImpl
     implements
@@ -159,7 +160,9 @@ public class LavaReaderImpl
 		return List.toArray((Pair)read(in));
 	    case '\\': 
 		ch = in.read();
-		if (ch == 's' || ch == 'S' || ch == 'n' || ch == 'N') {
+		if (ch == 's' || ch == 'S' ||
+		    ch == 'n' || ch == 'N')
+                {
 		    pushChar(ch);
 		    token = readToken(in);
 		    if (token instanceof Symbol) {

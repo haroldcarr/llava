@@ -1,6 +1,6 @@
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2000 Feb 04 (Fri) 07:17:02 by Harold Carr.
+;;;; Last Modified : 2000 Oct 29 (Sun) 21:43:48 by .
 ;;;;
 
 (require 'lava/exceptions/error)
@@ -13,7 +13,7 @@
 
 (provide 'lava/exceptions/apply-fail-on-false)
 
-(.comment
+(_comment
 (require 'exceptions/apply-fail-on-false)
 (apply-fail-on-false (lambda (x) (pair? x)) '(x))
 (apply-fail-on-false (lambda (x) (pair? x)) '((x)))

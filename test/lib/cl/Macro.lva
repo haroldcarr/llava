@@ -1,6 +1,6 @@
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2000 Jan 22 (Sat) 17:11:09 by Harold Carr.
+;;;; Last Modified : 2000 Oct 29 (Sun) 22:00:41 by .
 ;;;;
 
 (require 'test/test)
@@ -17,7 +17,7 @@
 
 (end-test 'cl/macros/defmacro)
 
-(.comment
+(_comment
 ;; See if macros only expanded once at compiletime.
 
 (define macrocalled 0)

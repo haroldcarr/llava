@@ -1,21 +1,21 @@
 /**
  * Created       : 1999 Dec 23 (Thu) 03:48:44 by Harold Carr.
- * Last Modified : 2000 Feb 11 (Fri) 06:15:15 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:18:05 by Harold Carr.
  */
 
-package libLava.r1;
+package lavaProfile.runtime;
 
-import lava.F;
+import lavaProfile.F;
 import lava.lang.exceptions.BacktraceHandler;
 import lava.lang.exceptions.LavaException;
 import lava.lang.types.Pair;
 import lava.lang.types.Procedure;
-import libLava.rt.EnvironmentTopLevel;
-import libLava.rt.Evaluator;
-import libLava.r1.Engine;
-import libLava.r1.FR1;
-import libLava.r1.code.Code;
-import libLava.r1.env.ActivationFrame;
+import lava.runtime.EnvironmentTopLevel;
+import lava.runtime.Evaluator;
+import lavaProfile.runtime.Engine;
+import lavaProfile.runtime.FR;
+import lavaProfile.runtime.code.Code;
+import lavaProfile.runtime.env.ActivationFrame;
 
 public class EngineImpl
     implements
@@ -32,14 +32,14 @@ public class EngineImpl
     public Evaluator newEvaluator ()
     {
 	EngineImpl engineImpl = new EngineImpl();
-	engineImpl.backtraceHandler = FR1.newBacktraceHandler();
+	engineImpl.backtraceHandler = FR.newBacktraceHandler();
 	return engineImpl;
     }
 
     public Object eval (Object form, EnvironmentTopLevel env)
     {
 	// REVISIT: do not create null frame on each eval.
-	ActivationFrame nullFrame = FR1.newActivationFrame(env);
+	ActivationFrame nullFrame = FR.newActivationFrame(env);
 	return run((Code)form, nullFrame);
     }
 

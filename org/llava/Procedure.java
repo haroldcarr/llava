@@ -1,12 +1,12 @@
 /**
  * Created       : 1999 Dec 28 (Tue) 03:08:36 by Harold Carr.
- * Last Modified : 2000 Jan 29 (Sat) 15:37:05 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 14:05:06 by Harold Carr.
  */
 
 package lava.lang.types;
 
 import lava.lang.types.Pair;
-import libLava.r1.Engine; // REVISIT
+import lavaProfile.runtime.Engine; // REVISIT
 
 public interface Procedure
 {

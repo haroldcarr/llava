@@ -1,16 +1,15 @@
 #
 # Created       : 1999 Dec 15 (Wed) 16:30:21 by Harold Carr.
-# Last Modified : 2000 Feb 15 (Tue) 21:19:03 by Harold Carr.
+# Last Modified : 2001 Mar 26 (Mon) 14:03:39 by Harold Carr.
 #
 
 TOPDIR		=	../..
 
-PACKAGE		=	libLava.co
-PKGDIR		=	libLava/co
+PACKAGE		=	lava.compiler
+PKGDIR		=	lava/compiler
 
 FILES_java	= \
-	$(PKGDIR)/Compiler.java \
-	$(PKGDIR)/FC.java
+	$(PKGDIR)/Compiler.java
 
 all :: classes
 

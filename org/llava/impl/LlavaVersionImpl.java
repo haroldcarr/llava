@@ -1,9 +1,11 @@
 /**
  * Created       : 2000 Jan 19 (Wed) 17:30:46 by Harold Carr.
- * Last Modified : 2000 Jan 26 (Wed) 17:05:21 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:15:16 by Harold Carr.
  */
 
-package lava;
+package lavaProfile;
+
+import lava.LavaVersion;
 
 public class LavaVersionImpl
     implements
@@ -22,9 +24,9 @@ public class LavaVersionImpl
 
     public int    getMajor   ()  { return 0; }
     
-    public int    getMinor   ()  { return 1; }
+    public int    getMinor   ()  { return 2; }
 
-    public String getDate    ()  { return "January 26, 2000"; }
+    public String getDate    ()  { return "March 26, 2001"; }
 
     public String toString ()
     {

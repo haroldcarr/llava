@@ -1,22 +1,22 @@
 /**
  * Created       : 2000 Jan 07 (Fri) 06:39:08 by Harold Carr.
- * Last Modified : 2000 Jan 29 (Sat) 15:41:09 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 14:50:32 by Harold Carr.
  */
 
-package libLava.r1.syntax;
+package lavaProfile.runtime.syntax;
 
 import lava.lang.types.Pair;
 import lava.lang.types.Procedure;
 import lava.lang.types.Symbol;
-import libLava.co.Compiler;
-import libLava.c1.EnvironmentLexical;
-import libLava.rt.EnvironmentTopLevel;
-import libLava.r1.FR1;
-import libLava.rt.LavaRuntime;
-import libLava.r1.FR1;
-import libLava.r1.Engine;
-import libLava.r1.code.Code;
-import libLava.r1.env.ActivationFrame;
+import lava.compiler.Compiler;
+import lavaProfile.compiler.EnvironmentLexical;
+import lava.runtime.EnvironmentTopLevel;
+import lavaProfile.runtime.FR;
+import lava.runtime.LavaRuntime;
+import lavaProfile.runtime.FR;
+import lavaProfile.runtime.Engine;
+import lavaProfile.runtime.code.Code;
+import lavaProfile.runtime.env.ActivationFrame;
 
 public class SyntaxDefineSyntax
     extends 
@@ -42,7 +42,7 @@ public class SyntaxDefineSyntax
 
 	// REVISIT - relationship between activation frame and top.
 	ActivationFrame topFrame 
-	    = FR1.newActivationFrame(runtime.getEnvironment());
+	    = FR.newActivationFrame(runtime.getEnvironment());
 	Procedure  macrolambda = 
 	    (Procedure) ((Engine)runtime.getEvaluator()).run(code, topFrame);
 

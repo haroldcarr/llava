@@ -1,14 +1,14 @@
 /**
  * Created       : 1999 Dec 20 (Mon) 21:37:28 by Harold Carr.
- * Last Modified : 2000 Jan 16 (Sun) 08:55:18 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:24:36 by Harold Carr.
  */
 
 package testLava;
 
-import lava.F;
+import lavaProfile.F;
 import lava.io.LavaReader;
 import lava.lang.types.Pair;
-import lava.util.List;
+import lavaProfile.util.List;
 
 public class TestReader
 {
@@ -41,6 +41,8 @@ public class TestReader
 
     public static void testReader ()
     {
+	Test.dsop("begin: testReader");
+
 	Object v;
 	Object v2;
 
@@ -86,6 +88,8 @@ public class TestReader
 		   F.cons(new Integer(1),
 			  new Integer(2)),
 		   readFromString("(1 . 2)"));
+
+	Test.dsop("end: testReader");
     }
 }
 

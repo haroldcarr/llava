@@ -3,30 +3,40 @@
 // Last Modified : 2004 Dec 01 (Wed) 10:15:34 by Harold Carr.
 //
 
-package libLava.r1.env;
+package lavaProfile.runtime.env;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import lava.F;
+
+import lavaProfile.F;
 import lava.Repl;
 import lava.lang.exceptions.LavaException;
 import lava.lang.types.Pair;
 import lava.lang.types.Procedure;
 import lava.lang.types.Symbol;
 
-import libLava.rt.EnvironmentTopLevel;
-import libLava.rt.FR;
-import libLava.rt.UndefinedIdHandler;
+import lava.runtime.EnvironmentTopLevel;
+import lavaProfile.runtime.FR;
+import lava.runtime.UndefinedIdHandler;
+
+import lavaProfile.runtime.procedure.generic.GenericProcedure; // REVISIT
 
 
 // TODO:
+//
+// - No name of error message.
+// lava.Repl> (foo.bar)
+// Error: java.lang.Exception: Undefined top level variable: 
 //
 // - Reenable import test in testBuiltIns.
 //
@@ -59,6 +69,16 @@ import libLava.rt.UndefinedIdHandler;
 //
 // * From any package you must import to enable BOTH short and long references.
 //   In other words, only can ref imported things.
+//
+//   Long references need to be legal from anywhere.  Otherwise,
+//   if you import a package which defines a macro and that macro
+//   uses a definition in a package not in the importing package
+//   then the definition will be undefined.  The macro *must*
+//   both import the needed definition (if it does not define it)
+//   and use the fully qualified name in the expansion.
+//   That way the definition is loaded AND when expanded in
+//   the importing package, available via its full name.
+//   Example  - cl.control.dotimes.
 //
 // * Have import precompute as much reflection as possible on all methods
 //   on each class to avoid full DI.
@@ -112,6 +132,12 @@ public class NamespaceImpl
 	// The system ensures the package statement in that file is correct.
 
 	String nextPackageShouldBe = null;
+
+	// If two lava files each import each other we need to stop
+	// circular loading.
+
+	Set lavaFilesCurrentlyBeingLoaded =
+	    Collections.synchronizedSet(new HashSet());
 
 	// Marker to return when values not found in map.
 
@@ -191,16 +217,7 @@ public class NamespaceImpl
 
     public Namespace _package (Symbol packagePathAndName, Symbol className)
     {
-	String PC = packagePathAndName.toString() + "." + className.toString();
-	if (classVariables.nextPackageShouldBe != null) {
-	    if (! PC.equals(classVariables.nextPackageShouldBe)) {
-		throw F.newLavaException("incorrect package: " + PC + 
-					 " should be: " +
-					 classVariables.nextPackageShouldBe);
-	    }
-	}
-	classVariables.currentNamespace = findOrCreateNamespace(PC);
-	return classVariables.currentNamespace;
+	return _package(packagePathAndName.toString(), className.toString());
     }
 
     public String _import (Symbol classPathAndName)
@@ -231,6 +248,29 @@ public class NamespaceImpl
     public String getFullNameForClass (Object x)
     {
 	return getFullNameForClass(x.toString());
+    }
+
+    public boolean isDottedP (Symbol identifier)
+    {
+	return isDottedP(identifier.toString());
+    }
+
+    public Object setNotDotted(Symbol identifier, Object val)
+    {
+	return setNotDotted(identifier.toString(), val);
+    }
+
+    public Object refNotDotted (Symbol identifier)
+    {
+	return refNotDotted(identifier.toString(), false);
+    }
+
+    public Object refDotted (Symbol id)
+    {
+	String identifier = id.toString();
+	return refDotted(packageAndClassOf(identifier),
+			 variableOf(identifier),
+			 false);
     }
 
     // --------------------------------------------------
@@ -294,6 +334,28 @@ public class NamespaceImpl
 	    return ns;
 	}
     }
+
+
+    // --------------------------------------------------
+
+    //
+    // Support for package.
+    //
+
+    public Namespace _package (String packagePathAndName, String className)
+    {
+	String PC = packagePathAndName + "." + className;
+	if (classVariables.nextPackageShouldBe != null) {
+	    if (! PC.equals(classVariables.nextPackageShouldBe)) {
+		throw F.newLavaException("incorrect package: " + PC + 
+					 " should be: " +
+					 classVariables.nextPackageShouldBe);
+	    }
+	}
+	classVariables.currentNamespace = findOrCreateNamespace(PC);
+	return classVariables.currentNamespace;
+    }
+
 
     // --------------------------------------------------
 
@@ -497,36 +559,69 @@ else
 	if (! file.exists()) {
 	    return null;
 	}
+	return loadFileWhichExists(file, name, loadPathAndName,
+				   addToRefListP, fileLastModified);
+    }
+
+    public String loadFileWhichExists (
+        File file, String name, String loadPathAndName,
+        boolean addToRefListP, long fileLastModified)
+    {
 	if ((fileLastModified == 0) ||
 	    (file.lastModified() > fileLastModified))
 	{
-	    try {
-		classVariables.nextPackageShouldBe = name;
-		getRepl()
-		    .readCompileEval("(load \"" + loadPathAndName + "\")");
-		// We loaded the file, either because it was a new import
-		// or because it had been touched.
-
-		// Make sure it had a correct package definition.
-		if (! name.equals(getCurrentNamespace().getName())) {
-		    throw F.newLavaException(
-                        "Missing or incorrect package statement.  Expecting: "
-			+ name);
-		}
-
+	    if (getLavaFilesCurrentlyBeingLoaded().contains(loadPathAndName)) {
 		if (addToRefListP) {
-		    // NOTE: Depends on package procedure setting
-		    // currentNamespace during the above load.
-		    addToRefList((NamespaceImpl)getCurrentNamespace());
+		    addToRefList(
+                      findOrCreateNamespace(
+		          packagePathAndName(name) + "." + classNameOf(name)));
 		}
-		findNamespace(name).setFileLastModified(file.lastModified());
-		return (addToRefListP ? "(re)load: " : "") + loadPathAndName;
+		return loadPathAndName;
+	    }
+	    // Needs to be loaded.
+	    getLavaFilesCurrentlyBeingLoaded().add(loadPathAndName);
+	    try {
+		return loadFileNewOrTouched(file, name, loadPathAndName, 
+					    addToRefListP);
 	    } finally {
-		setCurrentNamespace(this);
-		classVariables.nextPackageShouldBe = null;
+		getLavaFilesCurrentlyBeingLoaded().remove(loadPathAndName);
 	    }
 	}
+	// REVISIT - duplicate code (see above).
+	if (addToRefListP) {
+	    addToRefList(
+              findOrCreateNamespace(
+		  packagePathAndName(name) + "." + classNameOf(name)));
+	}
 	return "no change: " + loadPathAndName;
+    }
+
+    public String loadFileNewOrTouched (
+        File file, String name, String loadPathAndName, boolean addToRefListP)
+    {
+	try {
+	    classVariables.nextPackageShouldBe = name;
+	    getRepl().readCompileEval("(load \"" + loadPathAndName + "\")");
+	    // We loaded the file, either because it was a new
+	    // import or because it had been touched.
+	    // Make sure it had a correct package definition.
+	    if (! name.equals(getCurrentNamespace().getName())) {
+		throw F.newLavaException(
+		    "Missing or incorrect package statement.  "
+		    + "Expecting: " + name
+		    + " when loading: " + loadPathAndName);
+	    }
+	    if (addToRefListP) {
+		// NOTE: Depends on package procedure setting
+		// currentNamespace during the above load.
+		addToRefList((NamespaceImpl)getCurrentNamespace());
+	    }
+	    findNamespace(name).setFileLastModified(file.lastModified());
+	    return (addToRefListP ? "(re)load: " : "") + loadPathAndName;
+	} finally {
+	    setCurrentNamespace(this);
+	    classVariables.nextPackageShouldBe = null;
+	}
     }
 
     public void addToRefList (NamespaceImpl reference)
@@ -558,20 +653,23 @@ else
 
 	NamespaceImpl current = (NamespaceImpl) getCurrentNamespace();
 
-	if (current.isSealed) {
+	return current.setNotDotted(identifier, val);
+    }
+
+    public Object setNotDotted (String identifier, Object val)
+    {
+	if (isSealed) {
 	    throw F.newLavaException("package: "
-				     + current.getName()
+				     + getName()
 				     + " is sealed.  Cannot set: "
 				     + identifier
 				     + " to: "
 				     + val);
 	}
 
-
-	Hashtable map = ((NamespaceImpl)getCurrentNamespace()).getMap();
 	// Hashtable does not allow null values to be put.
-	map.put(identifier, 
-		val == null ? classVariables.NULL_VALUE : val);
+	getMap().put(identifier, 
+		   val == null ? classVariables.NULL_VALUE : val);
 	// REVISIT
 	// TestCompilerAndEngine "(list 1)" after setting list to
 	// newPrimList fails - because DI does not throw the right
@@ -587,9 +685,10 @@ else
     public Object get (String identifier, boolean ignoreUndefined)
     {
 	if (isDottedP(identifier)) {
-	    return refDotted(packageAndClassOf(identifier),
-			     variableOf(identifier),
-			     ignoreUndefined);
+	    return ((NamespaceImpl)getCurrentNamespace())
+		.refDotted(packageAndClassOf(identifier),
+			   variableOf(identifier),
+			   ignoreUndefined);
 	} else {
 	    return ((NamespaceImpl)getCurrentNamespace())
 		.refNotDotted(identifier, ignoreUndefined);
@@ -601,15 +700,23 @@ else
 	return (identifier.indexOf(".") == -1 ? false : true);
     }
 
+    // For references.
     public String packageAndClassOf (String identifier)
     {
 	return identifier.substring(0, identifier.lastIndexOf("."));
     }
 
+    // For references.
     public String variableOf (String identifier)
     {
 	return identifier.substring(identifier.lastIndexOf(".") + 1,
 				    identifier.length());
+    }
+
+    // For taking apart a pc internally.
+    private String packagePathAndName (String packageAndClass)
+    {
+	return packageAndClassOf(packageAndClass);
     }
 
     /**
@@ -641,6 +748,11 @@ else
 	    if (result != classVariables.NOT_FOUND) {
 		if (result == classVariables.NULL_VALUE) {
 		    return null;
+		    /*
+		} else if (result instanceof GenericProcedure) {
+		    // WORKAROUND/SET/UNDEFINED. See EnvTopLevelInitImpl.
+		    ;
+		    */
 		} else {
 		    return result;
 		}
@@ -692,22 +804,50 @@ else
 	return null;
     }
 
-    public Object refDotted(String packagePathAndNameAndClassname, 
-			    String identifier,
-			    boolean ignoreUndefined)
+    public Object refDotted (String packagePathAndNameAndClassname, 
+			     String identifier,
+			     boolean ignoreUndefined)
     {
 	String pc = packagePathAndNameAndClassname;
 	String originalPC = pc;
+
 	// Enables .foo shorthand for built-in procedures.
 	pc = (pc.equals("") ? "lava.Lava" : pc);
-	NamespaceImpl ns = 
-	    ((NamespaceImpl)getCurrentNamespace()).findNamespaceInRefList(pc);
+
+	// REVISIT
+	// Only ref imported things, even fully qualified:
+	//
+	// But for imported macros, where the macros themselves
+	// ref something they import the macro must use the
+	// fully qualified name.  The package that expands the
+	// macro may not ref the package the macro depends on.
+	// So, the macro imports to get it loaded and uses the
+	// fully qualified name to ensure its found when expanded.
+	/*
+	NamespaceImpl ns = findNamespaceInRefList(pc);
+	*/
+
+	// REVISIT
+	// Ref anything.
+	//
+	// REVISIT - swap order?
+	// This case picks up ClassFoo.staticMethod.
+	NamespaceImpl ns = findNamespaceInRefList(pc);
+	if (ns == null) {
+	    // This case picks up fully qualified.
+	    ns = findNamespace(pc);
+	}
 	if (ns != null) {
 	    Object result = lookupInMap(ns.getMap(), identifier,
 					classVariables.NOT_FOUND);
 	    if (result != classVariables.NOT_FOUND) {
 		if (result == classVariables.NULL_VALUE) {
 		    return null;
+		    /*
+		} else if (result instanceof GenericProcedure) {
+		    // WORKAROUND/SET/UNDEFINED. See EnvTopLevelInitImpl.
+		    ;
+		    */
 		} else {
 		    return result;
 		}
@@ -768,6 +908,11 @@ else
     public Repl setRepl (Repl repl)
     {
 	return classVariables.repl = repl;
+    }
+
+    public Set getLavaFilesCurrentlyBeingLoaded ()
+    {
+	return classVariables.lavaFilesCurrentlyBeingLoaded;
     }
 
     public Hashtable getMap ()

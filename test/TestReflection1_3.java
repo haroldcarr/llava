@@ -1,6 +1,6 @@
 /**
  * Created       : 2000 Feb 10 (Thu) 23:26:38 by Harold Carr.
- * Last Modified : 2000 Feb 11 (Fri) 00:03:42 by Harold Carr.
+ * Last Modified : 2001 Mar 14 (Wed) 21:59:11 by Harold Carr.
  */
 
 package testLava;
@@ -18,7 +18,9 @@ public class TestReflection1_3
 
     public static void testReflection1_3 ()
     {
+	Test.dsop("begin: testReflection1_3")
 	testProxy();
+	Test.dsop("end: testReflection1_3")
     }
 
     public static void testProxy ()

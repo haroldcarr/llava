@@ -1,6 +1,6 @@
 ;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2000 Feb 20 (Sun) 22:35:42 by Harold Carr.
+;;;; Last Modified : 2000 Oct 29 (Sun) 21:55:03 by .
 ;;;;
 
 ;; map made into primitive for speed.
@@ -9,22 +9,22 @@
 ;  (if (null? lists)
 ;      '() 
 ;      (if (null? (cdr lists))
-;	  (.%mapone f (car lists)) 
-;	  (.%mapmany f lists))))
+;	  (_%mapone f (car lists)) 
+;	  (_%mapmany f lists))))
 ;
-;(define .%mapone
+;(define _%mapone
 ;  (lambda (f x)  
 ;    (if (null? x)
 ;	'() 
 ;	(cons (f (car x))
-;	      (.%mapone f (cdr x))))))
+;	      (_%mapone f (cdr x))))))
 ;
-;(define .%mapmany
+;(define _%mapmany
 ;  (lambda (f xs)  
 ;    (if (null? (car xs))
 ;	'() 
-;	(cons (apply f (.%mapone car xs))
-;	      (.%mapmany f (.%mapone cdr xs))))))
+;	(cons (apply f (_%mapone car xs))
+;	      (_%mapmany f (_%mapone cdr xs))))))
 ;
 
 ;;; REVISIT

@@ -1,12 +1,12 @@
 /**
  * Created       : 2000 Jan 07 (Fri) 18:17:59 by Harold Carr.
- * Last Modified : 2000 Jan 10 (Mon) 18:42:31 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 14:07:10 by Harold Carr.
  */
 
-package libLava.rt;
+package lava.runtime;
 
-import libLava.rt.EnvironmentTopLevel;
-import libLava.rt.Evaluator;
+import lava.runtime.EnvironmentTopLevel;
+import lava.runtime.Evaluator;
 
 /**
  * This interface exists so a representation of the runtime system

@@ -1,6 +1,6 @@
 /*
  * Created       : 2001 Mar 10 (Sat) 16:34:48 by Harold Carr.
- * Last Modified : 2001 Apr 29 (Sun) 15:17:13 by Harold Carr.
+ * Last Modified : 2002 Mar 07 (Thu) 12:59:05 by Harold Carr.
  */
 
 package org.jdom.output;
@@ -202,19 +202,16 @@ public class LXMLOutputter extends XMLOutputter {
             }
         }
 
-        boolean attributesOnlyShorthand = false;
-	if (hasAttributes || hasNamespaceDeclarations) {
-	    if (empty) {
-		out.write("(~ ");
-		attributesOnlyShorthand = true;
-	    } else {
-		out.write("((");
-	    }
-	} else {
-	    out.write("(");
-	}
+	// Begin element.
+
+	out.write("(");
+
         out.write(element.getQualifiedName());
         int previouslyDeclaredNamespaces = namespaces.size();
+
+	if (hasAttributes || hasNamespaceDeclarations) {
+	    out.write(" (@");
+	}
 
         ns = element.getNamespace();
 
@@ -252,9 +249,7 @@ public class LXMLOutputter extends XMLOutputter {
 	}
 
         if (empty) {
-	    if (! attributesOnlyShorthand) {
-		out.write(")");
-	    }
+	    out.write(")");
             maybePrintln(out);
         } else {
             // we know it's not null or empty from above

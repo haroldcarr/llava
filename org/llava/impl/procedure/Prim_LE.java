@@ -1,6 +1,6 @@
 /**
  * Created       : 2002 Jan 12 (Sat) 12:01:47 by Harold Carr.
- * Last Modified : 2002 Jan 12 (Sat) 12:02:12 by Harold Carr.
+ * Last Modified : 2002 Jan 12 (Sat) 12:03:34 by Harold Carr.
  */
 
 package lavaProfile.runtime.procedure.primitive.java;
@@ -25,7 +25,7 @@ public class Prim_LE
 
     public Object apply (Pair args, Engine engine)
     {
-	return Prim_NumHelp.doOpBoolean(Prim_NumHelp.LT, args);
+	return Prim_NumHelp.doOpBoolean(Prim_NumHelp.LE, args);
     }
 }
 

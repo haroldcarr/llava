@@ -1,6 +1,6 @@
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2000 Jan 25 (Tue) 18:58:03 by Harold Carr.
+;;;; Last Modified : 2001 Mar 15 (Thu) 08:05:43 by Harold Carr.
 ;;;;
 
 (require 'cl/control/dotimes)
@@ -29,26 +29,26 @@
 		       (error "bad arg")))))
 	      (len  (if (null? contents)
 			0
-			(.si 'getLength 'java.lang.reflect.Array contents)))
+			(_si 'getLength 'java.lang.reflect.Array contents)))
 	      (current '()))
 	 (dotimes (i len)
-	   (set! current (.si 'get 'java.lang.reflect.Array contents i))
-	   ;;(.print (list 'current current))
-	   ;;(.print (list 'class (invoke current 'getClass)))
+	   (set! current (_si 'get 'java.lang.reflect.Array contents i))
+	   ;;(_println (list 'current current))
+	   ;;(_println (list 'class (invoke current 'getClass)))
 	   (cond ((isDirectory current)
 		  (if (proc current) (return #t))
 		  (for-each-dir proc current))
 		 ((isFile current)
 		  (if (proc current) (return #t)))
 		 (else
-		  (.print (string-append "Unknown: " (to-string current)))
-		  (.print " ... skipping ...")))))))))
+		  (_println (string-append "Unknown: " (toString current)))
+		  (_println " ... skipping ...")))))))))
 
 (provide 'lava/files/for-each-dir)
 
-(.comment
+(_comment
 (require 'lava/files/for-each-dir)
-(define (pf x) (.print (list 'YES x)) #f)
+(define (pf x) (_println (list 'YES x)) #f)
 (for-each-dir pf ".")
 (for-each-dir pf "d:/home/carr/.sync/.esync/java/lava")
 )

@@ -1,12 +1,12 @@
 /**
  * Created       : 1999 Dec 25 (Sat) 02:30:22 by Harold Carr.
- * Last Modified : 2000 Jan 29 (Sat) 15:38:44 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 14:41:56 by Harold Carr.
  */
 
-package libLava.r1.code;
+package lavaProfile.runtime.code;
 
-import libLava.r1.env.ActivationFrame;
-import libLava.r1.Engine;
+import lavaProfile.runtime.env.ActivationFrame;
+import lavaProfile.runtime.Engine;
 
 public class CodeAssignment
     extends Code

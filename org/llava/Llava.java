@@ -1,44 +1,31 @@
 /**
  * Created       : 1999 Dec 30 (Thu) 04:18:02 by Harold Carr.
- * Last Modified : 2001 Mar 12 (Mon) 18:30:59 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 14:10:01 by Harold Carr.
  */
 
-package lava;
+package lavaProfile;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
-import lava.F;
 import lava.Repl;
-import lava.io.LavaReader;
-import lava.lang.exceptions.BacktraceHandler;
 import lava.lang.exceptions.LavaException;
-import lava.lang.types.Pair;
-import lava.lang.types.Procedure;
-import libLava.co.Compiler;
-import libLava.co.FC;
-import libLava.rt.EnvironmentTopLevel;
-import libLava.rt.Evaluator;
-import libLava.rt.EnvTopLevelInit;
-import libLava.rt.LavaRuntime;
-import libLava.rt.FR;
-import libLava.r1.Engine; // REVISIT
-import libLava.r1.FR1; // REVISIT
 
-import libLava.r1.env.Namespace; // REVISIT
+import lava.compiler.Compiler;
+
+import lava.runtime.EnvironmentTopLevel;
+import lava.runtime.Evaluator;
+import lava.runtime.LavaRuntime;
+
+import lavaProfile.F;
 
 public class Lava
 {
-    private Evaluator           evaluator;
-    private Compiler            compiler;
-    private EnvironmentTopLevel environment;
-    private LavaRuntime         runtime;
-    private Repl                repl;
-    private BacktraceHandler    backtraceHandler;
-    private PrintWriter         err;
+    private Repl repl;
 
     public static void main (String[] av)
     {
@@ -48,14 +35,7 @@ public class Lava
 
 	lava.getRepl().outputVersionMessage(end - start);
 
-	lava.loadUserLavaRC();
-
-	// REVISIT - wrong place
-	EnvironmentTopLevel env = lava.getEnvironmentTopLevel();
-	if (env instanceof Namespace) {
-	    ((Namespace)env)
-		.findNamespace(F.newSymbol("lava.Lava")).setIsSealed(true);
-	}
+	lava.loadUserLavaRC(System.err);
 
 	//newReplOnPort(4444); // REVISIT
 
@@ -64,100 +44,44 @@ public class Lava
 
     public Lava ()
     {
-	this(System.in, System.out, System.err);
+	repl = F.newRepl();
     }
 
     public Lava (InputStream in, OutputStream out, OutputStream err)
 
     {
-	//You can override defaults via -D or setting them here.
-	//System.setProperty("lava.io.LavaEOFClassName", "Bad");
-
-	// REVISIT: compiler is passed to handle system derived procedures.
-	// However this means the system cannot run without the compiler.
-	// But the compiler is so small who cares?
-
-	evaluator   = FR.newEvaluator();
-	compiler    = FC.newCompiler();
-	environment = FR.newEnvironmentTopLevel();
-	runtime     = FR.newLavaRuntime(environment, evaluator);
-
-	this.err    = new PrintWriter(err);
-	repl        = F.newRepl(F.newLavaReader(new InputStreamReader(in)),
-				new PrintWriter(out),
-				this.err,
-				runtime,
-				compiler);
-
-	EnvTopLevelInit init = FR.newEnvTopLevelInit(repl);
-	init.init();
-	init.loadDerived();
-
-	backtraceHandler = FR1.newBacktraceHandler(); // REVISIT
-	environment.set(F.newSymbol("_jbt"), new JavaBacktrace());
-	environment.set(F.newSymbol("_bt"), new LavaBacktrace());
+	repl = F.newRepl(in, out, err);
     }
 
-    public Object loadUserLavaRC ()
+    public Object loadUserLavaRC (OutputStream err)
     {
 	String homeDir = java.lang.System.getProperty("user.home");
 	try {
-	    return loadFile(homeDir + "/.lavarc");
+	    return getRepl().loadFile(homeDir + "/.lavarc");
 	} catch (java.lang.Throwable t) {
 	    if (t instanceof LavaException &&
 		((LavaException)t).getThrowable() instanceof FileNotFoundException) {
 		; // OK - it does not exist
 	    } else {
-		err.println("Error while loading: " + homeDir + "/.lavarc: " +
-			    t);
-		err.flush();
+		new PrintWriter(err)
+		    .println("Error while loading: " + homeDir + "/.lavarc: " +
+			     t);
+		try {
+		    err.flush();
+		} catch (IOException ioe) {
+		    ; // REVISIT - what to do?
+		}
 	    }
 	}
 	return null; // For javac.
     }
 
-    public Object loadFile (String filename)
-    {
-	return repl.readCompileEval("(load \"" + filename + "\")");
-    }
-
-    public Evaluator           getEvaluator ()           { return evaluator; }
-    public Compiler            getCompiler ()            { return compiler; }
-    public EnvironmentTopLevel getEnvironmentTopLevel () { return environment;}
-    public LavaRuntime         getLavaRuntime ()         { return runtime; }
-    public Repl                getRepl ()                { return repl; }
-
-    public class JavaBacktrace
-	implements Procedure
-    {
-	private String name;
-	public Object apply (Pair args, Engine engine)
-	{
-	    if (repl.getLastException() != null) {
-		repl.getLastException().getThrowable().printStackTrace(err);
-		err.flush();
-	    }
-	    return null;
-	}
-	public String getName ()            { return name; }
-	public String setName (String name) { return this.name = name; }
-    }
-
-    public class LavaBacktrace
-	implements Procedure
-    {
-	private String name;
-	public Object apply (Pair args, Engine engine)
-	{
-	    if (repl.getLastException() != null) {
-		repl.getLastException().printBacktrace(backtraceHandler, err);
-		err.flush();
-	    }
-	    return null;
-	}
-	public String getName ()            { return name; }
-	public String setName (String name) { return this.name = name; }
-    }
+    public Compiler    getCompiler  ()         { return repl.getCompiler(); }
+    public EnvironmentTopLevel 
+            getEnvironmentTopLevel () { return repl.getEnvironmentTopLevel(); }
+    public Evaluator   getEvaluator ()         { return repl.getEvaluator(); }
+    public LavaRuntime getLavaRuntime ()       { return repl.getLavaRuntime();}
+    public Repl        getRepl ()              { return repl; }
 
     public static Thread newReplOnPort (int port)
     {
@@ -166,7 +90,8 @@ public class Lava
 
 	Lava lava = new Lava();
 	Repl repl = lava.getRepl();
-	lava.loadUserLavaRC(); // REVISIT - .lavarc to get examples on path
+	// REVISIT - .lavarc to get examples on path
+	lava.loadUserLavaRC(System.err);
 	repl.readCompileEval("(load-library 'examples/net/server)");
 	repl.readCompileEval("(define *repl-server* #t)");
 	return (Thread)

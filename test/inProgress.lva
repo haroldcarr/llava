@@ -9,22 +9,22 @@
   (map (lambda (x)
 	 (list
 	  (getResourceAsStream 
-	   (.si 'forName 'java.lang.Class "lava.Lava") x)
+	   (_si 'forName 'java.lang.Class "lavaProfile.Lava") x)
 	  (getResourceAsStream 
-	   (.si 'forName 'java.lang.Class "libLava.r1.procedure.primitive.lava.PrimAppend") x)))
+	   (_si 'forName 'java.lang.Class "lavaProfile.runtime.procedure.primitive.lava.PrimAppend") x)))
        l))
 
 (define (lc l)
   (map (lambda (x)
 	 (try 
-	  (.si 'forName 'java.lang.Class x)
+	  (_si 'forName 'java.lang.Class x)
 	  (catch (java.lang.Exception e) '())))
        l))
 
 (gr l)
 (lc l)
-(.si 'getProperties 'java.lang.System)
-(.si 'getProperty 'java.lang.System "java.class.path")
+(_si 'getProperties 'java.lang.System)
+(_si 'getProperty 'java.lang.System "java.class.path")
 
 
 ;(load "inProgress.lva")

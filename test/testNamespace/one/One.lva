@@ -1,5 +1,17 @@
-(package 'testLava.ns.one 'One)
+(_println "Entering One");
+(_println *ns*)
+(_println (_package *ns* 'testNamespace.one 'One))
+(_println *ns*)
+(_println (_import *ns* 'testNamespace.two.Two))
 
-(importX 'testLava.ns.two.Two)
+(letrec ((min (lambda args (minAux (car args) (cdr args))))
+	 (minAux (lambda (smallest args)
+		   (if (null? args)
+		       smallest
+		       (minAux (if (< (car args) smallest)
+				   (car args)
+				   smallest)
+			       (cdr args))))))
+  (set *ns* 'min min))
 
-;; blank
+;; End of file.

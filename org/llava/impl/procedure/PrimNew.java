@@ -1,16 +1,16 @@
 /**
  * Created       : 2001 Mar 05 (Mon) 21:04:59 by Harold Carr.
- * Last Modified : 2001 Mar 05 (Mon) 21:25:21 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:18:51 by Harold Carr.
  */
 
-package libLava.r1.procedure.primitive.java;
+package lavaProfile.runtime.procedure.primitive.java;
 
-import lava.F;
+import lavaProfile.F;
 import lava.lang.types.Pair;
-import libLava.r1.Engine;
-import libLava.r1.env.Namespace;
-import libLava.r1.procedure.primitive.java.PrimNewPrim;
-import libLava.r1.procedure.primitive.PrimitiveProcedure;
+import lavaProfile.runtime.Engine;
+import lavaProfile.runtime.env.Namespace;
+import lavaProfile.runtime.procedure.primitive.java.PrimNewPrim;
+import lavaProfile.runtime.procedure.primitive.PrimitiveProcedure;
 
 public class PrimNew
     extends

@@ -1,25 +1,27 @@
 /**
  * Created       : 1999 Dec 23 (Thu) 04:54:03 by Harold Carr.
- * Last Modified : 2000 Feb 15 (Tue) 21:48:12 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:24:33 by Harold Carr.
  */
 
 package testLava;
 
 import java.io.PrintWriter;
 
-import lava.F;
+import lavaProfile.F;
 import lava.io.LavaReader;
 import lava.lang.exceptions.LavaException;
-import lava.util.List;
+import lavaProfile.util.List;
 import lava.Repl;
-import libLava.co.Compiler;
-import libLava.co.FC;
-import libLava.rt.EnvironmentTopLevel;
-import libLava.rt.Evaluator;
-import libLava.rt.FR;
-import libLava.rt.LavaRuntime;
-import libLava.r1.FR1;
-import libLava.r1.syntax.SyntaxDefineSyntax;
+
+import lava.compiler.Compiler;
+
+import lava.runtime.EnvironmentTopLevel;
+import lava.runtime.Evaluator;
+import lava.runtime.LavaRuntime;
+
+import lavaProfile.compiler.FC;
+import lavaProfile.runtime.FR;
+import lavaProfile.runtime.syntax.SyntaxDefineSyntax;
 
 public class TestCompilerAndEngine
 {
@@ -40,17 +42,18 @@ public class TestCompilerAndEngine
 
     public static void testCompilerAndEngine ()
     {
+	Test.dsop("begin: testCompilerAndEngine");
 
-	topEnvironment.set(F.newSymbol("list"), FR1.newPrimList());
+	topEnvironment.set(F.newSymbol("list"), FR.newPrimList());
 
-
+	Test.check("eval0", eval("'(1)"), eval("(list 1)"));
 	Test.check("eval1", new Integer(1), eval("(if true 1 0)"));
 	Test.check("eval2", new Integer(0), eval("(if false 1 0)"));
 	Test.check("eval3", new Double(0.1), eval("(begin -1 0 0.1)"));
 	// REVISIT
 	//Test.check("eval4", new Double(0.1), eval("(lambda () 0.2)"));
 	Test.check("eval5", 
-		   "Anonymous lambda with body: {libLava.r1.code.CodeLiteral 3}: too many arguments",
+		   "Anonymous lambda with body: {lavaProfile.runtime.code.CodeLiteral 3}: too many arguments",
 		   eval("((lambda () 3) 4)"));
 	Test.check("eval6", new Double(5.0), eval("((lambda (x) x) 5.0)"));
 	Test.check("eval6.1", 
@@ -84,10 +87,10 @@ public class TestCompilerAndEngine
 ")"
                        ));
 	Test.check("eval9.1", 
-		   "Anonymous lambda with body: {libLava.r1.code.CodeReference y}: not enough arguments",
+		   "Anonymous lambda with body: {lavaProfile.runtime.code.CodeReference y}: not enough arguments",
 		   eval("((lambda (x y) y) -1)"));
 	Test.check("eval10", 
-		   "Anonymous lambda with body: {libLava.r1.code.CodeReference y}: too many arguments",
+		   "Anonymous lambda with body: {lavaProfile.runtime.code.CodeReference y}: too many arguments",
 		   eval("((lambda (x y) y) 1 2 3)"));
 	Test.check("eval11", 
 		   "Undefined top level variable: z",
@@ -103,6 +106,7 @@ public class TestCompilerAndEngine
 		   F.newSymbol("a"),
 		   eval("(begin (define-syntax foo (lambda (x y) (list 'quote x))) (foo a b))")
 		   );
+	Test.dsop("end: testCompilerAndEngine");
     }
 
     public static Object eval(String stringExpr)
@@ -111,7 +115,8 @@ public class TestCompilerAndEngine
 	    Object expr = TestReader.readFromString(stringExpr);
 	    Object code = repl.compile(expr);
 	    Test.dsop(code.toString());
-	    return repl.eval(code);
+	    Object result = repl.eval(code);
+	    return result;
 	} catch (LavaException le) {
 	    Test.printStackTrace(le.getThrowable());
 	    return le.getThrowable().getMessage();

@@ -1,3 +1,15 @@
-(package 'testLava.ns.two 'Two)
+(_println "Entering Two")
+(_println *ns*)
+(_println (_package *ns* 'testNamespace.two 'Two))
 
-;; blank
+(letrec ((max (lambda args (maxAux (car args) (cdr args))))
+	 (maxAux (lambda (largest args)
+		   (if (null? args)
+		       largest
+		       (maxAux (if (> (car args) largest)
+				   (car args)
+				   largest)
+			       (cdr args))))))
+  (set *ns* 'max max))
+
+;; End of file.

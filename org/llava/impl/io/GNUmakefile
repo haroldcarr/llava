@@ -1,17 +1,14 @@
 #
 # Created       : 1999 Dec 18 (Sat) 16:10:32 by Harold Carr.
-# Last Modified : 2000 Jan 15 (Sat) 18:42:06 by Harold Carr.
+# Last Modified : 2001 Mar 26 (Mon) 15:13:16 by Harold Carr.
 #
 
 TOPDIR		=	../..
 
-PACKAGE		=	lava.io
-PKGDIR		=	lava/io
+PACKAGE		=	lavaProfile.io
+PKGDIR		=	lavaProfile/io
 
 FILES_java	= \
-	$(PKGDIR)/LavaEOF.java \
-	$(PKGDIR)/LavaEOFImpl.java \
-	$(PKGDIR)/LavaReader.java \
 	$(PKGDIR)/LavaReaderImpl.java
 
 all :: classes

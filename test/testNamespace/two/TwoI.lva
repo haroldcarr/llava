@@ -1,4 +1,4 @@
-(package testNamespace.two Two)
+(package testNamespace.two TwoI)
 
 (letrec ((maxT (lambda args (maxAux (car args) (cdr args))))
 	 (maxAux (lambda (largest args)

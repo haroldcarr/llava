@@ -1,6 +1,6 @@
 ;;;;
 ;;;; Created       : 2001 Mar 06 (Tue) 15:09:50 by Harold Carr.
-;;;; Last Modified : 2001 May 04 (Fri) 21:15:57 by Harold Carr.
+;;;; Last Modified : 2002 Mar 28 (Thu) 14:52:03 by Harold Carr.
 ;;;;
 
 (package xml XSLT)
@@ -37,6 +37,11 @@
     (l->x-files lxslt "/tmp/ttXSLT.xslt")
     (apply transform-via-main 
 	   `("/tmp/ttXML.xml" "/tmp/ttXSLT.xslt" ,result ,@options))))
+
+(define tfWithStyle
+  (lambda (lxml lxslt lstyle lstyleParam result)
+    (l->x-files lstyle "/tmp/ttSTYLE.xml")
+    (transform-files lxml lxslt result "-PARAM" lstyleParam "/tmp/ttSTYLE.xml")))
 
 (define transform-via-main
   (lambda (xmlDoc xslDoc outDoc . options)

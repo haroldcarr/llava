@@ -1,6 +1,6 @@
 ;;;;
 ;;;; Created       : 2001 Mar 06 (Tue) 15:09:50 by Harold Carr.
-;;;; Last Modified : 2001 Nov 15 (Thu) 10:25:24 by Harold Carr.
+;;;; Last Modified : 2002 Mar 30 (Sat) 11:38:13 by Harold Carr.
 ;;;;
 
 (package xml L2X)
@@ -25,12 +25,15 @@
 
 (define *l->x-out* (_sf 'out 'java.lang.System))
 
-(define *l->x-newline?* true)
+;; Make newline and indent false by default so "mailto" attributed do not
+;; end up with space in them.  Turn to true for development.
+
+(define *l->x-newline?* false)
 (define l->x-newline?
   (lambda (v)
     (set! *l->x-newline?* v)))
 
-(define *l->x-indent?* true)
+(define *l->x-indent?* false)
 (define l->x-indent?
   (lambda (v)
     (set! *l->x-indent?* v)))
@@ -49,18 +52,21 @@
 	(case (car sexpr)
 	  ((?)   (l->x-printProcessingInstruction sexpr indent))
 	  ((!)   (_println (string-append "ignoring: " (toString sexpr))))
+	  ((!DOCTYPE)
+                 (l->x-printDOCTYPE sexpr indent))
 	  ((!--) (l->x-printComment sexpr indent))
 	  ((&&)  (l->x-printEntity sexpr indent))
-	  ((~)   (l->x-printElement (list (cdr sexpr)) indent))
 	  (else  (l->x-printElement sexpr indent))))))
 
 (define l->x-printElement
   (lambda (element indent)
-    (let* ((operator (car element))
-	   (hasAttributes (pair? operator))
-	   (name (if hasAttributes (car operator) operator))
-	   (attributes (if hasAttributes (cdr operator) null))
-	   (body (cdr element)))
+    (let* ((hasAttributes (and (not (null? (cdr element)))
+			       (pair? (cdr element))
+			       (pair? (cadr element))
+			       (equals '@ (car (cadr element)))))
+	   (name (car element))
+	   (attributes (if hasAttributes (cdr (cadr element)) null))
+	   (body (if hasAttributes (cddr element) (cdr element))))
       (l->x-newline)
       (l->x-indent indent)
       (l->x-print "<")
@@ -70,7 +76,7 @@
 	     (l->x-print "/>"))
 	    (else
 	     (l->x-print ">")
-	     (l->x-with-indent (cdr element) (+ indent 4))
+	     (l->x-with-indent body (+ indent 4))
 	     (l->x-print "</")
 	     (l->x-print name)
 	     (l->x-print ">"))))))
@@ -114,6 +120,20 @@
     (l->x-print "<!--")
     (l->x-print (cadr comment))
     (l->x-print "-->")))
+
+(define l->x-printDOCTYPE
+  (lambda (doctype indent)
+    (l->x-newline)
+    (l->x-indent indent)
+    (l->x-print "<!DOCTYPE")
+    (do ((d (cdr doctype)            (cdr d))
+	 (s '(false false true true) (cdr s)))
+	((null? d))
+      (l->x-print " ")
+      (if (car s) (l->x-print "\""))
+      (l->x-print (car d))
+      (if (car s) (l->x-print "\"")))
+    (l->x-print ">")))
 
 (define l->x-indent
   (lambda (indent)
@@ -199,7 +219,9 @@
 
 (define x->l-aux
   (lambda (builderType outputterType uri . out)
-    (set! out (if (null? out) (_sf 'out 'java.lang.System) (car out)))
+    (set! out (if (null? out) 
+		  (_sf 'out 'java.lang.System)
+		  (x->l-normalize-output-type (car out))))
     (let* ((builder (case builderType
 		      ;; p 210.
 		      ((SAX) (new 'org.jdom.input.SAXBuilder false))
@@ -227,6 +249,15 @@
       (setExpandEmptyElements fmt true) ;; This one is necessary for LXML
       (output fmt doc out))))
 
+(define x->l-normalize-output-type
+  (lambda (out)
+    (cond ((equal? (getName (getClass out)) "java.lang.String")
+	   (new 'java.io.PrintStream
+		(new 'java.io.FileOutputStream out)))
+	  (else
+	   ;; Assume it is already what is needed.
+	   out))))
+
 ;;;;
 ;;;; --------------------------------------------------
 ;;;; Test.
@@ -244,13 +275,10 @@
 
 (load "L2X.lva")
 
-(x->l "/export/home/carr/InteropTest.wsdl")
-
+(l->x-files "./example.lxsl" "./junk.xslt")
 (l->x-string '((? xml (version "1.0") (encoding "UTF-8"))))
-
 (l->x-files (demoRoot "xsltBook/me/03Example/bookings.lxml")
 	    "/tmp/bookings.xml")
-
 (l->x-files (string-append (userHome) "/.sync/.ksync/rpt/carrEstimates.lxml")
 	    "/tmp/carrEstimates.xml")
 
@@ -258,6 +286,7 @@
 (x->l-aux 'DOM 'LXML (demoRoot "test.xml"))
 ;; Must be connected to specs.
 (x->l (demoRoot "specs/REC-xml-20001006.xml"))
+(x->l "/export/home/carr/InteropTest.wsdl")
 
 )
 

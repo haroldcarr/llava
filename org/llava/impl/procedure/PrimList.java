@@ -1,16 +1,16 @@
 /**
  * Created       : 1999 Dec 30 (Thu) 19:28:20 by Harold Carr.
- * Last Modified : 2000 Jan 29 (Sat) 15:40:49 by Harold Carr.
+ * Last Modified : 2001 Mar 26 (Mon) 15:24:13 by Harold Carr.
  */
 
-package libLava.r1.procedure.primitive.lava;
+package lavaProfile.runtime.procedure.primitive.lava;
 
-import lava.F;
+import lavaProfile.F;
 import lava.lang.types.Pair;
-import lava.util.List;
-import libLava.r1.Engine;
-import libLava.r1.exceptions.UndefinedIdException;
-import libLava.r1.procedure.generic.GenericProcedureImpl;
+import lavaProfile.util.List;
+import lavaProfile.runtime.Engine;
+import lavaProfile.runtime.exceptions.UndefinedIdException;
+import lavaProfile.runtime.procedure.generic.GenericProcedureImpl;
 
 public class PrimList
     extends
