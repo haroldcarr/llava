@@ -1,6 +1,16 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+
 ;;;;
 ;;;; Created       : 1999 Jun 10 (Thu) 20:56:18 by Harold Carr.
-;;;; Last Modified : 1999 Nov 19 (Fri) 17:18:51 by Harold Carr.
+;;;; Last Modified : 2004 Sep 03 (Fri) 15:44:05 by Harold Carr.
 ;;;;
 
 ;;;;
@@ -15,43 +25,43 @@
 ;;;; Parser.
 ;;;;
 
-(defmacro (hcLavaMakePredicate name test)
+(defmacro (hcLlavaMakePredicate name test)
   `(define (,name item)
      (and (pair? item)
 	  (member (first item) '(,test /** /* //)))))
 
-(defmacro (hcLavaPopStream )
+(defmacro (hcLlavaPopStream )
   `(begin
      (set! stream (rest stream))
      (set! item   (first stream))
      item))
 
-(defmacro (hcLavaMakeParseItem name predicate)
+(defmacro (hcLlavaMakeParseItem name predicate)
   `(define (,name stream)
      (let ((result '())
 	   (item (first stream)))
        (while (,predicate item)
 	 (set! result (cons item result))
-	 (hcLavaPopStream))
+	 (hcLlavaPopStream))
        (values (reverse result) stream))))
 
-(hcLavaMakePredicate hcLavaCommentP    //) ; finds all comment forms
-(hcLavaMakePredicate hcLavaPackageP    package)
-(hcLavaMakePredicate hcLavaImportP     import)
-(hcLavaMakePredicate hcLavaImplementsP implements)
-(hcLavaMakePredicate hcLavaExtendsP    extends)
-(hcLavaMakePredicate hcLavaThrowsP     throws)
+(hcLlavaMakePredicate hcLlavaCommentP    //) ; finds all comment forms
+(hcLlavaMakePredicate hcLlavaPackageP    package)
+(hcLlavaMakePredicate hcLlavaImportP     import)
+(hcLlavaMakePredicate hcLlavaImplementsP implements)
+(hcLlavaMakePredicate hcLlavaExtendsP    extends)
+(hcLlavaMakePredicate hcLlavaThrowsP     throws)
 
-(hcLavaMakeParseItem hcLavaParsePackage hcLavaPackageP)
-(hcLavaMakeParseItem hcLavaParseImport  hcLavaImportP)
+(hcLlavaMakeParseItem hcLlavaParsePackage hcLlavaPackageP)
+(hcLlavaMakeParseItem hcLlavaParseImport  hcLlavaImportP)
 
-(defmacro (hcLavaGetImplementsOrExtends implementsOrExtends)
+(defmacro (hcLlavaGetImplementsOrExtends implementsOrExtends)
   `(begin
      ;; rest -> skip actual "implements" or "extends" symbol.
      (set! ,implementsOrExtends (rest (first stream))) 
      (set! stream (rest stream))))
 
-(define (hcLavaParseClassHeader stream)
+(define (hcLlavaParseClassHeader stream)
   (let ((name       #f)
 	(implements #f)
 	(extends    #f))
@@ -61,22 +71,22 @@
 			      (first stream) " " (second stream))))
     (setq name (third stream))
     (setq stream (rest (rest (rest stream))))
-    (cond ((hcLavaImplementsP (first stream))
-	   (hcLavaGetImplementsOrExtends implements)
-	   (cond ((hcLavaExtendsP (first stream))
-		  (hcLavaGetImplementsOrExtends extends))))
-	  ((hcLavaExtendsP (first stream))
-	   (hcLavaGetImplementsOrExtends extends)
-	   (cond ((hcLavaImplementsP (first stream))
-		  (hcLavaGetImplementsOrExtends implements)))))
-    (values (hcLavaMakeClassHeader
+    (cond ((hcLlavaImplementsP (first stream))
+	   (hcLlavaGetImplementsOrExtends implements)
+	   (cond ((hcLlavaExtendsP (first stream))
+		  (hcLlavaGetImplementsOrExtends extends))))
+	  ((hcLlavaExtendsP (first stream))
+	   (hcLlavaGetImplementsOrExtends extends)
+	   (cond ((hcLlavaImplementsP (first stream))
+		  (hcLlavaGetImplementsOrExtends implements)))))
+    (values (hcLlavaMakeClassHeader
 	     :name name :implements implements :extends extends)
 	    stream)))
 
-(define (hcLavaParseClassMembers publicClassName stream)
-  (hcLavaParseClassMember publicClassName '() (first stream) (rest stream)))
+(define (hcLlavaParseClassMembers publicClassName stream)
+  (hcLlavaParseClassMember publicClassName '() (first stream) (rest stream)))
 
-(define (hcLavaParseClassMember publicClassName accumulator stream remaining)
+(define (hcLlavaParseClassMember publicClassName accumulator stream remaining)
   (let ((visibility "")
 	(static     "")
 	(returnType #f)
@@ -86,40 +96,40 @@
 	(body       '())
 	(result     '())
 	(item       (car stream)))
-    (cond ((hcLavaCommentP stream)
+    (cond ((hcLlavaCommentP stream)
 	   (set! result stream))
 	  (else
 	   (cond ((member item '(public protected private))
 		  (set! visibility item)
-		  (hcLavaPopStream)))
+		  (hcLlavaPopStream)))
 	   (cond ((eq? item 'static)
 		  (set! static item)
-		  (hcLavaPopStream)))
+		  (hcLlavaPopStream)))
 	   (cond ((symbol? item)
 		  (set! returnType item)
-		  (hcLavaPopStream)
-		  (let ((tmp (hcLavaParseNameAndParams item)))
+		  (hcLlavaPopStream)
+		  (let ((tmp (hcLlavaParseNameAndParams item)))
 		    (set! name (first tmp))
 		    (set! args (second tmp))
-		    (hcLavaPopStream)))
+		    (hcLlavaPopStream)))
 		 ((and (pair? item)
 		       (eq? (car item) publicClassName))
 		  ;; A Constructor.
-		  (let ((tmp (hcLavaParseNameAndParams item)))
+		  (let ((tmp (hcLlavaParseNameAndParams item)))
 		    (set! name (first tmp))
 		    (set! args (second tmp))
-		    (hcLavaPopStream)))
+		    (hcLlavaPopStream)))
 		 (else
 		  (error (string-append "Expecting name and parameters, got: "
 					item))))
-	   (cond ((hcLavaThrowsP item)
+	   (cond ((hcLlavaThrowsP item)
 		  (set! throws (rest item)) ; skip "throws" symbol.
-		  (hcLavaPopStream)))
+		  (hcLlavaPopStream)))
 	   ;; Build in throwing of SchemeException.
 	   (set! throws (append throws (list 'SchemeException)))
 	   (set! body stream)
 	   (set! result
-		 (hcLavaMakeClassMember
+		 (hcLlavaMakeClassMember
 		  :visibility visibility 
 		  :static static
 		  :returnType returnType 
@@ -131,24 +141,24 @@
     (cond ((null? remaining)
 	   (reverse accumulator))
 	  (else
-	   (hcLavaParseClassMember publicClassName
+	   (hcLlavaParseClassMember publicClassName
 				   accumulator
 				   (first remaining)
 				   (rest remaining))))))
 
-(define (hcLavaParseNameAndParams item)
+(define (hcLlavaParseNameAndParams item)
   (values (first item) (rest item)))
 
-(define (hcLavaParse def)
-  (let* ((tmp1 (hcLavaParsePackage def))
+(define (hcLlavaParse def)
+  (let* ((tmp1 (hcLlavaParsePackage def))
 	 (package (first tmp1))
-	 (tmp2 (hcLavaParseImport (second tmp1)))
+	 (tmp2 (hcLlavaParseImport (second tmp1)))
 	 (import (first tmp2))
 	 ;; NB. first to get inside the class and make a new stream.
-	 (tmp3 (hcLavaParseClassHeader (first (second tmp2))))
+	 (tmp3 (hcLlavaParseClassHeader (first (second tmp2))))
 	 (classHeader (first tmp3))
-	 (members (hcLavaParseClassMembers 
-		   (hcLavaGetClassHeaderName classHeader) (second tmp3))))
+	 (members (hcLlavaParseClassMembers 
+		   (hcLlavaGetClassHeaderName classHeader) (second tmp3))))
     `((package     ,package)
       (import      ,import)
       (classHeader ,classHeader)
@@ -159,206 +169,206 @@
 ;;;; Java and Skij file generators.
 ;;;;
 
-(define (hcLavaGenerateComment comment javaBuffer skijBuffer)
-  (hcLavaGenerateCommentJava comment javaBuffer)
-  (hcLavaGenerateCommentSkij comment skijBuffer))
+(define (hcLlavaGenerateComment comment javaBuffer skijBuffer)
+  (hcLlavaGenerateCommentJava comment javaBuffer)
+  (hcLlavaGenerateCommentSkij comment skijBuffer))
 
-(define (hcLavaGenerateCommentJava comment javaBuffer)
+(define (hcLlavaGenerateCommentJava comment javaBuffer)
   (let* ((commentType (car comment))
 	 (subsequent  (if (member commentType '(/** /*)) '* '//))
 	 (end         (if (member commentType '(/** /*)) '*/ '//))
 	 (needsSpaceP (if (member commentType '(/** /*)) #t #f)))
-    (hcLavaTerpri javaBuffer)
-    (hcLavaTerpri javaBuffer)
-    (hcLavaPrinc commentType javaBuffer)
+    (hcLlavaTerpri javaBuffer)
+    (hcLlavaTerpri javaBuffer)
+    (hcLlavaPrinc commentType javaBuffer)
     (set! comment (cdr comment))
     (while (not (null? comment))
-      (hcLavaTerpri javaBuffer)
-      (if needsSpaceP (hcLavaPrinc " " javaBuffer))
-      (hcLavaPrinc (string-append subsequent " " (car comment)) javaBuffer)
+      (hcLlavaTerpri javaBuffer)
+      (if needsSpaceP (hcLlavaPrinc " " javaBuffer))
+      (hcLlavaPrinc (string-append subsequent " " (car comment)) javaBuffer)
       (set! comment (cdr comment)))
-    (hcLavaTerpri javaBuffer)
-    (if needsSpaceP (hcLavaPrinc " " javaBuffer))
-    (hcLavaPrinc end javaBuffer)
-    (hcLavaTerpri javaBuffer)))
+    (hcLlavaTerpri javaBuffer)
+    (if needsSpaceP (hcLlavaPrinc " " javaBuffer))
+    (hcLlavaPrinc end javaBuffer)
+    (hcLlavaTerpri javaBuffer)))
 
-(define (hcLavaGenerateCommentSkij comment skijBuffer)
-  (hcLavaTerpri skijBuffer)
-  (hcLavaTerpri skijBuffer)
-  (hcLavaPrintContents comment 
-		       (lambda () (hcLavaPrinc ";;; " skijBuffer))
-		       (lambda () (hcLavaTerpri skijBuffer))
+(define (hcLlavaGenerateCommentSkij comment skijBuffer)
+  (hcLlavaTerpri skijBuffer)
+  (hcLlavaTerpri skijBuffer)
+  (hcLlavaPrintContents comment 
+		       (lambda () (hcLlavaPrinc ";;; " skijBuffer))
+		       (lambda () (hcLlavaTerpri skijBuffer))
 		       skijBuffer
 		       #f))
 
-(define (hcLavaGeneratePackage parsed javaBuffer skijBuffer)
-  (let ((package (hcLavaSelect 'package parsed)))
-    (hcLavaGeneratePackageJava package javaBuffer)
-    (hcLavaGeneratePackageSkij package skijBuffer)))
+(define (hcLlavaGeneratePackage parsed javaBuffer skijBuffer)
+  (let ((package (hcLlavaSelect 'package parsed)))
+    (hcLlavaGeneratePackageJava package javaBuffer)
+    (hcLlavaGeneratePackageSkij package skijBuffer)))
 
-(define (hcLavaGeneratePackageJava package javaBuffer)
+(define (hcLlavaGeneratePackageJava package javaBuffer)
   (while (not (null? package))
-    (cond ((hcLavaCommentP (car package))
-	   (hcLavaGenerateCommentJava (car package) javaBuffer))
+    (cond ((hcLlavaCommentP (car package))
+	   (hcLlavaGenerateCommentJava (car package) javaBuffer))
 	  (else
-	   (hcLavaTerpri javaBuffer)
-	   (hcLavaPrinc (string-append "package " (second (car package)) ";")
+	   (hcLlavaTerpri javaBuffer)
+	   (hcLlavaPrinc (string-append "package " (second (car package)) ";")
 			javaBuffer)))
     (set! package (cdr package))))
 
-(define (hcLavaGeneratePackageSkij package skijBuffer)
+(define (hcLlavaGeneratePackageSkij package skijBuffer)
   (while (not (null? package))
-    (cond ((hcLavaCommentP (car package))
-	   (hcLavaGenerateCommentSkij (car package) skijBuffer))
+    (cond ((hcLlavaCommentP (car package))
+	   (hcLlavaGenerateCommentSkij (car package) skijBuffer))
 	  (else
-	   (hcLavaTerpri skijBuffer)
-	   (hcLavaPrinc (string-append ";;; " (car package)) skijBuffer)))
+	   (hcLlavaTerpri skijBuffer)
+	   (hcLlavaPrinc (string-append ";;; " (car package)) skijBuffer)))
     (set! package (cdr package))))
 
-(define (hcLavaGenerateImport parsed javaBuffer skijBuffer)
-  (let ((import (hcLavaSelect 'import parsed)))
-    (hcLavaGenerateImportJava import parsed javaBuffer)
-    (hcLavaGenerateImportSkij import parsed skijBuffer)))
+(define (hcLlavaGenerateImport parsed javaBuffer skijBuffer)
+  (let ((import (hcLlavaSelect 'import parsed)))
+    (hcLlavaGenerateImportJava import parsed javaBuffer)
+    (hcLlavaGenerateImportSkij import parsed skijBuffer)))
 
-(define (hcLavaGenerateImportJava import parsed javaBuffer)
-  (hcLavaTerpri javaBuffer)
-  (hcLavaTerpri javaBuffer)
-  (hcLavaPrinc "// Start of imports needed by framework." javaBuffer)
-  (hcLavaTerpri javaBuffer)
-  (hcLavaPrinc "import com.ibm.jikes.skij.Cons;" javaBuffer)
-  (hcLavaTerpri javaBuffer)
-  (hcLavaPrinc "import com.ibm.jikes.skij.Scheme;" javaBuffer)
-  (hcLavaTerpri javaBuffer)
-  (hcLavaPrinc "import com.ibm.jikes.skij.SchemeException;" javaBuffer)
-  (hcLavaTerpri javaBuffer)
-  (hcLavaPrinc "// End of imports needed by framework." javaBuffer)
-  (hcLavaTerpri javaBuffer)
+(define (hcLlavaGenerateImportJava import parsed javaBuffer)
+  (hcLlavaTerpri javaBuffer)
+  (hcLlavaTerpri javaBuffer)
+  (hcLlavaPrinc "// Start of imports needed by framework." javaBuffer)
+  (hcLlavaTerpri javaBuffer)
+  (hcLlavaPrinc "import com.ibm.jikes.skij.Cons;" javaBuffer)
+  (hcLlavaTerpri javaBuffer)
+  (hcLlavaPrinc "import com.ibm.jikes.skij.Scheme;" javaBuffer)
+  (hcLlavaTerpri javaBuffer)
+  (hcLlavaPrinc "import com.ibm.jikes.skij.SchemeException;" javaBuffer)
+  (hcLlavaTerpri javaBuffer)
+  (hcLlavaPrinc "// End of imports needed by framework." javaBuffer)
+  (hcLlavaTerpri javaBuffer)
   (while (not (null? import))
-    (cond ((hcLavaCommentP (car import))
-	   (hcLavaGenerateCommentJava (car import) javaBuffer))
+    (cond ((hcLlavaCommentP (car import))
+	   (hcLlavaGenerateCommentJava (car import) javaBuffer))
 	  (else
-	   (hcLavaTerpri javaBuffer)
-	   (hcLavaPrinc (string-append "import " (second (car import)) ";")
+	   (hcLlavaTerpri javaBuffer)
+	   (hcLlavaPrinc (string-append "import " (second (car import)) ";")
 			javaBuffer)))
     (set! import (cdr import))))
 
-(define (hcLavaGenerateImportSkij import parsed skijBuffer)
-  (hcLavaTerpri skijBuffer)
-  (hcLavaPrinc "(hcRequire \"importJava\")" skijBuffer)
-  (hcLavaTerpri skijBuffer)
+(define (hcLlavaGenerateImportSkij import parsed skijBuffer)
+  (hcLlavaTerpri skijBuffer)
+  (hcLlavaPrinc "(hcRequire \"importJava\")" skijBuffer)
+  (hcLlavaTerpri skijBuffer)
   ;; Two selects skip comments inside of package parse node.
-  (let ((package (hcLavaSelect 'package (hcLavaSelect 'package parsed)))
-	(className (hcLavaGetClassHeaderName
-		    (hcLavaSelect 'classHeader parsed))))
-    (hcLavaPrinc (string-append "(importJava \'" package "." className ")")
+  (let ((package (hcLlavaSelect 'package (hcLlavaSelect 'package parsed)))
+	(className (hcLlavaGetClassHeaderName
+		    (hcLlavaSelect 'classHeader parsed))))
+    (hcLlavaPrinc (string-append "(importJava \'" package "." className ")")
 		 skijBuffer)
-    (hcLavaTerpri skijBuffer))
+    (hcLlavaTerpri skijBuffer))
   (while (not (null? import))
-    (cond ((hcLavaCommentP (car import))
-	   (hcLavaGenerateCommentSkij (car import) skijBuffer))
+    (cond ((hcLlavaCommentP (car import))
+	   (hcLlavaGenerateCommentSkij (car import) skijBuffer))
 	  (else
-	   (hcLavaTerpri skijBuffer)
-	   (hcLavaPrinc (string-append ";;; " (car import)) skijBuffer)))
+	   (hcLlavaTerpri skijBuffer)
+	   (hcLlavaPrinc (string-append ";;; " (car import)) skijBuffer)))
     (set! import (cdr import))))
 
-(define (hcLavaGenerateClassHeader parsed javaBuffer skijBuffer)
-  (let* ((classHeader (hcLavaSelect 'classHeader parsed))
-	 (name        (hcLavaGetClassHeaderName       classHeader))
-	 (implements  (hcLavaGetClassHeaderImplements classHeader))
-	 (extends     (hcLavaGetClassHeaderExtends    classHeader)))
-    (hcLavaTerpri javaBuffer)
-    (hcLavaTerpri javaBuffer)
-    (hcLavaPrinc (string-append "public class " name) javaBuffer)
-    (hcLavaTerpri javaBuffer)
+(define (hcLlavaGenerateClassHeader parsed javaBuffer skijBuffer)
+  (let* ((classHeader (hcLlavaSelect 'classHeader parsed))
+	 (name        (hcLlavaGetClassHeaderName       classHeader))
+	 (implements  (hcLlavaGetClassHeaderImplements classHeader))
+	 (extends     (hcLlavaGetClassHeaderExtends    classHeader)))
+    (hcLlavaTerpri javaBuffer)
+    (hcLlavaTerpri javaBuffer)
+    (hcLlavaPrinc (string-append "public class " name) javaBuffer)
+    (hcLlavaTerpri javaBuffer)
     (cond (extends
-	   (hcLavaPrinc "extends" javaBuffer)
-	   (hcLavaPrintContents extends
-				(lambda () (hcLavaTerpri javaBuffer))
+	   (hcLlavaPrinc "extends" javaBuffer)
+	   (hcLlavaPrintContents extends
+				(lambda () (hcLlavaTerpri javaBuffer))
 				(lambda () #f)
 				javaBuffer
 				#t)
-	   (hcLavaTerpri javaBuffer)))
+	   (hcLlavaTerpri javaBuffer)))
     (cond (implements
-	   (hcLavaPrinc "implements" javaBuffer)
-	   (hcLavaPrintContents implements
-				(lambda () (hcLavaTerpri javaBuffer))
+	   (hcLlavaPrinc "implements" javaBuffer)
+	   (hcLlavaPrintContents implements
+				(lambda () (hcLlavaTerpri javaBuffer))
 				(lambda () #f)
 				javaBuffer
 				#t)
-	   (hcLavaTerpri javaBuffer)))
-    (hcLavaPrinc "{" javaBuffer)))
+	   (hcLlavaTerpri javaBuffer)))
+    (hcLlavaPrinc "{" javaBuffer)))
 
-(define (hcLavaGenerateMembers parsed javaBuffer skijBuffer)
-  (let ((members (hcLavaSelect 'members parsed)))
+(define (hcLlavaGenerateMembers parsed javaBuffer skijBuffer)
+  (let ((members (hcLlavaSelect 'members parsed)))
     (while (not (null? members))
-      (cond ((hcLavaCommentP (car members))
-	     (hcLavaGenerateComment (car members) javaBuffer skijBuffer))
+      (cond ((hcLlavaCommentP (car members))
+	     (hcLlavaGenerateComment (car members) javaBuffer skijBuffer))
 	    (else
-	     (hcLavaGenerateMember (car members) parsed javaBuffer skijBuffer)))
+	     (hcLlavaGenerateMember (car members) parsed javaBuffer skijBuffer)))
       (set! members (cdr members)))))
 
-(define (hcLavaGenerateMember member parsed javaBuffer skijBuffer)
-  (hcLavaGenerateMemberJava member parsed javaBuffer)
-  (hcLavaGenerateMemberSkij member parsed skijBuffer))
+(define (hcLlavaGenerateMember member parsed javaBuffer skijBuffer)
+  (hcLlavaGenerateMemberJava member parsed javaBuffer)
+  (hcLlavaGenerateMemberSkij member parsed skijBuffer))
 
-(define (hcLavaGenerateMemberJava member parsed javaBuffer)
-  (hcLavaTerpri javaBuffer)
-  (hcLavaPrinc
+(define (hcLlavaGenerateMemberJava member parsed javaBuffer)
+  (hcLlavaTerpri javaBuffer)
+  (hcLlavaPrinc
    (string-append
-    (hcLavaGetClassMemberVisibility member) " "
-    (hcLavaGetClassMemberStatic member) " "
-    (let ((returnType (hcLavaGetClassMemberReturnType member)))
+    (hcLlavaGetClassMemberVisibility member) " "
+    (hcLlavaGetClassMemberStatic member) " "
+    (let ((returnType (hcLlavaGetClassMemberReturnType member)))
       (if returnType returnType "")) " "
-    (hcLavaGetClassMemberName member))
+    (hcLlavaGetClassMemberName member))
    javaBuffer)
-  (hcLavaGenerateParametersJava (hcLavaGetClassMemberArgs member) javaBuffer)
-  (let ((throws (hcLavaGetClassMemberThrows member)))
+  (hcLlavaGenerateParametersJava (hcLlavaGetClassMemberArgs member) javaBuffer)
+  (let ((throws (hcLlavaGetClassMemberThrows member)))
     (cond ((not (null? throws))
-	   (hcLavaTerpri javaBuffer)
-	   (hcLavaPrinc "throws" javaBuffer)
-	   (hcLavaPrintContents throws
-				(lambda () (hcLavaTerpri javaBuffer))
+	   (hcLlavaTerpri javaBuffer)
+	   (hcLlavaPrinc "throws" javaBuffer)
+	   (hcLlavaPrintContents throws
+				(lambda () (hcLlavaTerpri javaBuffer))
 				(lambda () #f)
 				javaBuffer
 				#t))))
-  (hcLavaTerpri javaBuffer)
-  (hcLavaPrinc "{" javaBuffer)
-  (hcLavaGenerateBodyJava member parsed javaBuffer)
-  (hcLavaTerpri javaBuffer)
-  (hcLavaPrinc "}" javaBuffer))
+  (hcLlavaTerpri javaBuffer)
+  (hcLlavaPrinc "{" javaBuffer)
+  (hcLlavaGenerateBodyJava member parsed javaBuffer)
+  (hcLlavaTerpri javaBuffer)
+  (hcLlavaPrinc "}" javaBuffer))
 
-(define (hcLavaMakeProcNameSkij member parsed)
+(define (hcLlavaMakeProcNameSkij member parsed)
   ;; Two selects skip comments inside package parse node.
-  (let ((package (hcLavaSelect 'package (hcLavaSelect 'package parsed)))
+  (let ((package (hcLlavaSelect 'package (hcLlavaSelect 'package parsed)))
 	(className 
-	 (hcLavaGetClassHeaderName (hcLavaSelect 'classHeader parsed))))
+	 (hcLlavaGetClassHeaderName (hcLlavaSelect 'classHeader parsed))))
     (string-append package
 		   "."
 		   className
 		   "."
-		   (symbol->string (hcLavaGetClassMemberName member))
+		   (symbol->string (hcLlavaGetClassMemberName member))
 		   "Impl")))
 
-(define (hcLavaGenerateMemberSkij member parsed skijBuffer)
-  (hcLavaTerpri skijBuffer)
-  (let ((procName (hcLavaMakeProcNameSkij member parsed)))
-    (hcLavaPrinc (string-append
+(define (hcLlavaGenerateMemberSkij member parsed skijBuffer)
+  (hcLlavaTerpri skijBuffer)
+  (let ((procName (hcLlavaMakeProcNameSkij member parsed)))
+    (hcLlavaPrinc (string-append
 		  "(define (" 
 		  procName 
 		  " "
-		  (if (hcLavaNeedsThis? member) " this " "")
-		  (hcLavaMakeParameterString 
-		   (hcLavaGetClassMemberArgs member) #f #f)
+		  (if (hcLlavaNeedsThis? member) " this " "")
+		  (hcLlavaMakeParameterString 
+		   (hcLlavaGetClassMemberArgs member) #f #f)
 		  ")")
 		 skijBuffer))
-  (let ((body (hcLavaGetClassMemberBody member)))
+  (let ((body (hcLlavaGetClassMemberBody member)))
     (while (not (null? body))
-      (hcLavaTerpri skijBuffer)
-      (hcLavaPrin1 (car body) skijBuffer)
+      (hcLlavaTerpri skijBuffer)
+      (hcLlavaPrin1 (car body) skijBuffer)
       (setq body (cdr body))))
-  (hcLavaPrinc ")" skijBuffer))
+  (hcLlavaPrinc ")" skijBuffer))
 
-(define (hcLavaMakeParameterString params withTypesP withCommasP)
+(define (hcLlavaMakeParameterString params withTypesP withCommasP)
   (let ((result "")
 	(param #f))
     (while (not (null? params))
@@ -368,64 +378,64 @@
 	     result
 	     (if withTypesP
 		 (string-append
-		  (hcLavaGetParameterType param) " " (hcLavaGetParameterName param))
-		 (hcLavaGetParameterName param))))
+		  (hcLlavaGetParameterType param) " " (hcLlavaGetParameterName param))
+		 (hcLlavaGetParameterName param))))
       (set! params (rest params))
       (if (not (null? params))
 	  (set! result (string-append result (if withCommasP ", " " ")))))
     result))
 
-(define (hcLavaGenerateParametersJava params javaBuffer)
-  (hcLavaPrinc "(" javaBuffer)
-  (hcLavaPrinc (hcLavaMakeParameterString params #t #t) javaBuffer)
-  (hcLavaPrinc ")" javaBuffer))
+(define (hcLlavaGenerateParametersJava params javaBuffer)
+  (hcLlavaPrinc "(" javaBuffer)
+  (hcLlavaPrinc (hcLlavaMakeParameterString params #t #t) javaBuffer)
+  (hcLlavaPrinc ")" javaBuffer))
 
-(define (hcLavaNeedsThis? member)
-  (if (eq? (hcLavaGetClassMemberStatic member) 'static)
+(define (hcLlavaNeedsThis? member)
+  (if (eq? (hcLlavaGetClassMemberStatic member) 'static)
       #f
-      (if (hcLavaGetClassMemberArgs member) #t #f)))
+      (if (hcLlavaGetClassMemberArgs member) #t #f)))
 
-(define (hcLavaGenerateBodyJava member parsed javaBuffer)
-  (let ((returnType (hcLavaGetClassMemberReturnType member))
-	(name       (hcLavaMakeProcNameSkij         member parsed))
-	(args       (hcLavaGetClassMemberArgs       member)))
-    (hcLavaTerpri javaBuffer)
+(define (hcLlavaGenerateBodyJava member parsed javaBuffer)
+  (let ((returnType (hcLlavaGetClassMemberReturnType member))
+	(name       (hcLlavaMakeProcNameSkij         member parsed))
+	(args       (hcLlavaGetClassMemberArgs       member)))
+    (hcLlavaTerpri javaBuffer)
     (cond ((and returnType
 		(not (eq? returnType 'void)))
-	   (hcLavaPrinc "return" javaBuffer)
-	   (hcLavaTerpri javaBuffer)
-	   (hcLavaPrinc (string-append "(" returnType ") ") javaBuffer)
-	   (hcLavaTerpri javaBuffer)))
-    (let* ((parms (hcLavaMakeParameterString args #f #t))
-	   (applyArgs (if (hcLavaNeedsThis? member)
+	   (hcLlavaPrinc "return" javaBuffer)
+	   (hcLlavaTerpri javaBuffer)
+	   (hcLlavaPrinc (string-append "(" returnType ") ") javaBuffer)
+	   (hcLlavaTerpri javaBuffer)))
+    (let* ((parms (hcLlavaMakeParameterString args #f #t))
+	   (applyArgs (if (hcLlavaNeedsThis? member)
 			  (if (null? args)
 			      "Cons.list(this)"
 			      (string-append "Cons.list(this, " parms ")"))
 			  (if (null? args)
 			      "Nil.nil"
 			      (string-append "Cons.list(" parms ")")))))
-      (hcLavaPrinc 
+      (hcLlavaPrinc 
        (string-append
 	"Scheme.procedure(\"" name "\").apply(" applyArgs ");")
        javaBuffer))))
 
-(define (hcLavaGenerateCloseClass parsed javaBuffer skijBuffer)
-  (hcLavaGenerateCloseClassJava parsed javaBuffer)
-  (hcLavaGenerateCloseClassSkij parsed skijBuffer))
+(define (hcLlavaGenerateCloseClass parsed javaBuffer skijBuffer)
+  (hcLlavaGenerateCloseClassJava parsed javaBuffer)
+  (hcLlavaGenerateCloseClassSkij parsed skijBuffer))
 
-(define (hcLavaGenerateCloseClassJava parsed javaBuffer)
-  (hcLavaTerpri javaBuffer)
-  (hcLavaPrinc "}" javaBuffer)
-  (hcLavaTerpri javaBuffer)
-  (hcLavaTerpri javaBuffer)
-  (hcLavaPrinc "// End of file." javaBuffer)
-  (hcLavaTerpri javaBuffer))
+(define (hcLlavaGenerateCloseClassJava parsed javaBuffer)
+  (hcLlavaTerpri javaBuffer)
+  (hcLlavaPrinc "}" javaBuffer)
+  (hcLlavaTerpri javaBuffer)
+  (hcLlavaTerpri javaBuffer)
+  (hcLlavaPrinc "// End of file." javaBuffer)
+  (hcLlavaTerpri javaBuffer))
 
-(define (hcLavaGenerateCloseClassSkij parsed skijBuffer)
-  (hcLavaTerpri skijBuffer)
-  (hcLavaTerpri skijBuffer)
-  (hcLavaPrinc ";;; End of file." skijBuffer)
-  (hcLavaTerpri skijBuffer))
+(define (hcLlavaGenerateCloseClassSkij parsed skijBuffer)
+  (hcLlavaTerpri skijBuffer)
+  (hcLlavaTerpri skijBuffer)
+  (hcLlavaPrinc ";;; End of file." skijBuffer)
+  (hcLlavaTerpri skijBuffer))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
@@ -436,10 +446,10 @@
   `(define-java-class-e ',def))
 
 (define (define-java-class-e def)
-  (let* ((parsed       (hcLavaParse def))
+  (let* ((parsed       (hcLlavaParse def))
 	 (className    (symbol->string 
-			(hcLavaGetClassHeaderName
-			 (hcLavaSelect 'classHeader parsed))))
+			(hcLlavaGetClassHeaderName
+			 (hcLlavaSelect 'classHeader parsed))))
 	 (javaFileName (string-append className ".java"))
 	 (skijFileName (string-append className "Impl.skj"))
 	 (javaBuffer   (open-output-file javaFileName))
@@ -447,11 +457,11 @@
     (for-each
      (lambda (procedure)
        (procedure parsed javaBuffer skijBuffer))
-     `(,hcLavaGeneratePackage
-       ,hcLavaGenerateImport
-       ,hcLavaGenerateClassHeader
-       ,hcLavaGenerateMembers
-       ,hcLavaGenerateCloseClass))
+     `(,hcLlavaGeneratePackage
+       ,hcLlavaGenerateImport
+       ,hcLlavaGenerateClassHeader
+       ,hcLlavaGenerateMembers
+       ,hcLlavaGenerateCloseClass))
     (close-output-port javaBuffer)
     (close-output-port skijBuffer)
     #t))
@@ -463,39 +473,39 @@
 
 ;;; Records
 
-(define (hcLavaCheckRecordType record type)
+(define (hcLlavaCheckRecordType record type)
   (if (or (not (pair? record))
 	  (not (eq? (car record) type)))
       (error (string-append "Incorrect type.  Expected: "
 			    type
 			    " got: "
 			    record))))
-(define (hcLavaGetRecordSlot record slot)
+(define (hcLlavaGetRecordSlot record slot)
   (let ((found (member slot record)))
     (if (not found)
 	(error (string-append "Incorrect slot: " slot " for: " record)))
     (cadr found)))
-(define (hcLavaCheckGetRecordSlot type record slot)
-  (hcLavaCheckRecordType record type)
-  (hcLavaGetRecordSlot record slot))
+(define (hcLlavaCheckGetRecordSlot type record slot)
+  (hcLlavaCheckRecordType record type)
+  (hcLlavaGetRecordSlot record slot))
 
 ;;; ClassHeader
 
-(defineWithKeywords (hcLavaMakeClassHeader name implements extends)
+(defineWithKeywords (hcLlavaMakeClassHeader name implements extends)
   (list 'ClassHeader
 	:name name 
 	:implements implements
 	:extends extends))
-(define (hcLavaGetClassHeaderName record)
-  (hcLavaCheckGetRecordSlot 'ClassHeader record :name))
-(define (hcLavaGetClassHeaderImplements record)
-  (hcLavaCheckGetRecordSlot 'ClassHeader record :implements))
-(define (hcLavaGetClassHeaderExtends record)
-  (hcLavaCheckGetRecordSlot 'ClassHeader record :extends))
+(define (hcLlavaGetClassHeaderName record)
+  (hcLlavaCheckGetRecordSlot 'ClassHeader record :name))
+(define (hcLlavaGetClassHeaderImplements record)
+  (hcLlavaCheckGetRecordSlot 'ClassHeader record :implements))
+(define (hcLlavaGetClassHeaderExtends record)
+  (hcLlavaCheckGetRecordSlot 'ClassHeader record :extends))
 
 ;;; ClassMember
 
-(defineWithKeywords (hcLavaMakeClassMember
+(defineWithKeywords (hcLlavaMakeClassMember
 		     visibility static returnType name args throws body)
   (list 'ClassMember 
 	:visibility visibility 
@@ -505,53 +515,53 @@
 	:args args
 	:throws throws
 	:body body))
-(define (hcLavaGetClassMemberVisibility record)
-  (hcLavaCheckGetRecordSlot 'ClassMember record :visibility))
-(define (hcLavaGetClassMemberStatic record)
-  (hcLavaCheckGetRecordSlot 'ClassMember record :static))
-(define (hcLavaGetClassMemberReturnType record)
-  (hcLavaCheckGetRecordSlot 'ClassMember record :returnType))
-(define (hcLavaGetClassMemberName record)
-  (hcLavaCheckGetRecordSlot 'ClassMember record :name))
-(define (hcLavaGetClassMemberArgs record)
-  (hcLavaCheckGetRecordSlot 'ClassMember record :args))
-(define (hcLavaGetClassMemberThrows record)
-  (hcLavaCheckGetRecordSlot 'ClassMember record :throws))
-(define (hcLavaGetClassMemberBody record)
-  (hcLavaCheckGetRecordSlot 'ClassMember record :body))
+(define (hcLlavaGetClassMemberVisibility record)
+  (hcLlavaCheckGetRecordSlot 'ClassMember record :visibility))
+(define (hcLlavaGetClassMemberStatic record)
+  (hcLlavaCheckGetRecordSlot 'ClassMember record :static))
+(define (hcLlavaGetClassMemberReturnType record)
+  (hcLlavaCheckGetRecordSlot 'ClassMember record :returnType))
+(define (hcLlavaGetClassMemberName record)
+  (hcLlavaCheckGetRecordSlot 'ClassMember record :name))
+(define (hcLlavaGetClassMemberArgs record)
+  (hcLlavaCheckGetRecordSlot 'ClassMember record :args))
+(define (hcLlavaGetClassMemberThrows record)
+  (hcLlavaCheckGetRecordSlot 'ClassMember record :throws))
+(define (hcLlavaGetClassMemberBody record)
+  (hcLlavaCheckGetRecordSlot 'ClassMember record :body))
 
 ;;; Parameters
 
-(define (hcLavaGetParameterType param)
+(define (hcLlavaGetParameterType param)
   (first param))
-(define (hcLavaGetParameterName param)
+(define (hcLlavaGetParameterName param)
   (second param))
 
 
-(define (hcLavaSelect this that)
+(define (hcLlavaSelect this that)
   (cond ((null? that) '())
 	((eq? this (caar that)) (car (cdr (car that))))
-	(else (hcLavaSelect this (cdr that)))))
+	(else (hcLlavaSelect this (cdr that)))))
 
-(define (hcLavaPrintContents 
+(define (hcLlavaPrintContents 
 	 contents beforeEachItem afterEachItem stream withCommas?)
   (while (not (null? contents))
     (let ((x (car contents)))
       (set! contents (cdr contents))
       (beforeEachItem)
-      (hcLavaPrinc x stream)
+      (hcLlavaPrinc x stream)
       (if (and withCommas?
 	       (not (null? contents)))
-	  (hcLavaPrinc "," stream))
+	  (hcLlavaPrinc "," stream))
       (afterEachItem))))
 
-(define (hcLavaTerpri stream)
+(define (hcLlavaTerpri stream)
   (newline stream))
 
-(define (hcLavaPrinc item stream)
+(define (hcLlavaPrinc item stream)
   (display item stream))
 
-(define (hcLavaPrin1 item stream)
+(define (hcLlavaPrin1 item stream)
   (write item stream))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -561,10 +571,10 @@
 
 (comment
 
-(load "hcLava.skj")
+(load "hcLlava.skj")
 
 (define-java-class
-  (package hc.lava)
+  (package hc.llava)
   (public class FooImplGen (extends Foo)
 	  (public String (bar (String x))
 		  (string-append "it works!  "
@@ -575,8 +585,8 @@
 gm
 
 (define className 'nothing)
-;(set! className 'hc.lava.FooImpl)
-(set! className 'hc.lava.FooImplGen)
+;(set! className 'hc.llava.FooImpl)
+(set! className 'hc.llava.FooImplGen)
 (define (tryFoo)
   (let ((foo (new className)))
     (bar foo " The Argument")))
@@ -597,12 +607,12 @@ gm
 
 ;;-----------
 
-(load "hcLava.skj")
+(load "hcLlava.skj")
 
 (define-java-class
   (/** "Comment before package."
        "Each line in a string.")
-  (package hc.lava)
+  (package hc.llava)
   (/* "Comment before import."
       "Another line.")
   (import com.ibm.jikes.skij.*)
@@ -636,9 +646,9 @@ gm
 gm
 
 (define (tryBaz)
-  (let ((foo (new 'hc.lava.Baz)))
-    (hc.lava.Baz.barNo)
-    (hc.lava.Baz.barYes (new 'java.lang.Integer 1) (new 'java.util.Hashtable))
+  (let ((foo (new 'hc.llava.Baz)))
+    (hc.llava.Baz.barNo)
+    (hc.llava.Baz.barYes (new 'java.lang.Integer 1) (new 'java.util.Hashtable))
     (bazNo foo)
     (bazYes foo (new 'java.lang.Integer 2))))
 

@@ -1,11 +1,20 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
 
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
 
 /**
  * Comment before package.
  * Each line in a string.
  */
 
-package hc.lava;
+package hc.llava;
 
 /*
  * Comment before import.
@@ -43,7 +52,7 @@ public   Baz()
 throws
 SchemeException
 {
-Scheme.procedure("hc.lava.Baz.BazImpl").apply(Cons.list(this));
+Scheme.procedure("hc.llava.Baz.BazImpl").apply(Cons.list(this));
 }
 
 /*
@@ -54,7 +63,7 @@ public static void barNo()
 throws
 SchemeException
 {
-Scheme.procedure("hc.lava.Baz.barNoImpl").apply(Nil.nil);
+Scheme.procedure("hc.llava.Baz.barNoImpl").apply(Nil.nil);
 }
 
 /*
@@ -67,7 +76,7 @@ SchemeException
 {
 return
 (Object) 
-Scheme.procedure("hc.lava.Baz.barYesImpl").apply(Cons.list(x, y));
+Scheme.procedure("hc.llava.Baz.barYesImpl").apply(Cons.list(x, y));
 }
 
 //
@@ -78,7 +87,7 @@ public  void bazNo()
 throws
 SchemeException
 {
-Scheme.procedure("hc.lava.Baz.bazNoImpl").apply(Cons.list(this));
+Scheme.procedure("hc.llava.Baz.bazNoImpl").apply(Cons.list(this));
 }
 
 //
@@ -92,7 +101,7 @@ SchemeException
 {
 return
 (Object) 
-Scheme.procedure("hc.lava.Baz.bazYesImpl").apply(Cons.list(this, x));
+Scheme.procedure("hc.llava.Baz.bazYesImpl").apply(Cons.list(this, x));
 }
 }
 

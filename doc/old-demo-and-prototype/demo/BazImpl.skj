@@ -1,17 +1,25 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
 
 
 ;;; /**
 ;;; Comment before package.
 ;;; Each line in a string.
 
-;;; (package hc.lava)
+;;; (package hc.llava)
 
 ;;; /*
 ;;; Comment before import.
 ;;; Another line.
 
 (hcRequire "importJava")
-(importJava 'hc.lava.Baz)
+(importJava 'hc.llava.Baz)
 
 ;;; (import com.ibm.jikes.skij.*)
 ;;; (import java.util.Hashtable)
@@ -24,31 +32,31 @@
 ;;; /**
 ;;; Constructor with no args.
 
-(define (hc.lava.Baz.BazImpl  this )
+(define (hc.llava.Baz.BazImpl  this )
 (print "Baz no arg constructor"))
 
 ;;; /*
 ;;; Static method with no args.
 
-(define (hc.lava.Baz.barNoImpl )
+(define (hc.llava.Baz.barNoImpl )
 (print "barNo"))
 
 ;;; /*
 ;;; Static method with args.
 
-(define (hc.lava.Baz.barYesImpl x y)
+(define (hc.llava.Baz.barYesImpl x y)
 (let ((return (list 'public 'static 'Object 'barYes x))) (print return) return))
 
 ;;; //
 ;;; Virtual method with no args.
 
-(define (hc.lava.Baz.bazNoImpl  this )
+(define (hc.llava.Baz.bazNoImpl  this )
 (print "bazNo"))
 
 ;;; //
 ;;; Virtual method with args.
 
-(define (hc.lava.Baz.bazYesImpl  this x)
+(define (hc.llava.Baz.bazYesImpl  this x)
 `(public Object baz ,x))
 
 ;;; End of file.

@@ -1,11 +1,20 @@
+# Copyright (c) 1997 - 2004 Harold Carr
 #
+# This work is licensed under the Creative Commons Attribution License.
+# To view a copy of this license, visit 
+#   http://creativecommons.org/licenses/by/2.0/
+# or send a letter to
+#   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+#-----------------------------------------------------------------------------
+
+
 # Created       : 1999 Nov 16 (Tue) 20:12:28 by Harold Carr.
-# Last Modified : 1999 Nov 17 (Wed) 19:20:44 by Harold Carr.
-#
+# Last Modified : 2004 Sep 03 (Fri) 15:38:40 by Harold Carr.
+
 
 TOPDIR		=	../..
 
-PKGDIR		=	hc/lava
+PKGDIR		=	hc/llava
 
 FILES_java	= \
 	$(PKGDIR)/Baz.java \
