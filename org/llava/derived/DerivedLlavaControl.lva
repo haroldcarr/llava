@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2004 Sep 05 (Sun) 14:25:53 by Harold Carr.
+;;;; Last Modified : 2004 Nov 30 (Tue) 06:51:21 by Harold Carr.
 ;;;;
 
 ;; map made into primitive for speed.
@@ -36,8 +36,8 @@
 ;	      (_%mapmany f (_%mapone cdr xs))))))
 ;
 
-;;; REVISIT
+;; for-each factored into map implementation.
 
-(define for-each map)
+;(define for-each map)
 
 ;;;; End of file.
