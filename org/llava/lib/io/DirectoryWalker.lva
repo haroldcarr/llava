@@ -1,18 +1,18 @@
-;;;; Copyright (c) 1997 - 2004 Harold Carr
-;;;;
-;;;; This work is licensed under the Creative Commons Attribution License.
-;;;; To view a copy of this license, visit 
-;;;;   http://creativecommons.org/licenses/by/2.0/
-;;;; or send a letter to
-;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
-;;;;---------------------------------------------------------------------------
+;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;
+;;; This work is licensed under the Creative Commons Attribution License.
+;;; To view a copy of this license, visit 
+;;;   http://creativecommons.org/licenses/by/2.0/
+;;; or send a letter to
+;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;---------------------------------------------------------------------------
 
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2004 Sep 09 (Thu) 21:14:02 by Harold Carr.
+;;;; Last Modified : 2005 Feb 16 (Wed) 16:16:20 by Harold Carr.
 ;;;;
 
-(package org.llava.lib.Files)
+(package org.llava.lib.io.DirectoryWalker)
 
 (import org.llava.lib.cl.Control)
 
@@ -35,6 +35,27 @@
 
 (define for-each-dir
   (lambda (proc dir)
+    (for-each-dir/file proc dir 'dir)))
+
+;;;
+;;; for-each-file
+;;;
+
+(-doc-
+ (name for-each-file)
+ (param proc)
+ (param file-or-string)
+ (description
+  "Given a procedure and directory name or file object.
+   Applies the procedure to each file in that directory.
+   Stops if given procedure returns true."))
+
+(define for-each-file
+  (lambda (proc dir)
+    (for-each-dir/file proc dir 'file)))
+
+(define for-each-dir/file
+  (lambda (proc dir type)
     (call/cc
      (lambda (return)
        (let* ((contents
@@ -54,61 +75,23 @@
 	   ;(-println (list 'current current))
 	   ;(-println (list 'class (getClass current)))
 	   (cond ((isDirectory current)
-		  (if (proc current) (return #t))
-		  (for-each-dir proc current))
+		  (cond ((eq? type 'dir)
+			 (if (proc current) (return true))
+			 (for-each-dir proc current))
+			(else null)))
 		 ((isFile current)
-		  (if (proc current) (return #t)))
-		 (else
-		  (-println (string-append "Unknown: " (toString current)))
-		  (-println " ... skipping ...")))))))))
-
-;;;
-;;; for-each-file
-;;;
-
-(-doc-
- (name for-each-file)
- (param proc)
- (param file-or-string)
- (description
-  "Given a procedure and directory name or file object.
-   Applies the procedure to each file in that directory.
-   Stops if given procedure returns true."))
-
-(define for-each-file
-  (lambda (proc dir)
-    (call/cc
-     (lambda (return)
-       (let* ((contents
-	       (listFiles 
-		(cond ((instanceof dir 'java.io.File)		
-		       dir)
-		      ((instanceof dir 'java.lang.String)
-		       (new 'java.io.File dir))
-		      (else
-		       (error "bad arg")))))
-	      (len  (if (null? contents)
-			0
-			(-si 'getLength 'java.lang.reflect.Array contents)))
-	      (current '()))
-	 (dotimes (i len)
-	   (set! current (-si 'get 'java.lang.reflect.Array contents i))
-	   ;;(-println (list 'current current))
-	   ;;(-println (list 'class (getClass current)))
-	   (cond ((isDirectory current)
-		  ;; ignore
-		  null)
-		 ((isFile current)
-		  (if (proc current) (return #t)))
+		  (if (proc current) (return true)))
 		 (else
 		  (-println (string-append "Unknown: " (toString current)))
 		  (-println " ... skipping ...")))))))))
 
 (-comment-
-(import org.llava.lib.Files)
-(define (pf x) (-println (list 'YES x)) #f)
-(for-each-dir pf ".")
-(for-each-dir pf "/export/home/carr/.sync/.lsync/llava")
+(import org.llava.lib.io.DirectoryWalker)
+(define (pf x) (-println (list 'YES x)) false)
+(for-each-dir  pf ".")
+(for-each-file pf ".")
+(for-each-dir  pf (s+ (user-home) "/.sync/.llava.org/.system"))
+(for-each-file pf (s+ (user-home) "/.sync/.llava.org/.system"))
 )
 
 ;;; End of file.
