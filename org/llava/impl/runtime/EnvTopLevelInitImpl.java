@@ -101,14 +101,12 @@ public class EnvTopLevelInitImpl
 
 	PrimNewPrim primNewPrim =   FR.newPrimNewPrim();
 
-	if (env instanceof Namespace) {
-	    set(env, "_%import",  FR.newPrimImport((Namespace)env));
-	    set(env, "_%new",     primNewPrim);
-	    set(env, "new",       FR.newPrimNew((Namespace)env, primNewPrim));
-	    set(env, "_%package", FR.newPrimPackage((Namespace)env));
-	} else {
-	    set(env, "new",       primNewPrim);
-	}
+	set(env, "_%boot-namespace",env);
+
+	set(env, "_%import",        FR.newPrimImport((Namespace)env));
+	set(env, "_%new",           primNewPrim);
+	set(env, "new",            FR.newPrimNew((Namespace)env, primNewPrim));
+	set(env, "_%package",       FR.newPrimPackage((Namespace)env));
 
 	set(env, "eq?",             FR.newPrimEqP());
 	set(env, "equal?",          FR.newPrimEqualP());
@@ -132,7 +130,7 @@ public class EnvTopLevelInitImpl
 	// opt (optional or optimized)
 	// REVISIT - put this in different package?
 	set(env, "current-time-millis",FR.newPrimCurrentTimeMillis());
-	set(env, "instanceof",      FR.newPrimInstanceof());
+	set(env, "instanceof",      FR.newPrimInstanceof((Namespace)env));
 	set(env, "not",             FR.newPrimNot());
 
 	//
