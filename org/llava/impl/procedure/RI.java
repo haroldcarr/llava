@@ -1,6 +1,6 @@
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2000 Feb 16 (Wed) 21:27:57 by Harold Carr.
+ * Last Modified : 2000 Feb 16 (Wed) 22:59:47 by Harold Carr.
  */
 
 package libLava.r1.procedure.generic;
@@ -10,10 +10,6 @@ import java.util.Vector;
 import java.util.Hashtable;
 
 public class DI {
-
-    //
-    // Public API.
-    //
 
     //
     // Instance creation.
@@ -193,7 +189,7 @@ public class DI {
 	    NoSuchMethodException,
 	    Throwable 
     {
-	Method method = findMethod(targetClass, methodName, getClasses(args));
+	Method method = findMethod(methodName, targetClass, getClasses(args));
 
 	if (method == null) {
 	    throw new NoSuchMethodException("DI.invoke: " + methodName);
@@ -206,20 +202,20 @@ public class DI {
 	}
     }
 
-    private static synchronized Method findMethod (Class target, 
-						   String name, 
+    private static synchronized Method findMethod (String methodName, 
+						   Class targetClass, 
 						   Class[] argTypes) 
 	throws 
 	    NoSuchMethodException  
     {
 	// synchronized because the key is reused.
-	MethodKey key = MethodKey.newMethodKey(target, name, argTypes);
+	MethodKey key = MethodKey.newMethodKey(methodName, targetClass, argTypes);
 	Method result = (Method) cachedMethods.get(key);
 	if (result != null) {
 	    return result;
 	}
 
-	result = findMethodFromScratch(target, name, argTypes);
+	result = findMethodFromScratch(methodName, targetClass, argTypes);
 
 	if (result == null) {
 	    return null;
@@ -230,30 +226,30 @@ public class DI {
 	return result; 
     }
 
-    private static Method findMethodFromScratch (Class target,
-						 String name,
+    private static Method findMethodFromScratch (String methodName,
+						 Class targetClass,
 						 Class[] argTypes) 
 	throws 
 	    NoSuchMethodException 
     {
 	try {
-	    Method m = target.getMethod(name, argTypes); 
+	    Method m = targetClass.getMethod(methodName, argTypes); 
 	    m.setAccessible(true);
 	    return m;
 	} catch (NoSuchMethodException e) {	
 	    ;
 	}
-	return findMethodInSupers(target, name, argTypes);
+	return findMethodInSupers(methodName, targetClass, argTypes);
     }
 
-    private static Method findMethodInSupers (Class target,
-					      String name,
+    private static Method findMethodInSupers (String methodName,
+					      Class targetClass,
 					      Class[] argTypes) 
 	throws 
 	    NoSuchMethodException 
     {
 	Vector goodMethods =
-	    collectCandidatesFromSupers(target, name, argTypes);
+	    collectCandidatesFromSupers(methodName, targetClass, argTypes);
 	
 	Method m;
 	switch (goodMethods.size()) {
@@ -270,25 +266,25 @@ public class DI {
 	return m;
     }
 
-    private static Vector collectCandidatesFromSupers(Class target,
-						      String name,
+    private static Vector collectCandidatesFromSupers(String methodName,
+						      Class targetClass,
 						      Class[] argTypes)
 	throws
 	    NoSuchMethodException
     {
 	Vector candidates = new Vector();
 
-	while (target != null) {
-	    Method[] methods = target.getDeclaredMethods();
+	while (targetClass != null) {
+	    Method[] methods = targetClass.getDeclaredMethods();
 	    for (int i = 0; i < methods.length; i++) {
 		Class[] parmTypes = methods[i].getParameterTypes();
-		if (name.equals(methods[i].getName()) &&
+		if (methodName.equals(methods[i].getName()) &&
 		    equalTypes(parmTypes, argTypes))
 		{
 		    candidates.addElement(methods[i]);
 		}
 	    }
-	    target = target.getSuperclass();
+	    targetClass = targetClass.getSuperclass();
 	}
 	return candidates;
     }
@@ -305,7 +301,7 @@ public class DI {
 	    IllegalAccessException,
 	    NoSuchFieldException 
     {
-	return findField(targetClass, fieldName).get(targetObject);
+	return findField(fieldName, targetClass).get(targetObject);
     }
 
     private static Object internalFieldSet (String fieldName,
@@ -316,11 +312,11 @@ public class DI {
 	    IllegalAccessException, 
 	    NoSuchFieldException 
     {
-	findField(targetClass, fieldName).set(targetObject, value); 
+	findField(fieldName, targetClass).set(targetObject, value); 
 	return value;
     }
 
-    private static Field findField (Class targetClass, String fieldName) 
+    private static Field findField (String fieldName, Class targetClass)
 	throws
 	    NoSuchFieldException 
     {
@@ -329,14 +325,15 @@ public class DI {
 	    field = targetClass.getField(fieldName);	   
 	} catch (NoSuchFieldException e) {
 	    // Either it is non-public, in a super, or it does not exist.
-	    field = findFieldNonPublicAndSupers(targetClass, fieldName);
+	    field = findFieldNonPublicAndSupers(fieldName, targetClass);
 	}
 	field.setAccessible(true);
 	return field;
     }
 
-    private static Field findFieldNonPublicAndSupers (Class targetClass,
-						      String fieldName) 
+    private static Field findFieldNonPublicAndSupers (String fieldName,
+						      Class targetClass)
+						      
 	throws
 	    NoSuchFieldException 
     {
@@ -347,11 +344,11 @@ public class DI {
 	    }
 	}
 
-	Class sup = targetClass.getSuperclass();
-	if (sup == null) {
+	Class superClass = targetClass.getSuperclass();
+	if (superClass == null) {
 	    throw new NoSuchFieldException(fieldName);
 	}
-	return findField(sup, fieldName);
+	return findField(fieldName, superClass);
     }
 
     //
@@ -595,32 +592,32 @@ public class DI {
 class MethodKey 
 {
 
-    private Class   target;
-    private String  name;
+    private String  methodName;
+    private Class   targetClass;
     private Class[] argTypes;
 
     private static MethodKey reusableKey; // N.B.: concurrency
 
-    private MethodKey (Class target, String name, Class[] argTypes) 
+    private MethodKey (String methodName, Class targetClass, Class[] argTypes) 
     {
-	this.init(target, name, argTypes);
+	this.init(methodName, targetClass, argTypes);
     }
 
-    private void init (Class target, String name, Class[] argTypes) 
+    private void init (String methodName, Class targetClass, Class[] argTypes) 
     {
-	this.target   = target; 
-	this.name     = name; 
-	this.argTypes = argTypes;
+	this.methodName  = methodName; 
+	this.targetClass = targetClass; 
+	this.argTypes    = argTypes;
     }
 
-    static MethodKey newMethodKey (Class target, 
-				   String name, 
+    static MethodKey newMethodKey (String methodName, 
+				   Class targetClass, 
 				   Class[] argTypes) 
     {
 	if (reusableKey == null) {
-	    reusableKey = new MethodKey(target, name, argTypes);
+	    reusableKey = new MethodKey(methodName, targetClass, argTypes);
 	} else {
-	    reusableKey.init(target, name, argTypes);
+	    reusableKey.init(methodName, targetClass, argTypes);
 	}
 	return reusableKey;
     }
@@ -632,7 +629,7 @@ class MethodKey
 
     public int hashCode () 
     {
-	int v = target.hashCode() ^ (37 * name.hashCode());
+	int v = targetClass.hashCode() ^ (37 * methodName.hashCode());
 	for (int i = 0; i < argTypes.length; i++) {
 	    v = (v * 43) ^ argTypes[i].hashCode();
 	}
@@ -646,8 +643,8 @@ class MethodKey
 	}
 	MethodKey m = (MethodKey)x;
 	return
-	    target == m.target &&
-	    name.equals(m.name) &&
+	    targetClass == m.targetClass &&
+	    methodName.equals(m.methodName) &&
 	    eqTypes(argTypes, m.argTypes);
     }
 
@@ -665,4 +662,5 @@ class MethodKey
 }
 
 // End of file.
+
 
