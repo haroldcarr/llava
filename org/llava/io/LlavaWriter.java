@@ -42,17 +42,13 @@ public interface LlavaWriter
     /**
      *
      */
-    /*
+
     public Object write (Object x, PrintWriter out);
-    */
-    /**
-     *
-     */
-    /*
-    public Object write (Object x, String out);
-    */
 
     public PrintWriter getPrintWriter ();
+
+    public Object setVectorPrintLength (boolean x);
+    public Object setVectorPrintLength (int x);
 }
 
 // End of file.
