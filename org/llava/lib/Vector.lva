@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2000 Feb 10 (Thu) 21:41:00 by Harold Carr.
-;;;; Last Modified : 2004 Dec 05 (Sun) 18:45:56 by Harold Carr.
+;;;; Last Modified : 2004 Dec 14 (Tue) 12:26:36 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.Vectors)
@@ -81,31 +81,6 @@
 (define vector-for-each
   (lambda (proc java-array)
     (_%map-java-array #f proc java-array)))
-
-;;;
-;;; vector-equal?
-;;;
-
-(-doc-
- (name vector-equal?)
- (param obj)
- (param obj)
- (description
-  "Checks <code>equal?</code> on vector elements."))
-
-(define vector-equal?
-  (lambda (a b)
-    (let ((a-len (-si 'getLength 'java.lang.reflect.Array a))
-	  (b-len (-si 'getLength 'java.lang.reflect.Array b)))
-      (if (not (= a-len b-len))
-	  false
-	  (call/cc 
-	   (lambda (return)
-	     (do ((i 0 (+ i 1)))
-		 ((>= i a-len) (return true))
-	       (if (not (equal? (-si 'get 'java.lang.reflect.Array a i)
-				(-si 'get 'java.lang.reflect.Array b i)))
-		   (return false)))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
