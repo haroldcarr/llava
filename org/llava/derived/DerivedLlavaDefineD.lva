@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2004 Nov 25 (Thu) 14:56:00 by Harold Carr.
-;;;; Last Modified : 2004 Dec 07 (Tue) 22:05:00 by Harold Carr.
+;;;; Last Modified : 2004 Dec 12 (Sun) 12:52:22 by Harold Carr.
 ;;;;
 
 (define-syntax define-d
@@ -53,20 +53,20 @@
 (define print-enter
   (lambda (name . args)
     (print-indent 'enter)
-    (display "->" )
+    (-print "->" )
     (print-common name args)
-    (newline)))
+    (-newline)))
 
 (define print-exit
   (lambda (error result name . args)
     (print-indent 'exit)
-    (display "<" )
-    (-if error (display "E") (display "-"))
+    (-print "<" )
+    (-if error (-print "E") (-print "-"))
     (print-common name args)
-    (display "= " )
+    (-print "= " )
     (-if error 
-	 (begin (write error)  (newline))
-	 (begin (write result) (newline)))))
+	 (-writeln error)
+	 (-writeln result))))
 
 
 (let ((current-indent 0)
@@ -82,7 +82,7 @@
 		 (set! current-indent (- current-indent indent)))
 	     (do ((i current-indent (- i 1)))
 		 ((<= i 0))
-	       (display " "))
+	       (-print " "))
 	     (if (eq? direction 'enter) 
 		 (set! current-indent (+ current-indent indent)))))))
 
@@ -90,10 +90,10 @@
 
 (define print-common
   (lambda (name args)
-    (display "(" )
-    (display name)
-    (for-each (lambda (a) (display " " ) (write a)) args)
-    (display ") ")))
+    (-print "(" )
+    (-print name)
+    (for-each (lambda (a) (-print " " ) (-write a)) args)
+    (-print ") ")))
 
 (-comment-
 (load (s+ (user-home) "/.sync/.llava.org/.system/org/llava/derived/DerivedLlavaDefineD.lva"))

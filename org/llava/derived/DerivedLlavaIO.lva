@@ -1,10 +1,7 @@
 ;;;;
 ;;;; Created       : 1999 Dec 18 (Sat) 17:14:40 by Harold Carr.
-;;;; Last Modified : 2004 Dec 11 (Sat) 09:43:53 by Harold Carr.
+;;;; Last Modified : 2004 Dec 12 (Sun) 13:28:03 by Harold Carr.
 ;;;;
-
-(define (read)
-  (-i 'read _%reader))
 
 (define -read
   (lambda in
@@ -15,12 +12,6 @@
 (define eof-object?
   (lambda (x)
     (equals (-i 'getEOFObject _%reader) x)))
-
-(define (write msg . out)
-  (if (null? out)
-      (-i 'write _%writer msg)
-      (-i 'write _%writer msg (car out)))
-  msg)
 
 (define -write
   (lambda (msg . out)
@@ -34,22 +25,15 @@
     (if (null? out)
 	(begin
 	  (-i 'write _%writer msg)
-	  (newline))
+	  (-newline))
 	(begin
 	  (-i 'write _%writer msg (car out))
-	  (newline (car out))))
+	  (-newline (car out))))
     msg))
 
 (define set-vector-print-length!
   (lambda (x)
     (-i 'setVectorPrintLength _%writer x)))
-
-(define (display msg . out)
-  (let ((n-msg (if (null? msg) "null" msg)))
-    (if (null? out)
-	(-i 'print (getPrintWriter _%writer) n-msg)
-	(-i 'print (car out) n-msg)))
-  msg)
 
 (define -print
   (lambda (msg . out)
@@ -60,18 +44,28 @@
     msg))
 
 (define -println
-  (lambda (msg . out)
-    (let ((n-msg (if (null? msg) "null" msg)))
-      (if (null? out)
-	  (begin
-	    (-i 'print (getPrintWriter _%writer) n-msg)
-	    (newline))
-	  (begin
-	    (-i 'print (car out) n-msg)
-	    (newline (car out)))))
-    msg))
+  (lambda msg-and-out
+    (let* ((no-args? (null? msg-and-out))
+	   (n-msg (if (not no-args?) 
+		      (if (null? (first msg-and-out))
+			  "null"
+			  (first msg-and-out))
+		      null))
+	   (out (if (and (not no-args?) (pair? (rest msg-and-out)))
+		    (second msg-and-out)
+		    null)))
+      (if no-args?
+	  (-newline)
+	  (if (null? out)
+	      (begin
+		(-i 'print (getPrintWriter _%writer) n-msg)
+		(-newline))
+	      (begin
+		(-i 'print out n-msg)
+		(-newline out)))))
+    (if (pair? msg-and-out) (first msg-and-out) null)))
 
-(define (newline . out)
+(define (-newline . out)
   (-i 'println (if (null? out) (getPrintWriter _%writer) (car out)))
   null)
 

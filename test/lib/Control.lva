@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 1998 Dec 05 (Sat) 21:41:11 by Harold Carr.
-;;;; Last Modified : 2004 Dec 07 (Tue) 20:39:35 by Harold Carr.
+;;;; Last Modified : 2004 Dec 12 (Sun) 12:05:25 by Harold Carr.
 ;;;;
 
 (import org.llava.lib.test.Test)
@@ -156,12 +156,12 @@
 (pp (macroexpand '(for ((i 0)) ((< i 10)) ((set! i (+ i 1)))
 		       (-println i))))
 (pp (macroexpand '(for (i 0) (< i 10) (set! i (+ i 1))
-		       (print i))))
+		       (-print i))))
 (pp (macroexpand '
 (for ((i 0) (j '(1 2 3 4)))
      ((< i 10) (not (null? j)))
      ((set! i (+ i 1)) (set! j (cdr j)))
-  (print (list i j)))
+  (-print (list i j)))
 ))
 )
 

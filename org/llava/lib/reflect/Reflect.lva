@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2000 Feb 10 (Thu) 03:17:11 by Harold Carr.
-;;;; Last Modified : 2004 Dec 07 (Tue) 18:38:44 by Harold Carr.
+;;;; Last Modified : 2004 Dec 12 (Sun) 12:52:53 by Harold Carr.
 ;;;;
 
 ;; Core Java 2 V1 p 209-214
@@ -63,39 +63,39 @@
   (lambda (class)
     (let ((extends    (getSuperclass class))
 	  (implements (getInterfaces class))); REVISIT try java.lang.System.out
-      (display "class ") (display (getName class)) (newline)
+      (-print "class ") (-print (getName class)) (-newline)
       (cond ((and (not (null? extends))
 		  (not (equals extends (getClass (new 'java.lang.Object)))))
-	     (display " extends ") (display (getName extends)) 
-	     (newline)))
+	     (-print " extends ") (-print (getName extends)) 
+	     (-newline)))
       (cond ((not (null? implements))
 	     (display-class-parts #f " implements" implements)
-	     (newline)
-	     (newline))))))
+	     (-newline)
+	     (-newline))))))
 
 (define display-class-parts
   (lambda (newline? msg parts)
     (cond ((not (null? parts))
-	   (display msg)
-	   (cond (newline? (newline) (newline)))
+	   (-print msg)
+	   (cond (newline? (-newline) (-newline)))
 	   (vector-for-each (lambda (p) 
-			      (display " ")
-			      (display p) 
-			      (cond (newline? (newline) (newline))))
+			      (-print " ")
+			      (-print p) 
+			      (cond (newline? (-newline) (-newline))))
 			    parts)))))
 
 (define display-fields
   (lambda (object fields)
     (cond ((not (null? fields))
-	   (display "Fields")
-	   (newline)
+	   (-print "Fields")
+	   (-newline)
 	   (vector-for-each (lambda (field)
-			      (newline)
-			      (display " ")
-			      (display field)
-			      (display " = ")
-			      (display (get field object))
-			      (newline))
+			      (-newline)
+			      (-print " ")
+			      (-print field)
+			      (-print " = ")
+			      (-print (get field object))
+			      (-newline))
 			    fields)))))
 
 (-comment-

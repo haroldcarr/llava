@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2004 Sep 05 (Sun) 11:27:57 by Harold Carr.
-;;;; Last Modified : 2004 Dec 11 (Sat) 11:06:35 by Harold Carr.
+;;;; Last Modified : 2004 Dec 12 (Sun) 13:32:44 by Harold Carr.
 ;;;;
 
 (-package-
@@ -1136,19 +1136,13 @@ share the static factory methods).
 (-section- (name "Input and Output"))
 
 (-doc-
- (name read)
- (location org.llava)
- (description
-  "Reader that understands llava data types.  Reads from <code>stdin</code>."))
-
-(-doc-
  (name -read)
  (param " . ")
  (param optional-java.io.Reader)
  (location org.llava)
  (description
-  "Alias for <code>read</code> but also accepts optional <code>Reader</code>
-   argument."))
+  "Reader that understands llava data types.  Reads from <code>stdin</code>
+  or the optional <code>Reader</code> argument."))
 
 (-doc-
  (name eof-object?)
@@ -1159,7 +1153,15 @@ share the static factory methods).
    <code>read</code>."))
 
 (-doc-
- (name write)
+ (name load)
+ (param string)
+ (location org.llava)
+ (description 
+  "Given a filename (relative or absolute), reads and evaluates the contexts
+   of the file with respect to the current package."))
+
+(-doc-
+ (name -write)
  (param obj)
  (param " . ")
  (param optional-java.io.PrinterWriter)
@@ -1172,22 +1174,13 @@ share the static factory methods).
   (example "(write '(\"foo\" #\\c #(1 2))) prints (\"foo\" #\\c #(1 2))")))
 
 (-doc-
- (name -write)
- (param obj)
- (param " . ")
- (param optional-java.io.PrinterWriter)
- (location org.llava)
- (description
-  "Alias for <code>write</code>."))
-
-(-doc-
  (name -writeln)
  (param obj)
  (param " . ")
  (param optional-java.io.PrinterWriter)
  (location org.llava)
  (description
-  "Equivalent to <code>-write</code> followed by <code>newline</code>."))
+  "Equivalent to <code>-write</code> followed by <code>-newline</code>."))
 
 (-doc-
  (name set-vector-print-length!)
@@ -1199,47 +1192,31 @@ share the static factory methods).
   <code>false</code> means 0."))
 
 (-doc-
- (name display)
- (param obj)
- (param " . ")
- (param optional-java.io.PrinterWriter)
- (location org.llava)
- (description
-  "Equivalent to Java <code>print</code>"
-  "Examples:"
-  (example "(display '(\"foo\" #\\c #(1 2))) prints (foo c [Ljava.lang.Object;@988707)")))
-
-(-doc-
  (name -print)
  (param obj)
  (param " . ")
  (param optional-java.io.PrinterWriter)
  (location org.llava)
  (description 
-  "Alias for <code>display</code>."))
+  "Equivalent to Java <code>print</code>"
+  "Examples:"
+  (example "(display '(\"foo\" #\\c #(1 2))) prints (foo c [Ljava.lang.Object;@988707)")))
 
 (-doc-
  (name -println)
- (param obj)
  (param " . ")
+ (param optional-obj)
  (param optional-java.io.PrinterWriter)
  (location org.llava)
  (description 
-  "Equivalent to <code>-print</code> followed by <code>newline</code>."))
+  "Equivalent to <code>-print</code> followed by <code>-newline</code>."
+  "If called with no arguments it is equivalent to <code>-newline</code>."))
 
 (-doc-
- (name newline)
+ (name -newline)
  (param " . ")
  (param optional-java.io.PrinterWriter)
  (location org.llava))
-
-(-doc-
- (name load)
- (param string)
- (location org.llava)
- (description 
-  "Given a filename (relative or absolute), reads and evaluates the contexts
-   of the file with respect to the current package."))
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

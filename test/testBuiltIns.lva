@@ -9,7 +9,7 @@
 
 ;;;
 ;;; Created       : 1999 Dec 25 (Sat) 22:10:35 by Harold Carr.
-;;; Last Modified : 2004 Dec 10 (Fri) 21:50:10 by Harold Carr.
+;;; Last Modified : 2004 Dec 12 (Sun) 12:54:13 by Harold Carr.
 ;;;
 
 (begin
@@ -702,14 +702,14 @@
 (set! pw (new 'java.io.PrintWriter 
 	      (new 'java.io.FileOutputStream test-filename)))
 
-(display data pw)
-(newline pw)
-(newline pw)
-(write data pw)
-(newline pw)
-(newline pw)
-(write vector-data pw)
-(newline pw)
+(-print data pw)
+(-newline pw)
+(-newline pw)
+(-write data pw)
+(-newline pw)
+(-newline pw)
+(-write vector-data pw)
+(-newline pw)
 (close pw)
 
 (set! r (new 'java.io.InputStreamReader
