@@ -1,6 +1,6 @@
 #
 # Created       : 2004 Aug 24 (Tue) 18:23:06 by Harold Carr.
-# Last Modified : 2004 Sep 12 (Sun) 08:14:55 by Harold Carr.
+# Last Modified : 2004 Nov 27 (Sat) 18:11:22 by Harold Carr.
 #
 
 # TODO: <hr> -> <br>
@@ -31,7 +31,7 @@ LAST_MODIFIED_FILES = \
 	$(DB_IN_DIR)/ch-Download.xml \
 	$(DB_IN_DIR)/llava-site.xml
 
-all : $(LastModifiedTxt) cp-index llava-doc force-db db sed-db pi
+all : $(LastModifiedTxt) cp-index llava-doc force-db db sed-db force-pi pi
 
 $(LastModifiedTxt) : $(DB_OUT_DIR) $(LAST_MODIFIED_FILES)
 	rm -f $(LastModifiedTxt)
@@ -53,6 +53,10 @@ sed-db : FORCE
 	rm -f /tmp/sed-db.$$
 	mv $(DB_OUT_DIR)/llava-site.html /tmp/sed-db.$$
 	cat /tmp/sed-db.$$ | sed 's/<hr>/<br>/g' > $(DB_OUT_DIR)/llava-site.html
+
+force-pi : FORCE
+	rm -f $(DB_OUT_DIR)/package-index.html \
+	      $(DB_OUT_DIR)/procedure-index.html
 
 pi : $(DB_OUT_DIR)/package-index.html $(DB_OUT_DIR)/procedure-index.html
 
