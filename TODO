@@ -8,13 +8,19 @@ or send a letter to
 ------------------------------------------------------------------------------
 
 Created       : 1999 Dec 18 (Sat) 17:14:40 by Harold Carr.
-Last Modified : 2004 Dec 08 (Wed) 13:16:05 by Harold Carr.
+Last Modified : 2004 Dec 12 (Sun) 14:55:57 by Harold Carr.
 
 To do:
 
+* Make procedures in llavalib.scm.Predicates built-in.
+
 * Find sourceforge like repository but using subversion
 
-* Make scheme IF be default.
+* Reader e, o, x, etc.
+
+* javadoc llava
+
+* Make scheme IF be default?
 
 * Extend display, write, newline, read to take optional arg of many types.
 
@@ -44,9 +50,7 @@ To do:
   llava-> (getSource (getCode (lambda (x) (cond ((null? x) x) (else "no")))))
   (-if (null? x) (begin x) (cond (else "no")))
 
-* Reader e, o, x, etc.
-
-* javadoc llava
+* unset!  ??
 
 * Todo in namespaceimpl.
 
@@ -70,16 +74,14 @@ To do:
 
 * checkNumArgs
 
-* PrimNot
-
 * 1. Rewrite DII (i.e., dynvoke - call it Reflect, or DII).
 	DII and DIIImpl.  -> PrimInvoke (etc.) will then need DII instance.
   2. Enable auto-generic toggling
 
-* reader: make object eq constants for all tokens.
+* reader: make object eq? constants for all tokens.
   LlavaInteger subtype of Integer which preallocates range: ?-128.
   LlavaDouble  subtype of Double  which preallocates 0.0, 1.0, ?
-  Note possible: can't subclass Integer or Double.
+  Note: can't subclass Integer or Double.
 
 * lambda, assignment, etc as pluggable syntax rather than built
   into the compiler.
