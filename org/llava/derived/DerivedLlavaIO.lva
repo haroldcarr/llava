@@ -1,0 +1,138 @@
+;;;;
+;;;; Created       : 1999 Dec 18 (Sat) 17:14:40 by Harold Carr.
+;;;; Last Modified : 2004 Dec 10 (Fri) 19:38:46 by Harold Carr.
+;;;;
+
+(define (write msg . out)
+  (if (null? out)
+      (-i 'write _%writer msg)
+      (-i 'write _%writer msg (car out)))
+  null)
+
+(define -write
+  (lambda (msg . out)
+    (if (null? out)
+	(-i 'write _%writer msg)
+	(-i 'write _%writer msg (car out)))
+    null))
+
+(define (writeln msg . out)
+  (if (null? out)
+      (begin
+	(write _%writer msg)
+	(newline))
+      (begin
+	(write _%writer msg (car out))
+	(newline (car out))))
+  null)
+
+(define -writeln
+  (lambda (msg . out)
+    (if (null? out)
+	(begin
+	  (write _%writer msg)
+	  (newline))
+	(begin
+	  (write _%writer msg (car out))
+	  (newline (car out))))
+    null))
+
+(define set-vector-print-length!
+  (lambda (x)
+    (setVectorPrintLength _%writer x)))
+
+(define (display msg . out)
+  (if (null? msg) (set! msg "null"))
+  (if (null? out)
+      (print (getPrintWriter _%writer) msg)
+      (print (car out) msg))
+  null)
+
+(define -print
+  (lambda (msg . out)
+    (let ((n-msg (if (null? msg) "null" msg)))
+      (if (null? out)
+	  (print (getPrintWriter _%writer) n-msg)
+	  (print (car out) n-msg)))
+    msg))
+
+(define -println
+  (lambda (msg . out)
+    (let ((n-msg (if (null? msg) "null" msg)))
+      (if (null? out)
+	  (begin
+	    (print (getPrintWriter _%writer) n-msg)
+	    (newline))
+	  (begin
+	    (print (car out) n-msg)
+	    (newline (car out)))))
+    msg))
+
+(define (newline . out)
+  (println (if (null? out) (getPrintWriter _%writer) (car out)))
+  null)
+
+(define (read . in)
+  (if (null? in)
+      (read _%reader)
+      (read _%reader (car in))))
+
+(define -read
+  (lambda in
+    (if (null? in)
+        (read _%reader)
+        (read _%reader (car in)))))
+
+(-comment-
+(load (s+ (user-home) "/.sync/.llava.org/.system/org/llava/derived/DerivedLlavaIO.lva"))
+(write null)
+(write #(1))
+(-write null)
+(-write #(2))
+(display null)
+(display #(3))
+(-print null)
+(-print #(3))
+(-println null)
+(-println #(3))
+(newline)
+
+(begin
+(set! *pw*
+      (new 'java.io.PrintWriter (new 'java.io.FileOutputStream "/tmp/junk")))
+(display "()" *pw*)
+(newline *pw*)
+(begin (display " -00- " *pw*)  (write null *pw*))
+(newline *pw*)
+(begin (display " -01- " *pw*)  (write #(1) *pw*))
+(newline *pw*)
+(begin (display " -02- " *pw*)  (-write null *pw*))
+(newline *pw*)
+(begin (display " -03- " *pw*)  (-write #(2) *pw*))
+(newline *pw*)
+(begin (display " -04- " *pw*)  (writeln null *pw*))
+(begin (display " -05- " *pw*)  (writeln #(3) *pw*))
+(begin (display " -06- " *pw*)  (-writeln null *pw*))
+(begin (display " -07- " *pw*)  (-writeln #(4) *pw*))
+(begin (display " -08- " *pw*)  (display null *pw*))
+(newline *pw*)
+(begin (display " -09- " *pw*)  (display #(5) *pw*))
+(newline *pw*)
+(begin (display " -10- " *pw*)  (-println null *pw*))
+(begin (display " -11- " *pw*)  (-println #(6) *pw*))
+(begin (display " -12- " *pw*)  (-print null *pw*))
+(newline *pw*)
+(begin (display " -13- " *pw*)  (-print #(7) *pw*))
+(newline *pw*)
+(close *pw*)
+)
+
+(set! *sr* (new 'java.io.InputStreamReader
+		(new 'java.io.FileInputStream "/tmp/junk")))
+(read *sr*)
+(-read *sr*)
+(close *sr*)
+
+)
+
+;;; End of file.
