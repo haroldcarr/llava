@@ -17,13 +17,14 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(-section- (name "Notation and Terminology"))
-(-section-
- (name "Entry format")
+(-section- 
+ (name "Notation and Terminology")
  (description
-  "Each entry describes one language feature (or group) where a
-      feature is either a syntactic construct or a procedure.  An entry
-      begins with lines of the form"))
+  "<bridgehead> Entry format</bridgehead>
+
+  Each entry describes one language feature (or group) where a
+  feature is either a syntactic construct or a procedure.  An entry
+  begins with lines of the form"))
 
 (-doc-
  (name template)
@@ -31,28 +32,25 @@
  (location location)
  (description
   "where <emphasis>category</emphasis> may be \"syntax\" or
-      \"procedure\", and where <emphasis>location</emphasis> specifies
-      the package containing the feature.  If the location is
-      contained inside <code>(import </code>
-      <emphasis>location</emphasis><code>)</code> then the package
-      must be imported in order to use the feature.  Otherwise the
-      feature is already imported and <emphasis>location</emphasis>
-      simply gives the package location of the feature."))
-(-section-end-)
+   \"procedure\", and where <emphasis>location</emphasis> specifies
+   the package containing the feature.  If the location is
+   contained inside <code>(import </code>
+   <emphasis>location</emphasis><code>)</code> then the package
+   must be imported in order to use the feature.  Otherwise the
+   feature is already imported and <emphasis>location</emphasis>
+   simply gives the package location of the feature.
 
-(-section-
- (name "Evaluation examples")
- (description
-  "The symbol &lva-et; used in program examples should be read
+   <bridgehead> Evaluation examples</bridgehead>
+
+   The symbol &lva-et; used in program examples should be read
    \"evaluates to.\"  For example,"
   
   (example "(* 5 8)  &lva-et;    40")
 
   "means that the expression <code>(* 5 8)</code> evalutes to the
    object <code>40</code>."))
-(-section-end-)
-(-section-end-) ;; Notation
 
+(-section-end-) ;; Notation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section-
@@ -69,7 +67,6 @@
 "(new 'java.util.Date)
 (new 'java.lang.Integer 3)")))
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section-
@@ -106,7 +103,6 @@
 
   (example "(getMonth (new 'java.util.Date))")))
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section-
@@ -132,7 +128,6 @@
 (parseInt \"ff\" 16)")))
 
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section-
@@ -159,7 +154,6 @@
 (minor! (new 'org.omg.CORBA.BAD_PARAM) 56)")))
 
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section-
@@ -187,7 +181,6 @@
 (out! 0)")))
 
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section-
@@ -231,7 +224,6 @@
    "((lambda (requiredArg1 requiredArg2 . optionalArgs) body) 1 2)")))
 
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section-
@@ -269,7 +261,6 @@
   (example "((lambda (requiredArg1 requiredArg2 . optionalArgs) body) 1 2)")))
 
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section-
@@ -295,7 +286,6 @@
 (demo) &lva-et; (Arithmetic:  java.lang.ArithmeticException: / by zero)
 (demo) &lva-et; (Exception:  java.lang.RuntimeException: Give up!)")))
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section-
@@ -309,7 +299,6 @@
  (param ...))
 
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section-
@@ -318,7 +307,6 @@
   "Same as Common LISP. See <code>org.llava.lib.cl.Macros</code>."))
 
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section-
@@ -386,7 +374,6 @@
    current package."))
 
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section-
@@ -401,7 +388,6 @@
  (name current-time-millis))
 
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section-
@@ -422,7 +408,6 @@
    trace."))
 
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section-
@@ -441,7 +426,6 @@
    <ulink url=\"http://llava.org/TODO\">TODO</ulink> list."))
 
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section-
@@ -462,10 +446,10 @@
  (name Syntax)
  (description
   "llava uses a parenthesized prefix notation for programs and
-    (other) data."
+   (other) data."
 
   "The <function>read</function> procedure performs syntactic as
-    well as lexical decomposition of the data it reads."))
+   well as lexical decomposition of the data it reads."))
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -526,89 +510,66 @@ share the static factory methods).
 ")
 
 (-section-end-)
-
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section- 
  (name "Lexical Conventions")
  (description
   "llava is case-sensitive.  For example, <code>Foo</code> is
-   <emphasis>not</emphasis> the same identifier as <code>FOO</code>."))
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   <emphasis>not</emphasis> the same identifier as <code>FOO</code>.
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(-section-
- (name Identifiers)
- (description
-  "A sequence of letters, digits and \"extended alphabetic
+   <bridgehead>Identifiers</bridgehead>
+
+   A sequence of letters, digits and \"extended alphabetic
    characters\" is an identifier.  llava's extended
-   alphabetic characters are identical with R5RS."))
+   alphabetic characters are identical with R5RS.
 
-(-section-end-)
+   <bridgehead>Comments</bridgehead>
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(-section-
- (name Comments)
- (description
-  "A semicolon (<code>;</code>) indicates the start of a
+   A semicolon (<code>;</code>) indicates the start of a
    comment.  The comment continues to the end of the line on which
-   the semicolon appears."
-  "A block comment is anything appearing inside the syntax:
-   <code>(-comment- ...)</code>."
-  "<code>(-package- ...)</code> and <code>(-doc- ...)</code> are also
+   the semicolon appears.
+
+   A block comment is anything appearing inside the syntax:
+   <code>(-comment- ...)</code>.
+
+   <code>(-package- ...)</code> and <code>(-doc- ...)</code> are also
    block comments.  They are recognized by
-   <code>org.llava.lib.LlavaDoc</code>."))
+   <code>org.llava.lib.LlavaDoc</code>.
 
-(-section-end-)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(-section-
- (name "Other notations")
- (description
-  "<code>. + -</code> As in R5RS."
-  "<code>(  )</code> Used for grouping and to notate lists, as in R5RS."
-  "<code>'</code> Indicates literal data, as in R5RS."
-  "<code>`</code> Indicates almost constant data, as in R5RS."
-  "<code>, ,@</code> Used in conjunction with backquote, as in R5RS."
-  "<code>\"</code> Used to delimit strings, as in R5RS."
-  "<code>\\</code> As in R5RS."
-  "<code>true false</code> These are the boolean constants."
-  "<code>#\\</code> Introduces a character constants, as in R5RS."
-  "<code>#(</code> Introduces a vector constant, as in R5RS."))
+   <bridgehead>Other notations</bridgehead>
 
-(-section-end-)
+   <code>. + -</code> As in R5RS.
+   <code>(  )</code> Used for grouping and to notate lists, as in R5RS.
+   <code>'</code> Indicates literal data, as in R5RS.
+   <code>`</code> Indicates almost constant data, as in R5RS.
+   <code>, ,@</code> Used in conjunction with backquote, as in R5RS.
+   <code>\"</code> Used to delimit strings, as in R5RS.
+   <code>\\</code> As in R5RS.
+   <code>true false</code> These are the boolean constants.
+   <code>#\\</code> Introduces a character constants, as in R5RS.
+   <code>#(</code> Introduces a vector constant, as in R5RS."))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section-end-) ; Lexical Conventions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section- (name "Expressions"))
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section- (name "Primitive Expression Types"))
 
-(-comment-
 (-doc-
  (name "&lt;variable&gt;")
  (category syntax)
- (description "An expression consisting of a variable is a variable reference."))
-)
+ (description 
+  "An expression consisting of a variable is a variable reference."))
 
 (-doc-
  (name quote)
  (category syntax)
  (param "&lt;datum&gt;")
  (location org.llava))
-
 
 (-doc-
  (name "&lt;operator&gt;")
@@ -656,25 +617,7 @@ share the static factory methods).
  (description "Backquote.  Use <code>` ,</code> and <code>,@</code>")
  (location org.llava))
 
-(-doc-
- (name try)
- (param "&lt;body&gt;")
- (param "&lt;catch&gt;")
- (param "&lt;finally&gt;")
- (category syntax)
- (location org.llava)
- (description 
-  "Example: "
-  (example
-"(try
- (/ 1 0)
- (catch (java.lang.Throwble t)
-   (display (s+ \"Caught: \" (toString t))))
- (finally
-   (display \"finally\")))")))
-
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section- (name "Derived Conditionals"))
 
@@ -702,8 +645,24 @@ share the static factory methods).
  (category syntax)
  (location org.llava))
 
-(-section-end-)
+(-doc-
+ (name try)
+ (param "&lt;body&gt;")
+ (param "&lt;catch&gt;")
+ (param "&lt;finally&gt;")
+ (category syntax)
+ (location org.llava)
+ (description 
+  "Example: "
+  (example
+"(try
+ (/ 1 0)
+ (catch (java.lang.Throwble t)
+   (display (s+ \"Caught: \" (toString t))))
+ (finally
+   (display \"finally\")))")))
 
+(-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section- (name "Binding Constructs"))
 
@@ -737,7 +696,6 @@ share the static factory methods).
  (location org.llava))
 
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section-end-) ; Expressions
@@ -747,8 +705,6 @@ share the static factory methods).
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section- (name "Procedures"))
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section- (name "Equivalence Predicates"))
@@ -766,7 +722,6 @@ share the static factory methods).
  (location org.llava))
 
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section- (name "Numbers"))
 
@@ -778,7 +733,6 @@ share the static factory methods).
  (param ...)
  (location org.llava))
 
-
 (-doc-
  (name "&lt;")
  (param x1)
@@ -786,7 +740,6 @@ share the static factory methods).
  (param x3)
  (param ...)
  (location org.llava))
-
 
 (-doc-
  (name "&gt;")
@@ -796,7 +749,6 @@ share the static factory methods).
  (param ...)
  (location org.llava))
 
-
 (-doc-
  (name "&lt;=")
  (param x1)
@@ -804,7 +756,6 @@ share the static factory methods).
  (param x3)
  (param ...)
  (location org.llava))
-
 
 (-doc-
  (name "&gt;=")
@@ -814,13 +765,11 @@ share the static factory methods).
  (param ...)
  (location org.llava))
 
-
 (-doc-
  (name +)
  (param z1)
  (param ...)
  (location org.llava))
-
 
 (-doc-
  (name *)
@@ -828,13 +777,11 @@ share the static factory methods).
  (param ...)
  (location org.llava))
 
-
 (-doc-
  (name -)
  (param z1)
  (param ...)
  (location org.llava))
-
 
 (-doc-
  (name /)
@@ -842,31 +789,29 @@ share the static factory methods).
  (param ...)
  (location org.llava))
 
-
 (-doc-
  (name modulo)
  (param n1)
  (param n2)
  (location org.llava))
 
-
 (-doc-
  (name |)
  (param n1)
  (param n2)
  (param ...)
- (location org.llava))
-
+ (location org.llava)
+ (description "Bitwise OR."))
 
 (-doc-
  (name "&amp;")
  (param n1)
  (param n2)
  (param ...)
- (location org.llava))
+ (location org.llava)
+ (description "Bitwise AND."))
 
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section- (name "Booleans"))
 
@@ -876,7 +821,6 @@ share the static factory methods).
  (location org.llava))
 
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section- (name "Pairs and Lists"))
 
@@ -970,7 +914,6 @@ share the static factory methods).
  (location org.llava))
 
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section- (name "Symbols"))
 
@@ -985,7 +928,6 @@ share the static factory methods).
  (location org.llava))
 
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section- (name "Strings"))
 
@@ -1008,7 +950,6 @@ share the static factory methods).
  (location org.llava))
 
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section- (name "Control Features"))
 
@@ -1037,7 +978,6 @@ share the static factory methods).
  (location org.llava))
 
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section- (name "Input and Output"))
 
@@ -1063,12 +1003,10 @@ share the static factory methods).
  (description "Prints <parameter>obj</parameter> to <code>System.out</code>."))
 
 (-section-end-)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-section-end-) ; Procedures
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 
 ;;; End of file.
