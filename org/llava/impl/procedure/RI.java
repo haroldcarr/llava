@@ -1,6 +1,6 @@
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2000 Feb 18 (Fri) 17:22:08 by Harold Carr.
+ * Last Modified : 2000 Feb 18 (Fri) 17:27:27 by Harold Carr.
  */
 
 package libLava.r1.procedure.generic;
@@ -559,7 +559,8 @@ public class DI {
     // Class variables and initialization.
     //
   
-    private static Map   cachedMethods = new HashMap();
+    // 89 - see _Java 2 Performance and Idiom Guide_ p 67.
+    private static Map   cachedMethods = new HashMap(89);
 
     private static Class NullClass;
     private static Class BooleanClass;
