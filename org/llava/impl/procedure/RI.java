@@ -1,6 +1,6 @@
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2000 Feb 16 (Wed) 18:26:14 by Harold Carr.
+ * Last Modified : 2000 Feb 16 (Wed) 18:46:34 by Harold Carr.
  */
 
 package libLava.r1.procedure.generic;
@@ -129,16 +129,16 @@ public class DI {
 	    NoSuchMethodException,
 	    Throwable 
     {
-	Class[] argTypes = getClasses(args);    
-	Method method = lookupMethod(myClass, methodName, argTypes);
-	if (method == null)
-	    throw new NoSuchMethodException("no applicable method");
-	else {
-	    try {
-		return method.invoke(obj, args); 
-	    } catch (InvocationTargetException e) {
-		throw(e.getTargetException()); 
-	    }
+	Method method = lookupMethod(myClass, methodName, getClasses(args));
+
+	if (method == null) {
+	    throw new NoSuchMethodException("DI.invoke: " + methodName);
+	}
+
+	try {
+	    return method.invoke(obj, args); 
+	} catch (InvocationTargetException e) {
+	    throw(e.getTargetException()); 
 	}
     }
 
@@ -149,7 +149,6 @@ public class DI {
 	    IllegalAccessException, 
 	    NoSuchFieldException 
     {
-	Class myClass = object.getClass();
 	setField(object.getClass(), object, fieldName, value); 
     }
 
@@ -189,27 +188,6 @@ public class DI {
     // Implementation.
     //
 
-    private static Object getMethod (Object obj,
-				     String methodName,
-				     Object[] args) 
-	throws
-	    NoSuchMethodException 
-    {
-	return getMethod(obj.getClass(), obj, methodName, args); 
-    }
-  
-
-    private static Method getMethod (Class myClass,
-				     Object obj,
-				     String methodName,
-				     Object[] args) 
-	throws 
-	    NoSuchMethodException 
-    {
-	Class[] argTypes = getClasses(args);    
-	return lookupMethod(myClass, methodName, argTypes);
-    }
-
     // synchronized since the key is reused
 
     private static synchronized Method lookupMethod (Class target, 
@@ -220,18 +198,20 @@ public class DI {
     {
 
 	MethodKey key = MethodKey.make(target, name, argTypes);
-	Object result = hash.get(key);
+	Method result = (Method) cachedMethods.get(key);
+	if (result != null) {
+	    return result;
+	}
+
+	result = lookupMethodFromScratch(target, name, argTypes);
+
 	if (result == null) {
-	    Method nresult = lookupMethodFromScratch(target, name, argTypes);
-	    if (nresult == null)
-		return null;
-	    else {
-		key.keep();
-		hash.put(key, nresult);
-		return nresult; 
-	    }
-	} else
-	    return (Method)result; 
+	    return null;
+	}
+
+	key.keep();
+	cachedMethods.put(key, result);
+	return result; 
     }
 
     private static Method lookupMethodFromScratch (Class target,
@@ -326,10 +306,10 @@ public class DI {
 	}
 	// didn't find it, go up to superclass
 	Class sup = myClass.getSuperclass();
-	if (sup == null)
+	if (sup == null) {
 	    throw new NoSuchFieldException(fieldName);
-	else
-	    return fieldLookup(sup, fieldName);
+	}
+	return fieldLookup(sup, fieldName);
     }
 
     private static boolean equalTypes (Class[] parmTypes, 
@@ -425,17 +405,19 @@ public class DI {
 	for (int i = 0; i < constructors.size(); i++) {
 	    for (int j = 0; j < constructors.size(); j++) {
 		if ((i != j) &&
-		    (moreSpecific((Constructor)constructors.elementAt(i), (Constructor)constructors.elementAt(j)))) {
+		    (moreSpecific((Constructor)constructors.elementAt(i), 
+				  (Constructor)constructors.elementAt(j)))) 
+                {
 		    constructors.removeElementAt(j);
 		    if (i > j) i--;
 		    j--;
 		}
 	    }
 	}
-	if (constructors.size() == 1)
+	if (constructors.size() == 1) {
 	    return (Constructor)constructors.elementAt(0);
-	else
-	    throw new NoSuchMethodException("more than one most specific constructor");
+	}
+	throw new NoSuchMethodException("more than one most specific constructor");
     }
 
     private static Method mostSpecificMethod (Vector methods) 
@@ -445,17 +427,19 @@ public class DI {
 	for (int i = 0; i < methods.size(); i++) {
 	    for (int j = 0; j < methods.size(); j++) {
 		if ((i != j) &&
-		    (moreSpecific((Method)methods.elementAt(i), (Method)methods.elementAt(j)))) {
+		    (moreSpecific((Method)methods.elementAt(i),
+				  (Method)methods.elementAt(j)))) 
+                {
 		    methods.removeElementAt(j);
 		    if (i > j) i--;
 		    j--;
 		}
 	    }
 	}
-	if (methods.size() == 1)
+	if (methods.size() == 1) {
 	    return (Method)methods.elementAt(0);
-	else
-	    throw new NoSuchMethodException("more than one most specific method");
+	}
+	throw new NoSuchMethodException("more than one most specific method");
     }
 
     // True IFF c1 is more specific than c2
@@ -477,20 +461,20 @@ public class DI {
 
     private static boolean moreSpecific (Method c1, Method c2) 
     {
-	if (!equalType(c2.getDeclaringClass(), c1.getDeclaringClass())) // needed for jdk12 only
+	if (! equalType(c2.getDeclaringClass(), c1.getDeclaringClass())) {
 	    return false;
+	}
 	Class[] parmTypes1 = c1.getParameterTypes();
 	Class[] parmTypes2 = c2.getParameterTypes();
 	int n = parmTypes1.length;
 	for (int i = 0; i < n; i++) {
-	    if (!equalType(parmTypes2[i], parmTypes1[i])) {
+	    if (! equalType(parmTypes2[i], parmTypes1[i])) {
 		return false;
 	    }
 	}
 	return true;
     }
 
-    // given an array of objects, return an array of corresponding classes
     private static Class[] getClasses (Object[] args) 
     {
 	Class[] classes = new Class[args.length];
@@ -500,7 +484,7 @@ public class DI {
     }
 
     // REVISIT - use weak references
-    static Hashtable hash = new Hashtable();
+    static Hashtable cachedMethods = new Hashtable();
 
     static Class NullClass;
     static Class nullClass;
