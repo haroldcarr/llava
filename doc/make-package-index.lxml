@@ -2,7 +2,7 @@
 
 (!-- "
 Created       : 2004 Sep 10 (Fri) 22:41:59 by Harold Carr.
-Last Modified : 2004 Nov 26 (Fri) 09:30:05 by Harold Carr.
+Last Modified : 2004 Sep 11 (Sat) 08:21:55 by Harold Carr.
 ")
 
 (!DOCTYPE xsl:transform)
@@ -14,14 +14,14 @@ Last Modified : 2004 Nov 26 (Fri) 09:30:05 by Harold Carr.
   (html 
    (head (title "index"))
    (body
-    (xsl:for-each (@ (select "//section/@package"))
+    (xsl:for-each (@ (select "//section[@package]"))
         (xsl:sort (@ (order "ascending")
-		     (select "../@package")))
+		     (select "@package")))
 	(xsl:element (@ (name "a"))
 	   (xsl:attribute (@ (name "target")) main)
 	   (xsl:attribute (@ (name "href")) 
-               ./llava-site.html#(xsl:value-of (@ (select "../@package"))))
-           (xsl:value-of (@ (select "../@package"))))
+               ./llava-site.html#(xsl:value-of (@ (select "@package"))))
+           (xsl:value-of (@ (select "@package"))))
 	(br)))))
 
 )
