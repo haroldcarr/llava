@@ -1,0 +1,44 @@
+<!--
+//
+// Created       : 2004 Sep 05 (Sun) 22:19:59 by Harold Carr.
+// Last Modified : 2004 Sep 09 (Thu) 21:41:04 by Harold Carr.
+//
+-->
+<chapter id="llava-ch-libraries">
+
+  <title>Libraries</title>
+
+  &lib-control;
+  &lib-exceptions;
+  &lib-files;
+  &lib-lists;
+  &lib-llava-doc;
+  &lib-macros;
+  &lib-namespace-util;
+  &lib-program;
+  &lib-reflect;
+  &lib-strings;
+  &lib-system;
+  &lib-threads;
+  &lib-vectors;
+
+  &lib-cl-control;
+  &lib-cl-macros;
+  &lib-cl-symbols;
+
+  &lib-io-filewalker;
+
+  &lib-java-lang;
+  &lib-java-corba-cosnaming;
+  &lib-java-corba-orb;
+
+  &lib-scm-lists;
+  &lib-scm-predicates;
+  &lib-scm-strings;
+  &lib-scm-vectors;
+
+  &lib-test-test;
+
+  &lib-xml-l2x;
+
+</chapter>
