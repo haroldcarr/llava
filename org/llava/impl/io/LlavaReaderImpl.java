@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 17 (Fri) 20:11:43 by Harold Carr.
- * Last Modified : 2004 Dec 08 (Wed) 10:30:30 by Harold Carr.
+ * Last Modified : 2004 Dec 10 (Fri) 21:13:19 by Harold Carr.
  */
 
 package org.llava.impl.io;
@@ -89,7 +89,15 @@ public class LlavaReaderImpl
 	else                        return token;
     }
 
+    public LlavaEOF getEOFObject ()
+    {
+	return EOF;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    //
     // Implementation.
+    //
 
     private Object readTail (Reader in, boolean dotOK) 
     {
