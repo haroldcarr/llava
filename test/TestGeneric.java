@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 28 (Tue) 05:43:41 by Harold Carr.
- * Last Modified : 2004 Dec 08 (Wed) 10:40:05 by Harold Carr.
+ * Last Modified : 2005 Feb 06 (Sun) 11:57:09 by Harold Carr.
  */
 
 /*
@@ -58,6 +58,14 @@ import org.llava.runtime.UndefinedIdHandler;
 import org.llava.impl.runtime.*;
 import org.llava.impl.procedure.DI;
 
+// Imports used by PrimNewPrim at bottom.
+
+import org.llava.Pair;
+import org.llava.runtime.Engine;
+
+import org.llava.impl.procedure.PrimitiveProcedure;
+import org.llava.impl.util.List;
+
 public class TestGeneric
 {
     public static void testGeneric ()
@@ -81,7 +89,7 @@ public class TestGeneric
             );
 
 	TestCompilerAndEngine.topEnvironment.set(F.newSymbol("new"),
-						 F.newPrimNewPrim());
+						 new PrimNewPrim());
 
 	Test.check("gen1", 
 		   new Integer(123),
@@ -146,6 +154,27 @@ public class TestGeneric
     public static long test_l_iill (int i1, int i2, long l1, long l2)
     {
 	return (long) (i1 + i2 + l1 + l2);
+    }
+}
+
+class PrimNewPrim
+    extends
+	PrimitiveProcedure
+{
+    public PrimNewPrim ()
+    {
+    }
+
+    public Object apply (Pair args, Engine engine)
+    {
+	try {
+	    // REVISIT - no Symbol type checking (i.e., cast)
+	    // because also used from PrimNew which sends it a String.
+	    return DI.newInstance(args.car().toString(),
+				  List.toArray((Pair)args.cdr()));
+	} catch (Throwable t) {
+	    throw F.newLlavaException(t);
+	}
     }
 }
 
