@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 2000 Jan 11 (Tue) 21:23:51 by Harold Carr.
- * Last Modified : 2005 Feb 21 (Mon) 17:22:54 by Harold Carr.
+ * Last Modified : 2005 Mar 14 (Mon) 18:16:37 by Harold Carr.
  */
 
 package test;
@@ -44,6 +44,10 @@ public class TestTop
 	    // An "easy" way to step into the Java implementation code.
 	    // Just put the form here as a string and start stepping.
 	    // Examples:
+
+	    eval(
+ "(begin (define loop (lambda (x) (if (= x 0) 0 (loop (- x 1))))) (loop 1))");
+
 
 	    eval(
 "(begin" +
