@@ -1,14 +1,15 @@
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2000 Feb 18 (Fri) 17:16:39 by Harold Carr.
+ * Last Modified : 2000 Feb 18 (Fri) 17:22:08 by Harold Carr.
  */
 
 package libLava.r1.procedure.generic;
 
 import java.lang.reflect.*;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DI {
 
@@ -191,9 +192,6 @@ public class DI {
 	throws
 	    NoSuchMethodException
     {
-	// REVISIT - rewrite so cache and keys are its own
-	// class which encapsulate concurrency so synchronized
-	// may be removed here.
 	Key key = Key.initReusableKey(methodName, targetClass, argTypes);
 	Method method = (Method) cachedMethods.get(key);
 	if (method != null) {
@@ -201,7 +199,6 @@ public class DI {
 	}
 
 	method = findMethodFromScratch(methodName, targetClass, argTypes);
-
 	if (method == null) {
 	    return null;
 	}
@@ -562,8 +559,7 @@ public class DI {
     // Class variables and initialization.
     //
   
-    // REVISIT - use weak references
-    private static Hashtable cachedMethods = new Hashtable();
+    private static Map   cachedMethods = new HashMap();
 
     private static Class NullClass;
     private static Class BooleanClass;
