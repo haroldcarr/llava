@@ -9,7 +9,7 @@
 
 ;;;
 ;;; Created       : 1999 Dec 25 (Sat) 22:10:35 by Harold Carr.
-;;; Last Modified : 2004 Dec 12 (Sun) 12:54:13 by Harold Carr.
+;;; Last Modified : 2004 Dec 14 (Tue) 12:34:42 by Harold Carr.
 ;;;
 
 (begin
@@ -24,7 +24,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test if
 
-(-println "if->:")
+(tprintln "if->:")
 
 (check 'testIf1 'f (if false 't 'f))
 ;; REVISIT - how to test
@@ -36,7 +36,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test print of lambdas with names
 
-(-println "lambda with names->:")
+(tprintln "lambda with names->:")
 
 (define foo (lambda (x) x))
 (check 'lambdaName (toString foo) (toString foo)) ;; REVISIT "Lambda foo"
@@ -45,7 +45,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test new and generic.
 
-(-println "new and generic->:")
+(tprintln "new and generic->:")
 
 ;; NB. do not use doubleValue here - TestGeneric makes it null.
 (check 'newAndGeneric 
@@ -55,16 +55,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test static invocation.
 
-(-println "static invocation->:")
+(tprintln "static invocation->:")
 
 ; REVISIT 1.3.0
 
-(-println (-si 'getProperty 'java.lang.System (toString 'java.version)))
+(tprintln (-si 'getProperty 'java.lang.System (toString 'java.version)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test field access
 
-(-println "field access->:")
+(tprintln "field access->:")
 
 (define test (new 'org.llava.impl.procedure.PrimNew))
 ;; REVISIT - no more singleton field
@@ -90,7 +90,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test WrapJavaPrimitive
 
-(-println "wrap Java primitive->:")
+(tprintln "wrap Java primitive->:")
 
 (define _%instanceof
   (lambda (obj type)
@@ -109,7 +109,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test equality
 
-(-println "equality->:")
+(tprintln "equality->:")
 
 (check 'equality1   true (eq? null null))
 (check 'equality1.1 true (eq? null null))
@@ -123,12 +123,22 @@
 (check 'equality6 false (equal? null 1))
 (check 'equality7 false (equals 1 1.0)) ;; REVISIT
 (check 'equality7.1 true (= 1 1.0))
-
+(check 'equality8 true (equal? #(3) #(3)))
+(check 'equality9 true (equal? #(2 3) #(2 3)))
+(check 'equality10 false (equal? #(2 3) #(2 3 4)))
+(check 'equality11 false (equal? #(2 3) #(3 2)))
+(check 'equality12 false (equal? null #(3 2)))
+(check 'equality13 false (equal? #(3 2) null))
+(check 'equality13 false (equal? #(3 2) '(3 2)))
+(check 'equality13 false (equal? '(3 2) #(3 2)))
+(check 'equality14 true (equal? null null))
+(check 'equality15 true (equal? '(1 2 3) '(1 2 3)))
+(check 'equality15 false (equal? '(1 2 3) '(1 2 x)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test list operations
 
-(-println "list->:")
+(tprintln "list->:")
 
 (check 'list0 '() (list))
 (check 'list1 '(1) (list 1))
@@ -147,7 +157,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test numerics operators
 
-(-println "numerics->:")
+(tprintln "numerics->:")
 
 (define test-numerics
   (lambda (arg-lists)
@@ -194,7 +204,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test tail recursion
 
-(-println "tail recursion->:")
+(tprintln "tail recursion->:")
 
 (define (printList x)
   (if (eq? x null)
@@ -217,7 +227,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test map
 
-(-println "map->:")
+(tprintln "map->:")
 
 (check 'map1
        '(1 2 3)
@@ -238,7 +248,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test generic procedure definition
 
-(-println "generic->:")
+(tprintln "generic->:")
 
 (define x 3)
 (define x (lambda (x) x))
@@ -265,7 +275,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test dotted
 
-(-println "dotted->:")
+(tprintln "dotted->:")
 
 (define (foo a b . rest) (list a b rest))
 (check 'dotted1 '(1 2 (3 4 5)) (foo 1 2 3 4 5))
@@ -273,7 +283,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test macros
 
-(-println "macros->:")
+(tprintln "macros->:")
 
 ;; REVISIT - since this is in a begin everything is first compiled
 ;; then executed.  But if the following is called "foo" then
@@ -291,7 +301,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test derived
 
-(-println "derived->:")
+(tprintln "derived->:")
 
 (check 'derived1 
        '(-if true (begin true) (cond))
@@ -374,7 +384,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test misc
 
-(-println "misc->:")
+(tprintln "misc->:")
 
 (check "-println" true (null? (-println null)))
 (check "-comment-" null (-comment- (throw (new 'java.lang.Exception))))
@@ -382,7 +392,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test eval
 
-(-println "eval->:")
+(tprintln "eval->:")
 
 (check 'eval1 eval (eval 'eval))
 ;; REVISIT - interaction of eval and local environments
@@ -399,7 +409,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test quasiquote
 
-(-println "quasiquote->:")
+(tprintln "quasiquote->:")
 
 ;; 1.1
 (check "quasi1" 1 (apply quasiquote '(quasiquote 1)))
@@ -449,7 +459,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Test call/cc
 
-(-println "call/cc->:")
+(tprintln "call/cc->:")
 
 (define (tc x)
  (list 'r1
@@ -560,7 +570,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; test throw
 
-(-println "throw->:")
+(tprintln "throw->:")
 
 (-comment-
 ;; revisit
@@ -580,7 +590,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; test try
 
-(-println "try->:")
+(tprintln "try->:")
 
 (define (test_%try tryProcedure)
   (_%try 
@@ -652,7 +662,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test import
 
-(-println "import->:")
+(tprintln "import->:")
 
 ;;(import java.lang.Double constructor) ;; REVISIT
 (import java.lang.Double)
@@ -687,7 +697,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; read/write
 
-(-println "read/write->:")
+(tprintln "read/write->:")
 
 (define test-filename "/tmp/test.junk")
 
@@ -732,11 +742,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test threads and synchronization
 
-(-println "threads->:")
+(tprintln "threads->:")
 
 (cond ((equal? (getHostName (-si 'getLocalHost 'java.net.InetAddress))
 	       "legolas")
-       (-println "*****DISABLED*****"))
+       (tprintln "*****DISABLED*****"))
       (else
        
 (import org.llava.lib.Threads)
@@ -779,7 +789,7 @@
 	   (join child-thread 
 		 (new 'java.lang.Long (toString how-long-to-wait)))
 	   (set! parent-end-time (current-time))
-	   (if *visual?* (-println 'parent-done-waiting)))))
+	   (if *visual?* (tprintln 'parent-done-waiting)))))
   child-thread)
 
 (define (child num-iterations)
@@ -787,14 +797,14 @@
   (do ((i 0 (+ i 1)))
       ((> i num-iterations))
     (set! child-progress (cons i child-progress))
-    (if *visual?* (-println child-progress))
+    (if *visual?* (tprintln child-progress))
     (sleep (-si 'currentThread 'java.lang.Thread) CHILD-LOOP-SLEEP))
   (set! child-end-time (current-time))
-  (if *visual?* (-println 'child-done)))
+  (if *visual?* (tprintln 'child-done)))
 
 (define (print-parent-and-child-end-times)
   (if *visual?*
-      (-println (list 
+      (tprintln (list 
 	       'parent-end-time parent-end-time 
 	       'child-end-time child-end-time))))
 
@@ -901,16 +911,16 @@
 (join child-thread (new 'java.lang.Long (toString INFINITY)))
 ))
 
-(-println "threads<-:")
+(tprintln "threads<-:")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test synchronized
 
-(-println "synchronized->:")
+(tprintln "synchronized->:")
 
 (cond ((equal? (getHostName (-si 'getLocalHost 'java.net.InetAddress))
 	       "legolas")
-       (-println "*****DISABLED*****"))
+       (tprintln "*****DISABLED*****"))
       (else
 
 (define lock-and-run-child
@@ -960,7 +970,7 @@
 (join thread (new 'java.lang.Long (toString INFINITY)))
 ))
 
-(-println "synchronized<-:")
+(tprintln "synchronized<-:")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; End test
