@@ -1,6 +1,6 @@
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2000 Feb 16 (Wed) 17:59:20 by Harold Carr.
+ * Last Modified : 2000 Feb 16 (Wed) 18:10:12 by Harold Carr.
  */
 
 package libLava.r1.procedure.generic;
@@ -240,8 +240,6 @@ public class DI {
 	throws 
 	    NoSuchMethodException 
     {
-
-	// Exact match?
 	try {
 	    Method m = target.getMethod(name, argTypes); 
 	    setAccessible(m, true);
@@ -249,50 +247,54 @@ public class DI {
 	} catch (NoSuchMethodException e) {	
 	    ;
 	}
-
-	return lookupMethodInSupers(new Vector(),
-				       target,
-				       name,
-				       argTypes);
+	return lookupMethodInSupers(target, name, argTypes);
     }
 
-    private static Method lookupMethodInSupers (Vector goodMethods,
-						Class target,
+    private static Method lookupMethodInSupers (Class target,
 						String name,
 						Class[] argTypes) 
 	throws 
 	    NoSuchMethodException 
     {
-
-	if (target == null) {
-	    Method m;
-	    switch (goodMethods.size()) {
-	    case 0:
-		return null;
-	    case 1:
-		m = (Method)goodMethods.firstElement();
-		break;
-	    default:
-		m = mostSpecificMethod(goodMethods);
-		break;
-	    }
-	    setAccessible(m, true);
-	    return m;
+	Vector goodMethods =
+	    collectCandidatesFromSupers(target, name, argTypes);
+	
+	Method m;
+	switch (goodMethods.size()) {
+	case 0:
+	    return null;
+	case 1:
+	    m = (Method)goodMethods.firstElement();
+	    break;
+	default:
+	    m = mostSpecificMethod(goodMethods);
+	    break;
 	}
+	setAccessible(m, true);
+	return m;
+    }
 
-	Method[] methods = target.getDeclaredMethods();
-	for (int i = 0; i != methods.length; i++) {
-	    Class[] parmTypes = methods[i].getParameterTypes();
-	    if (name.equals(methods[i].getName()) &&
-		equalTypes(parmTypes, argTypes))
-	    {
-		goodMethods.addElement(methods[i]);
+    private static Vector collectCandidatesFromSupers(Class target,
+						      String name,
+						      Class[] argTypes)
+	throws
+	    NoSuchMethodException
+    {
+	Vector goodMethods = new Vector();
+
+	while (target != null) {
+	    Method[] methods = target.getDeclaredMethods();
+	    for (int i = 0; i != methods.length; i++) {
+		Class[] parmTypes = methods[i].getParameterTypes();
+		if (name.equals(methods[i].getName()) &&
+		    equalTypes(parmTypes, argTypes))
+		{
+		    goodMethods.addElement(methods[i]);
+		}
 	    }
+	    target = target.getSuperclass();
 	}
-	return lookupMethodInSupers(goodMethods,
-				    target.getSuperclass(),
-				    name,
-				    argTypes);
+	return goodMethods;
     }
 
     static Field fieldLookup (Class myClass, String fieldName) 
