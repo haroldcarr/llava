@@ -48,6 +48,7 @@ copy-to-local-mirror :
 	cp -p $(DOC_DIR_GENERATED)/procedure-index.html $(SITE_DIR)/procedure-index.html
 	rm -f $(SITE_DIR)/LICENSE.*
 	cp -p LICENSE.* $(SITE_DIR)
+	cp -p BUGS $(SITE_DIR)
 	cp -p TODO $(SITE_DIR)
 	cp -p VERSION $(SITE_DIR)
 	cp -p $(JARDIR)/llava-*    $(SITE_DIR)/archive
@@ -68,7 +69,10 @@ makeVersion : classes
 	`$(LLAVAVERSION) > VERSION`
 	`$(LLAVAVERSION) dateOnly > VERSIONDATEONLY`
 
-release : clean scrub makeVersion zip-src zip-lib all c jar docs release_end
+release : message clean scrub makeVersion zip-src zip-lib all c jar docs release_end
+
+message : FORCE
+	-@echo "WARNING: USE J2SE 1.4 or less for RELEASE"
 
 release_end :
 	date=`$(LLAVAVERSION) dateOnly`; \
