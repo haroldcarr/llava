@@ -1,6 +1,6 @@
 ;;;;
 ;;;; Created       : 1998 Dec 13 (Sun) 09:18:12 by Harold Carr.
-;;;; Last Modified : 2000 Feb 21 (Mon) 17:14:53 by Harold Carr.
+;;;; Last Modified : 2001 Mar 06 (Tue) 09:16:23 by Harold Carr.
 ;;;;
 ;;;; Provides import
 ;;;;
@@ -23,7 +23,7 @@
 ;     (import '***** '*****)
 ;
 
-(define-syntax .%setq
+(define-syntax _%setq
   (lambda (var val)
     `(let ((_lazy_hygenie_ ,val))
        (set! ,var _lazy_hygenie_)
@@ -33,98 +33,110 @@
 ;;;; First we define a few by hand to be used by "import" and friends.
 ;;;;
 
-(define (java.lang.Class.forName className)
-  (if (symbol? className) (set! className (toString className)))  
-  (.si 'forName 'java.lang.Class className))
+(define _%java_lang_Class_forName 
+  (lambda (className)
+    (if (symbol? className) (set! className (toString className)))  
+    (_si 'forName 'java.lang.Class className)))
 
-(define (java.lang.reflect.Modifier.isPublic int)
-  (.si 'isPublic 'java.lang.reflect.Modifier int))
+(define _%java_lang_reflect_Modifier_isPublic 
+  (lambda (int)
+    (_si 'isPublic 'java.lang.reflect.Modifier int)))
 
-(define (java.lang.reflect.Modifier.isStatic int)
-  (.si 'isStatic 'java.lang.reflect.Modifier int))
+(define _%java_lang_reflect_Modifier_isStatic
+  (lambda (int)
+    (_si 'isStatic 'java.lang.reflect.Modifier int)))
 
-(define (java.lang.reflect.Array.get o i)
-  (.si 'get 'java.lang.reflect.Array o i))
+(define _%java_lang_reflect_Array_get
+  (lambda (o i)
+    (_si 'get 'java.lang.reflect.Array o i)))
 
-(define (java.lang.reflect.Array.getLength o)
-  (.si 'getLength 'java.lang.reflect.Array o))
-
-;;;
-;;; .%isPublic? .%isStatic?
-;;;
-
-(define (.%isPublic? x)
-  (java.lang.reflect.Modifier.isPublic (getModifiers x)))
-
-(define (.%isStatic? x)
-  (java.lang.reflect.Modifier.isStatic (getModifiers x)))
+(define _%java_lang_reflect_Array_getLength 
+  (lambda (o)
+    (_si 'getLength 'java.lang.reflect.Array o)))
 
 ;;;
-;;; .%isMemberOfArray
+;;; _%isPublic? _%isStatic?
+;;;
+
+(define _%isPublic?
+  (lambda (x)
+    (_%java_lang_reflect_Modifier_isPublic (getModifiers x))))
+
+(define _%isStatic?
+  (lambda (x)
+    (_%java_lang_reflect_Modifier_isStatic (getModifiers x))))
+
+;;;
+;;; _%isMemberOfArray
 ;;;
 ;;; false if not present.  Otherwise the first element which passes the test.
 ;;;
 
-(define (.%isMemberOfArray test array)
-  (call/cc
-   (lambda (return)
-     (do ((len (java.lang.reflect.Array.getLength array))
-	  (i 0 (+ i 1)))
-	 ((>= i len) (return false))
-       (let ((el (java.lang.reflect.Array.get array i)))
-	 (if (test el)
-	     (return el)))))))
+(define _%isMemberOfArray
+  (lambda (test array)
+    (call/cc
+     (lambda (return)
+       (do ((len (_%java_lang_reflect_Array_getLength array))
+	    (i 0 (+ i 1)))
+	   ((>= i len) (return false))
+	 (let ((el (_%java_lang_reflect_Array_get array i)))
+	   (if (test el)
+	       (return el))))))))
 
 ;;;
-;;; .%mapJavaArray
+;;; _%mapJavaArray
 ;;;
 
-(define (.%mapJavaArray proc array)
-  (let ((result '(dummy)))
-    (do ((len (java.lang.reflect.Array.getLength array))
-	 (rptr result
-	       (begin
-		 (setCdr rptr
-			 (cons (proc (java.lang.reflect.Array.get array i))
-			       '()))
-		 (cdr rptr)))
-	 (i 0 (+ i 1)))
-	((>= i len) (cdr result)))))
+(define _%mapJavaArray 
+  (lambda (proc array)
+    (let ((result '(dummy)))
+      (do ((len (_%java_lang_reflect_Array_getLength array))
+	   (rptr result
+		 (begin
+		   (setCdr rptr
+			   (cons (proc (_%java_lang_reflect_Array_get array i))
+				 '()))
+		   (cdr rptr)))
+	   (i 0 (+ i 1)))
+	  ((>= i len) (cdr result))))))
 
 ;;;
 ;;; For defining the procedures.  Also for debugging.
 ;;;
 
-(define *.%evalDefineCMF* 'eval)
-(define (.%evalDefineCMFWrite form) (.print form) form)
-(define (.%evalDefineCMFEval  form) (eval form))
+(define *_%evalDefineCMF* 'eval)
+(define _%evalDefineCMFWrite (lambda (form) (_print form) form))
+(define _%evalDefineCMFEval  (lambda (form) (eval form)))
 
-(define (.%evalDefineCMF form)
-  (case *.%evalDefineCMF*
-    ((write    ) (.%evalDefineCMFWrite form))
-    ((eval     ) (.%evalDefineCMFEval  form))
-    ((writeEval) (.%evalDefineCMFEval  (.%evalDefineCMFWrite form)))
-    ((none     ) 'none)
-    (else (error (string-append ".%evalDefineCMF - unknown: "
-				(toString form))))))
+(define _%evalDefineCMF
+  (lambda (form)
+    (case *_%evalDefineCMF*
+      ((write    ) (_%evalDefineCMFWrite form))
+      ((eval     ) (_%evalDefineCMFEval  form))
+      ((writeEval) (_%evalDefineCMFEval  (_%evalDefineCMFWrite form)))
+      ((none     ) 'none)
+      (else (error (string-append "_%evalDefineCMF - unknown: "
+				  (toString form)))))))
 
 ; Uncomment for debug.
-;(set! *.%evalDefineCMF* 'writeEval)
+;(set! *_%evalDefineCMF* 'writeEval)
+(set! *_%evalDefineCMF* 'write)
 
 ;;;
 ;;; Always useful.
 ;;;
 
-(define (.%makeSymOrStr symOrStr . args)
-  (let ((result (apply string-append
-		       (map (lambda (x)
-			      (if (symbol? x)
-				  (toString x)
-				  x))
-			    args))))
-    (if (eq? symOrStr 'symbol)
-	(string->symbol result)
-	result)))
+(define _%makeSymOrStr
+  (lambda (symOrStr . args)
+    (let ((result (apply string-append
+			 (map (lambda (x)
+				(if (symbol? x)
+				    (toString x)
+				    x))
+			      args))))
+      (if (eq? symOrStr 'symbol)
+	  (string->symbol result)
+	  result))))
 
 ;;;
 ;;; import
@@ -132,121 +144,135 @@
 ;;; The main procedure.
 ;;;
 
-(define (import className . methodOrFieldNames)
-  (let* ((class   (java.lang.Class.forName (.%makeSymOrStr 'string className)))
-	 (constructors (getConstructors    class))
-	 (methods      (getDeclaredMethods class))
-	 (fields       (getDeclaredFields  class)))
-    (if (null? methodOrFieldNames)
-	(.%defineAllCMF className class constructors methods fields)
-	(for-each
-	 (lambda (methodOrFieldName)
-	   (.%defineCMF
-	    className
-	    (.%makeSymOrStr 'symbol methodOrFieldName)
-	    class constructors methods fields))
-	 methodOrFieldNames)))
-  true)
+(define _%importAux
+  (lambda (className . methodOrFieldNames)
+    (let* ((class
+	    (_%java_lang_Class_forName (_%makeSymOrStr 'string className)))
+	   (constructors (getConstructors    class))
+	   (methods      (getDeclaredMethods class))
+	   (fields       (getDeclaredFields  class)))
+      (if (null? methodOrFieldNames)
+	  (_%defineAllCMF className class constructors methods fields)
+	  (for-each
+	   (lambda (methodOrFieldName)
+	     (_%defineCMF
+	      className
+	      (_%makeSymOrStr 'symbol methodOrFieldName)
+	      class constructors methods fields))
+	   methodOrFieldNames)))
+    true))
 
 ;; Define an individual constructor, method or field.
 
-(define (.%defineCMF
-	 className methodOrFieldName class constructors methods fields)
-  (if (eq? methodOrFieldName 'constructor)
-      (.%defineC className class constructors)
-      (.%defineMF className methodOrFieldName class methods fields)))
+(define _%defineCMF
+  (lambda (className methodOrFieldName class constructors methods fields)
+    (if (eq? methodOrFieldName 'constructor)
+	(_%defineC className class constructors)
+	(_%defineMF className methodOrFieldName class methods fields))))
 
 ;; Define an individual constructor.
 
-(define (.%defineC className class constructors)
-  (if (and (not (equal? 0 (java.lang.reflect.Array.getLength constructors)))
-	   (not (equal? 0 
-			(length (apply 
-				 append
-				 (.%mapJavaArray
-				  (lambda (x) (if (.%isPublic? x) '(true) '()))
-				  constructors))))))
-      (.%evalDefineCMF
-       `(define (,className . args) (apply new (cons ',className args))))
-      (error 
-       (string-append "No constructor for class: " (toString className)))))
+(define _%defineC
+  (lambda (className class constructors)
+    "Use new"))
+(_comment
+    (if (and (not (equal? 0
+			  (_%java_lang_reflect_Array_getLength constructors)))
+	     (not (equal? 0 
+			  (length (apply 
+				   append
+				   (_%mapJavaArray
+				    (lambda (x)
+				      (if (_%isPublic? x) '(true) '()))
+				    constructors))))))
+	(_%evalDefineCMF
+	 `(define (,className . args) (apply new (cons ',className args))))
+	(error 
+	 (string-append "No constructor for class: " (toString className))))))
+)
 
 ;; Define an individual method or field.
 
-(define (.%defineMF className methodOrFieldName class methods fields)
-  (let* ((nameString (.%makeSymOrStr 'string methodOrFieldName))
-	 (test       (lambda (el) (equal? (getName el) nameString)))
-	 (el         '()))
-    (cond ((.%setq el (.%isMemberOfArray test methods))
-	   (if (.%isPublic? el) 
-	       (.%defineM className methodOrFieldName class el)))
-	  ((.%setq el (.%isMemberOfArray test fields))
-	   (if (.%isPublic? el) 
-	       (.%defineF className methodOrFieldName class el)))
-	  (else
-	   (error (string-append "Unknown method or field: "
-				 (toString className)
-				 " "
-				 (toString methodOrFieldName)))))))
+(define _%defineMF
+  (lambda (className methodOrFieldName class methods fields)
+    (let* ((nameString (_%makeSymOrStr 'string methodOrFieldName))
+	   (test       (lambda (el) (equal? (getName el) nameString)))
+	   (el         '()))
+      (cond ((_%setq el (_%isMemberOfArray test methods))
+	     (if (_%isPublic? el) 
+		 (_%defineM className methodOrFieldName class el)))
+	    ((_%setq el (_%isMemberOfArray test fields))
+	     (if (_%isPublic? el) 
+		 (_%defineF className methodOrFieldName class el)))
+	    (else
+	     (error (string-append "Unknown method or field: "
+				   (toString className)
+				   " "
+				   (toString methodOrFieldName))))))))
 
 ;; Define an individual method.
 
-(define (.%defineM className methodName class method)
-  ;; Only static methods since virtual are picked up automatically.
-  (if (.%isStatic? method)
-    (.%evalDefineCMF
-     `(define (,(.%makeSymOrStr 'symbol  className "." methodName) . args)
-	(apply .si (cons ',methodName (cons ',className args)))))))
+(define _%defineM
+  (lambda (className methodName class method)
+    ;; Only static methods since virtual are picked up automatically.
+    (if (_%isStatic? method)
+	(_%evalDefineCMF
+	 `(define (,(_%makeSymOrStr 'symbol  className "." methodName) . args)
+	    (apply _si (cons ',methodName (cons ',className args))))))))
 
 ;; Define an individual field.
 
-(define (.%defineF className fieldName class field)
-  (let* ((isStatic (.%isStatic? field))
-	 (name     (if isStatic
-		       (.%makeSymOrStr 'symbol className "." fieldName)
-		       fieldName))
-	 (name!    (.%makeSymOrStr 'symbol name "!"))
-	 (andArg   (if isStatic `(,name)  `(,name  o)))
-	 (andArg!  (if isStatic `(,name!) `(,name! o)))
-	 (andVal   (append andArg  '(v)))
-	 (andVal!  (append andArg! '(v))))
-    (.%evalDefineCMF
-     `(define ,andArg
-	,(if isStatic
-	     `(.sf ',fieldName ',className)
-	     `(.f  ',fieldName o))))
-    (.%evalDefineCMF
-     `(define ,andVal!
-	,(if isStatic
-	     `(.sf ',fieldName ',className v)
-	     `(.f  ',fieldName o           v))))))
+(define _%defineF 
+  (lambda (className fieldName class field)
+    (let* ((isStatic (_%isStatic? field))
+	   (name     (if isStatic
+			 (_%makeSymOrStr 'symbol className "." fieldName)
+			 fieldName))
+	   (name!    (_%makeSymOrStr 'symbol name "!"))
+	   (andArg   (if isStatic `(,name)  `(,name  o)))
+	   (andArg!  (if isStatic `(,name!) `(,name! o)))
+	   (andVal   (append andArg  '(v)))
+	   (andVal!  (append andArg! '(v))))
+      (_%evalDefineCMF
+       `(define ,andArg
+	  ,(if isStatic
+	       `(_sf ',fieldName ',className)
+	       `(_f  ',fieldName o))))
+      (_%evalDefineCMF
+       `(define ,andVal!
+	  ,(if isStatic
+	       `(_sf ',fieldName ',className v)
+	       `(_f  ',fieldName o           v)))))))
 
 ; Define procedures for all public constructors, methods and fields.
 
-(define (.%defineAllCMF className class constructors methods fields)
-  (let* ((methodNames (.%mapJavaArray (lambda (x) (getName x)) methods))
-	 (fieldNames  (.%mapJavaArray (lambda (x) (getName x)) fields))
-	 (methodAndFieldNames (append methodNames fieldNames))
-	 (importArgs
-	  (cons className
-		(if (> (java.lang.reflect.Array.getLength constructors) 0)
-		    (cons 'constructor methodAndFieldNames)
-		    methodAndFieldNames))))
-    (apply import importArgs)))
+(define _%defineAllCMF
+  (lambda (className class constructors methods fields)
+    (let* ((methodNames (_%mapJavaArray (lambda (x) (getName x)) methods))
+	   (fieldNames  (_%mapJavaArray (lambda (x) (getName x)) fields))
+	   (methodAndFieldNames (append methodNames fieldNames))
+	   (importArgs
+	    (cons className
+		  (if (> (_%java_lang_reflect_Array_getLength constructors) 0)
+		      (cons 'constructor methodAndFieldNames)
+		      methodAndFieldNames))))
+      (apply _%importAux importArgs))))
       
 
 (provide 'java/lang/import)
 
 
-(.comment
+(_comment
 
 (load "import.lva")
+;(set! *_%evalDefineCMF* 'write)
 (import 'java.lang.Float)
 (import 'java.lang.Float 'constructor)
 (java.lang.Float "34")
 (java.lang.Float.MAX_VALUE)
 (java.lang.Float.MAX_VALUE! (java.lang.Float 3.4028235E38))
-(import 'java.util.Vector)
+(_%importAux 'java.util.Vector)
+(_%importAux 'java.util.Hashtable)
 (import 'java.lang.System 'out)
 (import 'java.lang.System 'constructor)
 (import 'java.lang.System 'bar)
