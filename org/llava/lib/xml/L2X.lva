@@ -33,7 +33,7 @@
 
 ;;;;
 ;;;; Created       : 2001 Mar 06 (Tue) 15:09:50 by Harold Carr.
-;;;; Last Modified : 2002 Oct 14 (Mon) 08:16:06 by Harold Carr.
+;;;; Last Modified : 2004 Jan 06 (Tue) 20:39:22 by Harold Carr.
 ;;;;
 
 (_namespace org.llava.lib.xml.L2X)
@@ -87,6 +87,8 @@
 	  ((!)   (_println (string-append "ignoring: " (toString sexpr))))
 	  ((!DOCTYPE)
                  (l->x-printDOCTYPE sexpr indent))
+	  ((!CDATA)
+                 (l->x-printCDATA sexpr indent))
 	  ((!--) (l->x-printComment sexpr indent))
 	  ((&&)  (l->x-printEntity sexpr indent))
 	  (else  (l->x-printElement sexpr indent))))))
@@ -150,9 +152,9 @@
   (lambda (comment indent)
     (l->x-newline)
     (l->x-indent indent)
-    (l->x-print "<!--")
-    (l->x-print (cadr comment))
-    (l->x-print "-->")))
+    (l->x-print "<!-- ")
+    (for-each l->x-print (cdr comment))
+    (l->x-print " -->")))
 
 (define l->x-printDOCTYPE
   (lambda (doctype indent)
@@ -167,6 +169,14 @@
       (l->x-print (car d))
       (if (car s) (l->x-print "\"")))
     (l->x-print ">")))
+
+(define l->x-printCDATA
+  (lambda (cdata indent)
+    (l->x-newline)
+    (l->x-indent indent)
+    (l->x-print "<![CDATA[")
+    (l->x-print (cadr cdata))
+    (l->x-print "]]>")))
 
 (define l->x-indent
   (lambda (indent)
