@@ -12,7 +12,7 @@ or send a letter to
 
 /**
  * Created       : 2004 Nov 30 (Tue) 06:41:40 by Harold Carr.
- * Last Modified : 2004 Nov 30 (Tue) 06:45:11 by Harold Carr.
+ * Last Modified : 2004 Dec 01 (Wed) 22:21:53 by Harold Carr.
  */
 
 package org.llava.impl.runtime.procedure.primitive.llava.opt;
@@ -28,7 +28,7 @@ import org.llava.impl.runtime.procedure.primitive.PrimitiveProcedure;
 
 public class PrimForEach
     extends
-	GenericProcedureImpl
+	PrimitiveProcedure
 {
     // NOTE: This implementation is tightly coupled with PrimMap.
     PrimMap map = new PrimMap();
