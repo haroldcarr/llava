@@ -1,52 +1,48 @@
 src.org.llava:
+	F
+	FC
+	FR
+	Lambda
 	Llava
+	LlavaException
+	LlavaVersion
+	Pair
+	Procedure
+	Repl
+	Symbol
+	UndefinedIdException
+	WrongNumberOfArgumentsException
+	llava.lva
+
+	compiler
+		Compiler
+		EnvironmentLexical
+	derived
+	io
+		LlavaEOF
+		LlavaReader
+		LlavaWriter
 	lib
-	(implied spi - really at org.llava level):
-		llava.lva
+	procedure
+		GenericProcedure
+		WrapJavaPrimitive
+	runtime
+		ActivationFrame
+		BacktraceHandler
+		Engine
+		EnvTopLevelInit
+		EnvironmentTopLevel
+		Evaluator
+		LlavaRuntime
+		Namespace
+		UndefinedIdHandler
+	;;syntax
 
-		F
-		FC
-		FR
-
-		LlavaVersion
-		Repl
-
-		Lambda
-		Pair
-		Procedure
-		Symbol
-		LlavaException
-		UndefinedIdException
-		WrongNumberOfArgumentsException
-
-		compiler
-			Compiler
-			EnvironmentLexical
-		io
-			LlavaEOF
-			LlavaReader
-			LlavaWriter
-		procedure
-			GenericProcedure
-			WrapJavaPrimitive
-		runtime
-			ActivationFrame
-			EnvironmentTopLevel
-			Namespace
-			UndefinedIdHandler
-			Engine
-
-			BacktraceHandler
-			EnvTopLevelInit
-			Evaluator
-			LlavaRuntime
-		;;syntax
 	impl
-		LlavaVersionImpl
-		ReplImpl
-
 		LambdaImpl
+		LlavaVersionImpl
 		PairImpl
+		ReplImpl
 		SymbolImpl
 
 		compiler
@@ -64,16 +60,14 @@ src.org.llava:
 			Prim* (flatten)
 		runtime
 			ActivationFrameImpl
-			EnvironmentTopLevelImpl
-			NamespaceImpl
-			UndefinedIdHandlerImpl
+			BacktraceHandlerImpl
 			Code*
 			EngineImpl
-
-			BacktraceHandlerImpl
 			EnvTopLevelInitImpl
-			Evaluator???
+			EnvironmentTopLevelImpl
 			LlavaRuntimeImpl
+			NamespaceImpl
+			UndefinedIdHandlerImpl
 		syntax
 			SyntaxDefineSyntax
 			Syntax
@@ -181,10 +175,8 @@ src.org.llava:
 
 
   )
-  "~/rip/rpcMsgFramework/doc/pept2/tests"
-  "~/rip/rpcMsgFramework/doc/pept2/tests"
+  "~/.sync/.llava.org/.system"
+  "~/.sync/.llava.org/.system"
  t)
-
-; "~/.sync/.llava.org/.system"
 
 ;;; End of file.
