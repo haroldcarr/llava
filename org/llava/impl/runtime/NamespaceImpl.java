@@ -11,7 +11,7 @@ or send a letter to
 
 //
 // Created       : 2000 Oct 21 (Sat) 10:46:48 by Harold Carr.
-// Last Modified : 2004 Dec 08 (Wed) 10:34:57 by Harold Carr.
+// Last Modified : 2004 Dec 22 (Wed) 17:06:38 by Harold Carr.
 //
 
 package org.llava.impl.runtime;
@@ -812,7 +812,7 @@ else
 		    return null;
 		    /*
 		} else if (result instanceof GenericProcedure) {
-		    // WORKAROUND/SET/UNDEFINED. See EnvTopLevelInitImpl.
+		    // WORKAROUND/SET/UNDEFINED. See UndefinedIdHandlerGenericImpl
 		    ;
 		    */
 		} else {
@@ -907,8 +907,7 @@ else
 		    return null;
 		    /*
 		} else if (result instanceof GenericProcedure) {
-		    // WORKAROUND/SET/UNDEFINED. See EnvTopLevelInitImpl.
-		    ;
+		    // WORKAROUND/SET/UNDEFINED. See UndefinedIdHandlerGenericImpl		    ;
 		    */
 		} else {
 		    return result;
