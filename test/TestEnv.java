@@ -1,20 +1,32 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /**
  * Created       : 1999 Dec 21 (Tue) 20:01:34 by Harold Carr.
- * Last Modified : 2001 Mar 26 (Mon) 15:24:34 by Harold Carr.
+ * Last Modified : 2004 Sep 03 (Fri) 15:35:46 by Harold Carr.
  */
 
-package testLava;
+package test;
 
-import lavaProfile.F;
-import lava.lang.exceptions.LavaException;
-import lava.lang.types.Symbol;
-import lavaProfile.util.List;
-import lavaProfile.compiler.*;
-import lavaProfile.compiler.FC;
-import lava.runtime.EnvironmentTopLevel;
-import lavaProfile.runtime.FR;
-import lavaProfile.runtime.env.*;
-import lavaProfile.runtime.exceptions.UndefinedIdException;
+import org.llava.impl.F;
+import org.llava.lang.exceptions.LlavaException;
+import org.llava.lang.types.Symbol;
+import org.llava.impl.util.List;
+import org.llava.impl.compiler.*;
+import org.llava.impl.compiler.FC;
+import org.llava.runtime.EnvironmentTopLevel;
+import org.llava.impl.runtime.FR;
+import org.llava.impl.runtime.env.*;
+import org.llava.impl.runtime.exceptions.UndefinedIdException;
 
 public class TestEnv
 {
@@ -167,7 +179,7 @@ public class TestEnv
 	    return env.get(symbol);
 	} catch (UndefinedIdException e) {
 	    return undefined;
-	} catch (LavaException e) {
+	} catch (LlavaException e) {
 	    return e;
 	}
     }

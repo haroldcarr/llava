@@ -1,9 +1,21 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 //
 // Created       : 2000 Oct 21 (Sat) 10:46:48 by Harold Carr.
 // Last Modified : 2004 Dec 01 (Wed) 10:15:34 by Harold Carr.
 //
 
-package lavaProfile.runtime.env;
+package org.llava.impl.runtime.env;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,27 +30,29 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 
-import lavaProfile.F;
-import lava.Repl;
-import lava.lang.exceptions.LavaException;
-import lava.lang.types.Pair;
-import lava.lang.types.Procedure;
-import lava.lang.types.Symbol;
+import org.llava.impl.F;
+import org.llava.Repl;
+import org.llava.lang.exceptions.LlavaException;
+import org.llava.lang.types.Pair;
+import org.llava.lang.types.Procedure;
+import org.llava.lang.types.Symbol;
 
-import lava.runtime.EnvironmentTopLevel;
-import lavaProfile.runtime.FR;
-import lava.runtime.UndefinedIdHandler;
+import org.llava.runtime.EnvironmentTopLevel;
+import org.llava.impl.runtime.FR;
+import org.llava.runtime.UndefinedIdHandler;
 
-import lavaProfile.runtime.procedure.generic.GenericProcedure; // REVISIT
+import org.llava.impl.runtime.procedure.generic.GenericProcedure; // REVISIT
 
 
 // TODO:
 //
 // - No name of error message.
-// lava.Repl> (foo.bar)
+// llava-> (foo.bar)
 // Error: java.lang.Exception: Undefined top level variable: 
 //
 // - Reenable import test in testBuiltIns.
+//
+// - If can't find nested import report the correct cannot find.
 //
 // - Reenable/fix selective import
 //
@@ -50,7 +64,7 @@ import lavaProfile.runtime.procedure.generic.GenericProcedure; // REVISIT
 // NOTE:
 //
 // - macros imported into root do not work.
-//   if the only namespace is lava.Lava and it is not sealed and you
+//   if the only namespace is org.llava and it is not sealed and you
 //   do:
 //
 // (import test.tt) ;; contains a macro definition of "m".
@@ -133,10 +147,10 @@ public class NamespaceImpl
 
 	String nextPackageShouldBe = null;
 
-	// If two lava files each import each other we need to stop
+	// If two llava files each import each other we need to stop
 	// circular loading.
 
-	Set lavaFilesCurrentlyBeingLoaded =
+	Set llavaFilesCurrentlyBeingLoaded =
 	    Collections.synchronizedSet(new HashSet());
 
 	// Marker to return when values not found in map.
@@ -159,7 +173,7 @@ public class NamespaceImpl
 	    // exist so it is null - and if it did exist would cause a circular
 	    // lookup.
 
-	    rootNamespace = createNamespace("lava.Lava", this);
+	    rootNamespace = createNamespace(F.llavaPackageName(), this);
 	    rootNamespace.getRefList().remove(1);
 	    currentNamespace = rootNamespace;
 	}
@@ -215,9 +229,9 @@ public class NamespaceImpl
     // Namespace interface methods.
     //
 
-    public Namespace _package (Symbol packagePathAndName, Symbol className)
+    public Namespace _package (Symbol namespacePathAndClassName)
     {
-	return _package(packagePathAndName.toString(), className.toString());
+	return _package(namespacePathAndClassName.toString());
     }
 
     public String _import (Symbol classPathAndName)
@@ -342,12 +356,12 @@ public class NamespaceImpl
     // Support for package.
     //
 
-    public Namespace _package (String packagePathAndName, String className)
+    public Namespace _package (String packagePathAndClassName)
     {
-	String PC = packagePathAndName + "." + className;
+	String PC = packagePathAndClassName;
 	if (classVariables.nextPackageShouldBe != null) {
 	    if (! PC.equals(classVariables.nextPackageShouldBe)) {
-		throw F.newLavaException("incorrect package: " + PC + 
+		throw F.newLlavaException("incorrect package: " + PC + 
 					 " should be: " +
 					 classVariables.nextPackageShouldBe);
 	    }
@@ -366,7 +380,7 @@ public class NamespaceImpl
     /**
 <pre>
 if alreadyImportedInNamespace?
-    loadLavaFileIfTouched
+    loadLlavaFileIfTouched
         if not classAlreadyImported
             ignore FileNotFoundException
 	        loadLoop false lastModified
@@ -378,7 +392,7 @@ if alreadyImportedInNamespace?
 		         load file
 else existsInFullNameNamespaceMap
     addToRefList
-    loadLavaFileIfTouched
+    loadLlavaFileIfTouched
 else if java class exists
     import class
     classAlreadyImported = true
@@ -397,7 +411,7 @@ else
 	NamespaceImpl current = (NamespaceImpl) getCurrentNamespace();
 
 	if (current.isSealed) {
-	    throw F.newLavaException("package: "
+	    throw F.newLlavaException("package: "
 				     + current.getName()
 				     + " is sealed.  Cannot import: "
 				     + name);
@@ -428,7 +442,7 @@ else
 	// Stops infinite loading for packages which import each other.
 	// Pick up any changes since last load.
 	// Note: does not handle erasures.
-	String result = loadLavaFileIfTouched(name);
+	String result = loadLlavaFileIfTouched(name);
 	if (result != null) {
 	    return result;
 	} else {
@@ -445,10 +459,10 @@ else
 	result = importJavaClassIntoNamespace(name);
 	if (result != null)
 	    return result;
-	result = importLavaFileIntoNamespace(name);
+	result = importLlavaFileIntoNamespace(name);
 	if (result != null)
 	    return result;
-	throw F.newLavaException("importIntoNamespace: should not happen." +
+	throw F.newLlavaException("importIntoNamespace: should not happen." +
 				 name);
     }
 
@@ -461,7 +475,7 @@ else
 	    // and have them import each other.
 	    addToRefList(ns);
 	    // Does not handle erasures.
-	    result = loadLavaFileIfTouched(name);
+	    result = loadLlavaFileIfTouched(name);
 	    if (result == null) {
 		return name;
 	    } else {
@@ -501,12 +515,12 @@ else
 	}
     }
 
-    public String importLavaFileIntoNamespace (String name)
+    public String importLlavaFileIntoNamespace (String name)
     {
-	return importLavaFileIntoNamespaceLoop(name, true, 0);
+	return importLlavaFileIntoNamespaceLoop(name, true, 0);
     }
 
-    public String loadLavaFileIfTouched (String name)
+    public String loadLlavaFileIfTouched (String name)
     {
 	NamespaceImpl ns = findNamespace(name);
 	if (ns.classAlreadyImported) {
@@ -516,9 +530,9 @@ else
 	    // This will load the file if has been touched since last load time
 	    // or if it is newly existent, i.e., if the import was created
 	    // interactively and then later had a file associated with it.
-	    return importLavaFileIntoNamespaceLoop(
+	    return importLlavaFileIntoNamespaceLoop(
 		name, false, ns.getFileLastModified());
-	} catch (LavaException e) {
+	} catch (LlavaException e) {
 	    if (! e.getThrowable().getMessage()
 		    .equals("Does not exist: " + name)) {
 		throw e;
@@ -527,7 +541,7 @@ else
 	}
     }
 
-    public String importLavaFileIntoNamespaceLoop(
+    public String importLlavaFileIntoNamespaceLoop(
        String name, boolean addToRefListP, long fileLastModified)
     {
 	StringTokenizer pathTokens = getClassPathTokens();
@@ -535,13 +549,13 @@ else
 	while (pathTokens.hasMoreTokens()) {
 	    String currentPath = pathTokens.nextToken();
 	    String result = 
-		importLavaFileIntoNamespaceLoopAux(
+		importLlavaFileIntoNamespaceLoopAux(
 		 name, loadName, currentPath, addToRefListP, fileLastModified);
 	    if (result != null) {
 		return result;
 	    }
 	}
-	throw F.newLavaException("Does not exist: " + name);
+	throw F.newLlavaException("Does not exist: " + name);
     }
 
     /**
@@ -550,7 +564,7 @@ else
      * Note: this should only be called on a namespace which is the
      * currentNamespace.
      */
-    public String importLavaFileIntoNamespaceLoopAux (
+    public String importLlavaFileIntoNamespaceLoopAux (
         String name, String loadName, String currentPath,
 	boolean addToRefListP, long fileLastModified)
     {
@@ -570,7 +584,7 @@ else
 	if ((fileLastModified == 0) ||
 	    (file.lastModified() > fileLastModified))
 	{
-	    if (getLavaFilesCurrentlyBeingLoaded().contains(loadPathAndName)) {
+	    if (getLlavaFilesCurrentlyBeingLoaded().contains(loadPathAndName)) {
 		if (addToRefListP) {
 		    addToRefList(
                       findOrCreateNamespace(
@@ -579,12 +593,12 @@ else
 		return loadPathAndName;
 	    }
 	    // Needs to be loaded.
-	    getLavaFilesCurrentlyBeingLoaded().add(loadPathAndName);
+	    getLlavaFilesCurrentlyBeingLoaded().add(loadPathAndName);
 	    try {
 		return loadFileNewOrTouched(file, name, loadPathAndName, 
 					    addToRefListP);
 	    } finally {
-		getLavaFilesCurrentlyBeingLoaded().remove(loadPathAndName);
+		getLlavaFilesCurrentlyBeingLoaded().remove(loadPathAndName);
 	    }
 	}
 	// REVISIT - duplicate code (see above).
@@ -606,7 +620,7 @@ else
 	    // import or because it had been touched.
 	    // Make sure it had a correct package definition.
 	    if (! name.equals(getCurrentNamespace().getName())) {
-		throw F.newLavaException(
+		throw F.newLlavaException(
 		    "Missing or incorrect package statement.  "
 		    + "Expecting: " + name
 		    + " when loading: " + loadPathAndName);
@@ -648,7 +662,7 @@ else
     public Object set (String identifier, Object val)
     {
 	if (isDottedP(identifier)) {
-	    throw F.newLavaException("setE!: no dots allowed: " + identifier);
+	    throw F.newLlavaException("setE!: no dots allowed: " + identifier);
 	}
 
 	NamespaceImpl current = (NamespaceImpl) getCurrentNamespace();
@@ -659,7 +673,7 @@ else
     public Object setNotDotted (String identifier, Object val)
     {
 	if (isSealed) {
-	    throw F.newLavaException("package: "
+	    throw F.newLlavaException("package: "
 				     + getName()
 				     + " is sealed.  Cannot set: "
 				     + identifier
@@ -724,10 +738,10 @@ else
      * This is the critical routine.
      * Possibilities:
      * 1. Only look in current namespace.
-     *    But this means you do not pick up builtin lava variables.
+     *    But this means you do not pick up builtin llava variables.
      * 2. Look in current namespace.
-     *    If not found look in lava namespace.
-     *    But this means all lava imported functions must have
+     *    If not found look in llava namespace.
+     *    But this means all llava imported functions must have
      *    at least its "class" name (e.g., Aif.aif).
      *    This most closely resembles static class methods/fields accessed.
      *    But it is inconvenient in terms of Lisp.
@@ -812,7 +826,7 @@ else
 	String originalPC = pc;
 
 	// Enables .foo shorthand for built-in procedures.
-	pc = (pc.equals("") ? "lava.Lava" : pc);
+	pc = (pc.equals("") ? F.llavaPackageName() : pc);
 
 	// REVISIT
 	// Only ref imported things, even fully qualified:
@@ -877,7 +891,7 @@ else
 	NamespaceImpl ns = 
 	    ((NamespaceImpl)getCurrentNamespace()).findNamespaceInRefList(x);
 	if (ns == null) {
-	    throw F.newLavaException("getFullNameForClass: undefined: "
+	    throw F.newLlavaException("getFullNameForClass: undefined: "
 				     + x);
 	}
 	return ns.getName();
@@ -910,9 +924,9 @@ else
 	return classVariables.repl = repl;
     }
 
-    public Set getLavaFilesCurrentlyBeingLoaded ()
+    public Set getLlavaFilesCurrentlyBeingLoaded ()
     {
-	return classVariables.lavaFilesCurrentlyBeingLoaded;
+	return classVariables.llavaFilesCurrentlyBeingLoaded;
     }
 
     public Hashtable getMap ()

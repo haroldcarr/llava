@@ -1,15 +1,27 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /**
  * Created       : 2001 Mar 05 (Mon) 10:55:19 by Harold Carr.
- * Last Modified : 2001 Mar 26 (Mon) 14:45:33 by Harold Carr.
+ * Last Modified : 2004 Sep 03 (Fri) 15:34:10 by Harold Carr.
  */
 
-package lavaProfile.runtime.procedure.primitive.java;
+package org.llava.impl.runtime.procedure.primitive.java;
 
-import lava.lang.types.Pair;
-import lava.lang.types.Symbol;
-import lavaProfile.runtime.Engine;
-import lavaProfile.runtime.env.Namespace;
-import lavaProfile.runtime.procedure.primitive.PrimitiveProcedure;
+import org.llava.lang.types.Pair;
+import org.llava.lang.types.Symbol;
+import org.llava.impl.runtime.Engine;
+import org.llava.impl.runtime.env.Namespace;
+import org.llava.impl.runtime.procedure.primitive.PrimitiveProcedure;
 
 public class PrimImport
     extends

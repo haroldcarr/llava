@@ -1,36 +1,48 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /**
  * Created       : 2000 Jan 07 (Fri) 18:17:59 by Harold Carr.
- * Last Modified : 2001 Mar 26 (Mon) 14:41:37 by Harold Carr.
+ * Last Modified : 2004 Sep 03 (Fri) 15:33:11 by Harold Carr.
  */
 
-package lavaProfile.runtime;
+package org.llava.impl.runtime;
 
-import lava.runtime.EnvironmentTopLevel;
-import lava.runtime.Evaluator;
-import lava.runtime.LavaRuntime;
+import org.llava.runtime.EnvironmentTopLevel;
+import org.llava.runtime.Evaluator;
+import org.llava.runtime.LlavaRuntime;
 
-public class LavaRuntimeImpl
+public class LlavaRuntimeImpl
     implements
-	LavaRuntime
+	LlavaRuntime
 {
     private EnvironmentTopLevel environmentTopLevel;
     private Evaluator           evaluator;
 
-    public LavaRuntimeImpl ()
+    public LlavaRuntimeImpl ()
     {
     }
 
-    private LavaRuntimeImpl (EnvironmentTopLevel environmentTopLevel,
+    private LlavaRuntimeImpl (EnvironmentTopLevel environmentTopLevel,
 			 Evaluator           evaluator)
     {
 	this.environmentTopLevel = environmentTopLevel;
 	this.evaluator           = evaluator;
     }
 
-    public LavaRuntime newLavaRuntime(EnvironmentTopLevel environmentTopLevel,
+    public LlavaRuntime newLlavaRuntime(EnvironmentTopLevel environmentTopLevel,
 				      Evaluator           evaluator)
     {
-	return new LavaRuntimeImpl(environmentTopLevel, evaluator);
+	return new LlavaRuntimeImpl(environmentTopLevel, evaluator);
     }
 	
     public EnvironmentTopLevel getEnvironment ()

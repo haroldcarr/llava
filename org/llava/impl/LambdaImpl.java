@@ -1,18 +1,30 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /**
  * Created       : 1999 Dec 23 (Thu) 18:36:42 by Harold Carr.
- * Last Modified : 2001 Mar 26 (Mon) 15:23:55 by Harold Carr.
+ * Last Modified : 2004 Sep 03 (Fri) 15:33:55 by Harold Carr.
  */
 
-package lavaProfile.runtime.procedure;
+package org.llava.impl.runtime.procedure;
 
-import lavaProfile.F;
-import lava.lang.types.Pair;
-import lavaProfile.util.List;
-import lava.runtime.EnvironmentTopLevel;
-import lavaProfile.runtime.code.Code;
-import lavaProfile.runtime.env.ActivationFrame;
-import lavaProfile.runtime.env.Namespace;
-import lavaProfile.runtime.Engine;
+import org.llava.impl.F;
+import org.llava.lang.types.Pair;
+import org.llava.impl.util.List;
+import org.llava.runtime.EnvironmentTopLevel;
+import org.llava.impl.runtime.code.Code;
+import org.llava.impl.runtime.env.ActivationFrame;
+import org.llava.impl.runtime.env.Namespace;
+import org.llava.impl.runtime.Engine;
 
 public class LambdaImpl
     implements
@@ -67,10 +79,10 @@ public class LambdaImpl
     {
 	int numArgs = List.length(args);
 	if (numArgs < numRequired) {
-	    throw F.newLavaException(makeErrorMessage("not enough arguments"));
+	    throw F.newLlavaException(makeErrorMessage("not enough arguments"));
 	}
 	if (numArgs > numRequired && !isDotted) {
-	    throw F.newLavaException(makeErrorMessage("too many arguments"));
+	    throw F.newLlavaException(makeErrorMessage("too many arguments"));
 	}
 	if (numArgs == numRequired && isDotted) {
 	    args = List.nconc(args, List.list(null));

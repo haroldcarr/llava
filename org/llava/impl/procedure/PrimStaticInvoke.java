@@ -1,18 +1,30 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /**
  * Created       : 1999 Dec 30 (Thu) 17:43:07 by Harold Carr.
- * Last Modified : 2001 Mar 26 (Mon) 15:24:16 by Harold Carr.
+ * Last Modified : 2004 Sep 03 (Fri) 15:35:08 by Harold Carr.
  */
 
-package lavaProfile.runtime.procedure.primitive.lava;
+package org.llava.impl.runtime.procedure.primitive.llava;
 
-import lavaProfile.F;
-import lava.lang.types.Pair;
-import lava.lang.types.Symbol;
-import lavaProfile.util.List;
-import lavaProfile.runtime.Engine;
-import lavaProfile.runtime.procedure.generic.DI;
-import lavaProfile.runtime.procedure.generic.GenericProcedureImpl; // REVISIT
-import lavaProfile.runtime.procedure.primitive.PrimitiveProcedure;
+import org.llava.impl.F;
+import org.llava.lang.types.Pair;
+import org.llava.lang.types.Symbol;
+import org.llava.impl.util.List;
+import org.llava.impl.runtime.Engine;
+import org.llava.impl.runtime.procedure.generic.DI;
+import org.llava.impl.runtime.procedure.generic.GenericProcedureImpl; // REVISIT
+import org.llava.impl.runtime.procedure.primitive.PrimitiveProcedure;
 
 public class PrimStaticInvoke
     extends
@@ -46,7 +58,7 @@ public class PrimStaticInvoke
 	    }
 	    return GenericProcedureImpl.getWrapJavaPrimitive().wrapJavaPrimitive(result);
 	} catch (Throwable t) {
-	    throw F.newLavaException(t);
+	    throw F.newLlavaException(t);
 	}
     }
 }

@@ -1,41 +1,53 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /** 
  * Created       : 1999 Dec 22 (Wed) 05:25:06 by Harold Carr.
  * Last Modified : 2000 Jan 25 (Tue) 17:15:16 by Harold Carr. 
  */
 
-package lavaProfile;
+package org.llava.impl;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 
-import lava.LavaVersion;
-import lavaProfile.LavaVersionImpl;
-import lava.Repl;
-import lavaProfile.ReplImpl;
+import org.llava.LlavaVersion;
+import org.llava.impl.LlavaVersionImpl;
+import org.llava.Repl;
+import org.llava.impl.ReplImpl;
 
-import lava.compiler.Compiler;
+import org.llava.compiler.Compiler;
 
-import lava.io.LavaEOF;
-import lava.io.LavaEOFImpl;
-import lava.io.LavaReader;
-import lavaProfile.io.LavaReaderImpl;
+import org.llava.io.LlavaEOF;
+import org.llava.io.LlavaEOFImpl;
+import org.llava.io.LlavaReader;
+import org.llava.impl.io.LlavaReaderImpl;
 
-import lava.lang.exceptions.LavaException;
-import lava.lang.exceptions.BacktraceHandler;
+import org.llava.lang.exceptions.LlavaException;
+import org.llava.lang.exceptions.BacktraceHandler;
 
-import lava.lang.types.Pair;
-import lava.lang.types.PairImpl;
-import lava.lang.types.Symbol;
-import lava.lang.types.SymbolImpl;
+import org.llava.lang.types.Pair;
+import org.llava.lang.types.PairImpl;
+import org.llava.lang.types.Symbol;
+import org.llava.lang.types.SymbolImpl;
 
-import lava.runtime.EnvironmentTopLevel;
-import lava.runtime.Evaluator;
-import lava.runtime.LavaRuntime;
+import org.llava.runtime.EnvironmentTopLevel;
+import org.llava.runtime.Evaluator;
+import org.llava.runtime.LlavaRuntime;
 
 /**
- * Factory for lava.* pluggable classes. <p>
+ * Factory for llava.* pluggable classes. <p>
  * Currently the implementation classes are wired in.
  * Later they will be pluggable by specifying class names via properties.
  */
@@ -62,46 +74,59 @@ public class F {
 	return object;
     }
 
-    // LavaEOF
-    private static LavaEOF lavaEOFFactory = null; // new LavaEOFImpl();
+    // NOTE: if you change the following packag names you will probably
+    // need to update testNamespaceInternal.lva.
 
-    public static LavaEOF newLavaEOF() {
-	if (lavaEOFFactory == null) {
-	    lavaEOFFactory = 
-		(LavaEOF)
-		createFromPropertiesOrUseDefault("lava.io.LavaEOFClassName",
-						 "lava.io.LavaEOFImpl");
+    // llava package containing built-in procedures.
+    public static String llavaPackageName() {
+	return "org.llava";
+    }
+
+    // package in which repl starts
+    public static String initialReplPackageName() {
+	return "llava-";
+    }
+
+    // LlavaEOF
+    private static LlavaEOF llavaEOFFactory = null; // new LlavaEOFImpl();
+
+    public static LlavaEOF newLlavaEOF() {
+	if (llavaEOFFactory == null) {
+	    llavaEOFFactory = 
+		(LlavaEOF)
+		createFromPropertiesOrUseDefault("org.llava.io.LlavaEOFClassName",
+						 "org.llava.io.LlavaEOFImpl");
 	}
-        return lavaEOFFactory.newLavaEOF();
+        return llavaEOFFactory.newLlavaEOF();
     }
 
-    // LavaException
-    private static LavaException lavaExceptionFactory = new LavaException();
+    // LlavaException
+    private static LlavaException llavaExceptionFactory = new LlavaException();
 
-    public static LavaException newLavaException(Throwable t) {
-        return lavaExceptionFactory.newLavaException(t);
+    public static LlavaException newLlavaException(Throwable t) {
+        return llavaExceptionFactory.newLlavaException(t);
     }
 
-    public static LavaException newLavaException(String msg) {
-        return lavaExceptionFactory.newLavaException(msg);
+    public static LlavaException newLlavaException(String msg) {
+        return llavaExceptionFactory.newLlavaException(msg);
     }
 
-    // LavaReader
-    private static LavaReader lavaReaderFactory = new LavaReaderImpl();
+    // LlavaReader
+    private static LlavaReader llavaReaderFactory = new LlavaReaderImpl();
 
-    public static LavaReader newLavaReader() {
-        return lavaReaderFactory.newLavaReader();
+    public static LlavaReader newLlavaReader() {
+        return llavaReaderFactory.newLlavaReader();
     }
 
-    public static LavaReader newLavaReader(Reader in) {
-        return lavaReaderFactory.newLavaReader(in);
+    public static LlavaReader newLlavaReader(Reader in) {
+        return llavaReaderFactory.newLlavaReader(in);
     }
 
-    // LavaVersion
-    private static LavaVersion lavaVersionFactory = new LavaVersionImpl();
+    // LlavaVersion
+    private static LlavaVersion llavaVersionFactory = new LlavaVersionImpl();
 
-    public static LavaVersion newLavaVersion() {
-        return lavaVersionFactory.newLavaVersion();
+    public static LlavaVersion newLlavaVersion() {
+        return llavaVersionFactory.newLlavaVersion();
     }
 
     // Pair
@@ -126,7 +151,7 @@ public class F {
 	return replFactory.newRepl(in, out, err);
     }
 
-    public static Repl newRepl(LavaReader reader, PrintWriter out, PrintWriter err, LavaRuntime runtime, Compiler compiler) {
+    public static Repl newRepl(LlavaReader reader, PrintWriter out, PrintWriter err, LlavaRuntime runtime, Compiler compiler) {
         return replFactory.newRepl(reader, out, err, runtime, compiler);
     }
 

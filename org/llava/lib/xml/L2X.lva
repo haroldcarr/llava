@@ -1,51 +1,36 @@
-;;;;                            Terms and Conditions 
-;;;;             
-;;;;              LLAVA COPYRIGHT AND PERMISSION NOTICE Version 1.0
-;;;; 
-;;;; Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002 Harold Carr
-;;;; All rights reserved.
-;;;; 
-;;;; Permission is hereby granted, free of charge, to any person obtaining
-;;;; a copy of this software and associated documentation files (the
-;;;; "Software"), to deal in the Software without restriction, including
-;;;; without limitation the rights to use, copy, modify, merge, publish,
-;;;; distribute, and/or sell copies of the Software, and to permit persons
-;;;; to whom the Software is furnished to do so, provided that the above
-;;;; copyright notice(s) and this permission notice appear in all copies of
-;;;; the Software and that both the above copyright notice(s) and this
-;;;; permission notice appear in supporting documentation.
-;;;; 
-;;;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-;;;; EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-;;;; MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
-;;;; OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-;;;; HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR ANY CLAIM, OR ANY
-;;;; SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER
-;;;; RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF
-;;;; CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-;;;; CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-;;;; 
-;;;; Except as contained in this notice, the name of a copyright holder
-;;;; shall not be used in advertising or otherwise to promote the sale, use
-;;;; or other dealings in this Software without prior written authorization
-;;;; of the copyright holder.
-
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
 
 ;;;;
 ;;;; Created       : 2001 Mar 06 (Tue) 15:09:50 by Harold Carr.
-;;;; Last Modified : 2004 Jan 06 (Tue) 20:39:22 by Harold Carr.
+;;;; Last Modified : 2004 Sep 21 (Tue) 12:09:25 by Harold Carr.
 ;;;;
 
-(_namespace org.llava.lib.xml.L2X)
+(package org.llava.lib.xml.L2X)
 
 (import org.llava.lib.cl.Control) ; dotimes
+(import org.llava.lib.io.FileWalker)
 
 ;(import org.llava.lib.Control) 
+
+(-package- 
+ (description
+  "Transform a \"lispy\" version of XML (called \"lxml\") into angle bracket
+   xml."))
 
 ;;;;
 ;;;; --------------------------------------------------
 ;;;; LXML -> XML
 ;;;;
+
+(-doc-
+ (name "l-&gt;x"))
 
 ;;;
 ;;; The main interactive routine.
@@ -54,29 +39,14 @@
 
 (define l->x
   (lambda (lxml)
-    (l->x-with-indent lxml 0)))
+    (file-walker-with-indent lxml 0)))
 
-(define *l->x-out* (_sf 'out 'java.lang.System))
-
-;; Make newline and indent false by default so "mailto" attributed do not
+;; Make newline and indent false by default so "mailto" attributes do not
 ;; end up with space in them.  Turn to true for development.
 
-(define *l->x-newline?* false)
-(define l->x-newline?
-  (lambda (v)
-    (set! *l->x-newline?* v)))
-
-(define *l->x-indent?* false)
-(define l->x-indent?
-  (lambda (v)
-    (set! *l->x-indent?* v)))
-
-(define l->x-with-indent
-  (lambda (lxml indent)
-    (for-each (lambda (sexpr)
-		(l->x-dispatch sexpr indent))
-	      lxml)
-    null))
+(file-walker-newline? false)
+(file-walker-indent? false)
+(define l->x-indent-amount 2) ; if above is true
 
 (define l->x-dispatch
   (lambda (sexpr indent)
@@ -84,7 +54,7 @@
 	(l->x-printText sexpr)
 	(case (car sexpr)
 	  ((?)   (l->x-printProcessingInstruction sexpr indent))
-	  ((!)   (_println (string-append "ignoring: " (toString sexpr))))
+	  ((!)   (-println (string-append "ignoring: " (toString sexpr))))
 	  ((!DOCTYPE)
                  (l->x-printDOCTYPE sexpr indent))
 	  ((!CDATA)
@@ -92,6 +62,10 @@
 	  ((!--) (l->x-printComment sexpr indent))
 	  ((&&)  (l->x-printEntity sexpr indent))
 	  (else  (l->x-printElement sexpr indent))))))
+
+(set-file-walker-dispatcher! l->x-dispatch)
+(set-file-walker-print-header! (lambda (a b c) null))
+(set-file-walker-print-footer! (lambda (a b c) null))
 
 (define l->x-printElement
   (lambda (element indent)
@@ -102,152 +76,99 @@
 	   (name (car element))
 	   (attributes (if hasAttributes (cdr (cadr element)) null))
 	   (body (if hasAttributes (cddr element) (cdr element))))
-      (l->x-newline)
-      (l->x-indent indent)
-      (l->x-print "<")
-      (l->x-print name)
+      (file-walker-newline)
+      (file-walker-indent indent)
+      (file-walker-print "<")
+      (file-walker-print name)
       (l->x-printAttributes attributes)
       (cond ((null? body)
-	     (l->x-print "/>"))
+	     (file-walker-print "/>"))
 	    (else
-	     (l->x-print ">")
-	     (l->x-with-indent body (+ indent 4))
-	     (l->x-print "</")
-	     (l->x-print name)
-	     (l->x-print ">"))))))
+	     (file-walker-print ">")
+	     (file-walker-with-indent body (+ indent l->x-indent-amount))
+	     (file-walker-print "</")
+	     (file-walker-print name)
+	     (file-walker-print ">"))))))
 
 (define l->x-printEntity
   (lambda (entity indent)
-    (l->x-print " &")
-    (l->x-print (cadr entity))
-    (l->x-print "; ")))
+    (file-walker-print " &")
+    (file-walker-print (cadr entity))
+    (file-walker-print "; ")))
 
 (define l->x-printProcessingInstruction
   (lambda (pi indent)
     ;; XML declaration must be on first line.
     (if (not (equals 'xml (cadr pi)))
-	(l->x-newline))
-    (l->x-indent indent)
-    (l->x-print "<?")
-    (l->x-print (cadr pi))
+	(file-walker-newline))
+    (file-walker-indent indent)
+    (file-walker-print "<?")
+    (file-walker-print (cadr pi))
     (l->x-printAttributes (cddr pi))
-    (l->x-print "?>")))
+    (file-walker-print "?>")))
 
 (define l->x-printAttributes
   (lambda (attributes)
     (do ((atts attributes (cdr atts)))
 	((null? atts))
-      (l->x-print " ")
-      (l->x-print (caar atts))
-      (l->x-print "=")
-      (l->x-print "\"")
-      (l->x-print (car (cdar atts)))
-      (l->x-print "\""))))
+      (file-walker-print " ")
+      (file-walker-print (caar atts))
+      (file-walker-print "=")
+      (file-walker-print "\"")
+      (file-walker-print (car (cdar atts)))
+      (file-walker-print "\""))))
 
 (define l->x-printText 
   (lambda (text)
-    (l->x-print text)))
+    (file-walker-print text)))
 
 (define l->x-printComment
   (lambda (comment indent)
-    (l->x-newline)
-    (l->x-indent indent)
-    (l->x-print "<!-- ")
-    (for-each l->x-print (cdr comment))
-    (l->x-print " -->")))
+    (file-walker-newline)
+    (file-walker-indent indent)
+    (file-walker-print "<!-- ")
+    (for-each file-walker-print (cdr comment))
+    (file-walker-print " -->")))
 
 (define l->x-printDOCTYPE
   (lambda (doctype indent)
-    (l->x-newline)
-    (l->x-indent indent)
-    (l->x-print "<!DOCTYPE")
+    (file-walker-newline)
+    (file-walker-indent indent)
+    (file-walker-print "<!DOCTYPE")
     (do ((d (cdr doctype)            (cdr d))
 	 (s '(false false true true) (cdr s)))
 	((null? d))
-      (l->x-print " ")
-      (if (car s) (l->x-print "\""))
-      (l->x-print (car d))
-      (if (car s) (l->x-print "\"")))
-    (l->x-print ">")))
+      (file-walker-print " ")
+      (if (car s) (file-walker-print "\""))
+      (file-walker-print (car d))
+      (if (car s) (file-walker-print "\"")))
+    (file-walker-print ">")))
 
 (define l->x-printCDATA
   (lambda (cdata indent)
-    (l->x-newline)
-    (l->x-indent indent)
-    (l->x-print "<![CDATA[")
-    (l->x-print (cadr cdata))
-    (l->x-print "]]>")))
-
-(define l->x-indent
-  (lambda (indent)
-    (if *l->x-indent?*
-	(dotimes (i indent) (l->x-print " ")))))
-
-(define l->x-print
-  (lambda (x)
-    (print *l->x-out* x)))
-
-(define l->x-newline
-  (lambda ()
-    (if *l->x-newline?*
-	(println *l->x-out*))))
+    (file-walker-newline)
+    (file-walker-indent indent)
+    (file-walker-print "<![CDATA[")
+    (file-walker-print (cadr cdata))
+    (file-walker-print "]]>")))
 
 ;;;
 ;;; Strings, Streams and files.
 ;;;
 
+(-doc-
+ (name "l-&gt;x-string"))
+
 (define l->x-string
   (lambda (lxml)
-    (let* ((sw (new 'java.io.StringWriter))
-	   (pw (new 'java.io.PrintWriter sw))
-	   (savedOut *l->x-out*))
-      (try
-       (begin
-	 (set! *l->x-out* pw)
-	 (l->x lxml)
-	 (toString sw))
-       (finally
-	(set! *l->x-out* savedOut))))))
+    (file-walker-string lxml)))
 
-(define l->x-streams
-  (lambda (in out)
-    (let ((savedOut *l->x-out*)
-	  (EOF      (_si 'newLlavaEOF 'org.llava.impl.F)))
-      (try
-       (begin
-	 (set! *l->x-out* out)
-	 (l->x-streams-aux in EOF))
-       (finally
-	(set! *l->x-out* savedOut))))))
-
-(define l->x-streams-aux
-  (lambda (in EOF)
-    (let ((sexpr (read in)))
-      (cond ((not (equals EOF sexpr))
-	     (l->x-dispatch sexpr 0)
-	     (l->x-streams-aux in EOF))))))
+(-doc-
+ (name "l-&gt;x-files"))
 
 (define l->x-files
   (lambda (inFileName outFileName)
-    (let ((inStream null)
-	  (in null)
-	  (out null))
-      (try
-       (begin
-	 (set! inStream (new 'java.io.InputStreamReader
-			     (new 'java.io.FileInputStream inFileName)))
-	 (set! in (_si 'newLlavaReader 'org.llava.impl.F inStream))
-	 (set! out (new 'java.io.PrintWriter
-			(new 'java.io.OutputStreamWriter
-			     (new 'java.io.FileOutputStream outFileName))))
-	 (l->x-streams in out))
-       (catch (java.lang.Throwable t)
-	      (_println (list "l->x-files error: " t)) ;; REVISIT
-	      (throw t))
-       (finally
-	(close inStream)
-	(close out))))
-    'done))
+    (file-walker-files inFileName outFileName)))
 
 ;;;;
 ;;;; --------------------------------------------------
@@ -263,7 +184,7 @@
 (define x->l-aux
   (lambda (builderType outputterType uri . out)
     (set! out (if (null? out) 
-		  (_sf 'out 'java.lang.System)
+		  (-sf 'out 'java.lang.System)
 		  (x->l-normalize-output-type (car out))))
     (let* ((builder (case builderType
 		      ;; p 210.
@@ -306,20 +227,22 @@
 ;;;; Test.
 ;;;;
 
-(define (userHome)
-  (_si 'getProperty 'java.lang.System "user.home"))
-
 (define (demoRoot tail)
   (string-append (userHome)
 		 "/.sync/.lsync/llava/lib/xml/"
 		 tail))
 
-(_comment
+(-comment-
 
 (load "L2X.lva")
 
-(l->x-files "./example.lxsl" "./junk.xslt")
+(dprint? true)
 (l->x-string '((? xml (version "1.0") (encoding "UTF-8"))))
+(file-walker-out)
+;; compare with "./junk.xslt"
+(file-walker-newline? true)
+(file-walker-indent? true)
+(l->x-files "./example.lxsl" "/tmp/junk.xslt")
 (l->x-files (demoRoot "xsltBook/me/03Example/bookings.lxml")
 	    "/tmp/bookings.xml")
 (l->x-files (string-append (userHome) "/.sync/.ksync/rpt/carrEstimates.lxml")

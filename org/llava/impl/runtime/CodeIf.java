@@ -1,13 +1,25 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /**
  * Created       : 1999 Dec 23 (Thu) 18:22:20 by Harold Carr.
- * Last Modified : 2001 Mar 26 (Mon) 15:18:20 by Harold Carr.
+ * Last Modified : 2004 Sep 03 (Fri) 15:33:24 by Harold Carr.
  */
 
-package lavaProfile.runtime.code;
+package org.llava.impl.runtime.code;
 
-import lavaProfile.F;
-import lavaProfile.runtime.env.ActivationFrame;
-import lavaProfile.runtime.Engine;
+import org.llava.impl.F;
+import org.llava.impl.runtime.env.ActivationFrame;
+import org.llava.impl.runtime.Engine;
 
 public class CodeIf
     extends Code
@@ -38,7 +50,7 @@ public class CodeIf
 	Object test = engine.run(testCode, frame);
 
 	if (! (test instanceof Boolean)) {
-	    throw F.newLavaException("if: expecting boolean, got: " + test);
+	    throw F.newLlavaException("if: expecting boolean, got: " + test);
 	}
 
 	Boolean tb = (Boolean) test;
@@ -48,7 +60,7 @@ public class CodeIf
 	} else if (tb.booleanValue() == false) {
 	    return engine.tailCall(elseCode, frame);
 	} else {
-	    throw F.newLavaException("if: should never happen: " + test);
+	    throw F.newLlavaException("if: should never happen: " + test);
 	}
     }
 }

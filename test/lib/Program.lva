@@ -1,13 +1,22 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+
 ;;;;
 ;;;; Created       : 1998 Dec 05 (Sat) 21:41:11 by Harold Carr.
-;;;; Last Modified : 2000 Jan 21 (Fri) 23:55:46 by Harold Carr.
+;;;; Last Modified : 2004 Sep 03 (Fri) 15:47:44 by Harold Carr.
 ;;;;
 
-(require 'test/test)
+(import org.llava.lib.test.Test)
+(import org.llava.lib.Program)
 
-(begin-test 'lava/program/define-with-exc-hand)
-
-(test-require 'lava/program/define-with-exc-hand)
+(begin-test 'program/define-with-exc-hand)
 
 (define-with-exc-hand (-expected- ex str a b c)
   (/ a b)
@@ -23,7 +32,8 @@
        "Exception in procedure -expected- : java.lang.ArithmeticException: / by zero"
        (-expected- #f "123" 4 0 '(a b)))
 
-(test-require 'lava/control/case-type)
+(import org.llava.lib.Control)
+(import org.llava.lib.Lists)
 
 (define test--expected-
   (lambda (s a b c)
@@ -52,7 +62,43 @@
        'else
        (test--expected- "123" 1 1 -1))
 
-(end-test 'lava/program/define-with-exc-hand)
+(end-test 'program/define-with-exc-hand)
+
+;;;;
+;;;;
+
+(begin-test 'program/define-with-keywords)
+
+(define-with-keywords (foo a b c) (list a b c))
+
+(getCode (getDefaultLambda foo))
+
+(getCode (getDefaultLambda _%foo))
+
+(check "define-with-keywords1"
+       '((1) 2 3)
+       (foo :b 2 :a (list 1) :c 3))
+
+(check "define-with-keywords2"
+       '(a b c)
+       (let ((a 'a) (b 'b) (c 'c)) (foo :b b :a a :c c)))
+
+(check "define-with-keywords3"
+       '((define :a (quote :a)) (define :b (quote :b)))
+       (_%defineKeywords '(:a :b)))
+
+(check "define-with-keywords4"
+       '(define (foo . args) (apply _%foo (_%listKeywordValues (quote (:bar)) args)))
+       (_%defineKeywordEntryFunction 'foo '_%foo '(:bar)))
+
+(check "define-with-keywords5"
+       '(define (foo a b) (list a b))
+       (_%defineBodyFunction 'foo '(a b) '((list a b))))
+
+(check "define-with-keywords6"
+       '(1 2 3)
+       (_%listKeywordValues '(:a :b :c) '(:b 2 :a 1 :c 3)))
+
+(end-test 'program/define-with-keywords)
 
 ;;; End of file.
-

@@ -1,16 +1,35 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2000 Jan 22 (Sat) 06:05:22 by Harold Carr.
+;;;; Last Modified : 2004 Sep 09 (Thu) 21:18:24 by Harold Carr.
 ;;;;
 
-(require 'lava/lists/add-between)
+(package org.llava.lib.Strings)
+
+(import org.llava.lib.Lists)
+
+(-package- (description "Procedures to manipulate strings."))
+
+(-doc-
+ (name "list&gt;string-with-space")
+ (param list)
+ (description "Calls <function>toString</function> on each element of
+  <parameter>list</parameter>.  Then adds a blank space between each element.
+  Then <function>string-append</function>s the stringified elements
+  and blanks."))
 
 (define list->string-with-space
   (lambda (lst)
     (apply string-append
 	   (map toString
 		(add-between " " lst)))))
-
-(provide 'lava/strings/list2string-with-space)
 
 ;;; End of file.

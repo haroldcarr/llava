@@ -1,51 +1,104 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
 ;;;
 ;;; Created       : 1999 Dec 25 (Sat) 22:10:35 by Harold Carr.
-;;; Last Modified : 2000 Oct 29 (Sun) 21:46:48 by .
+;;; Last Modified : 2004 Sep 09 (Thu) 21:26:27 by Harold Carr.
 ;;;
 
-(define test-require
-  (lambda (name)
-    (check "test-require first" 
-	   true 
-	   (instanceof (require name) 'java.lang.String))
-    (check "test-require second" 
-	   null
-	   (require name))))
+(package org.llava.lib.test.Test)
+
+(-package- (description "llava test utilities."))
+
+;;;
+;;; check
+;;;
+
+(-doc-
+ (name check)
+ (name string-message)
+ (name object-should-be)
+ (name object-is))
 
 (define (check msg shouldBe is)
-  (_si 'check 'testLava.Test (toString msg) shouldBe is)
+  (-si 'check 'test.Test (toString msg) shouldBe is)
   'ok)
+
+;;;
+;;; begin-test
+;;;
+
+(-doc-
+ (name begin-test)
+ (param optional-symbol-or-string))
 
 (define begin-test
   (lambda args
-    (_si 'beginTest 'testLava.Test)))
+    (-if (not (null? args))
+	 (println (-sf 'out 'java.lang.System) 
+		  (string-append (toString (car args)) "->: " )))
+    (-si 'beginTest 'test.Test)))
+
+;;;
+;;; begin-test
+;;;
+
+(-doc-
+ (name end-test)
+ (param optional-symbol-or-string))
 
 (define end-test
   (lambda args
-    (_if (not (null? args))
-	 (print (_sf 'out 'java.lang.System) 
-		(string-append (toString (car args)) " : ")))
-    (_si 'endTest 'testLava.Test)))
+    (-if (not (null? args))
+	 (print (-sf 'out 'java.lang.System) 
+		(string-append (toString (car args)) "<-: ")))
+    (-si 'endTest 'test.Test)))
+
+;;;
+;;; dprintln
+;;;
+
+(-doc-
+ (name dprintln)
+ (param obj))
 
 (define (dprintln x)
-  (if (_sf 'printProgress 'testLava.Test)
-      (println (_sf 'out 'java.lang.System) x)
+  (if (-sf 'printProgress 'test.Test)
+      (println (-sf 'out 'java.lang.System) x)
       null)
   x)
 
+;;;
+;;; toggle-print-results
+;;;
+
+(-doc-
+ (name toggle-print-results))
+
 (define toggle-print-results 
   (lambda ()
-    (_sf 'printResults 'testLava.Test 
-	 (not (_sf 'printResults  'testLava.Test)))))
+    (-sf 'printResults 'test.Test 
+	 (not (-sf 'printResults  'test.Test)))))
+
+;;;
+;;; toggle-print-progress
+;;;
+
+(-doc-
+ (name toggle-print-progress))
 
 (define toggle-print-progress
   (lambda ()
-    (_sf 'printProgress 'testLava.Test
-	 (not (_sf 'printProgress 'testLava.Test)))))
+    (-sf 'printProgress 'test.Test
+	 (not (-sf 'printProgress 'test.Test)))))
 
 ;(toggle-print-results)
 ;(toggle-print-progress)
-
-(provide 'test/test)
 
 ;;; End of file.

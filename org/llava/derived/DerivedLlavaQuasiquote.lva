@@ -1,6 +1,15 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
 ;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2001 Mar 07 (Wed) 14:54:17 by Harold Carr.
+;;;; Last Modified : 2004 Sep 06 (Mon) 01:25:02 by Harold Carr.
 ;;;;
 
 (define-syntax quasiquote
@@ -11,48 +20,48 @@
   (lambda (exp nesting)
     (cond
      ((not (pair? exp))
-      ;;(_println 1)
+      ;;(-println 1)
       (if (_%constant? exp) 
 	  (begin 
-	    ;;(_println 1.1)
+	    ;;(-println 1.1)
 	    exp)
 	  (begin 
-	    ;;(_println 1.2)
-	    (_list 'quote exp))))
+	    ;;(-println 1.2)
+	    (-list 'quote exp))))
      ((and (eq? (car exp) 'unquote) 
 	   (equal? (length exp) 2))
-      ;;(_println 2)
+      ;;(-println 2)
       (if (equal? nesting 0)
 	  (begin 
-	    ;;(_println 2.1)
+	    ;;(-println 2.1)
 	    (car (cdr exp)))
 	  (begin
-	    ;;(_println 2.2)
+	    ;;(-println 2.2)
 	    (_%combine-skeletons ''unquote
 			       (_%expand-quasiquote (cdr exp) (- nesting 1))
 			       exp))))
      ((and (eq? (car exp) 'quasiquote)
 	   (equal? (length exp) 2))
-      ;;(_println 3)
+      ;;(-println 3)
       (_%combine-skeletons ''quasiquote
 			 (_%expand-quasiquote (cdr exp) (+ nesting 1))
 			 exp))
      ((and (pair? (car exp))
 	   (eq? (car (car exp)) 'unquote-splicing)
 	   (equal? (length (car exp)) 2))
-      ;;(_println 4)
+      ;;(-println 4)
       (if (equal? nesting 0)
 	  (begin
-	    ;;(_println 4.1)
-	    (_list 'append (car (cdr (car exp)))
+	    ;;(-println 4.1)
+	    (-list 'append (car (cdr (car exp)))
 		  (_%expand-quasiquote (cdr exp) nesting)))
 	  (begin
-	    ;;(_println 4.2)
+	    ;;(-println 4.2)
 	    (_%combine-skeletons (_%expand-quasiquote (car exp) (- nesting 1))
 			       (_%expand-quasiquote (cdr exp) nesting)
 			       exp))))
      (else 
-      ;;(_println 5)
+      ;;(-println 5)
       (_%combine-skeletons (_%expand-quasiquote (car exp) nesting)
 			 (_%expand-quasiquote (cdr exp) nesting)
 			 exp)))))
@@ -67,24 +76,24 @@
   (lambda (left right exp)
     (cond
      ((and (_%constant? left) (_%constant? right))
-      ;; (_println'cb1)
+      ;; (-println'cb1)
       (if (and (equal? (eval left ) (car exp))
 	       (equal? (eval right) (cdr exp)))
 	  (begin 
-	    ;;(_println 'cb1.1)
-	    (_list 'quote exp))
+	    ;;(-println 'cb1.1)
+	    (-list 'quote exp))
 	  (begin 
-	    ;;(_println 'cb1.2) 
-	    (_list 'quote (cons (eval left )
+	    ;;(-println 'cb1.2) 
+	    (-list 'quote (cons (eval left )
 			       (eval right))))))
      ((null? right)
-      ;;(_println 'cb2)
-      (_list '_list left))
-     ((and (pair? right) (eq? (car right) '_list))
-      ;;(_println 'cb3)
-      (cons '_list (cons left (cdr right))))
+      ;;(-println 'cb2)
+      (-list '-list left))
+     ((and (pair? right) (eq? (car right) '-list))
+      ;;(-println 'cb3)
+      (cons '-list (cons left (cdr right))))
      (else 
-      ;;(_println 'cb4)
-      (_list 'cons left right)))))
+      ;;(-println 'cb4)
+      (-list 'cons left right)))))
 
 ;;; End of file.

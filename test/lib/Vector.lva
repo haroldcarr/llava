@@ -1,15 +1,23 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+
 ;;;;
 ;;;; Created       : 2000 Feb 10 (Thu) 04:12:22 by Harold Carr.
-;;;; Last Modified : 2000 Feb 10 (Thu) 04:18:04 by Harold Carr.
+;;;; Last Modified : 2004 Sep 03 (Fri) 15:47:47 by Harold Carr.
 ;;;;
 
-(require 'test/test)
+(import org.llava.lib.test.Test)
+(import org.llava.lib.Vectors)
+(import org.llava.lib.scm.Vectors)
 
-(begin-test 'lava/vectors/vector-map)
-
-(test-require 'lava/vectors/vector-map)
-
-(require 'scm/vectors/list2vector)
+(begin-test 'vectors/vector-map)
 
 (check "vector-map"
        '(1 2 3)
@@ -23,6 +31,6 @@
 				(list->vector '(a b c d e)))))
 	 (list result for-each-result)))
 
-(end-test 'lava/vectors/vector-map)
+(end-test 'vectors/vector-map)
 
 ;;; End of file.

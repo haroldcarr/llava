@@ -1,9 +1,21 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /**
  * Created       : 1999 Dec 30 (Thu) 04:18:02 by Harold Carr.
- * Last Modified : 2001 Mar 26 (Mon) 14:10:01 by Harold Carr.
+ * Last Modified : 2004 Sep 03 (Fri) 15:32:44 by Harold Carr.
  */
 
-package lavaProfile;
+package org.llava.impl;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -12,59 +24,59 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
-import lava.Repl;
-import lava.lang.exceptions.LavaException;
+import org.llava.Repl;
+import org.llava.lang.exceptions.LlavaException;
 
-import lava.compiler.Compiler;
+import org.llava.compiler.Compiler;
 
-import lava.runtime.EnvironmentTopLevel;
-import lava.runtime.Evaluator;
-import lava.runtime.LavaRuntime;
+import org.llava.runtime.EnvironmentTopLevel;
+import org.llava.runtime.Evaluator;
+import org.llava.runtime.LlavaRuntime;
 
-import lavaProfile.F;
+import org.llava.impl.F;
 
-public class Lava
+public class Llava
 {
-    private Repl repl;
+    protected Repl repl;
 
     public static void main (String[] av)
     {
 	long start = System.currentTimeMillis();
-	Lava lava  = new Lava();
+	Llava llava  = new Llava();
 	long end   = System.currentTimeMillis();
 
-	lava.getRepl().outputVersionMessage(end - start);
+	llava.getRepl().outputVersionMessage(end - start);
 
-	lava.loadUserLavaRC(System.err);
+	llava.loadUserLlavaRC(System.err);
 
 	//newReplOnPort(4444); // REVISIT
 
-	lava.getRepl().loop();
+	llava.getRepl().loop();
     }
 
-    public Lava ()
+    public Llava ()
     {
 	repl = F.newRepl();
     }
 
-    public Lava (InputStream in, OutputStream out, OutputStream err)
+    public Llava (InputStream in, OutputStream out, OutputStream err)
 
     {
 	repl = F.newRepl(in, out, err);
     }
 
-    public Object loadUserLavaRC (OutputStream err)
+    public Object loadUserLlavaRC (OutputStream err)
     {
 	String homeDir = java.lang.System.getProperty("user.home");
 	try {
-	    return getRepl().loadFile(homeDir + "/.lavarc");
+	    return getRepl().loadFile(homeDir + "/.llavarc");
 	} catch (java.lang.Throwable t) {
-	    if (t instanceof LavaException &&
-		((LavaException)t).getThrowable() instanceof FileNotFoundException) {
+	    if (t instanceof LlavaException &&
+		((LlavaException)t).getThrowable() instanceof FileNotFoundException) {
 		; // OK - it does not exist
 	    } else {
 		new PrintWriter(err)
-		    .println("Error while loading: " + homeDir + "/.lavarc: " +
+		    .println("Error while loading: " + homeDir + "/.llavarc: " +
 			     t);
 		try {
 		    err.flush();
@@ -80,18 +92,18 @@ public class Lava
     public EnvironmentTopLevel 
             getEnvironmentTopLevel () { return repl.getEnvironmentTopLevel(); }
     public Evaluator   getEvaluator ()         { return repl.getEvaluator(); }
-    public LavaRuntime getLavaRuntime ()       { return repl.getLavaRuntime();}
+    public LlavaRuntime getLlavaRuntime ()       { return repl.getLlavaRuntime();}
     public Repl        getRepl ()              { return repl; }
 
     public static Thread newReplOnPort (int port)
     {
 	// N.B.: This assumes you have the directory where the examples
-	//       are located on your Lava load-path.
+	//       are located on your Llava load-path.
 
-	Lava lava = new Lava();
-	Repl repl = lava.getRepl();
-	// REVISIT - .lavarc to get examples on path
-	lava.loadUserLavaRC(System.err);
+	Llava llava = new Llava();
+	Repl repl = llava.getRepl();
+	// REVISIT - .llavarc to get examples on path
+	llava.loadUserLlavaRC(System.err);
 	repl.readCompileEval("(load-library 'examples/net/server)");
 	repl.readCompileEval("(define *repl-server* #t)");
 	return (Thread)

@@ -9,10 +9,40 @@
 
 ;;;;
 ;;;; Created       : 2004 Sep 03 (Fri) 21:11:19 by Harold Carr.
-;;;; Last Modified : 2004 Nov 26 (Fri) 09:46:35 by Harold Carr.
+;;;; Last Modified : 2004 Sep 12 (Sun) 23:58:24 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.scm.Lists)
+
+(-package- (description "Scheme list procedures."))
+
+;;;
+;;; append!
+;;;
+
+(-doc-
+ (name "append!")
+ (param list)
+ (param list))
+
+(define append!
+  (lambda (l1 l2)
+    (-si 'nconc 'org.llava.impl.util.List l1 l2)))
+
+;;;
+;;; reverse
+;;;
+
+(-doc-
+ (name "reverse")
+ (param list))
+
+(define (reverse l)
+  (-si 'reverse 'org.llava.impl.util.List l))
+
+;;;
+;;; assoc
+;;;
 
 (-doc-
  (name assoc)
@@ -30,6 +60,10 @@
 	 (car that))
 	(else
 	 (assoc this (cdr that)))))
+
+;;;
+;;; assq
+;;;
 
 (-doc-
  (name assq)

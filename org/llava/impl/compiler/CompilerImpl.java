@@ -1,24 +1,36 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /**
  * Created       : 1999 Dec 23 (Thu) 03:42:10 by Harold Carr.
- * Last Modified : 2001 Mar 26 (Mon) 15:23:46 by Harold Carr.
+ * Last Modified : 2004 Sep 06 (Mon) 00:39:30 by Harold Carr.
  */
 
-package lavaProfile.compiler;
+package org.llava.impl.compiler;
 
-import lavaProfile.F;
-import lava.lang.types.Pair;
-import lava.lang.types.Symbol;
-import lavaProfile.util.List;
-import lava.compiler.Compiler;
-import lavaProfile.compiler.EnvironmentLexical;
-import lava.runtime.LavaRuntime;
-import lavaProfile.runtime.FR;
-import lavaProfile.runtime.code.Code;
-import lavaProfile.runtime.syntax.Syntax;
+import org.llava.impl.F;
+import org.llava.lang.types.Pair;
+import org.llava.lang.types.Symbol;
+import org.llava.impl.util.List;
+import org.llava.compiler.Compiler;
+import org.llava.impl.compiler.EnvironmentLexical;
+import org.llava.runtime.LlavaRuntime;
+import org.llava.impl.runtime.FR;
+import org.llava.impl.runtime.code.Code;
+import org.llava.impl.runtime.syntax.Syntax;
 
 // REVISIT - coupling just for speed
-import lavaProfile.runtime.Engine;
-import lavaProfile.runtime.env.ActivationFrame;
+import org.llava.impl.runtime.Engine;
+import org.llava.impl.runtime.env.ActivationFrame;
 
 // REVISIT: Add syntax checking
 
@@ -53,17 +65,17 @@ public class CompilerImpl
 	instance.IF_SYMBOL             = F.newSymbol("if");
 	instance.LAMBDA_SYMBOL         = F.newSymbol("lambda");
 	instance.QUOTE_SYMBOL          = F.newSymbol("quote");
-	instance.SCHEME_IF_SYMBOL      = F.newSymbol("_if");
+	instance.SCHEME_IF_SYMBOL      = F.newSymbol("-if");
 
 	return instance;
     }
 
-    public Object compile (Object x, LavaRuntime runtime)
+    public Object compile (Object x, LlavaRuntime runtime)
     {
 	return compile(x, environment, runtime);
     }
 
-    public Code compile (Object x, EnvironmentLexical env, LavaRuntime runtime)
+    public Code compile (Object x, EnvironmentLexical env, LlavaRuntime runtime)
     {
 	boolean isPair = x instanceof Pair;
 	
@@ -102,20 +114,20 @@ public class CompilerImpl
 	return compileLiteral(x, x);
     }
 
-    public Code compileApplication (Pair x, EnvironmentLexical env, LavaRuntime runtime)
+    public Code compileApplication (Pair x, EnvironmentLexical env, LlavaRuntime runtime)
     {
 	// REVISIT: Handle builtins and closed. p 200
 	return compileApplicationRegular(x, env, runtime);
     }
 
-    public Code compileApplicationRegular (Pair x, EnvironmentLexical env, LavaRuntime runtime)
+    public Code compileApplicationRegular (Pair x, EnvironmentLexical env, LlavaRuntime runtime)
     {
 	Code procCode = compile(x.car(), env, runtime);
 	Code argsCode  = compileApplicationArgs((Pair)x.cdr(), env, runtime);
 	return FR.newCodeApplication(x, procCode, argsCode);
     }
 
-    public Code compileApplicationArgs (Pair args, EnvironmentLexical env, LavaRuntime runtime)
+    public Code compileApplicationArgs (Pair args, EnvironmentLexical env, LlavaRuntime runtime)
     {
 	if (args == null) {
 	    return compileLiteral(null, null);
@@ -173,7 +185,7 @@ public class CompilerImpl
 	    }; 
     }
 
-    public Code compileAssignment (Pair x, EnvironmentLexical env, LavaRuntime runtime)
+    public Code compileAssignment (Pair x, EnvironmentLexical env, LlavaRuntime runtime)
     {
 	Pair rest      = (Pair)x.cdr(); // Skip "set!".
 	Symbol identifier = (Symbol)rest.car();
@@ -192,7 +204,7 @@ public class CompilerImpl
 	return FR.newCodeAssignmentTopLevel(x, identifier, codeValue);
     }
 
-    public Code compileDefine (Pair x, EnvironmentLexical env, LavaRuntime runtime)
+    public Code compileDefine (Pair x, EnvironmentLexical env, LlavaRuntime runtime)
     {
 	Pair rest      = (Pair)x.cdr(); // Skip "define"
 	Object nameOrNameAndParms = rest.car();
@@ -203,7 +215,7 @@ public class CompilerImpl
 	    return FR.newCodeAssignmentTopLevel(x, identifier, codeValue);
 	} else {
 	    // Compiles it as:
-	    // (begin (define x (lambda () ...)) (_%defGenInternal x))
+	    // (begin (define x (lambda () ...)) (-%defGenInternal x))
 	    Pair nameAndParms = (Pair) nameOrNameAndParms;
 	    identifier = (Symbol) nameAndParms.car();
 	    Object parms = nameAndParms.cdr();
@@ -218,7 +230,7 @@ public class CompilerImpl
 	}
     }
 
-    public Code compileIf (boolean isScheme, Pair x, EnvironmentLexical env, LavaRuntime runtime)
+    public Code compileIf (boolean isScheme, Pair x, EnvironmentLexical env, LlavaRuntime runtime)
     {
 	Pair z = (Pair)x.cdr(); // Skip "if"
 	Code testCode = compile(z.first(), env, runtime);
@@ -235,7 +247,7 @@ public class CompilerImpl
 	return FR.newCodeIf(x, testCode, thenCode, elseCode);
     }
 
-    public Code compileLambda (Pair x, EnvironmentLexical env, LavaRuntime runtime)
+    public Code compileLambda (Pair x, EnvironmentLexical env, LlavaRuntime runtime)
     {
 	Pair rest    = (Pair)x.cdr();
 	Object parms = rest.car();
@@ -278,7 +290,7 @@ public class CompilerImpl
 	return FR.newCodeLiteral(source, x);
     }
 
-    public Code compileReference (Symbol x, EnvironmentLexical env, LavaRuntime runtime)
+    public Code compileReference (Symbol x, EnvironmentLexical env, LlavaRuntime runtime)
     {
 	Object kind = env.determineIfLocalVariable(x);
 	if (kind instanceof EnvironmentLexical.LocalVariable) {
@@ -292,12 +304,12 @@ public class CompilerImpl
 	return FR.newCodeReferenceTopLevel(x);
     }
 
-    public Code compileSequence (Pair x, EnvironmentLexical env, LavaRuntime runtime)
+    public Code compileSequence (Pair x, EnvironmentLexical env, LlavaRuntime runtime)
     {
 	return compileSequenceAux((Pair)x.cdr(), env, runtime);
     }
 
-    public Code compileSequenceAux (Pair exprs, EnvironmentLexical env, LavaRuntime runtime)
+    public Code compileSequenceAux (Pair exprs, EnvironmentLexical env, LlavaRuntime runtime)
     {
 	if (exprs == null) {
 	    // (begin)

@@ -1,14 +1,22 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2000 Oct 29 (Sun) 22:01:02 by .
+;;;; Last Modified : 2004 Sep 03 (Fri) 15:47:51 by Harold Carr.
 ;;;;
 
-(require 'test/test)
+(import org.llava.lib.cl.Symbols)
+(import org.llava.lib.test.Test)
 
 (begin-test 'cl/symbols/gensym)
-
-(test-require 'cl/symbols/gensym)
-
 
 (define this-gensym '())
 
@@ -46,9 +54,10 @@
        -1
        (getEnvTopLevelIndex this-gensym))
 
-(check "gensym7"
-       true
-       (not (= -1 (getEnvTopLevelIndex 'gensym-test-4))))
+;; REVISIT - test not valid when using namespaces
+;;(check "gensym7"
+;;       true
+;;       (not (= -1 (getEnvTopLevelIndex 'gensym-test-4))))
 
 (define gentemp-test-5 35)
 

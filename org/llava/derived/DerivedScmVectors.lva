@@ -1,23 +1,54 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2000 Oct 29 (Sun) 21:46:37 by .
+;;;; Last Modified : 2004 Sep 09 (Thu) 21:25:51 by Harold Carr.
 ;;;;
 
-(require 'lava/lists/build-list)
+(package org.llava.lib.scm.Vectors)
+
+(import org.llava.lib.Lists)
+
+(-package- (description "Scheme vector procedures."))
+
+;;;
+;;; list->vector
+;;;
+
+(-doc-
+ (name "list-&gt;vector")
+ (param list))
+
+(define list->vector
+  (lambda (l)
+    (-si 'toArray 'org.llava.impl.util.List l)))
+
+;;;
+;;; vector->list
+;;;
+
+(-doc-
+ (name "vector-&gt;list")
+ (param vector))
 
 (define vector->list
   (lambda (v)
-    (let ((len (_si 'getLength 'java.lang.reflect.Array v))
+    (let ((len (-si 'getLength 'java.lang.reflect.Array v))
 	  (i 0))
       (build-list (lambda () (>= i len))
 		  (lambda () 
-		    (let ((el (_si 'get 'java.lang.reflect.Array v i)))
+		    (let ((el (-si 'get 'java.lang.reflect.Array v i)))
 		      (set! i (+ i 1))
 		      el))))))
 
-(provide 'scm/vectors/vector->list)
-
-(_comment
+(-comment-
 (load "ScmTypeProcs.lva")
 (load "import.lva")
 (isArray (getClass (listFiles (new 'java.io.File "."))))

@@ -1,27 +1,60 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
 ;;;;
 ;;;; Created       : 2000 Feb 10 (Thu) 03:17:11 by Harold Carr.
-;;;; Last Modified : 2000 Oct 29 (Sun) 21:45:13 by .
+;;;; Last Modified : 2004 Sep 09 (Thu) 21:17:54 by Harold Carr.
 ;;;;
 
 ;; Core Java 2 V1 p 209-214
 
-(require 'lava/vectors/vector-map)
+(package org.llava.lib.Reflect)
+
+(import org.llava.lib.Vectors)
+
+(-package- (description "Reflective display and equality."))
+
+;;;
+;;; display-class
+;;;
+
+(-doc-
+ (name display-class)
+ (param class-name-or-instance)
+ (description "Displays constructions, methods and fields."))
 
 (define display-class
-  (lambda (class-name)
-    (set! class-name (toString class-name))
-    (let ((class (_si 'forName 'java.lang.Class class-name)))
+  (lambda (instance-or-class-name)
+    (let ((class null))
+      (if (instanceof instance-or-class-name 'java.lang.String)
+	  (set! class (-si 'forName 'java.lang.Class instance-or-class-name))
+	  (set! class (getClass instance-or-class-name)))
       (display-class-header class)
       (display-class-parts #t "Constructors" (getDeclaredConstructors class))
       (display-class-parts #t "Methods"      (getDeclaredMethods class))
       (display-class-parts #t "Fields"       (getDeclaredFields class)))))
+
+;;;
+;;; display-object
+;;;
+
+(-doc-
+ (name display-object)
+ (param obj)
+ (description "Displays field names and values."))
 
 (define display-object
   (lambda (object)
     (let* ((class (getClass object))
 	   (fields (getDeclaredFields class)))
       (display-class-header class)
-      (_si 'setAccessible 'java.lang.reflect.AccessibleObject fields true)
+      (-si 'setAccessible 'java.lang.reflect.AccessibleObject fields true)
       (display-fields object fields))))
 
 (define display-class-header
@@ -63,15 +96,127 @@
 			      (newline))
 			    fields)))))
 
-(provide 'lava/reflect/display-class)
-
-(_comment
-(load-library 'lava/reflect/display-class)
+(-comment-
+(import org.llava.lib.Reflect)
 (display-class 'java.lang.Double)
 (display-class 'java.lang.Class)
-(display-class (getName (getClass (_sf 'out 'java.lang.System))))
-(display-object (_sf 'out 'java.lang.System))
+(display-class (getName (getClass (-sf 'out 'java.lang.System))))
+(display-object (-sf 'out 'java.lang.System))
 )
 
+;;;;
+;;;; For Java 1.3.
+;;;;
+
+;;;
+;;; get-proxy-class
+;;;
+
+(-doc-
+ (name get-proxy-class)
+ (param ...))
+
+(define get-proxy-class
+  (lambda interfaces
+    (-si 'getProxyClass 'java.lang.reflect.Proxy 
+	 null ;; class loader
+	 (list->class-vector interfaces))))
+
+;;;
+;;; new-invocation-handler
+;;;
+
+(-doc-
+ (name new-invocation-handler)
+ (param ...))
+
+(define new-invocation-handler
+  (lambda (lam)
+    (apply (new 'org.llava.impl.runtime.procedure.primitive.java.PrimNewInvocationHandler)
+	   (list lam))))
+
+;;;
+;;; new-proxy-instance
+;;;
+
+(-doc-
+ (name new-proxy-instance)
+ (param ...))
+
+(define new-proxy-instance
+  (lambda (interfaces lam . classLoader)
+    (-si 'newProxyInstance
+	 'java.lang.reflect.Proxy 
+	 (if (not (null? classLoader)) (car classLoader) null)
+	 (list->class-vector interfaces)
+	 (new-invocation-handler lam))))
+
+(-comment-
+(import org.llava.lib.Reflect)
+
+(define ih (new-invocation-handler (lambda () 1)))
+(getClass ih)
+;; REVISIT - engine field prints as null (check display-object code).
+(display-object ih)
+
+;; Note: - toString is immediately called
+(define p (new-proxy-instance 
+	   '(java.lang.reflect.Member)
+	   (lambda (p m a) 
+	     (-println (list 'm m 'a a))
+	     (let ((methodName (getName m)))
+	       (-println (list 'methodName methodName))
+	       (cond ((equals methodName "getDeclaringClass")
+		      (getDeclaringClass m))
+		     ((equals methodName "getModifiers")
+		      (getModifiers m))
+		     ((equals methodName "getName")
+		      (getName m))
+		     ((equals methodName "toString")
+		      "toString")
+		     (else
+		      (error (string-append "unknown method: "
+					    (toString m)))))))))
+
+(getClass p)
+(getDeclaringClass p)
+(getModifiers p)
+(getName p)
+p
+)
+
+;;;
+;;; reflect-equals
+;;;
+
+(-doc-
+ (name reflect-equals)
+ (param obj1)
+ (param obj2)
+ (description "Uses reflections to compare objects."))
+
+(define reflect-equals
+  (lambda (a b)
+    (call/cc
+     (lambda (return)
+       (let ((class (getClass a)))
+	 (if (not (equals class (getClass b)))
+	     (return false))
+	 (let ((fields (getDeclaredFields class)))
+	   (-si 'setAccessible 'java.lang.reflect.AccessibleObject fields true)
+	   (vector-for-each
+	    (lambda (field)
+	      (if (not (equals (get field a) (get field b)))
+		  (return false)))
+	    fields)))
+       true))))
+	   
+(-comment-
+(import org.llava.lib.Reflect)
+(reflect-equals (new 'java.lang.Double "4.5") (new 'java.lang.Object))
+(reflect-equals (new 'java.lang.Double "4.5") (new 'java.lang.Double "4"))
+(reflect-equals (new 'java.lang.Double "4") (new 'java.lang.Double "4.0"))
+(reflect-equals (-sf 'out 'java.lang.System) (-sf 'out 'java.lang.System))
+)
 
 ;;; End of file.

@@ -1,9 +1,21 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /**
  * Created       : 1999 Dec 29 (Wed) 20:09:32 by Harold Carr.
  * Last Modified : 2004 Dec 08 (Wed) 17:18:05 by Harold Carr.
  */
 
-package lavaProfile;
+package org.llava.impl;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -11,45 +23,45 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 
-import lavaProfile.F;
-import lava.Repl;
+import org.llava.impl.F;
+import org.llava.Repl;
 
-import lava.io.LavaEOF;
-import lava.io.LavaReader;
+import org.llava.io.LlavaEOF;
+import org.llava.io.LlavaReader;
 
-import lava.lang.exceptions.BacktraceHandler;
-import lava.lang.exceptions.LavaException;
+import org.llava.lang.exceptions.BacktraceHandler;
+import org.llava.lang.exceptions.LlavaException;
 
-import lava.lang.types.Pair;
-import lava.lang.types.Procedure;
+import org.llava.lang.types.Pair;
+import org.llava.lang.types.Procedure;
 
-import lava.compiler.Compiler;
-import lavaProfile.compiler.FC;
+import org.llava.compiler.Compiler;
+import org.llava.impl.compiler.FC;
 
-import lava.runtime.EnvironmentTopLevel;
-import lava.runtime.EnvTopLevelInit;
-import lava.runtime.Evaluator;
-import lavaProfile.runtime.FR;
-import lava.runtime.LavaRuntime;
+import org.llava.runtime.EnvironmentTopLevel;
+import org.llava.runtime.EnvTopLevelInit;
+import org.llava.runtime.Evaluator;
+import org.llava.impl.runtime.FR;
+import org.llava.runtime.LlavaRuntime;
 
-import lavaProfile.runtime.Engine; // REVISIT
-import lavaProfile.runtime.FR; // REVISIT
-import lavaProfile.runtime.env.Namespace; // REVISIT
+import org.llava.impl.runtime.Engine; // REVISIT
+import org.llava.impl.runtime.FR; // REVISIT
+import org.llava.impl.runtime.env.Namespace; // REVISIT
 
 public class ReplImpl
     implements
 	Repl
 {
-    private LavaReader          reader;
+    private LlavaReader          reader;
     private PrintWriter         out;
     private PrintWriter         err;
-    private LavaRuntime         runtime;
+    private LlavaRuntime         runtime;
     private EnvironmentTopLevel env;
     private Evaluator           evaluator;
     private Compiler            compiler;
 
-    private LavaException       lastException;
-    private LavaEOF             EOF;
+    protected LlavaException       lastException;
+    protected LlavaEOF             EOF;
 
     private BacktraceHandler    backtraceHandler;
     
@@ -62,10 +74,10 @@ public class ReplImpl
     // REVISIT:
     // order: promptCallback, reader, env, compiler, evaluator, printCallback
     // printCallback handles actual output.
-    private ReplImpl (LavaReader  reader,
+    private ReplImpl (LlavaReader  reader,
 		      PrintWriter out,
 		      PrintWriter err,
-		      LavaRuntime runtime,
+		      LlavaRuntime runtime,
 		      Compiler    compiler)
     {
 	this.reader    = reader;
@@ -75,29 +87,29 @@ public class ReplImpl
 	this.env       = runtime.getEnvironment();
 	this.evaluator = runtime.getEvaluator();
 	this.runtime   = runtime;
-	this.EOF       = F.newLavaEOF();
+	this.EOF       = F.newLlavaEOF();
 
 	init();
     }
 
-    private ReplImpl (InputStream in, OutputStream out, OutputStream err)
+    protected ReplImpl (InputStream in, OutputStream out, OutputStream err)
     {
 
 	//You can override defaults via -D or setting them here.
-	//System.setProperty("lava.io.LavaEOFClassName", "Bad");
+	//System.setProperty("llava.io.LlavaEOFClassName", "Bad");
 
 	// REVISIT: compiler is passed to handle system derived procedures.
 	// However this means the system cannot run without the compiler.
 	// But the compiler is so small who cares?
 
-	this.reader    = F.newLavaReader(new InputStreamReader(in));
+	this.reader    = F.newLlavaReader(new InputStreamReader(in));
 	this.out       = new PrintWriter(out);
 	this.err       = new PrintWriter(err);
 	this.compiler  = FC.newCompiler();
 	this.env       = FR.newEnvironmentTopLevel();
 	this.evaluator = FR.newEvaluator();
-	this.runtime   = FR.newLavaRuntime(env, evaluator);
-	this.EOF       = F.newLavaEOF();
+	this.runtime   = FR.newLlavaRuntime(env, evaluator);
+	this.EOF       = F.newLlavaEOF();
 
 	init();
     }
@@ -109,22 +121,23 @@ public class ReplImpl
 	init.loadDerived();
 
 	backtraceHandler = FR.newBacktraceHandler(); // REVISIT
-	env.set(F.newSymbol("_jbt"), new JavaBacktrace());
-	env.set(F.newSymbol("_bt"), new LavaBacktrace());
+	env.set(F.newSymbol("-jbt"), new JavaBacktrace());
+	env.set(F.newSymbol("-bt"), new LlavaBacktrace());
 
 	if (env instanceof Namespace) {
 	    Namespace ns = (Namespace)env;
 	    // The root namespace is immutable.
-	    ns.findNamespace(F.newSymbol("lava.Lava")).setIsSealed(true);
+	    // REVISIT : get name from Namespace constant.
+	    ns.findNamespace(F.newSymbol(F.llavaPackageName())).setIsSealed(true);
 	    // The REPL starts in its own namespace.
-	    ns._package(F.newSymbol("lava"), F.newSymbol("Repl"));
+	    ns._package(F.newSymbol(F.initialReplPackageName()));
 	}
     }
 
-    public Repl newRepl (LavaReader  reader,
+    public Repl newRepl (LlavaReader  reader,
 			 PrintWriter out,
 			 PrintWriter err,
-			 LavaRuntime runtime,
+			 LlavaRuntime runtime,
 			 Compiler    compiler)
     {
 	return new ReplImpl(reader, out, err, runtime, compiler);
@@ -152,11 +165,11 @@ public class ReplImpl
 		    }
 		    printResult(eval(compile(sexpr)));
 		} 
-	    } catch (LavaException e) {
+	    } catch (LlavaException e) {
 		lastException = e;
 		informAboutException();
 	    } catch (Throwable t) {
-		lastException = F.newLavaException(t);
+		lastException = F.newLlavaException(t);
 		informAboutException();
 	    }
 	}
@@ -171,7 +184,7 @@ public class ReplImpl
 		   + ((Namespace)env).getCurrentNamespace().getName() 
 		   + "> ");
 	} else {
-	    prompt("\nlava> ");
+	    prompt("\nllava> ");
 	}
     }
 
@@ -254,11 +267,11 @@ public class ReplImpl
 	    if (in != null) {
 		readCompileEvalUntilEOF(new InputStreamReader(in));
 	    } else {
-		throw F.newLavaException("Resource file not found: " +
+		throw F.newLlavaException("Resource file not found: " +
 					 loaderClass + " " + resource);
 	    }
 	} catch (ClassNotFoundException e) {
-	    throw F.newLavaException("Resource load class not found: " +
+	    throw F.newLlavaException("Resource load class not found: " +
 				     loaderClass + " " + resource);
 	}
     }
@@ -270,7 +283,7 @@ public class ReplImpl
 	err.flush();
     }
 
-    public LavaException getLastException ()
+    public LlavaException getLastException ()
     {
 	return lastException;
     }
@@ -282,7 +295,7 @@ public class ReplImpl
 
     public void outputVersionMessage ()
     {
-	out.println(F.newLavaVersion());
+	out.println(F.newLlavaVersion());
 	out.flush();
     }
 
@@ -296,7 +309,7 @@ public class ReplImpl
     public Compiler            getCompiler            () { return compiler; }
     public EnvironmentTopLevel getEnvironmentTopLevel () { return env; }
     public Evaluator           getEvaluator           () { return evaluator; }
-    public LavaRuntime         getLavaRuntime         () { return runtime; }
+    public LlavaRuntime         getLlavaRuntime         () { return runtime; }
 
     public class JavaBacktrace
 	implements Procedure
@@ -314,7 +327,7 @@ public class ReplImpl
 	public String setName (String name) { return this.name = name; }
     }
 
-    public class LavaBacktrace
+    public class LlavaBacktrace
 	implements Procedure
     {
 	private String name;

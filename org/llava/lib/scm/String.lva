@@ -1,9 +1,30 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2000 Jan 22 (Sat) 00:29:42 by Harold Carr.
+;;;; Last Modified : 2004 Sep 09 (Thu) 21:25:30 by Harold Carr.
 ;;;;
 
-(require 'lava/lists/build-list)
+(package org.llava.lib.scm.Strings)
+
+(import org.llava.lib.Lists)
+
+(-package- (description "Scheme string procedures."))
+
+;;;
+;;; string->list
+;;;
+
+(-doc-
+ (name "string-&gt;list")
+ (param string))
 
 (define string->list
   (lambda (v)
@@ -14,7 +35,5 @@
 		    (let ((el (charAt v i)))
 		      (set! i (+ i 1))
 		      el))))))
-
-(provide 'scm/strings/string->list)
 
 ;;; End of file.

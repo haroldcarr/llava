@@ -199,9 +199,9 @@ public class EnvTopLevelInitImpl
 	    loadDerived(repl,          FR.newDerivedLlavaCase());
 	    loadDerived(repl,          FR.newDerivedLlavaIteration());
 	    loadDerived(repl,          FR.newDerivedLlavaMember());
+	    loadDerived(repl,          FR.newDerivedLlavaDefineD());
 	    loadDerived(repl,          FR.newDerivedJavaTry());
 	    loadDerived(repl,          FR.newDerivedJavaSecond());
-	    loadDerived(repl,          FR.newRequireProvide());
 	    loadDerived(repl,          FR.newDerivedTest());
 	    loadDerived(repl,          FR.newImport());
 	} else {

@@ -1,8 +1,18 @@
-(_println "Entering One");
-(_println *ns*)
-(_println (_package *ns* 'testNamespace.one 'One))
-(_println *ns*)
-(_println (_import *ns* 'testNamespace.two.Two))
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+
+(-println "Entering One");
+(-println *ns*)
+(-println (_package *ns* 'test.testNamespace.one.One))
+(-println *ns*)
+(-println (_import *ns* 'test.testNamespace.two.Two))
 
 (letrec ((min (lambda args (minAux (car args) (cdr args))))
 	 (minAux (lambda (smallest args)

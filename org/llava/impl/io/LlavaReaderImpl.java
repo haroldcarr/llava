@@ -1,48 +1,60 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /**
  * Created       : 1999 Dec 17 (Fri) 20:11:43 by Harold Carr.
- * Last Modified : 2002 Jan 12 (Sat) 13:47:18 by Harold Carr.
+ * Last Modified : 2004 Sep 03 (Fri) 15:33:02 by Harold Carr.
  */
 
-package lavaProfile.io;
+package org.llava.impl.io;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-import lavaProfile.F;
-import lava.io.LavaEOF;
-import lava.io.LavaReader;
-import lava.lang.types.*;
-import lavaProfile.util.List;
+import org.llava.impl.F;
+import org.llava.io.LlavaEOF;
+import org.llava.io.LlavaReader;
+import org.llava.lang.types.*;
+import org.llava.impl.util.List;
 
-public class LavaReaderImpl
+public class LlavaReaderImpl
     implements
-	LavaReader
+	LlavaReader
 {
     private Reader in;
-    private LavaEOF EOF      = F.newLavaEOF();
+    private LlavaEOF EOF      = F.newLlavaEOF();
     private Object  CONS_DOT = new Object();
 
     // REVISIT: maybe do not allocate until needed.
     private StringBuffer tmpBuff = new StringBuffer();
 
-    public LavaReaderImpl ()
+    public LlavaReaderImpl ()
     {
     }
 
-    LavaReaderImpl (Reader in)
+    LlavaReaderImpl (Reader in)
     {
 	this.in = in;
     }
 
-    public LavaReader newLavaReader ()
+    public LlavaReader newLlavaReader ()
     {
-	return new LavaReaderImpl();
+	return new LlavaReaderImpl();
     }
 
-    public LavaReader newLavaReader (Reader in)
+    public LlavaReader newLlavaReader (Reader in)
     {
-	return new LavaReaderImpl(in);
+	return new LlavaReaderImpl(in);
     }
 
     public Object read ()
@@ -69,8 +81,8 @@ public class LavaReaderImpl
 						read(in));
 	else if (token == ",@")return List.list(F.newSymbol("unquote-splicing"),
 						read(in));
-	else if (token == ")") throw F.newLavaException("Extra ')'");
-	else if (token == CONS_DOT) throw F.newLavaException("Extra '.'");
+	else if (token == ")") throw F.newLlavaException("Extra ')'");
+	else if (token == CONS_DOT) throw F.newLlavaException("Extra '.'");
 	else                   return token;
     }
 
@@ -85,13 +97,13 @@ public class LavaReaderImpl
 	    Object result = read(in);
 	    token = readToken(in); 
 	    if (token != ")") {
-		throw F.newLavaException("Expecting ')' but got: "+ token + " after .");
+		throw F.newLlavaException("Expecting ')' but got: "+ token + " after .");
 	    }
 	    return result;
 	} else if (token == CONS_DOT) {
-	    throw F.newLavaException("Got '.' immediately after '('");
+	    throw F.newLlavaException("Got '.' immediately after '('");
 	} else if (token == EOF) {
-	    throw F.newLavaException("EOF during read.");
+	    throw F.newLlavaException("EOF during read.");
 	} else {
 	    pushToken(token);
 	    return F.cons(read(in), readTail(in, true));
@@ -144,7 +156,7 @@ public class LavaReaderImpl
 		tmpBuff.append((char) ((ch == '\\') ? in.read() : ch));
 	    }
 	    if (ch == -1) {
-		throw F.newLavaException("EOF inside of a string.");
+		throw F.newLlavaException("EOF inside of a string.");
 	    }
 	    return tmpBuff.toString().intern();
 	case '#' :
@@ -182,7 +194,7 @@ public class LavaReaderImpl
 		}
 	    // REVISIT: 'e' 'i' 'd' 'b' 'o' 'x' goes here
 	    default :
-		F.newLavaException("#" + ((char)ch) + " not recognized");
+		F.newLlavaException("#" + ((char)ch) + " not recognized");
 	    }
 		
 	default: 
@@ -223,7 +235,7 @@ public class LavaReaderImpl
 	    }
 	}
       } catch (IOException e) {
-	  throw F.newLavaException(e);
+	  throw F.newLlavaException(e);
       }
     }
 

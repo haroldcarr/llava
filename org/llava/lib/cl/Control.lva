@@ -1,19 +1,51 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
 ;;;;
-;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2001 Mar 13 (Tue) 09:11:20 by Harold Carr.
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+;;;;
+;;;; Created       : 1998 Dec 05 (Sat) 21:41:11 by Harold Carr.
+;;;; Last Modified : 2004 Sep 09 (Thu) 21:20:43 by Harold Carr.
 ;;;;
 
-(require 'cl/symbols/gensym)
+(package org.llava.lib.cl.Control)
 
-(_comment
-(package cl.control dotimes)
+(import org.llava.lib.cl.Symbols)
 
-(import cl.symbols.gensym)
-)
+(-package- (description "Common LISP control features."))
 
-;; TODO - missing result
+;;;
+;;; setq
+;;;
 
-;; REVISIT - you must fully qualify gensym since only
+(-doc-
+ (name setq)
+ (param variable)
+ (param obj)
+ (category syntax))
+
+(define-syntax setq
+  (lambda (var val)
+    `(set! ,var ,val)))
+
+;;;
+;;; dotimes
+;;;
+
+(-doc-
+ (name dotimes)
+ (param variable-and-limit)
+ (param expression)
+ (param ...)
+ (category syntax))
+
+;; REVISIT - missing result
+
+;; NOTE - you must fully qualify gensym since only
 ;; the macro will be imported.  When the macro runs in a different
 ;; package, that package will not reference the gensym package.
 ;; You still need to import gensym here to make sure the package is loaded
@@ -21,12 +53,10 @@
 
 (define-syntax dotimes
   (lambda (iAndStop . body)
-    (let ((gstop (gensym)))
+    (let ((gstop (org.llava.lib.cl.Symbols.gensym)))
       `(do ((,(car iAndStop) 0 (+ ,(car iAndStop) 1))
 	    (,gstop ,(cadr iAndStop)))
 	   ((>= ,(car iAndStop) ,gstop))
 	 ,@body))))
-
-(provide 'cl/control/dotimes)
 
 ;;; End of file.

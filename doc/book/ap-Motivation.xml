@@ -1,58 +1,40 @@
-                           Terms and Conditions 
-            
-             LLAVA COPYRIGHT AND PERMISSION NOTICE Version 1.0
+<!--
+//
+// Created       : a long time ago by Harold Carr.
+// Last Modified : 2004 Aug 26 (Thu) 23:08:23 by Harold Carr.
+//
+-->
+<appendix id="llava-ap-motivation">
 
-Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002 Harold Carr
-All rights reserved.
+  <title>Motivation</title>
 
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, and/or sell copies of the Software, and to permit persons
-to whom the Software is furnished to do so, provided that the above
-copyright notice(s) and this permission notice appear in all copies of
-the Software and that both the above copyright notice(s) and this
-permission notice appear in supporting documentation.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
-OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR ANY CLAIM, OR ANY
-SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER
-RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF
-CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-Except as contained in this notice, the name of a copyright holder
-shall not be used in advertising or otherwise to promote the sale, use
-or other dealings in this Software without prior written authorization
-of the copyright holder.
-
-------------------------------------------------------------------------------
-
-
+  <para>
 During the 80s I was involved in designing and building LISP systems
 [cite*****].  When funding for LISP became scarce I switched to
 distributed computing and ended up working for SUN Microsystems on
-CORBA software [cite*****].  Then Java arrived.  At SUN, our group's
-efforts in C++ were redirected towards Java.
+CORBA software in C++ [cite*****].  Then Java arrived.  At SUN, our
+group's efforts in C++ were redirected towards Java.
+  </para>
 
+  <para>
 Immediately, upon first using Java, I was struck by the fact that it
 was fun to program again (vis-a-vis the tedious nature of programming
 in C++).  It was clear that the reason for this joy was Java's higher
 level ala LISP.  However, once I tasted that level again I was soon
 disappointed by Java since it lacked many features of LISP which make
 working at that level fun and productive.
+  </para>
 
+  <para>
 Then Per Bothner released Kawa [cite*****], a version of Scheme
 [cite*****] in Java.  Using Kawa I was able to program a little more
 interactively with Java but I kept running into missing library items.
 I was continually forced to choose between finding versions of btrees,
 hash tables, etc., in public-domain Scheme code, or making
 foreign-function interfaces to Java versions of the same.
+  </para>
 
+  <para>
 I ended up doing more of the later.  I automated this with an "import"
 macro which would automatically wrap all or selected methods of
 specified Java classes using Java reflection.  However, I then kept
@@ -64,10 +46,17 @@ Java which I could import with my macro, or I could use Meroon
 objects did not interoperate with the Java objects so I was back to
 the non-interoperability of Kawa and Java types again.  This lack of
 interoperability just kept cropping up every step of the way,
-particularly in exceptions.
+particularly in exceptions.  (I haven't kept track of Kawa, so many of
+these problems, problems for me at least, may be resolved.  Plus, I
+definitely recommend Kawa where performance is a concern.  Kawa is a
+great system.)
+  </para>
 
-That's when I got the idea for JIST.
+  <para>
+That's when I got the idea for LLAVA.
+  </para>
 
+  <para>
 Why not create a version of Java which uses LISP syntax (or, more
 precisely, LISP's lack of syntax) to write Java classes?  Then extend
 that system to include a few special forms (LAMBDA, DEFINE, SET!, IF,
@@ -76,7 +65,28 @@ incremental (re)definition to support interactive program development.
 In other words, a minimal LISP system with complete interoperability
 with Java to leverage the Java Virtual Machine and growing Java class
 libraries.
+  </para>
 
-That's why JIST is called JIST and not JISP, to emphasize the
-combination of Java and lIST capabilities and syntax, rather than give
-the impression of a LISP system written in Java.
+  <para>
+  Originally my name for llava was JIST: for Java + lIST.  I called it
+  JIST (not JISP), to emphasize the combination of Java and lIST
+  capabilities and syntax, rather than give the impression of a LISP
+  system written in Java.
+  </para>
+
+  <para>
+  But JIST (or JISP) didn't sound right.  So I went with LAVA: for
+  Lisp + jAVA.  But lava.org was already taken so I added an "l" -
+  thus: llava (pronounced either "lava" - like the volcanic stuff - or
+  "yava" - like in Spanish - your choice).
+  </para>
+
+  <para>
+  llava is <emphasis>not</emphasis> a LISP/Scheme system written in
+  Java.  The philosophy of llava is: maximum leverage of
+  Java&mdash;only add what is missing or cannot be done in Java 
+  (e.g., list "syntax" and library, repl, incremental (re)definition,
+  macros).
+  </para>
+
+</appendix>

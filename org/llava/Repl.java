@@ -1,32 +1,44 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /**
  * Created       : 1999 Dec 29 (Wed) 20:09:32 by Harold Carr.
- * Last Modified : 2001 Mar 26 (Mon) 15:05:44 by Harold Carr.
+ * Last Modified : 2004 Sep 03 (Fri) 15:32:32 by Harold Carr.
  */
 
-package lava;
+package org.llava;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 
-import lava.io.LavaEOF;
-import lava.io.LavaReader;
+import org.llava.io.LlavaEOF;
+import org.llava.io.LlavaReader;
 
-import lava.lang.exceptions.LavaException;
+import org.llava.lang.exceptions.LlavaException;
 
-import lava.compiler.Compiler;
+import org.llava.compiler.Compiler;
 
-import lava.runtime.EnvironmentTopLevel;
-import lava.runtime.Evaluator;
-import lava.runtime.LavaRuntime;
+import org.llava.runtime.EnvironmentTopLevel;
+import org.llava.runtime.Evaluator;
+import org.llava.runtime.LlavaRuntime;
 
 public interface Repl
 {
-    public Repl newRepl (LavaReader  reader,
+    public Repl newRepl (LlavaReader  reader,
 			 PrintWriter out,
 			 PrintWriter err,
-			 LavaRuntime runtime,
+			 LlavaRuntime runtime,
 			 Compiler    compiler);
 
     public Repl newRepl ();
@@ -65,7 +77,7 @@ public interface Repl
 
     public void informAboutException ();
 
-    public LavaException getLastException ();
+    public LlavaException getLastException ();
 
     public void setTelnetCRLFOutput (boolean on);
 
@@ -76,7 +88,7 @@ public interface Repl
     public Compiler            getCompiler            ();
     public EnvironmentTopLevel getEnvironmentTopLevel ();
     public Evaluator           getEvaluator           ();
-    public LavaRuntime         getLavaRuntime         ();
+    public LlavaRuntime         getLlavaRuntime         ();
 
 }
 

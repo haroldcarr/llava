@@ -1,18 +1,28 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2000 Jan 22 (Sat) 06:01:47 by Harold Carr.
+;;;; Last Modified : 2004 Sep 03 (Fri) 15:47:43 by Harold Carr.
 ;;;;
 
-(require 'test/test)
+(import org.llava.lib.test.Test)
+(import org.llava.lib.Lists)
 
-(begin-test 'lava/lists/add-between)
 
-(test-require 'lava/lists/add-between)
+(begin-test 'lists/add-between)
 
 (check "add-between"
        '(a x 34 x 34.5 x "s" x #\c)
        (add-between 'x '(a 34 34.5 "s" #\c)))
 
-(end-test 'lava/lists/add-between)
+(end-test 'lists/add-between)
 
 ;;; End of file.

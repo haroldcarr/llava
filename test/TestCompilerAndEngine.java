@@ -1,27 +1,39 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /**
  * Created       : 1999 Dec 23 (Thu) 04:54:03 by Harold Carr.
- * Last Modified : 2001 Mar 26 (Mon) 15:24:33 by Harold Carr.
+ * Last Modified : 2004 Sep 03 (Fri) 15:35:46 by Harold Carr.
  */
 
-package testLava;
+package test;
 
 import java.io.PrintWriter;
 
-import lavaProfile.F;
-import lava.io.LavaReader;
-import lava.lang.exceptions.LavaException;
-import lavaProfile.util.List;
-import lava.Repl;
+import org.llava.impl.F;
+import org.llava.io.LlavaReader;
+import org.llava.lang.exceptions.LlavaException;
+import org.llava.impl.util.List;
+import org.llava.Repl;
 
-import lava.compiler.Compiler;
+import org.llava.compiler.Compiler;
 
-import lava.runtime.EnvironmentTopLevel;
-import lava.runtime.Evaluator;
-import lava.runtime.LavaRuntime;
+import org.llava.runtime.EnvironmentTopLevel;
+import org.llava.runtime.Evaluator;
+import org.llava.runtime.LlavaRuntime;
 
-import lavaProfile.compiler.FC;
-import lavaProfile.runtime.FR;
-import lavaProfile.runtime.syntax.SyntaxDefineSyntax;
+import org.llava.impl.compiler.FC;
+import org.llava.impl.runtime.FR;
+import org.llava.impl.runtime.syntax.SyntaxDefineSyntax;
 
 public class TestCompilerAndEngine
 {
@@ -29,9 +41,9 @@ public class TestCompilerAndEngine
     public static EnvironmentTopLevel topEnvironment =
 	FR.newEnvironmentTopLevel();
     static Evaluator evaluator = FR.newEvaluator();
-    static LavaRuntime runtime = FR.newLavaRuntime(topEnvironment, evaluator);
+    static LlavaRuntime runtime = FR.newLlavaRuntime(topEnvironment, evaluator);
     static Compiler compiler   = FC.newCompiler();
-    static LavaReader reader   = F.newLavaReader();
+    static LlavaReader reader   = F.newLlavaReader();
 
     static Repl repl = 
 	F.newRepl(reader, 
@@ -53,7 +65,7 @@ public class TestCompilerAndEngine
 	// REVISIT
 	//Test.check("eval4", new Double(0.1), eval("(lambda () 0.2)"));
 	Test.check("eval5", 
-		   "Anonymous lambda with body: {lavaProfile.runtime.code.CodeLiteral 3}: too many arguments",
+		   "Anonymous lambda with body: {org.llava.impl.runtime.code.CodeLiteral 3}: too many arguments",
 		   eval("((lambda () 3) 4)"));
 	Test.check("eval6", new Double(5.0), eval("((lambda (x) x) 5.0)"));
 	Test.check("eval6.1", 
@@ -87,14 +99,16 @@ public class TestCompilerAndEngine
 ")"
                        ));
 	Test.check("eval9.1", 
-		   "Anonymous lambda with body: {lavaProfile.runtime.code.CodeReference y}: not enough arguments",
+		   "Anonymous lambda with body: {org.llava.impl.runtime.code.CodeReference y}: not enough arguments",
 		   eval("((lambda (x y) y) -1)"));
 	Test.check("eval10", 
-		   "Anonymous lambda with body: {lavaProfile.runtime.code.CodeReference y}: too many arguments",
+		   "Anonymous lambda with body: {org.llava.impl.runtime.code.CodeReference y}: too many arguments",
 		   eval("((lambda (x y) y) 1 2 3)"));
+	/* REVISIT : returns generic undef handler when DI in use.
 	Test.check("eval11", 
 		   "Undefined top level variable: z",
 		   eval("((lambda (x y) z) 1 2)"));
+	*/
 	Test.check("eval12", 
 		   List.list(new Integer(3), new Integer(4)),
 		   eval("((lambda (x y . z) z) 1 2 3 4)"));
@@ -117,7 +131,7 @@ public class TestCompilerAndEngine
 	    Test.dsop(code.toString());
 	    Object result = repl.eval(code);
 	    return result;
-	} catch (LavaException le) {
+	} catch (LlavaException le) {
 	    Test.printStackTrace(le.getThrowable());
 	    return le.getThrowable().getMessage();
 	} catch (Throwable t) {

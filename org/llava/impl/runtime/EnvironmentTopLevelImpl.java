@@ -1,17 +1,29 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /**
  * Created       : 1999 Dec 25 (Sat) 19:08:58 by Harold Carr.
- * Last Modified : 2001 Mar 26 (Mon) 15:28:53 by Harold Carr.
+ * Last Modified : 2004 Sep 03 (Fri) 15:33:43 by Harold Carr.
  */
 
-package lavaProfile.runtime.env;
+package org.llava.impl.runtime.env;
 
-import lavaProfile.F;
-import lava.Repl;
-import lava.lang.types.Procedure;
-import lava.lang.types.Symbol;
-import lava.runtime.EnvironmentTopLevel;
-import lavaProfile.runtime.FR;
-import lava.runtime.UndefinedIdHandler;
+import org.llava.impl.F;
+import org.llava.Repl;
+import org.llava.lang.types.Procedure;
+import org.llava.lang.types.Symbol;
+import org.llava.runtime.EnvironmentTopLevel;
+import org.llava.impl.runtime.FR;
+import org.llava.runtime.UndefinedIdHandler;
 
 public class EnvironmentTopLevelImpl 
     implements
@@ -68,7 +80,7 @@ public class EnvironmentTopLevelImpl
 	int index = symbol.getEnvTopLevelIndex();
 	if (index == -1 || index >= values.length) {
 	    // It is either undefined, or undefined in this
-	    // instance of Lava.
+	    // instance of Llava.
 	    if (index == -1) {
 		index = symbol.setEnvTopLevelIndex(nextAvailableIndex++);
 	    }
@@ -125,7 +137,7 @@ public class EnvironmentTopLevelImpl
 	int newLen = oldLength * 2;
 	// But if the index is still off the end then make big enough to fit.
 	// This is necessary since symbols are EQ between instances
-	// of Lava - so a symbol may have been set in a Lava with
+	// of Llava - so a symbol may have been set in a Llava with
 	// many more top level variables than the current instance.
 	// A waste of space here, but oh well ...
 	newLen = newLen > index ? newLen : newLen + (index - (newLen - 1));

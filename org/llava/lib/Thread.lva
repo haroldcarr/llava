@@ -1,7 +1,43 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
 ;;;;
 ;;;; Created       : 2000 Jan 23 (Sun) 08:04:29 by Harold Carr.
-;;;; Last Modified : 2000 Jan 25 (Tue) 04:39:36 by Harold Carr.
+;;;; Last Modified : 2004 Sep 09 (Thu) 21:19:43 by Harold Carr.
 ;;;;
+
+(package org.llava.lib.Threads)
+
+(-package- (description "Starting and killing threads."))
+
+;;;
+;;; kill-current-thread
+;;;
+
+(-doc-
+ (name kill-current-thread)
+ (description "Calls deprecated <function>stop</function> on the
+  current thread."))
+
+(define kill-current-thread
+  (lambda () 
+    (try (stop (-sf 'currentThread 'java.lang.Thread))
+	 (catch (java.lang.Throwable t) '()))))
+
+;;;
+;;; start-new-thread
+;;;
+
+(-doc-
+ (name start-new-thread)
+ (param thunk)
+ (description "Executes <parameter>thunk</parameter> in a new thread."))
 
 (define start-new-thread
   (lambda (thunk)
@@ -9,10 +45,19 @@
       (start thread)
       thread)))
 
+;;;
+;;; start-new-thread
+;;;
+
+(-doc-
+ (name start-new-thread)
+ (param expression)
+ (param ...)
+ (category syntax)
+ (description "Executes <parameter>expression ...</parameter> in a new thread."))
+
 (define-syntax start-new-thread*
   (lambda body
     `(start-new-thread (lambda () ,@body))))
-
-(provide 'lava/threads/start-new-thread)
 
 ;;; End of file.

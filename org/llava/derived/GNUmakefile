@@ -10,7 +10,7 @@
 
 #
 # Created       : 2000 Jan 18 (Tue) 04:28:19 by Harold Carr.
-# Last Modified : 2004 Sep 03 (Fri) 15:59:37 by Harold Carr.
+# Last Modified : 2004 Nov 26 (Fri) 08:35:20 by Harold Carr.
 #
 
 TOPDIR		=	../../../../..
@@ -33,6 +33,7 @@ RESOURCE_FILES	= \
 	$(PKGDIR)/DerivedLlavaMember.lva \
 	$(PKGDIR)/DerivedJavaTry.lva \
 	$(PKGDIR)/DerivedJavaSecond.lva \
+	$(PKGDIR)/DerivedLlavaDefineD.lva \
 	$(PKGDIR)/DerivedTest.lva \
 	$(PKGDIR)/import.lva 
 

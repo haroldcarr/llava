@@ -1,15 +1,27 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /**
  * Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
- * Last Modified : 2001 Mar 26 (Mon) 15:19:08 by Harold Carr.
+ * Last Modified : 2004 Sep 03 (Fri) 15:34:50 by Harold Carr.
  */
 
-package lavaProfile.runtime.procedure.primitive.java.opt;
+package org.llava.impl.runtime.procedure.primitive.java.opt;
 
-import lavaProfile.F;
-import lava.lang.types.Pair;
-import lavaProfile.runtime.Engine;
-import lavaProfile.runtime.FR;
-import lavaProfile.runtime.procedure.primitive.PrimitiveProcedure;
+import org.llava.impl.F;
+import org.llava.lang.types.Pair;
+import org.llava.impl.runtime.Engine;
+import org.llava.impl.runtime.FR;
+import org.llava.impl.runtime.procedure.primitive.PrimitiveProcedure;
 
 public class PrimInstanceof
     extends
@@ -31,7 +43,7 @@ public class PrimInstanceof
 	    return F.newBoolean(Class.forName(args.second().toString())
 				.isInstance(args.first()));
 	} catch (Throwable e) {
-	    throw F.newLavaException(e);
+	    throw F.newLlavaException(e);
 	}
     }
 }

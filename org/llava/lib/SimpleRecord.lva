@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2004 Nov 24 (Wed) 07:42:48 by Harold Carr.
-;;;; Last Modified : 2004 Nov 26 (Fri) 09:51:57 by Harold Carr.
+;;;; Last Modified : 2004 Nov 24 (Wed) 09:23:19 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.SimpleRecord)
@@ -28,15 +28,18 @@
  (param ...)
  (category syntax)
  (description
-  "Defines a constructor: make-<record-name>.  It can take 0 to
+  "Defines a constructor: make-<record-name>.  Constructor takes 0 to
    N arguments, where N is the number of <slot-name>s.  For each
    argument it initializes the slot in that position or null if no
    corresponding argument."
   "For each <slot-name> it defines: get-<slot-name> and set-<slot-name>!"))
 
+(-comment-
+  "The representation is:  #(record <record-name> <slot-name> ...)")
+
 (define-syntax define-simple-record
   (lambda (record-name . slot-names)
-    (let* ((N -1)
+    (let* ((N 1)
 	   (positions 
 	    (map (lambda (x) (set! N (+ N 1))) 
 		 slot-names))
@@ -57,23 +60,26 @@
 		      (lambda (r)
 			(-si 'get 'java.lang.reflect.Array r ,n))))
 		 slot-names
-		 positions)))
+		 positions))
+	   (constructor
+	    `(define ,(string->symbol (s+ "make-" (toString record-name)))
+	       (lambda args
+		 (do ((r (-si 'toArray 'org.llava.impl.util.List 
+			      (cons 'record (cons ',record-name ',slot-names))))
+		      (sn ',setter-names (cdr sn)))
+		     ((null? sn) r)
+		   (cond ((null? args)
+			  (apply (eval (car sn)) (list r null)))
+			 (else
+			  (apply (eval (car sn)) (list r (car args)))
+			  (set! args (cdr args)))))))))
       `(begin
-	 (define ,(string->symbol (s+ "make-" (toString record-name)))
-	   (lambda args
-	     (do ((r (-si 'toArray 'org.llava.impl.util.List ',slot-names))
-		  (sn ',setter-names (cdr sn)))
-		 ((null? sn) r)
-	       (cond ((null? args)
-		      (apply (eval (car sn)) (list r null)))
-		     (else
-		      (apply (eval (car sn)) (list r (car args)))
-		      (set! args (cdr args)))))))
+	 ,constructor
 	 ,@setters
 	 ,@getters
 	 ',record-name))))
 
-(define display-record
+(define display-simple-record
   (lambda (r)
     (-print "#(" )
     (do ((len (-si 'getLength 'java.lang.reflect.Array r))
@@ -85,5 +91,19 @@
     (-println ") " ) ;;; REVISIT - reader bug
     null
     ))
+
+(-comment-
+(import org.llava.lib.SimpleRecord)
+(define-simple-record r x y z)
+(set! r (make-r))
+(display-simple-record r)
+(set-y! r 2)
+(display-simple-record r)
+(set! r (make-r 1 2 3))
+(display-simple-record r)
+(get-z r)
+(set-z! r 'vv)
+(display-simple-record r)
+)
 
 ;;; End of file.

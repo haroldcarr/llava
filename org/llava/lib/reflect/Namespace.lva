@@ -131,7 +131,7 @@
 
 (-doc-
  (name which-package)
- (name symbol)
+ (name symbol-or-string)
  (description
   "Given a variable name.
    Returns the package name in which it exists if that package is
@@ -140,8 +140,13 @@
 
 (define which-package
   (lambda (var-name)
-    (let ((import-list (list-imports (current-package))))
-      import-list)))
+    (do ((result false (-if (member (toString var-name)
+				    (list-variables (car packages)))
+			    (car packages)
+			    false))
+	 (packages (list-imports (current-package)) (cdr packages)))
+	((or result (null? packages)) result))))
+
 
 ;;;
 ;;; which-package-all

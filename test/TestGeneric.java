@@ -1,15 +1,27 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /**
  * Created       : 1999 Dec 28 (Tue) 05:43:41 by Harold Carr.
- * Last Modified : 2001 Mar 26 (Mon) 15:20:53 by Harold Carr.
+ * Last Modified : 2004 Sep 06 (Mon) 00:25:21 by Harold Carr.
  */
 
 /*
 Each of these says it takes an int.  Some will also take a long.
 
-(sleep (_si 'currentThread 'java.lang.Thread) (new 'java.lang.Integer 1000))
-(sleep (_si 'currentThread 'java.lang.Thread) (new 'java.lang.Long 1000))
-(_si 'toHexString 'java.lang.Integer (new 'java.lang.Integer 15))
-(_si 'toHexString 'java.lang.Integer (new 'java.lang.Long 15))
+(sleep (-si 'currentThread 'java.lang.Thread) (new 'java.lang.Integer 1000))
+(sleep (-si 'currentThread 'java.lang.Thread) (new 'java.lang.Long 1000))
+(-si 'toHexString 'java.lang.Integer (new 'java.lang.Integer 15))
+(-si 'toHexString 'java.lang.Integer (new 'java.lang.Long 15))
 (compareTo 22 (new 'java.lang.Integer 21))
 (compareTo 22 (new 'java.lang.Long 21))
 (charAt "abc" (new 'java.lang.Integer 1))
@@ -17,18 +29,18 @@ Each of these says it takes an int.  Some will also take a long.
 949513387412
 9.49513387413E11
 (load "import.scm")
-(require 'java/lang/import)
+(require 'org/llava/lib/java/lang/import)
 (import "java.lang.System")
 (System.currentTimeMillis)
 (invoke-static 'java.lang.System 'currentTimeMillis)
-(_si 'currentTimeMillis 'java.lang.System)
+(-si 'currentTimeMillis 'java.lang.System)
 (define *which* 'skij)
-(define *which* 'lava)
+(define *which* 'llava)
 (define *which* 'silk)
 (define (tt)
   (let ((t (case *which*
 	     ((skij) (invoke-static 'java.lang.System 'currentTimeMillis))
-	     ((lava) (_si 'currentTimeMillis 'java.lang.System))
+	     ((llava) (-si 'currentTimeMillis 'java.lang.System))
 	     ((silk) (System.currentTimeMillis))
 	     (else (error "NO")))))
     (display (list t (+ t 1)))
@@ -36,16 +48,16 @@ Each of these says it takes an int.  Some will also take a long.
 (tt)
  */
 
-package testLava;
+package test;
 
-import lavaProfile.F;
-import lava.lang.types.Symbol;
-import lava.runtime.EnvironmentTopLevel;
-import lava.runtime.UndefinedIdHandler;
-import lavaProfile.runtime.FR;
-import lavaProfile.runtime.env.*;
-import lavaProfile.runtime.procedure.generic.DI;
-import lavaProfile.runtime.procedure.generic.GenericProcedure;
+import org.llava.impl.F;
+import org.llava.lang.types.Symbol;
+import org.llava.runtime.EnvironmentTopLevel;
+import org.llava.runtime.UndefinedIdHandler;
+import org.llava.impl.runtime.FR;
+import org.llava.impl.runtime.env.*;
+import org.llava.impl.runtime.procedure.generic.DI;
+import org.llava.impl.runtime.procedure.generic.GenericProcedure;
 
 public class TestGeneric
 {
@@ -106,7 +118,7 @@ public class TestGeneric
 
 	    try {
 		 v = DI.invokeStatic("test_i_iill",
-				     testLava.TestGeneric.class,
+				     test.TestGeneric.class,
 				     new Object[]{new Integer(1),new Long(2),
 						  new Integer(3),new Long(4)});
 		 // I would like this to be the case, but no...
@@ -115,10 +127,10 @@ public class TestGeneric
 	    }
 
 	    v = DI.invokeStatic("test_l_iill",
-				testLava.TestGeneric.class,
+				test.TestGeneric.class,
 				new Object[]{new Integer(1),new Integer(2),
 					     new Long(3),   new Long(4) });
-	    // Note - Lava reader builds Integers but Java builds
+	    // Note - Llava reader builds Integers but Java builds
 	    // both Longs and Integers.
 	    Test.check("dyn5", new Long(10), v);
 

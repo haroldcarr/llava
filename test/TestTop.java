@@ -1,19 +1,31 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /**
  * Created       : 2000 Jan 11 (Tue) 21:23:51 by Harold Carr.
- * Last Modified : 2001 Mar 26 (Mon) 16:43:26 by Harold Carr.
+ * Last Modified : 2004 Sep 06 (Mon) 00:25:55 by Harold Carr.
  */
 
-package testLava;
+package test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-import lavaProfile.Lava;
-import lava.Repl;
-import lava.lang.exceptions.LavaException;
-import lava.lang.types.Symbol;
-import lavaProfile.runtime.FR;
-import lavaProfile.runtime.env.Namespace;
+import org.llava.impl.Llava;
+import org.llava.Repl;
+import org.llava.lang.exceptions.LlavaException;
+import org.llava.lang.types.Symbol;
+import org.llava.impl.runtime.FR;
+import org.llava.impl.runtime.env.Namespace;
 
 public class TestTop
 {
@@ -21,7 +33,7 @@ public class TestTop
 
     public static String userHome = System.getProperty("user.home");
     public static String loadDir = 
-	userHome + "/.sync/.lsync/lava/testLava";
+	userHome + "/.sync/.llava.org/.system/test";
 
     public static String libDir  = loadDir + "/lib";
 
@@ -36,39 +48,39 @@ public class TestTop
 
 	    eval(
 "(begin" +
-"(package x bottom)" +
+"(package x.bottom)" +
 "(define bottom " +
 "  (lambda (x) " +
 "    (let ((x (+ x 1)))" +
 "      (list 'bottom x))))" +
 
-"(package x top)" +
+"(package x.top)" +
 "(import x.bottom)" +
 "(define top " +
 "  (lambda (x) " +
 "    (let ((x (+ x 1)))" +
 "      (list 'top (bottom x)))))" +
 
-"(package lava Repl)" +
+"(package org.llava.lib.Repl)" +
 "(import x.top)" +
 "(top 1)" +
 ")");
 
 	    /* REVISIT _i broke
-	    eval("(_i 'floatValue (new 'java.lang.Integer 123))");
+	    eval("(-i 'floatValue (new 'java.lang.Integer 123))");
 	    */
 	    eval("(floatValue (new 'java.lang.Integer 123))");
-	    eval("(_si 'getProperty 'java.lang.System (toString 'java.version))");
-	    eval("(_sf 'TYPE 'java.lang.Double)");
+	    eval("(-si 'getProperty 'java.lang.System (toString 'java.version))");
+	    eval("(-sf 'TYPE 'java.lang.Double)");
 
 
 	    eval("(> (new 'java.lang.Long \"949639300427\") (new 'java.lang.Long \"949639300426\"))");
 
 
-	    eval("(run (new-thread (lambda () (_println 'XXXX))))");
+	    eval("(run (new-thread (lambda () (-println 'XXXX))))");
 
 	    // A way to evaluate several forms in sequence
-	    // in the same Lava instance.
+	    // in the same Llava instance.
 
 	    //evalShared("(define x (quote x))");
 	    //evalShared("x");
@@ -78,12 +90,12 @@ public class TestTop
 	    repl("(/ 4 1)");
 	    //repl("(/ 4 0)");
 
-	    // Check that symbols are EQ between Lava instances.
+	    // Check that symbols are EQ between Llava instances.
 
 	    Symbol s1 = 
-		(Symbol) new Lava().getRepl().readCompileEval("(quote a)");
+		(Symbol) new Llava().getRepl().readCompileEval("(quote a)");
 	    Symbol s2 = 
-		(Symbol) new Lava().getRepl().readCompileEval("(quote a)");
+		(Symbol) new Llava().getRepl().readCompileEval("(quote a)");
 	    Test.check("symbol eq?", 
 		       new Boolean(true),
 		       new Boolean(s1 == s2));
@@ -100,41 +112,19 @@ public class TestTop
 	    // Run the library tests.
 
 	    libTest(libDir + "/cl/Control.lva");
-	    libTest(libDir + "/cl/control/dotimes.lva");
-	    libTest(libDir + "/cl/control/setq.lva");
-
 	    libTest(libDir + "/cl/Macros.lva");
-	    libTest(libDir + "/cl/macros/defmacro.lva");
-
 	    libTest(libDir + "/cl/Symbols.lva");
-	    libTest(libDir + "/cl/symbols/gensym.lva");
 
-	    libTest(libDir + "/lava/Control.lva");
-	    libTest(libDir + "/lava/control/aif.lva");
-	    libTest(libDir + "/lava/control/case-eval-r.lva");
-	    libTest(libDir + "/lava/control/case-type.lva");
-	    libTest(libDir + "/lava/control/for.lva");
-	    libTest(libDir + "/lava/control/map3.lva");
-	    libTest(libDir + "/lava/control/tlet.lva");
-	    libTest(libDir + "/lava/control/while.lva");
-
-	    libTest(libDir + "/lava/Lists.lva");
-	    libTest(libDir + "/lava/lists/add-between.lva");
-
-	    libTest(libDir + "/lava/Program.lva");
-	    libTest(libDir + "/lava/program/define-with-keywords.lva");
-	    libTest(libDir + "/lava/program/define-with-exc-hand.lva");
-
-	    libTest(libDir + "/lava/Strings.lva");
-	    libTest(libDir + "/lava/strings/list2string-with-space.lva");
-
-	    libTest(libDir + "/lava/Vectors.lva");
-	    libTest(libDir + "/lava/vectors/vector-map.lva");
+	    libTest(libDir + "/Control.lva");
+	    libTest(libDir + "/Lists.lva");
+	    libTest(libDir + "/Program.lva");
+	    libTest(libDir + "/Strings.lva");
+	    libTest(libDir + "/Vectors.lva");
 
 	} catch (Throwable t) {
 	    Test.bad("top", "this should not happen", t);
-	    if (t instanceof LavaException) {
-		((LavaException)t).getThrowable().printStackTrace(System.err);
+	    if (t instanceof LlavaException) {
+		((LlavaException)t).getThrowable().printStackTrace(System.err);
 	    } else {
 		t.printStackTrace(System.err);
 	    }
@@ -144,18 +134,18 @@ public class TestTop
 
     // This one evals in a shared instance.
 
-    private static Lava lava;
+    private static Llava llava;
     private static Repl repl;
     public static Object evalShared (String x)
     {
-	if (lava == null) {
-	    lava = new Lava();
-	    repl = lava.getRepl();
+	if (llava == null) {
+	    llava = new Llava();
+	    repl = llava.getRepl();
 	}
 	return repl.readCompileEval(x);
     }
 
-    // All of the following deliberately create a new Lava instance
+    // All of the following deliberately create a new Llava instance
     // to run the test in a fresh environment.
 
     public static void libTest (String filename)
@@ -167,14 +157,14 @@ public class TestTop
 
     public static Object load (String filename)
     {
-	Lava lava = new Lava();     // Not functional so you can step over.
-	return lava.getRepl().loadFile(filename);
+	Llava llava = new Llava();     // Not functional so you can step over.
+	return llava.getRepl().loadFile(filename);
     }
 
     public static Object eval (String x)
     {
-	Lava lava = new Lava();     // Not functional so you can step over.
-	Repl repl = lava.getRepl(); // Ditto.
+	Llava llava = new Llava();     // Not functional so you can step over.
+	Repl repl = llava.getRepl(); // Ditto.
 	return repl.readCompileEval(x);
     }
 
@@ -182,8 +172,8 @@ public class TestTop
     {
 	ByteArrayInputStream  in  = new ByteArrayInputStream(x.getBytes());
 	ByteArrayOutputStream out = new ByteArrayOutputStream();
-	Lava lava = new Lava(in, out, out);
-	lava.getRepl().loop();
+	Llava llava = new Llava(in, out, out);
+	llava.getRepl().loop();
 	String output = out.toString();
 	System.out.println(output);
     }

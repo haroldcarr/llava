@@ -1,24 +1,100 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
 ;;;;
-;;;; Created       : 1997 Nov 17 (Mon) 20:38:08 by Harold Carr.
-;;;; Last Modified : 2000 Oct 29 (Sun) 21:46:16 by .
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
 ;;;;
+;;;; Created       : 2000 Feb 10 (Thu) 21:41:00 by Harold Carr.
+;;;; Last Modified : 2004 Sep 12 (Sun) 23:48:38 by Harold Carr.
+;;;;
+
+(package org.llava.lib.Vectors)
+
+(import org.llava.lib.java.Lang)
+
+(-package- (description "Procedures for manipulating vectors."))
+
+;;;
+;;; list->class-vector
+;;;
+
+(-doc-
+ (name "list&gt;class-vector")
+ (param list-of-classnames)
+ (description 
+  "Given a list of symbols or strings naming classes.
+   Returns a vector of corresponding classes."))
+
+(define list->class-vector
+  (lambda (class-names)
+    (list->typed-vector 
+     (map (lambda (class-name)
+	    (-si 'forName 'java.lang.Class (toString class-name)))
+	  class-names))))
+
+;;;
+;;; list->typed-vector
+;;;
+
+(-doc-
+ (name "list&gt;typed-vector")
+ (param list)
+ (description 
+  "Creates a vector of the type of the first element.
+   Puts the elements of the list into the vector."))
+
+(define list->typed-vector
+  (lambda (lst)
+    (let* ((len (length lst))
+	   (array (new-array (getClass (car lst)) len)))
+      (do ((i 0 (+ i 1))
+	   (l lst (cdr l)))
+	  ((>= i len) array)
+	(-si 'set 'java.lang.reflect.Array array i (car l))))))
+
+;;;
+;;; vector-map
+;;;
+
+(-doc-
+ (name vector-map)
+ (param proc)
+ (param vector))
 
 (define vector-map
   (lambda (proc java-array)
     (_%map-java-array #t proc java-array)))
 
+;;;
+;;; vector-for-each
+;;;
+
+(-doc-
+ (name vector-for-each)
+ (param proc)
+ (param vector))
+
 (define vector-for-each
   (lambda (proc java-array)
     (_%map-java-array #f proc java-array)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Implementation.
+;;;
+
 (define _%map-java-array 
   (lambda (cons? proc java-array)
     (let ((result '()))
-      (do ((len (_si 'getLength 'java.lang.reflect.Array java-array))
+      (do ((len (-si 'getLength 'java.lang.reflect.Array java-array))
 	   (i 0 (+ i 1))
 	   (ptr '()
 		(let* 
-		  ((el (proc (_si 'get 'java.lang.reflect.Array java-array i)))
+		  ((el (proc (-si 'get 'java.lang.reflect.Array java-array i)))
 		   (el-cons (cons el '()))) ;; ***** not if cons? #f
 		  (cond (cons?
 			 (if (not (null? ptr))
@@ -26,7 +102,5 @@
 			     (set! result el-cons)) ;; First element.
 			 el-cons)))))
 	  ((>= i len) result)))))
-
-(provide 'lava/vectors/vector-map)
 
 ;;; End of file.

@@ -1,21 +1,33 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /**
  * Created       : 2000 Jan 17 (Mon) 19:58:59 by Harold Carr.
- * Last Modified : 2001 Mar 26 (Mon) 15:18:07 by Harold Carr.
+ * Last Modified : 2004 Sep 03 (Fri) 15:33:07 by Harold Carr.
  */
 
-package lavaProfile.runtime;
+package org.llava.impl.runtime;
 
-import lavaProfile.F;
-import lava.lang.exceptions.BacktraceHandler;
-import lava.lang.exceptions.LavaException;
-import lava.lang.types.Pair;
-import lava.lang.types.Procedure;
-import lava.runtime.EnvironmentTopLevel;
-import lava.runtime.Evaluator;
-import lavaProfile.runtime.EngineImpl;
-import lavaProfile.runtime.FR;
-import lavaProfile.runtime.code.Code;
-import lavaProfile.runtime.env.ActivationFrame;
+import org.llava.impl.F;
+import org.llava.lang.exceptions.BacktraceHandler;
+import org.llava.lang.exceptions.LlavaException;
+import org.llava.lang.types.Pair;
+import org.llava.lang.types.Procedure;
+import org.llava.runtime.EnvironmentTopLevel;
+import org.llava.runtime.Evaluator;
+import org.llava.impl.runtime.EngineImpl;
+import org.llava.impl.runtime.FR;
+import org.llava.impl.runtime.code.Code;
+import org.llava.impl.runtime.env.ActivationFrame;
 
 public class EngineStepImpl
     extends
@@ -45,11 +57,11 @@ public class EngineStepImpl
 		result = this.code.run(this.frame, this);
 	    }
 	    return result;
-	} catch (LavaException e) {
+	} catch (LlavaException e) {
 	    e.addToBacktrace(F.cons(code, frame), backtraceHandler);
 	    throw e;
 	} catch (Throwable e) {
-	    LavaException le = F.newLavaException(e);
+	    LlavaException le = F.newLlavaException(e);
 	    le.addToBacktrace(F.cons(code, frame), backtraceHandler);
 	    throw le;
 	}

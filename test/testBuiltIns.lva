@@ -1,16 +1,26 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+
 ;;;
 ;;; Created       : 1999 Dec 25 (Sat) 22:10:35 by Harold Carr.
-;;; Last Modified : 2001 Mar 26 (Mon) 15:21:03 by Harold Carr.
+;;; Last Modified : 2004 Sep 06 (Mon) 00:28:44 by Harold Carr.
 ;;;
 
 (begin
 
-(require 'test/test)
+(import org.llava.lib.test.Test)
 
 ;(toggle-print-results)
 ;(toggle-print-progress)
 
-(begin-test)
+(begin-test 'testBuiltIns)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test if
@@ -19,8 +29,8 @@
 ;; REVISIT - how to test
 ;(check 'testIf2 't (if 1 't 'f))
 
-(check 'testIf3 't (_if 1 't 'f))
-(check 'testIf4 't (_if null 't 'f))
+(check 'testIf3 't (-if 1 't 'f))
+(check 'testIf4 't (-if null 't 'f))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test print of lambdas with names
@@ -42,48 +52,46 @@
 
 ; REVISIT 1.3.0
 
-(check 'staticInvocation
-       (toString '1.3.0)
-       (_si 'getProperty 'java.lang.System (toString 'java.version)))
+(-println (-si 'getProperty 'java.lang.System (toString 'java.version)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test field access
 
-(define test (new 'lavaProfile.runtime.procedure.primitive.java.PrimNew))
+(define test (new 'org.llava.impl.runtime.procedure.primitive.java.PrimNew))
 ;; REVISIT - no more singleton field
-;(check 'fieldGet1 null (_f 'singleton test))
-;(check 'fieldSet1 test (_f 'singleton test test))
-;(check 'fieldGet2 test (_f 'singleton test))
+;(check 'fieldGet1 null (-f 'singleton test))
+;(check 'fieldSet1 test (-f 'singleton test test))
+;(check 'fieldGet2 test (-f 'singleton test))
 
-(_sf 'TYPE 'java.lang.Double)
-;(_sf 'TYPE 'java.lang.Double 'typeMismatch)
-(_sf 'out 'java.lang.System)
+(-sf 'TYPE 'java.lang.Double)
+;(-sf 'TYPE 'java.lang.Double 'typeMismatch)
+(-sf 'out 'java.lang.System)
 
 (check 'staticFieldGet1
        (toString 'undefined)
-       (_sf 'undefined 'testLava.TestEnv))
+       (-sf 'undefined 'test.TestEnv))
 (check 'staticFieldSet1
        (toString 'foo)
-       (_sf 'undefined 'testLava.TestEnv (toString 'foo)))
+       (-sf 'undefined 'test.TestEnv (toString 'foo)))
 (check 'staticFieldGet1
        (toString 'foo)
-       (_sf 'undefined 'testLava.TestEnv))
-(_sf 'undefined 'testLava.TestEnv (toString 'undefined))
+       (-sf 'undefined 'test.TestEnv))
+(-sf 'undefined 'test.TestEnv (toString 'undefined))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test WrapJavaPrimitive
 
 (define _%instanceof
   (lambda (obj type)
-    (isInstance (_si 'forName 'java.lang.Class (toString type)) obj)))
+    (isInstance (-si 'forName 'java.lang.Class (toString type)) obj)))
 
 (check 'wrap1
        true
-       (_%instanceof 'a 'lava.lang.types.Symbol))
+       (_%instanceof 'a 'org.llava.lang.types.Symbol))
 
 (check 'wrap2
        false
-       (_%instanceof 1 'lava.lang.types.Symbol))
+       (_%instanceof 1 'org.llava.lang.types.Symbol))
 
 ;; REVISIT - add more
 
@@ -257,7 +265,7 @@
 ;;; Test derived
 
 (check 'derived1 
-       '(_if true (begin true) (cond))
+       '(-if true (begin true) (cond))
        (apply cond '(cond (true true))))
 
 (define condTest
@@ -337,8 +345,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test misc
 
-(check "_println" true (null? (_println null)))
-(check "_comment" null (_comment (throw (new 'java.lang.Exception))))
+(check "-println" true (null? (-println null)))
+(check "-comment-" null (-comment- (throw (new 'java.lang.Exception))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test eval
@@ -368,15 +376,15 @@
 (check "quasi6" 'a `a)
 ;; 2.1
 (check "quasi7"
-       '(_list 1 (list 1))
+       '(-list 1 (list 1))
        (apply quasiquote '(quasiquote (1 (unquote (list 1))))))
 (check "quasi8"
-       '(_list 1 (list 1))
+       '(-list 1 (list 1))
        (apply quasiquote '`(1 ,(list 1))))
 (check "quasi9" '(1 (1)) `(1 ,(list 1)))
 ;; 3
 (check "quasi10"
-       '(_list (quote a) (+ 2 3) (quasiquote (c (unquote (+ 4 5)))))
+       '(-list (quote a) (+ 2 3) (quasiquote (c (unquote (+ 4 5)))))
        (apply quasiquote '`(a ,(+ 2 3) ,`(c ,(+ 4 5)))))
 (check "quasi11"
        '(a 5 (c 9))
@@ -515,17 +523,17 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; test throw
 
-(_comment
+(-comment-
 ;; revisit
 (check "throw1"
-       (_si 'newLavaException 
-	    'lavaProfile.F
+       (-si 'newLlavaException 
+	    'org.llava.impl.F
 	    (new 'java.lang.Exception "check-throw1"))
        (throw (new 'java.lang.Exception "check-throw1")))
 
 (check "throw2"
-       (_si 'newLavaException 
-	    'lavaProfile.F
+       (-si 'newLlavaException 
+	    'org.llava.impl.F
 	    (new 'java.lang.Exception "check-throw2"))
        (throw (new 'java.lang.IllegalArgumentException "check-throw2")))
 )
@@ -537,7 +545,7 @@
   (_%try 
    (lambda () (tryProcedure))
    (lambda (t)
-     (let ((g2 (if (instanceof t 'lava.lang.exceptions.LavaException)
+     (let ((g2 (if (instanceof t 'org.llava.lang.exceptions.LlavaException)
 		   (getThrowable t)
 		   t)))
        (cond ((instanceof g2 'java.lang.NumberFormatException)
@@ -559,12 +567,12 @@
        'NumberFormatException
        (test_%try (lambda () 
 		    (dprintln 'try)
-		    (_si 'parseInt 'java.lang.Integer ".."))))
+		    (-si 'parseInt 'java.lang.Integer ".."))))
 (check "_%try4"
        'AbstractMethodError
        (test_%try (lambda () 
 		    (dprintln 'try)
-		    (throw (_si 'newLavaException 'lavaProfile.F
+		    (throw (-si 'newLlavaException 'org.llava.impl.F
 				(new 'java.lang.AbstractMethodError "ab"))))))
 
 (define (testTry tryProcedure)
@@ -592,24 +600,26 @@
        'NumberFormatException
        (testTry (lambda () 
 		  (dprintln 'try)
-		  (_si 'parseInt 'java.lang.Integer ".."))))
+		  (-si 'parseInt 'java.lang.Integer ".."))))
 (check "try4"
        'AbstractMethodError
        (testTry (lambda () 
 		  (dprintln 'try)
-		  (throw (_si 'newLavaException 'lavaProfile.F
+		  (throw (-si 'newLlavaException 'org.llava.impl.F
 			      (new 'java.lang.AbstractMethodError "ab"))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test require/provide
 
-(require 'lava/system/win32p)
+(-comment-
+
+(require 'org/llava/lib/system/win32p)
 
 (define userHome 
-  (_si 'getProperty 'java.lang.System "user.home"))
+  (-si 'getProperty 'java.lang.System "user.home"))
 
 (check "provided1"
-       '("lava/system/win32p" "test/test")
+       '("org/llava/lib/system/win32p" "org/llava/lib/test/test")
        (provided))
 (check "reset-provided1"
        null
@@ -619,37 +629,38 @@
        (provided))
 (check "load-library1"
        (string-append userHome
-		      "/.sync/.lsync/lava/lib/test/do-not-provide.lva")
-       (toLowerCase (load-library 'test/do-not-provide)))
+		      "/.sync/.llava.org/.system/org/llava/lib/test/do-not-provide.lva")
+       (toLowerCase (load-library 'org/llava/lib/test/do-not-provide)))
 (check "provided3"
        null
        (provided))
 (check "provided?1"
        false
-       (provided? 'cl/control/setq))
+       (provided? 'org/llava/lib/cl/control/setq))
 (check "require1"
        (string-append userHome
-		      "/.sync/.lsync/lava/lib/cl/control/setq.lva")
-       (toLowerCase (require 'cl/control/setq)))
+		      "/.sync/.llava.org/.system/org/llava/lib/cl/control/setq.lva")
+       (toLowerCase (require 'org/llava/lib/cl/control/setq)))
 (check "provided4"
-       '("cl/control/setq" "cl/symbols/gensym")
+       '("org/llava/lib/cl/control/setq" "org/llava/lib/cl/symbols/gensym")
        (provided))
 (check "provided?2"
        true
-       (provided? 'cl/control/setq))
+       (provided? 'org/llava/lib/cl/control/setq))
 (check "require2"
        null
-       (require 'cl/control/setq))
+       (require 'org/llava/lib/cl/control/setq))
 
 ;; REVISIT - load-path, push-on-load-path, append-to-load-path
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test import
 
-(_comment
+(-comment-
 REVISIT - reenable this test
 
-(require 'java/lang/import)
+(require 'org/llava/lib/java/lang/import)
 
 (import 'java.lang.Double 'constructor)
 ;; REVISIT - no floats
@@ -676,12 +687,14 @@ REVISIT - reenable this test
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test threads and synchronization
 
-(test-require 'lava/threads/start-new-thread)
+(-println "threads->:")
+
+(import org.llava.lib.Threads)
 
 (define current-time 
   (lambda () 
     ;; REVISIT - intValue
-    (intValue (_si 'currentTimeMillis 'java.lang.System))))
+    (intValue (-si 'currentTimeMillis 'java.lang.System))))
 
 ; p 243
 
@@ -716,7 +729,7 @@ REVISIT - reenable this test
 	   (join child-thread 
 		 (new 'java.lang.Long (toString how-long-to-wait)))
 	   (set! parent-end-time (current-time))
-	   (if *visual?* (_println 'parent-done-waiting)))))
+	   (if *visual?* (-println 'parent-done-waiting)))))
   child-thread)
 
 (define (child num-iterations)
@@ -724,20 +737,20 @@ REVISIT - reenable this test
   (do ((i 0 (+ i 1)))
       ((> i num-iterations))
     (set! child-progress (cons i child-progress))
-    (if *visual?* (_println child-progress))
-    (sleep (_si 'currentThread 'java.lang.Thread) CHILD-LOOP-SLEEP))
+    (if *visual?* (-println child-progress))
+    (sleep (-si 'currentThread 'java.lang.Thread) CHILD-LOOP-SLEEP))
   (set! child-end-time (current-time))
-  (if *visual?* (_println 'child-done)))
+  (if *visual?* (-println 'child-done)))
 
 (define (print-parent-and-child-end-times)
   (if *visual?*
-      (_println (list 
+      (-println (list 
 	       'parent-end-time parent-end-time 
 	       'child-end-time child-end-time))))
 
 (define (check-child-progress msg expected)
   (set! child-progress1 (length child-progress))
-  (sleep (_si 'currentThread 'java.lang.Thread) WAIT)
+  (sleep (-si 'currentThread 'java.lang.Thread) WAIT)
   (set! child-progress2 (length child-progress))
   (check msg  expected (equal? child-progress1 child-progress2)))
 
@@ -837,8 +850,12 @@ REVISIT - reenable this test
 ;;; Wait for child to terminate so we are in a clean state.
 (join child-thread (new 'java.lang.Long (toString INFINITY)))
 
+(-println "threads<-:")
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test synchronized
+
+(-println "synchronized->:")
 
 (define lock-and-run-child
   (lambda (lock)
@@ -857,7 +874,7 @@ REVISIT - reenable this test
 
 (begin
   (start-new-thread (lambda () (lock-and-run-child lock1)))
-  (sleep (_si 'currentThread 'java.lang.Thread) WAIT)
+  (sleep (-si 'currentThread 'java.lang.Thread) WAIT)
   (try-lock lock1))
 
 (print-parent-and-child-end-times)
@@ -870,7 +887,7 @@ REVISIT - reenable this test
 
 (begin
   (set! thread (start-new-thread (lambda () (lock-and-run-child lock1))))
-  (sleep (_si 'currentThread 'java.lang.Thread) WAIT)
+  (sleep (-si 'currentThread 'java.lang.Thread) WAIT)
   (try-lock lock2))
 
 (print-parent-and-child-end-times)
@@ -885,6 +902,7 @@ REVISIT - reenable this test
 
 ;;; Wait for first thread before continuing test.
 (join thread (new 'java.lang.Long (toString INFINITY)))
+(-println "synchronized<-:")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; End test

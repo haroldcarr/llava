@@ -1,13 +1,22 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
 ;;;;
-;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2001 Mar 07 (Wed) 14:54:35 by Harold Carr.
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+
+;;;;
+;;;; Created       : 1998 Dec 05 (Sat) 21:41:11 by Harold Carr.
+;;;; Last Modified : 2004 Sep 06 (Mon) 00:26:35 by Harold Carr.
 ;;;;
 
-(require 'test/test)
+(import org.llava.lib.cl.Control)
+(import org.llava.lib.test.Test)
 
 (begin-test 'cl/control/dotimes)
-
-(test-require 'cl/control/dotimes)
 
 (define test-dotimes
   (lambda (x)
@@ -25,9 +34,31 @@
 
 (end-test 'cl/control/dotimes)
 
-(_comment
-(require 'cl/control/dotimes)
-(macroexpand '(dotimes (i (+ 2 3)) (_println i)))
+(-comment-
+(import org.llava.lib.cl.Control)
+(macroexpand '(dotimes (i (+ 2 3)) (-println i)))
 )
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(begin-test 'test/test)
+
+(check "setq1"
+       -1
+       (getEnvTopLevelIndex 'NoWayJose))
+(check "setq2"
+       34
+       (setq NoWayJose 34))
+;; REVISIT - test no valid when using namespaces.
+;;(check "setq3"
+;;       true
+;;       (not (= (getEnvTopLevelIndex 'NoWayJose) -1)))
+(check "setq4"
+       34
+       NoWayJose)
+
+(end-test 'cl/control/setq)
+
 ;;; End of file.
+
+

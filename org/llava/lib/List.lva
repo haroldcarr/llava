@@ -1,9 +1,69 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2001 Mar 26 (Mon) 14:51:12 by Harold Carr.
+;;;; Last Modified : 2004 Sep 14 (Tue) 09:44:22 by Harold Carr.
 ;;;;
 
-(let ((boxer (_si 'newWrapJavaPrimitive 'lavaProfile.runtime.FR)))
+(package org.llava.lib.Lists)
+
+(import org.llava.lib.Control)
+(import org.llava.lib.scm.Vectors)
+(import org.llava.lib.scm.Strings)
+
+(-package- (description "Useful list utilities."))
+
+;;;
+;;; add-between
+;;;
+
+(-doc-
+ (name add-between)
+ (param obj)
+ (param list)
+ (description "Returns a list with <parameter>obj</parameter> added between
+  each element of the original <parameter>list</parameter>."))
+
+(define add-between
+  (lambda (between lst)
+    (apply append
+	   (map3 (lambda (c p n)
+		   (if (not (null? n)) 
+		       (list c between)
+		       (list c)))
+		 lst))))
+
+(-comment-
+(import org.llava.lib.Lists)
+(add-between 'x '(a 34 34.5 "s" #\c))
+)
+
+;;;
+;;; build-list
+;;;
+
+(-doc-
+ (name build-list)
+ (param terminate-thunk)
+ (param step-thunk)
+ (description 
+  "Example:"
+  (example 
+"(let* ((lst '(1 2 3))
+       (terminate? (lambda () (null? lst)))
+       (step (lambda () (let ((result (* (car lst) 10)))
+			  (set! lst (cdr lst))
+			  result))))
+  (build-list terminate? step))")))
+
+(let ((boxer (-si 'newWrapJavaPrimitive 'org.llava.impl.runtime.FR)))
 
   (define build-list 
     (lambda (terminate? step)
@@ -17,6 +77,62 @@
 
 )
 
-(provide 'lava/lists/build-list)
+(-comment-
+(import org.llava.lib.Lists)
+(let* ((lst '(1 2 3))
+       (terminate? (lambda () (null? lst)))
+       (step (lambda () (let ((result (* (car lst) 10)))
+			  (set! lst (cdr lst))
+			  result))))
+  (build-list terminate? step))
+)
+
+;;;
+;;; member-cadr
+;;;
+
+(-doc-
+ (name member-cadr)
+ (param obj)
+ (param list)
+ (description "If <parameter>obj</parameter> is a <function>member</function>
+  of <parameter>list</parameter> it returns the following element.
+  Otherwise <code>false</code>."))
+
+(define member-cadr
+  (lambda (this that)
+    (let ((el (member this that)))
+      (-if el (cadr el) #f))))
+
+;;;
+;;; to-list
+;;;
+
+(-doc-
+ (name to-list)
+ (param obj)
+ (description "Given is a list, string or vector it returns a list
+  of <parameter>obj</parameter>'s elements."))
+
+(let ((java.lang.String (getClass "dummy")))
+
+  (define to-list
+    (lambda (x)
+      (call/cc
+       (lambda (return)
+	 (if (or (null? x)
+		 (pair? x))
+	   (return x))
+	 (let ((class (getClass x)))
+	   (cond ((isArray class)              (return (vector->list x)))
+		 ((eq? class java.lang.String) (return (string->list x)))
+		 (else (error (string-append "toList: unknown type: " 
+					     (toString class)
+					     " for object: "
+					     (toString x))))))))))
+
+)
 
 ;;; End of file.
+
+

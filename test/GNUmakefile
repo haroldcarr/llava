@@ -1,12 +1,22 @@
+# Copyright (c) 1997 - 2004 Harold Carr
+#
+# This work is licensed under the Creative Commons Attribution License.
+# To view a copy of this license, visit 
+#   http://creativecommons.org/licenses/by/2.0/
+# or send a letter to
+#   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+#-----------------------------------------------------------------------------
+
+
 #
 # Created       : 1999 Dec 18 (Sat) 16:15:20 by Harold Carr.
-# Last Modified : 2001 Jul 20 (Fri) 01:26:43 by Harold Carr.
+# Last Modified : 2004 Sep 03 (Fri) 15:39:58 by Harold Carr.
 #
 
 TOPDIR		=	..
 
-PACKAGE		=	testLava
-PKGDIR		=	testLava
+PACKAGE		=	test
+PKGDIR		=	test
 
 # The CLIENT name is misleading.
 # I am reusing some of my CORBA client/server rules.

@@ -1,9 +1,21 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 //
 // Created       : 2000 Oct 23 (Mon) 17:35:17 by Harold Carr.
-// Last Modified : 2001 Mar 26 (Mon) 15:06:59 by Harold Carr.
+// Last Modified : 2004 Sep 03 (Fri) 15:33:45 by Harold Carr.
 //
 
-package lavaProfile.runtime.env;
+package org.llava.impl.runtime.env;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,8 +23,8 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import lava.lang.types.Pair;
-import lava.lang.types.Symbol;
+import org.llava.lang.types.Pair;
+import org.llava.lang.types.Symbol;
 
 public interface Namespace
 {
@@ -21,13 +33,13 @@ public interface Namespace
      * If that package/class does not exist then it is created.
      */
 
-    public Namespace _package (Symbol packagePathAndName, Symbol className);
+    public Namespace _package (Symbol namespacePathAndClassName);
 
 
     /**
      * "import":
      * - creates a namespace if it doesn't exist.
-     * - if namespace has associated Lava file it loads it into that namespace
+     * - if namespace has associated Llava file it loads it into that namespace
      *   if not already loaded or if it has been touched since last loaded.
      * - if namespace has associated Java class it loads it
      *   if not already loaded and creates procedures in that namespace

@@ -1,18 +1,30 @@
+# Copyright (c) 1997 - 2004 Harold Carr
+#
+# This work is licensed under the Creative Commons Attribution License.
+# To view a copy of this license, visit 
+#   http://creativecommons.org/licenses/by/2.0/
+# or send a letter to
+#   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+#-----------------------------------------------------------------------------
+
+
 #
 # Created       : 1999 Dec 15 (Wed) 16:30:21 by Harold Carr.
-# Last Modified : 2001 Mar 26 (Mon) 15:12:22 by Harold Carr.
+# Last Modified : 2004 Sep 03 (Fri) 15:39:13 by Harold Carr.
 #
 
-TOPDIR		=	..
+TOPDIR		=	../../..
 
-PACKAGE		=	lavaProfile
-PKGDIR		=	lavaProfile
+PACKAGE		=	org.llava.impl
+PKGDIR		=	org/llava/impl
 
 FILES_java	= \
 	$(PKGDIR)/F.java \
-	$(PKGDIR)/Lava.java \
-	$(PKGDIR)/LavaVersionImpl.java \
-	$(PKGDIR)/ReplImpl.java
+	$(PKGDIR)/Llava.java \
+	$(PKGDIR)/LlavaBridge.java \
+	$(PKGDIR)/LlavaVersionImpl.java \
+	$(PKGDIR)/ReplImpl.java \
+	$(PKGDIR)/ReplBridgeImpl.java
 
 all :: classes 
 

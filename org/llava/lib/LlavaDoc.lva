@@ -202,6 +202,8 @@ chapter llava features
 
 (define llava-doc
   (lambda (source-root destination-root)
+    (set! *current-builtin-package* 'nothing)
+    (set! *current-doc-package*     'nothing)
     (for-each-dir
      (lambda (x) 
        (cond ((and (isFile x)
@@ -338,9 +340,9 @@ chapter llava features
 
 (define format-section
   (lambda (name description)
-    (-dprint (list 'format-section location description))
+    (-dprint (list 'format-section name description))
     (s+
-     (format-package-begin name)  ;; REVISIT
+     (format-section-begin name)
      (format-description description))))
 
 (define format-entry
@@ -356,25 +358,49 @@ chapter llava features
      (format-refentry1-end)
      (format-refentry-end))))
 
+;;;
+;;; The "package" attribute is non-standard.
+;;; It is used by make-package-index to distinquish package sections
+;;; from other uses of section.
+;;;
+
 (define format-package-begin
   (lambda (location)
     (set! location (strip-import location))
     (s+
 "<!-- ===================================================================== -->
 <!-- ===================================================================== -->
-<section id=\"" location "\">
+<section id=\"" location "\"
+         package=\"" location "\">
   <title>" location "</title>
+")))
+
+(define format-section-begin
+  (lambda (name)
+    (set! name (strip-import name))
+    (s+
+"<!-- ===================================================================== -->
+<!-- ===================================================================== -->
+<section id=\"" name "\">
+  <title>" name "</title>
 ")))
 
 (define format-package-end
   (lambda ()
     "</section>"))
 
+;;;
+;;; The "package" and "procedure" attributes are non-standard.
+;;; They are used by make-procedure-index.
+;;;
+
 (define format-refentry-begin
   (lambda (location name)
     (s+
 "<!-- ================================================== -->
-<refentry id=\"" (s+ (strip-import location) "." (toString name)) "\">
+<refentry id=\"" (s+ (strip-import location) "." (toString name)) "\"
+          package=\"" (strip-import location) "\"
+          procedure=\"" (toString name) "\">
 ")))
 
 (define (format-index category name)
@@ -472,10 +498,17 @@ chapter llava features
 
 (define parse-location
   (lambda (doc) 
+    (-dprint (list 'parse-location 
+		   'doc doc 
+		   '*current-builtin-package* *current-builtin-package*
+		   '*current-doc-package*     *current-doc-package*))
     (let ((location (assq 'location doc)))
-      (-if location
-	   (second location)
-	   (list 'import *current-doc-package*)))))
+      (cond (location 
+	     (second location))
+	    ((not (eq? *current-doc-package* 'nothing))
+	     (list 'import *current-doc-package*))
+	    (else
+	     *current-builtin-package*)))))
 
 (define parse-params
   (lambda (doc) (collect 'param doc)))

@@ -1,6 +1,16 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+
 (define l
   '(
-    "lava/tt.lva" 
+    "llava/tt.lva" 
     "tt.lva"
     "PrimTT.lva"
     ))
@@ -9,22 +19,22 @@
   (map (lambda (x)
 	 (list
 	  (getResourceAsStream 
-	   (_si 'forName 'java.lang.Class "lavaProfile.Lava") x)
+	   (-si 'forName 'java.lang.Class "org.llava.impl.Llava") x)
 	  (getResourceAsStream 
-	   (_si 'forName 'java.lang.Class "lavaProfile.runtime.procedure.primitive.lava.PrimAppend") x)))
+	   (-si 'forName 'java.lang.Class "org.llava.impl.runtime.procedure.primitive.llava.PrimAppend") x)))
        l))
 
 (define (lc l)
   (map (lambda (x)
 	 (try 
-	  (_si 'forName 'java.lang.Class x)
+	  (-si 'forName 'java.lang.Class x)
 	  (catch (java.lang.Exception e) '())))
        l))
 
 (gr l)
 (lc l)
-(_si 'getProperties 'java.lang.System)
-(_si 'getProperty 'java.lang.System "java.class.path")
+(-si 'getProperties 'java.lang.System)
+(-si 'getProperty 'java.lang.System "java.class.path")
 
 
 ;(load "inProgress.lva")

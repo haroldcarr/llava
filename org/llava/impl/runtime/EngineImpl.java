@@ -1,21 +1,33 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /**
  * Created       : 1999 Dec 23 (Thu) 03:48:44 by Harold Carr.
- * Last Modified : 2001 Mar 26 (Mon) 15:18:05 by Harold Carr.
+ * Last Modified : 2004 Sep 03 (Fri) 15:33:05 by Harold Carr.
  */
 
-package lavaProfile.runtime;
+package org.llava.impl.runtime;
 
-import lavaProfile.F;
-import lava.lang.exceptions.BacktraceHandler;
-import lava.lang.exceptions.LavaException;
-import lava.lang.types.Pair;
-import lava.lang.types.Procedure;
-import lava.runtime.EnvironmentTopLevel;
-import lava.runtime.Evaluator;
-import lavaProfile.runtime.Engine;
-import lavaProfile.runtime.FR;
-import lavaProfile.runtime.code.Code;
-import lavaProfile.runtime.env.ActivationFrame;
+import org.llava.impl.F;
+import org.llava.lang.exceptions.BacktraceHandler;
+import org.llava.lang.exceptions.LlavaException;
+import org.llava.lang.types.Pair;
+import org.llava.lang.types.Procedure;
+import org.llava.runtime.EnvironmentTopLevel;
+import org.llava.runtime.Evaluator;
+import org.llava.impl.runtime.Engine;
+import org.llava.impl.runtime.FR;
+import org.llava.impl.runtime.code.Code;
+import org.llava.impl.runtime.env.ActivationFrame;
 
 public class EngineImpl
     implements
@@ -69,11 +81,11 @@ public class EngineImpl
 	    // REVISIT - do not wrap so it shows up in automatic
 	    // jvm stacktrace.  See GenericProcedureImpl.
 	    throw e;
-	} catch (LavaException e) {
+	} catch (LlavaException e) {
 	    e.addToBacktrace(F.cons(code, frame), backtraceHandler);
 	    throw e;
 	} catch (Throwable e) {
-	    LavaException le = F.newLavaException(e);
+	    LlavaException le = F.newLlavaException(e);
 	    le.addToBacktrace(F.cons(code, frame), backtraceHandler);
 	    throw le;
 	}

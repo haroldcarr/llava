@@ -3,16 +3,62 @@
 <!--
 //
 // Created       : 1999 Dec 29 (Wed) 14:53:37 by Harold Carr.
-// Last Modified : 2004 Aug 25 (Wed) 10:34:38 by Harold Carr.
+// Last Modified : 2004 Nov 26 (Fri) 09:02:44 by Harold Carr.
 //
 -->
 
 <!DOCTYPE book SYSTEM "/usr/local/hc/xml/docbook/docbook-xml-4.3/docbookx.dtd"
 [
-<!ENTITY ch01-QuickStart SYSTEM "ch01-QuickStart.xml">
-<!ENTITY lastModified    SYSTEM "LastModified.txt">
-<!ENTITY license         SYSTEM "License.xml">
-<!ENTITY version         SYSTEM "../VERSION">
+<!ENTITY lva-et           SYSTEM "lva-et.xml">
+<!ENTITY lva-te           SYSTEM "lva-te.xml">
+<!ENTITY ap-Motivation    SYSTEM "ap-Motivation.xml">
+<!ENTITY ch-Download      SYSTEM "ch-Download.xml">
+<!ENTITY ch-Libraries     SYSTEM "ch-Libraries.xml">
+<!ENTITY lastModified     SYSTEM "../.generated/LastModified.txt">
+<!ENTITY copyright        SYSTEM "../../COPYRIGHT.txt">
+<!ENTITY license          SYSTEM "../../LICENSE.xml">
+<!ENTITY version          SYSTEM "../../VERSION">
+
+<!ENTITY builtins         SYSTEM "../.generated/org/llava/impl/llava.xml">
+
+<!ENTITY  lib-control     SYSTEM "../.generated/org/llava/lib/Control.xml">
+<!ENTITY  lib-exceptions  SYSTEM "../.generated/org/llava/lib/Exceptions.xml">
+<!ENTITY  lib-files       SYSTEM "../.generated/org/llava/lib/Files.xml">
+<!ENTITY  lib-lists       SYSTEM "../.generated/org/llava/lib/Lists.xml">
+<!ENTITY  lib-llava-doc   SYSTEM "../.generated/org/llava/lib/LlavaDoc.xml">
+<!ENTITY  lib-macros      SYSTEM "../.generated/org/llava/lib/Macros.xml">
+<!ENTITY  lib-namespace-util SYSTEM "../.generated/org/llava/lib/NamespaceUtil.xml">
+<!ENTITY  lib-program     SYSTEM "../.generated/org/llava/lib/Program.xml">
+<!ENTITY  lib-reflect     SYSTEM "../.generated/org/llava/lib/Reflect.xml">
+<!ENTITY  lib-strings     SYSTEM "../.generated/org/llava/lib/Strings.xml">
+<!ENTITY  lib-system      SYSTEM "../.generated/org/llava/lib/System.xml">
+<!ENTITY  lib-threads     SYSTEM "../.generated/org/llava/lib/Threads.xml">
+<!ENTITY  lib-vectors     SYSTEM "../.generated/org/llava/lib/Vectors.xml">
+
+
+<!ENTITY lib-cl-control SYSTEM "../.generated/org/llava/lib/cl/Control.xml">
+<!ENTITY lib-cl-macros  SYSTEM "../.generated/org/llava/lib/cl/Macros.xml">
+<!ENTITY lib-cl-symbols SYSTEM "../.generated/org/llava/lib/cl/Symbols.xml">
+
+
+<!ENTITY lib-io-filewalker SYSTEM "../.generated/org/llava/lib/io/FileWalker.xml">
+
+
+<!ENTITY lib-java-lang SYSTEM "../.generated/org/llava/lib/java/Lang.xml">
+<!ENTITY lib-java-corba-cosnaming SYSTEM "../.generated/org/llava/lib/java/corba/CosNaming.xml">
+<!ENTITY lib-java-corba-orb SYSTEM "../.generated/org/llava/lib/java/corba/Orb.xml">
+
+
+<!ENTITY lib-scm-lists SYSTEM "../.generated/org/llava/lib/scm/Lists.xml">
+<!ENTITY lib-scm-predicates SYSTEM "../.generated/org/llava/lib/scm/Predicates.xml">
+<!ENTITY lib-scm-strings SYSTEM "../.generated/org/llava/lib/scm/Strings.xml">
+<!ENTITY lib-scm-vectors SYSTEM "../.generated/org/llava/lib/scm/Vectors.xml">
+
+<!ENTITY lib-test-test SYSTEM "../.generated/org/llava/lib/test/Test.xml">
+
+<!ENTITY lib-xml-l2x SYSTEM "../.generated/org/llava/lib/xml/L2X.xml">
+
+
 ]>
 
   <book id="llava">
@@ -31,50 +77,38 @@
       <para>llava</para>
       <para>Lisp + jAVA = lava (but lava.org already taken, thus:
       llava)</para>
+      <para>llava is a Scheme-like interface to Java.</para>
+      <para>llava is pronounced "lava" - like the molten stuff, or "yava"
+      - as in Spanish.</para>
     </legalnotice>
   </bookinfo>
 
-<!--
-  <bookinfo>
-    <copyright>
-      <year>2004</year>
-      <holder>Harold Carr</holder>
-    </copyright>
+  <!-- ================================================== -->
 
-    <legalnotice><para>This work is licensed under the Creative
-        Commons Attribution License. To view a copy of this license,
-        visit http://creativecommons.org/licenses/by/2.0/ or send a
-        letter to Creative Commons, 559 Nathan Abbott Way, Stanford,
-        California 94305, USA.</para></legalnotice>
-  </bookinfo>
--->
+  <part>
+    <title>Reference</title>
+    &ch-Download;
+    <chapter>
+      <title>The llava Language</title>
+      &builtins;
+    </chapter>
+    &ch-Libraries;
+  </part>
+  <part>
+    <title>Implementation</title>
+    <para>...</para>
+  </part>
+  <part>
+    <title>Appendices</title>
+    &ap-Motivation;
+  </part>
 
-  <!-- External entity refs -->
-  &ch01-QuickStart;
-
-<!--
-  &foreword;
-  &ch01;
-  &ch02;
-  &ch03;
-  &ch04;
-  &ch05;
-  &ch06;
-  &ch07;
-  &ch08;
-  &ch09;
-  &appa;
-  &appb;
-  &appc;
-  &appd;
-  &license;
-  &colo;
--->
+  <!-- ================================================== -->
 
   <appendix id="copyrightAndLicense">
     <title>Copyright and License</title>
 
-    <para>Copyright 2004 Harold Carr</para>
+    <para>&copyright;</para>
 
     <para>&license;</para>
   </appendix>

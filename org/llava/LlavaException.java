@@ -1,42 +1,54 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /**
  * Created       : 1999 Dec 26 (Sun) 18:03:05 by Harold Carr.
- * Last Modified : 2000 Feb 01 (Tue) 06:25:15 by Harold Carr.
+ * Last Modified : 2004 Sep 03 (Fri) 15:35:21 by Harold Carr.
  */
 
-package lava.lang.exceptions;
+package org.llava.lang.exceptions;
 
 import java.io.PrintWriter;
 
-public class LavaException
+public class LlavaException
     extends
 	RuntimeException
 {
     private Throwable throwable;
     private Object    backtrace;
 
-    public LavaException ()
+    public LlavaException ()
     {
     }
 
-    private LavaException (Throwable throwable)
+    private LlavaException (Throwable throwable)
     {
 	this.throwable = throwable;
 	//System.out.println("*****: " + throwable);
     }
 
-    protected LavaException (String msg)
+    protected LlavaException (String msg)
     {
 	this(new Exception(msg));
     }
 
-    public LavaException newLavaException (Throwable throwable)
+    public LlavaException newLlavaException (Throwable throwable)
     {
-	return new LavaException(throwable);
+	return new LlavaException(throwable);
     }
 
-    public LavaException newLavaException (String msg)
+    public LlavaException newLlavaException (String msg)
     {
-	return new LavaException(msg);
+	return new LlavaException(msg);
     }
 
     public Throwable getThrowable ()

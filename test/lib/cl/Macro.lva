@@ -1,13 +1,22 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2000 Oct 29 (Sun) 22:00:41 by .
+;;;; Last Modified : 2004 Sep 03 (Fri) 15:47:49 by Harold Carr.
 ;;;;
 
-(require 'test/test)
+(import org.llava.lib.cl.Macros)
+(import org.llava.lib.test.Test)
 
 (begin-test 'cl/macros/defmacro)
-
-(test-require 'cl/macros/defmacro)
 
 (defmacro ffff (x y . r) `(list ,x ,y ',@r))
 
@@ -17,7 +26,7 @@
 
 (end-test 'cl/macros/defmacro)
 
-(_comment
+(-comment-
 ;; See if macros only expanded once at compiletime.
 
 (define macrocalled 0)
@@ -43,5 +52,6 @@ macrocalled
 (foom 4)
 macrocalled
 )
+
 ;;; End of file.
 

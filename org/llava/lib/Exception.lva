@@ -1,9 +1,36 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2000 Oct 29 (Sun) 21:43:48 by .
+;;;; Last Modified : 2004 Sep 09 (Thu) 21:13:20 by Harold Carr.
 ;;;;
 
-(require 'lava/exceptions/error)
+(package org.llava.lib.Exceptions)
+
+(-package- (description "Procedures for handling or generating exceptions."))
+
+;;;
+;;; apply-fail-on-false
+;;;
+
+(-doc-
+ (name apply-fail-on-false)
+ (param procedure)
+ (param list)
+ (result obj "like (<function>apply</function> <parameter>procedure</parameter> <parameter>args</parameter>)")
+ (throws LlavaException "If result is false.")
+ (description 
+  "Identical to <function>apply</function> except it raises an
+   exception if the result is false."
+  (example "(apply (lambda (x) (pair? x)) '((1 . 2))) &lva-et; true")
+  (example "(apply (lambda (x) (pair? x)) '(1)) &lva-te;")))
 
 (define apply-fail-on-false 
   (lambda (procedure args)
@@ -11,12 +38,42 @@
       (cond (result)
 	    (else (error* (cons procedure args) " failed"))))))
 
-(provide 'lava/exceptions/apply-fail-on-false)
+;;;
+;;; error*
+;;;
 
-(_comment
-(require 'exceptions/apply-fail-on-false)
+(-doc-
+ (name error*)
+ (param obj)
+ (param ...)
+ (description 
+  "Equivalent to:"
+  (example "(error (apply string-append (map toString (list obj ...))))")))
+
+(define error*
+  (lambda args
+    (error (apply string-append (map toString args)))))
+
+;;;
+;;; ignore-errors
+;;;
+
+(-doc-
+ (name ignore-errors)
+ (param thunk)
+ (description "Calls <parameter>thunk</parameter> catching and
+  ignoring all <code>java.lang.Exception</code>s."))
+
+(define ignore-errors 
+  (lambda (thunk)
+    (try (thunk) (catch (java.lang.Exception e) '()))))
+
+(-comment-
+(import org.llava.lib.Exceptions)
 (apply-fail-on-false (lambda (x) (pair? x)) '(x))
 (apply-fail-on-false (lambda (x) (pair? x)) '((x)))
 )
+
+
 
 ;;; End of file.

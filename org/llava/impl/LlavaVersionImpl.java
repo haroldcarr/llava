@@ -1,41 +1,80 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /**
  * Created       : 2000 Jan 19 (Wed) 17:30:46 by Harold Carr.
- * Last Modified : 2001 Mar 26 (Mon) 15:15:16 by Harold Carr.
+ * Last Modified : 2004 Sep 06 (Mon) 10:58:39 by Harold Carr.
  */
 
-package lavaProfile;
+package org.llava.impl;
 
-import lava.LavaVersion;
+import org.llava.LlavaVersion;
 
-public class LavaVersionImpl
+public class LlavaVersionImpl
     implements
-	LavaVersion
+	LlavaVersion
 {
-    public LavaVersionImpl ()
+    public LlavaVersionImpl ()
     {
     }
 
-    public LavaVersion newLavaVersion ()
+    public LlavaVersion newLlavaVersion ()
     {
-	return new LavaVersionImpl();
+	return new LlavaVersionImpl();
     }
 
-    public String getName    ()  { return "Lava (alpha)"; }
+    public String getName    ()  { return "llava"; }
 
-    public int    getMajor   ()  { return 0; }
+    public String getYear    ()  { return "2004"; }
+
+    public String getMonth   ()  { return "09"; }
     
-    public int    getMinor   ()  { return 2; }
+    public String getDay     ()  { return "06"; }
 
-    public String getDate    ()  { return "March 26, 2001"; }
+    public String getOptional()  { return "alpha"; }
 
     public String toString ()
     {
 	return 
-	    getName() + 
-	    " version " + 
-	    getMajor() + "." + getMinor() +
-	    ", " +
-	    getDate();
+	    getName() + " version " + dateOnly() + sep + getOptional();
+    }
+
+    private String sep = "-";
+
+    private String dateOnly ()
+    {
+	return	getYear() + sep + getMonth() +  sep + getDay();
+    }
+
+    public static void main (String[] av)
+    {
+	String result = null;
+	LlavaVersionImpl llavaVersion = new LlavaVersionImpl();
+
+	switch (av.length) {
+	case 0 : 
+	    result = llavaVersion.toString();
+	    break;
+	case 1 :
+	    if (av[0].equals("dateOnly")) {
+		result = llavaVersion.dateOnly();
+		break;
+	    }
+	default :
+	    System.err.println(
+	       LlavaVersionImpl.class.getName() + ": " + "[ dateOnly ]");
+	    System.exit(-1);
+	}
+	System.out.println(result);
     }
 }
 

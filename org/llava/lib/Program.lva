@@ -1,7 +1,167 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
 ;;;;
-;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2001 Mar 26 (Mon) 15:20:39 by Harold Carr.
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
 ;;;;
+;;;; Created       : 1998 Dec 05 (Sat) 21:41:11 by Harold Carr.
+;;;; Last Modified : 2004 Sep 09 (Thu) 21:17:09 by Harold Carr.
+;;;;
+
+(package org.llava.lib.Program)
+
+(import org.llava.lib.Lists)
+
+(-package- (description "Syntax for defining procedures and variables."))
+
+;;;
+;;; define-with-setter
+;;;
+
+(-doc-
+ (name define-with-setter)
+ (param name-and-args)
+ (param expression)
+ (param ...)
+ (category syntax)
+ (description
+  "Define a named function and a procedure to set that name.
+   Useful from other namespaces when you cannot set dotted names."))
+
+(define-syntax define-with-setter
+  (lambda (nameAndArgs . body)
+    (let* ((g (org.llava.lib.cl.Symbols.gensym))
+	   (name (car nameAndArgs))
+	   (args (cdr nameAndArgs))
+	   (setter (string->symbol (s+ "set-" (toString name) "!")))
+	   (getter (string->symbol (s+ "get-" (toString name)))))
+      `(let ((,g ,init))
+	 (begin
+	   (define ,name 
+	     (lambda ,args ,@body))
+	   (define ,setter
+	     (lambda (procedure)
+	       (set! ,name procedure)))
+	   (define ,getter
+	     (lambda () ,name)))))))
+
+;;;
+;;; define-indirect-variable
+;;;
+
+(-doc-
+ (name define-indirect-variable)
+ (name symbol)
+ (name obj)
+ (category syntax)
+ (description
+  "Close over a free variable.
+    Then set and access it via a named procedure."))
+
+(define-syntax define-indirect-variable
+  (lambda (name init)
+    (let ((g (org.llava.lib.cl.Symbols.gensym)))
+      `(let ((,g ,init))
+	 (define ,name
+	   (lambda x
+	     (if (null? x)
+		 ,g
+		 (set! ,g (car x)))))))))
+
+;;;;
+;;;; define-with-exc-hand
+;;;;
+
+(define :exc  ':exc)
+(define :name ':name)
+
+(-doc-
+ (name define-with-exc-hand)
+ (param ...)
+ (category syntax))
+
+(define-syntax define-with-exc-hand
+  (lambda (functionNameAndParameterNames . body)
+    (let* ((functionName   (car functionNameAndParameterNames))
+	   (parameterNames (cdr functionNameAndParameterNames))
+	   (keywords       (map (lambda (keyword) (_%make-symbol ":" keyword))
+				parameterNames))
+	   (excHand        (car parameterNames))
+	   (excHandArgs `(:exc e :name ',functionName
+			       ,@(apply append
+					(map (lambda (key val) (list key val))
+					     keywords parameterNames)))))
+      `(begin ,@(_%defineKeywords keywords)
+	      (define ,functionNameAndParameterNames
+		(try ,@body
+		     (catch (java.lang.Exception e)
+			    ((or ,excHand default-define-with-exc-hand) ,@excHandArgs))))))))
+
+(define default-define-with-exc-hand
+  (lambda args
+    (let* ((exc (member-cadr :exc args))
+	   (msg (string-append "Exception in procedure "
+			       (toString (member-cadr :name args))
+			       " : "
+			       (toString exc)))
+	   (displayMsg (lambda () (-println msg))))
+      (displayMsg))))
+
+(define (_%make-symbol . args)
+  (-si 'newSymbol 'org.llava.impl.F (apply string-append (map toString args))))
+
+
+(-comment-
+(import org.llava.lib.Program)
+(getRefListNames (package org.llava.lib.Repl))
+(define-with-exc-hand (foo ex str a b c)
+  (/ a b)
+  (charAt str a) 
+  (new 'java.lang.Long str)
+  (car c))
+(foo #f "123" 2 4.0 '(a b))
+(foo #f "123" 4 0 '(a b))
+
+(getRefListNames (package org.llava.lib.Repl))
+(import org.llava.lib.Lists)
+(getRefListNames (package org.llava.lib.Repl))
+(import org.llava.lib.Control)
+(getRefListNames (package org.llava.lib.Repl))
+(define test-foo
+  (lambda (s a b c)
+    (foo (lambda args
+	   (let ((e (member-cadr :exc args)))
+	     (case-type e
+	       ((java.lang.ArithmeticException 
+		 java.lang.StringIndexOutOfBoundsException) "arith or string")
+	       ((java.lang.NumberFormatException)           "number")
+	       (else                                        'else))))
+	 s a b c)))
+(test-foo "123" 2 0 4)
+(test-foo "123" 5 -1 -1)
+(test-foo "aa123" 1 1 -1)
+(test-foo "123" 1 1 -1)
+
+
+;; REVISIT - namespace testing.
+(import org.llava.lib.Program)
+(import org.llava.lib.Control)
+(define (foo proc a) (list 'foo (proc a)))
+(define test-foo
+  (lambda (x)
+    (foo (lambda (y)
+	   (let ((e y))
+	     (case-type e
+	       ((java.lang.Double) 'YES)
+	       (else (getClass e)))))
+	 x)))
+(test-foo "4.5")
+(test-foo 4.5)
+)
 
 ;; REVISIT - make aux functions internal (after define-syntax env fixed).
 ;; REVISIT - handle . args
@@ -9,6 +169,11 @@
 ;;;
 ;;; defineWithKeywords
 ;;;
+
+(-doc-
+ (name define-with-keywords)
+ (param ...)
+ (category syntax))
 
 (define-syntax define-with-keywords
   (lambda (functionNameAndKeywordNames . body)
@@ -42,13 +207,11 @@
 (define _%keywordValue
   (lambda (keyword args)
     (let ((keywordValue (memq keyword args)))
-      (_if keywordValue
+      (-if keywordValue
 	   (cadr keywordValue)
 	   false))))
 
 (define (_%make-symbol . args)
-  (_si 'newSymbol 'lavaProfile.F (apply string-append (map toString args))))
-
-(provide 'lava/program/define-with-keywords)
+  (-si 'newSymbol 'org.llava.impl.F (apply string-append (map toString args))))
 
 ;;; End of file.

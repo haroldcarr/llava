@@ -422,6 +422,25 @@
    exception.  Note: the top of the stack is at the top of the
    trace."))
 
+(-doc-
+ (name define-d)
+ (param ...)
+ (category syntax)
+ (description
+  "Equivalent to <code>define</code> when defining generic and lambda
+   procedures except procedures defined with <code>define-d</code> print
+   procedure entry and exit values to the console.  Exit value tracing
+   indicates whether a normal value is returned or an exception has been
+   thrown."))
+
+(-doc-
+ (name set-define-d-indent!)
+ (param false-or-integer)
+ (description
+  "Controls the indentation of the call stack tracing of procedures
+  defined with <code>define-d</code>.  If <code>false</code> then no
+  indentation.  Otherwise by the integer amount given."))
+
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -549,6 +568,7 @@ share the static factory methods).
    (name -comment-)
    (parameter "&lt;expression&gt;")
    (parameter ...)
+   (category syntax)
    (description
     "A block comment is anything appearing inside the syntax:
    <code>(-comment- ...)</code>."))
@@ -557,6 +577,7 @@ share the static factory methods).
    (name -package-)
    (parameter "&lt;expression&gt;")
    (parameter ...)
+   (category syntax)
    (description
     "A block comment.  Recognized by <code>org.llava.lib.LlavaDoc</code>."))
 
@@ -564,6 +585,7 @@ share the static factory methods).
    (name -doc-)
    (parameter "&lt;expression&gt;")
    (parameter ...)
+   (category syntax)
    (description 
     "A block comment. Recognized by <code>org.llava.lib.LlavaDoc</code>."
 

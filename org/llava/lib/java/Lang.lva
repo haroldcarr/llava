@@ -1,17 +1,35 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
 ;;;;
 ;;;; Created       : 2000 Jan 19 (Wed) 22:05:40 by Harold Carr.
-;;;; Last Modified : 2000 Oct 29 (Sun) 21:43:13 by .
+;;;; Last Modified : 2004 Sep 09 (Thu) 21:23:05 by Harold Carr.
 ;;;;
 
-(define newArray
+(package org.llava.lib.java.Lang)
+
+(-package- (description "Java operations."))
+
+(-doc-
+ (name new-array)
+ (param class-or-class-name)
+ (param length)
+ (description
+  "Creates a new array of the given type."))
+
+(define new-array
   (lambda (type len . lengths)
     (if (not (null? lengths))
 	(error "multiple dimensions not implemented"))
     (let ((class (if (instanceof type 'java.lang.Class) 
 		     type
-		     (_si 'forName 'java.lang.Class (toString type)))))
-      (_si 'newInstance 'java.lang.reflect.Array class len))))
-
-(provide 'java/lang/newArray)
+		     (-si 'forName 'java.lang.Class (toString type)))))
+      (-si 'newInstance 'java.lang.reflect.Array class len))))
 
 ;;; End of file.

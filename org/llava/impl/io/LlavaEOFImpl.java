@@ -1,27 +1,39 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /**
  * Created       : 2000 Jan 11 (Tue) 22:35:58 by Harold Carr.
- * Last Modified : 2000 Jan 11 (Tue) 23:01:19 by Harold Carr.
+ * Last Modified : 2004 Sep 03 (Fri) 15:35:19 by Harold Carr.
  */
 
-package lava.io;
+package org.llava.io;
 
-import lava.io.LavaEOF;
+import org.llava.io.LlavaEOF;
 
-public class LavaEOFImpl
+public class LlavaEOFImpl
     implements
-	LavaEOF
+	LlavaEOF
 {
-    private LavaEOF singleton = null;
+    private LlavaEOF singleton = null;
 
-    public LavaEOFImpl ()
+    public LlavaEOFImpl ()
     {
 	singleton = this;
     }
 
-    public LavaEOF newLavaEOF ()
+    public LlavaEOF newLlavaEOF ()
     {
 	if (singleton == null) {
-	    singleton = new LavaEOFImpl();
+	    singleton = new LlavaEOFImpl();
 	}
 	return singleton;
     }

@@ -1,21 +1,74 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+
 ;;;;
 ;;;; Created       : 1998 Dec 05 (Sat) 21:41:11 by Harold Carr.
-;;;; Last Modified : 2000 Jan 21 (Fri) 23:32:13 by Harold Carr.
+;;;; Last Modified : 2004 Sep 06 (Mon) 00:26:19 by Harold Carr.
 ;;;;
 
-(require 'test/test)
+(import org.llava.lib.test.Test)
+(import org.llava.lib.Control)
 
-(begin-test 'lava/control/case-type)
+;;;;
+;;;;
 
-(test-require 'lava/control/case-type)
+(begin-test 'control/case-eval-r)
+
+(define yes (lambda () 1))
+
+(define test-case-eval-r
+  (lambda ()
+    (case-eval-r (yes)
+     ((1)  (define yes (lambda () 2)))
+     ((2)  (define yes (lambda () 3)))
+     ((3)  (define yes (lambda () -1)))
+     (else (define yes (lambda () 'else))))))
+
+(define next
+  (lambda ()
+    (check "case-eval-r-next"
+	   true 
+	   (instanceof (test-case-eval-r) 'org.llava.lang.types.Procedure))))
+
+(check "case-eval-r1" 1 (yes))
+
+(next)
+
+(check "case-eval-r1" 2 (yes))
+
+(next)
+
+(check "case-eval-r1" 3 (yes))
+
+(next)
+
+(check "case-eval-r1" -1 (yes))
+
+(next)
+
+(check "case-eval-r1" 'else (yes))
+
+(end-test 'control/case-eval-r)
+
+;;;;
+;;;;
+
+(begin-test 'control/case-type)
 
 (define test-case-type
   (lambda (x)
     (case-type x
       ((java.lang.Integer java.lang.Double) "Integer or Double")
       ((java.lang.String)                   "String")
-      ((lava.lang.types.Procedure)          "Procedure")
-      ((lava.lang.types.Pair)               "Pair")
+      ((org.llava.lang.types.Procedure)     "Procedure")
+      ((org.llava.lang.types.Pair)          "Pair")
       (else                                 x))))
 
 (check "case-type1"
@@ -46,7 +99,142 @@
        #\c
        (test-case-type #\c))
 
-(end-test 'lava/control/case-type)
+(end-test 'control/case-type)
+
+;;;;
+;;;;
+
+(begin-test 'control/for)
+
+(define (test-for-s x)
+  (let ((result '()))
+    (for (i 0) (< i x) (set! i (+ i 1))
+      (set! result (cons i result)))
+    result))
+
+(check "for1"
+       '(1 0)
+       (test-for-s 2))
+
+(check "for2"
+       '(3 2 1 0)
+       (test-for-s 4))
+
+(define (test-for-m x)
+  (let ((result '()))
+    (for ((i 0) (j x))
+	 ((< i 4) (not (null? j))) 
+	 ((set! i (+ i 1)) (set! j (cdr j)))
+      (set! result (cons (list i j) result)))
+    result))
+
+(check "for3"
+       '((1 (2)) (0 (1 2)))
+       (test-for-m '(1 2)))
+(check "for4"
+       '((3 (4 5)) (2 (3 4 5)) (1 (2 3 4 5)) (0 (1 2 3 4 5)))
+       (test-for-m '(1 2 3 4 5)))
+
+(define (test-for-sm x)
+  (let ((result '()))
+    (for ((i 0) (j x))
+	 (not (null? j))
+	 ((set! i (+ i 1)) (set! j (cdr j)))
+      (set! result (cons (list i j) result)))
+    result))
+
+(check "for5"
+       '((1 (2)) (0 (1 2)))
+       (test-for-sm '(1 2)))
+(check "for6"
+       '((4 (5)) (3 (4 5)) (2 (3 4 5)) (1 (2 3 4 5)) (0 (1 2 3 4 5)))
+       (test-for-sm '(1 2 3 4 5)))
+
+(end-test 'control/for)
+
+(-comment-
+(require 'org/llava/lib/control/for)
+(pp (macroexpand '(for ((i 0)) ((< i 10)) ((set! i (+ i 1)))
+		       (-println i))))
+(pp (macroexpand '(for (i 0) (< i 10) (set! i (+ i 1))
+		       (print i))))
+(pp (macroexpand '
+(for ((i 0) (j '(1 2 3 4)))
+     ((< i 10) (not (null? j)))
+     ((set! i (+ i 1)) (set! j (cdr j)))
+  (print (list i j)))
+))
+)
+
+;;;;
+;;;;
+
+(begin-test 'control/map3)
+
+(check "map3"
+       '(d | c | b | a)
+       (let ((result '()))
+	 (map3 (lambda (c p n) 
+		 (set! result (cons c result))
+		 (if (not (null? n))
+		     (set! result (cons '| result))))
+	       '(a b c d))
+	 result))
+
+(end-test 'control/map3)
+
+;;;;
+;;;;
+
+(begin-test 'control/tlet)
+
+;; REVISIT - bad variable capture
+(define test-tlet-bad-binding
+  (lambda (b)
+    (tlet* ((b b))
+      b
+      (catch (java.lang.Exception e) "this should never happen"))))
+
+(define test-tlet-good-binding
+  (lambda (b)
+    (tlet* ((c b))
+      c
+      (catch (java.lang.Exception e) "this should never happen"))))
+
+(check "tlet0"
+       "REVISIT: known error"
+       (test-tlet-bad-binding "REVISIT: known error"))
+
+(check "tlet0.1"
+       1
+       (test-tlet-good-binding 1))
+
+(define test-tlet
+  (lambda (b)
+    (tlet* ((a 1))
+      (/ a b) 
+      'after
+      (catch (java.lang.Exception e) 'yes))))
+
+(check "tlet1" 'after (test-tlet 1))
+(check "tlet2" 'yes   (test-tlet 0))
+
+(end-test 'control/tlet)
+
+;;;;
+;;;;
+
+(begin-test 'control/while)
+
+(check "while"
+       '(1 2 3 4 5 6 7 8 9 10)
+       (let ((result '())
+	     (i 10))
+	 (while (> i 0) 
+	   (set! result (cons i result))
+	   (set! i (- i 1)))
+	 result))
+
+(end-test 'control/while)
 
 ;;; End of file.
-

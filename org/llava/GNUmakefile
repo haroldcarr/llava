@@ -1,20 +1,29 @@
+# Copyright (c) 1997 - 2004 Harold Carr
+#
+# This work is licensed under the Creative Commons Attribution License.
+# To view a copy of this license, visit 
+#   http://creativecommons.org/licenses/by/2.0/
+# or send a letter to
+#   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+#-----------------------------------------------------------------------------
+
 #
 # Created       : 1999 Dec 15 (Wed) 16:30:21 by Harold Carr.
-# Last Modified : 2001 Mar 26 (Mon) 15:12:06 by Harold Carr.
+# Last Modified : 2004 Sep 04 (Sat) 08:20:48 by Harold Carr.
 #
 
-TOPDIR		=	..
+TOPDIR		=	../..
 
-PACKAGE		=	lava
-PKGDIR		=	lava
+PACKAGE		=	org.llava
+PKGDIR		=	org/llava
 
 FILES_java	= \
-	$(PKGDIR)/LavaVersion.java \
+	$(PKGDIR)/LlavaVersion.java \
 	$(PKGDIR)/Repl.java \
 
 all :: classes 
 
-SUBDIRS		=	compiler io lang runtime
+SUBDIRS		=	compiler impl io lang runtime
 
 all optimized debug clean clobber ::
 	@for i in $(SUBDIRS) ; do \

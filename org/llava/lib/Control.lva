@@ -1,18 +1,67 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
 ;;;;
-;;;; Created       : 1998 Dec 05 (Sat) 21:41:11 by Harold Carr.
-;;;; Last Modified : 2000 Oct 29 (Sun) 21:43:31 by .
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+;;;;
+;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
+;;;; Last Modified : 2004 Sep 11 (Sat) 23:23:15 by Harold Carr.
 ;;;;
 
-(require 'cl/symbols/gensym)
+(package org.llava.lib.Control)
 
+(import org.llava.lib.cl.Symbols)
+
+(-package-
+ (description "Misc., looping, mapping, case."))
+
+;;;
+;;; case-eval-r
+;;;
+
+(-doc-
+ (name case-eval-r)
+ (param ...)
+ (category syntax)
+ (description "Like <function>case</function> except it explicitly calls
+  <function>eval</function> on the right side."))
+
+(define-syntax case-eval-r
+  (lambda (expr . cases)
+    `(case ,expr ,@(_%case-eval-r cases))))
+
+;; REVISIT - make internal after syntax environment fixed.
+
+(define _%case-eval-r
+  (lambda (cases)
+    (map (lambda (x)
+	   `(,(car x)
+	     (eval '(begin ,@(cdr x)))))
+	 cases)))
+
+;;;
+;;; case-type
+;;;
 ;;; Syntax is like Scheme case.
 ;;; Functionality is like CL typecase.
+;;;
+
+(-doc-
+ (name case-type)
+ (param ...)
+ (category syntax)
+ (description "Like Common LISP <function>typecase</function>.
+  The left forms should name class types."))
 
 ;; REVISIT - optimize away instanceof
 
 (define-syntax case-type
   (lambda (object . cases)
-    (let ((g_object (gensym)))
+    (let ((g_object (org.llava.lib.cl.Symbols.gensym)))
       `(let ((,g_object ,object))
 	 (cond ,@(map (lambda (case) 
 			(if (eq? (car case) 'else)
@@ -25,7 +74,118 @@
   (lambda (object types)
     (map (lambda (type) `(instanceof ,object ',type)) types)))
 
-(provide 'lava/control/case-type)
+;;;
+;;; for
+;;;
+
+(-doc-
+ (name for)
+ (param "&lt;inits&gt;")
+ (param "&lt;tests&gt;")
+ (param "&lt;steps&gt;")
+ (param "&lt;expression&gt;")
+ (param ...)
+ (category syntax))
+
+(define-syntax for 
+  (lambda (inits continues steps . body)
+    (let* ((wrap      (lambda (x) (if (symbol? (car x)) (list x) x)))
+	   (inits     (wrap inits))
+	   (continues (wrap continues))
+	   (steps     (wrap steps)))
+      `(let (,@inits)
+	 (do ()
+	     ((not (and ,@continues)))
+	   ,@body
+	   ,@steps)))))
+
+;;;
+;;; map3
+;;;
+
+(-doc-
+ (name map3)
+ (param proc)
+ (param list)
+ (description "From Graham CL - p 263"))
+
+(define (map3 fn lst)
+  (letrec ((rec (lambda (curr prev next left)
+		  (cons
+		   (fn curr prev next)
+		   (if (not (null? left))
+		       (rec (_%scar left)
+			    curr
+			    (_%scar (_%scdr left))
+			    (_%scdr left))
+		       '())))))
+    (if (not (null? lst))
+	(rec (car lst) '() (_%scar (cdr lst)) (cdr lst)))))
+
+;;;
+;;; for-each3
+;;;
+
+(-doc-
+ (name for-each3)
+ (param proc)
+ (param list)
+ (description "From Graham CL - p 263"))
+
+(define (for-each3 fn lst)
+  (letrec ((rec (lambda (curr prev next left)
+		   (fn curr prev next)
+		   (if (not (null? left))
+		       (rec (_%scar left)
+			    curr
+			    (_%scar (_%scdr left))
+			    (_%scdr left))
+		       '()))))
+    (if (not (null? lst))
+	(rec (car lst) '() (_%scar (cdr lst)) (cdr lst)))))
+
+;;;
+;;; tlet*
+;;;
+;;; REVISIT - fixed let* semantics - see test.
+;;;
+
+(-doc-
+ (name tlet*)
+ (param "&lt;bindings&gt;")
+ (param "&lt;body&gt;")
+ (category syntax)
+ (description "Like let* but <parameter>&lt;bindings&gt;</parameter>
+  happen inside a <function>try</function> and 
+  <parameter>&lt;body&gt;</parameter>
+  can contain <function>catch</function> and <function>finally</function>."))
+
+(define-syntax tlet*
+  (lambda (bindings . body)
+    (let* ((bindingVars  (map (lambda (binding) (car binding)) bindings))
+	   (bindingVals  (map (lambda (binding) (cadr binding)) bindings))
+	   (nullBindings (map (lambda (var) `(,var #f)) bindingVars))
+	   (assignments  (map (lambda (var val) `(set! ,var ,val))
+			      bindingVars bindingVals)))
+      `(let ,nullBindings
+	 (try ,@assignments
+	      ,@body)))))
+
+;;;
+;;; while
+;;;
+
+(-doc-
+ (name while)
+ (param "&lt;test&gt;")
+ (param "&lt;expression&gt;")
+ (param ...)
+ (category syntax))
+
+(define-syntax while
+  (lambda (tester . body)
+    `(do ()
+	 ((not ,tester))
+       ,@body)))
 
 ;;; End of file.
-

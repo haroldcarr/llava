@@ -1,6 +1,16 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+
 ;;;;
 ;;;; Created       : 1998 Dec 13 (Sun) 09:18:12 by Harold Carr.
-;;;; Last Modified : 2001 Mar 08 (Thu) 21:01:07 by Harold Carr.
+;;;; Last Modified : 2004 Sep 06 (Mon) 00:11:33 by Harold Carr.
 ;;;;
 ;;;; Provides import
 ;;;;
@@ -36,23 +46,23 @@
 (define _%java_lang_Class_forName 
   (lambda (className)
     (if (symbol? className) (set! className (toString className)))  
-    (_si 'forName 'java.lang.Class className)))
+    (-si 'forName 'java.lang.Class className)))
 
 (define _%java_lang_reflect_Modifier_isPublic 
   (lambda (int)
-    (_si 'isPublic 'java.lang.reflect.Modifier int)))
+    (-si 'isPublic 'java.lang.reflect.Modifier int)))
 
 (define _%java_lang_reflect_Modifier_isStatic
   (lambda (int)
-    (_si 'isStatic 'java.lang.reflect.Modifier int)))
+    (-si 'isStatic 'java.lang.reflect.Modifier int)))
 
 (define _%java_lang_reflect_Array_get
   (lambda (o i)
-    (_si 'get 'java.lang.reflect.Array o i)))
+    (-si 'get 'java.lang.reflect.Array o i)))
 
 (define _%java_lang_reflect_Array_getLength 
   (lambda (o)
-    (_si 'getLength 'java.lang.reflect.Array o)))
+    (-si 'getLength 'java.lang.reflect.Array o)))
 
 ;;;
 ;;; _%isPublic? _%isStatic?
@@ -105,7 +115,7 @@
 ;;;
 
 (define *_%evalDefineCMF* 'eval)
-(define _%evalDefineCMFWrite (lambda (form) (_println form) form))
+(define _%evalDefineCMFWrite (lambda (form) (-println form) form))
 (define _%evalDefineCMFEval  (lambda (form) (eval form)))
 
 (define _%evalDefineCMF
@@ -197,7 +207,7 @@
 (define _%defineC
   (lambda (className class constructors)
     "Use new"))
-(_comment
+(-comment-
     (if (and (not (equal? 0
 			  (_%java_lang_reflect_Array_getLength constructors)))
 	     (not (equal? 0 
@@ -245,7 +255,7 @@
 	(_%evalDefineCMF
 	 ;; REVISIT - no need to use apply? - maybe to get value of methodName
 	 `(define (,methodName . args)
-	    (apply _si (cons ',methodName (cons ',className args)))))
+	    (apply -si (cons ',methodName (cons ',className args)))))
 	(if _%showVirtual?
 	    (_%evalDefineCMF methodName)))))
 
@@ -265,13 +275,13 @@
       (_%evalDefineCMF
        `(define ,andArg
 	  ,(if isStatic
-	       `(_sf ',fieldName ',className)
-	       `(_f  ',fieldName o))))
+	       `(-sf ',fieldName ',className)
+	       `(-f  ',fieldName o))))
       (_%evalDefineCMF
        `(define ,andVal!
 	  ,(if isStatic
-	       `(_sf ',fieldName ',className v)
-	       `(_f  ',fieldName o           v)))))))
+	       `(-sf ',fieldName ',className v)
+	       `(-f  ',fieldName o           v)))))))
 
 ; Define procedures for all public constructors, methods and fields.
 
@@ -287,7 +297,7 @@
 		      methodAndFieldNames))))
       (apply _%importAux importArgs))))
       
-(_comment
+(-comment-
 
 (load "import.lva")
 ;(set! *_%evalDefineCMF* 'write)

@@ -1,19 +1,62 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2001 Mar 14 (Wed) 21:21:45 by Harold Carr.
+;;;; Last Modified : 2004 Sep 09 (Thu) 21:25:06 by Harold Carr.
 ;;;;
 
-(package scm Predicates)
+(package org.llava.lib.scm.Predicates)
+
+(-package- (description "Scheme type predicates."))
+
+;;;
+;;; boolean?
+;;;
+
+(-doc-
+ (name boolean?)
+ (param obj))
 
 (define (boolean? x)
   (or (eq? x true)
       (eq? x false)))
 
+;;;
+;;; char?
+;;;
+
+(-doc-
+ (name char?)
+ (param obj))
+
 (define (char? x)
   (instanceof x 'java.lang.Character))
 
+;;;
+;;; procedure?
+;;;
+
+(-doc-
+ (name procedure?)
+ (param obj))
+
 (define (procedure? x)
-  (instanceof x 'lava.lang.types.Procedure))
+  (instanceof x 'llava.lang.types.Procedure))
+
+;;;
+;;; string?
+;;;
+
+(-doc-
+ (name string?)
+ (param obj))
 
 (define (string? x)
   (instanceof x 'java.lang.String))

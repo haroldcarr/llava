@@ -1,15 +1,25 @@
+# Copyright (c) 1997 - 2004 Harold Carr
+#
+# This work is licensed under the Creative Commons Attribution License.
+# To view a copy of this license, visit 
+#   http://creativecommons.org/licenses/by/2.0/
+# or send a letter to
+#   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+#-----------------------------------------------------------------------------
+
+
 #
 # Created       : 1999 Dec 18 (Sat) 16:10:32 by Harold Carr.
-# Last Modified : 2001 Mar 26 (Mon) 15:13:16 by Harold Carr.
+# Last Modified : 2004 Sep 03 (Fri) 15:39:17 by Harold Carr.
 #
 
-TOPDIR		=	../..
+TOPDIR		=	../../../..
 
-PACKAGE		=	lavaProfile.io
-PKGDIR		=	lavaProfile/io
+PACKAGE		=	org.llava.impl.io
+PKGDIR		=	org/llava/impl/io
 
 FILES_java	= \
-	$(PKGDIR)/LavaReaderImpl.java
+	$(PKGDIR)/LlavaReaderImpl.java
 
 all :: classes
 

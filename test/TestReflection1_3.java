@@ -1,9 +1,21 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /**
  * Created       : 2000 Feb 10 (Thu) 23:26:38 by Harold Carr.
- * Last Modified : 2001 Mar 14 (Wed) 21:59:11 by Harold Carr.
+ * Last Modified : 2004 Sep 03 (Fri) 15:35:53 by Harold Carr.
  */
 
-package testLava;
+package test;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
