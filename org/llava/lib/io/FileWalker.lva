@@ -1,0 +1,159 @@
+;;;;                            Terms and Conditions 
+;;;;             
+;;;;              LLAVA COPYRIGHT AND PERMISSION NOTICE Version 1.0
+;;;; 
+;;;; Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004 Harold Carr
+;;;; All rights reserved.
+;;;; 
+;;;; Permission is hereby granted, free of charge, to any person obtaining
+;;;; a copy of this software and associated documentation files (the
+;;;; "Software"), to deal in the Software without restriction, including
+;;;; without limitation the rights to use, copy, modify, merge, publish,
+;;;; distribute, and/or sell copies of the Software, and to permit persons
+;;;; to whom the Software is furnished to do so, provided that the above
+;;;; copyright notice(s) and this permission notice appear in all copies of
+;;;; the Software and that both the above copyright notice(s) and this
+;;;; permission notice appear in supporting documentation.
+;;;; 
+;;;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+;;;; EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+;;;; MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+;;;; OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+;;;; HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR ANY CLAIM, OR ANY
+;;;; SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER
+;;;; RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF
+;;;; CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+;;;; CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+;;;; 
+;;;; Except as contained in this notice, the name of a copyright holder
+;;;; shall not be used in advertising or otherwise to promote the sale, use
+;;;; or other dealings in this Software without prior written authorization
+;;;; of the copyright holder.
+
+
+;;;;
+;;;; Created       : 2001 Mar 06 (Tue) 15:09:50 by Harold Carr.
+;;;; Last Modified : 2005 Feb 16 (Wed) 14:48:18 by Harold Carr.
+;;;;
+
+(_namespace org.llava.lib.io.FileWalker)
+
+(import org.llava.lib.Program)    ; define-with-setter, ...
+(import org.llava.lib.cl.Control) ; dotimes
+(import org.llava.lib.cl.Symbols) ; gensym
+
+;;;
+;;; When using this package you need to set the dispatcher
+;;; (and optionally the header/footer printers.
+;;;
+
+(define-with-setter (file-walker-dispatcher sexpr indent)
+  (error "You must set-file-walker-dispatcher!"))
+(define-with-setter (file-walker-print-header out inFileName outFilename)
+  null)
+(define-with-setter (file-walker-print-footer out inFileName outFilename)
+  null)
+
+;;;
+;;; Control formatting.
+;;;
+
+(define-indirect-variable file-walker-out (_sf 'out 'java.lang.System))
+(define-indirect-variable file-walker-newline? true)
+(define-indirect-variable file-walker-indent? true)
+(define-indirect-variable dprint? false)
+
+(define file-walker-with-indent
+  (lambda (lxml indent)
+    (dprint 'file-walker-with-indent->)
+    (try 
+     (begin
+      (for-each (lambda (sexpr) (file-walker-dispatcher sexpr indent))
+		lxml)
+      null)
+     (finally
+      (dprint 'file-walker-with-indent<-)))))
+
+(define file-walker-string
+  (lambda (lxml)
+    (dprint 'file-walker-string->)
+    (let* ((sw (new 'java.io.StringWriter))
+	   (pw (new 'java.io.PrintWriter sw))
+	   (savedOut (file-walker-out)))
+      (try
+       (begin
+	 (file-walker-out pw)
+	 (file-walker-with-indent lxml 0)
+	 (toString sw))
+       (finally
+	(file-walker-out savedOut)
+	(dprint 'file-walker-string<-))))))
+
+(define file-walker-files
+  (lambda (inFileName outFileName)
+    (let ((inStream null)
+	  (in null)
+	  (out null))
+      (try
+       (begin
+	 (set! inStream (new 'java.io.InputStreamReader
+			     (new 'java.io.FileInputStream inFileName)))
+	 (set! in (_si 'newLlavaReader 'org.llava.impl.F inStream))
+	 (set! out (new 'java.io.PrintWriter
+			(new 'java.io.OutputStreamWriter
+			     (new 'java.io.FileOutputStream outFileName))))
+	 (file-walker-print-header out inFileName outFileName)
+	 (file-walker-streams in out)
+	 (file-walker-print-footer out inFileName outFileName))
+       (catch (java.lang.Throwable t)
+	      (throw t))
+       (finally
+	(close inStream)
+	(close out))))
+    'done))
+
+(define file-walker-streams
+  (lambda (in out)
+    (dprint 'file-walker-streams->)
+    (let ((savedOut (file-walker-out))
+	  (EOF      (_si 'newLlavaEOF 'org.llava.impl.F)))
+      (try
+       (begin
+	 (file-walker-out out)
+	 (file-walker-streams-aux in EOF))
+       (finally
+	(file-walker-out savedOut)
+	(dprint 'file-walker-streams<-))))))
+
+(define file-walker-streams-aux
+  (lambda (in EOF)
+    (dprint 'file-walker-streams-aux->)
+    (try
+     (let ((sexpr (read in)))
+       (cond ((not (equals EOF sexpr))
+	      (file-walker-dispatcher sexpr 0)
+	      (file-walker-streams-aux in EOF))))
+     (finally
+      (dprint 'file-walker-streams-aux<-)))))
+
+(define file-walker-indent
+  (lambda (indent)
+    (if (file-walker-indent?)
+	(dotimes (i indent) (file-walker-print " ")))))
+
+(define file-walker-print
+  (lambda (x)
+    (dprint 'file-walker-print->)
+    (print (file-walker-out) x)
+    (dprint 'file-walker-print<-)))
+
+(define file-walker-newline
+  (lambda ()
+    (if (file-walker-newline?)
+	(println (file-walker-out)))))
+
+(define dprint
+  (lambda (msg) (if (dprint?) (_println msg))))
+
+
+;;; End of file.
