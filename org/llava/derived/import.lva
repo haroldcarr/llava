@@ -10,7 +10,7 @@
 
 ;;;;
 ;;;; Created       : 1998 Dec 13 (Sun) 09:18:12 by Harold Carr.
-;;;; Last Modified : 2004 Nov 28 (Sun) 16:25:41 by Harold Carr.
+;;;; Last Modified : 2004 Dec 02 (Thu) 20:24:58 by Harold Carr.
 ;;;;
 ;;;; Provides import
 ;;;;
@@ -206,23 +206,24 @@
 
 (define _%defineC
   (lambda (className class constructors)
-    "Use new"))
-(-comment-
-    (if (and (not (equal? 0
-			  (_%java_lang_reflect_Array_getLength constructors)))
-	     (not (equal? 0 
-			  (length (apply 
-				   append
-				   (_%mapJavaArray
-				    (lambda (x)
-				      (if (_%isPublic? x) '(true) '()))
-				    constructors))))))
-	(_%evalDefineCMF
-	 `(define (,className . args) (apply new (cons ',className args))))
-	(error 
-	 (string-append "No constructor for class: " (toString className))))
-)
-
+    (let* ((cnStr (toString className))
+	   ;; foo.bar.baz -> baz;  baz -> baz
+	   (baseName (_%makeSymOrStr 
+		      'symbol(substring cnStr (+ 1 (lastIndexOf cnStr "."))))))
+      (if (and 
+	   (not (equal? 0
+			(_%java_lang_reflect_Array_getLength constructors)))
+	   (not (equal? 0 
+			(length (apply 
+				 append
+				 (_%mapJavaArray
+				  (lambda (x)
+				    (if (_%isPublic? x) '(true) '()))
+				  constructors))))))
+	  (_%evalDefineCMF
+	   `(define (,baseName . args) (apply new (cons ',className args))))
+	  (error 
+	   (s+ "No constructor for class: " (toString className)))))))
 
 ;; Define an individual method or field.
 
