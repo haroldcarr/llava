@@ -10,7 +10,7 @@
 
 #
 # Created       : 2000 Jan 18 (Tue) 04:28:19 by Harold Carr.
-# Last Modified : 2004 Nov 26 (Fri) 08:35:20 by Harold Carr.
+# Last Modified : 2004 Nov 26 (Fri) 16:10:12 by Harold Carr.
 #
 
 TOPDIR		=	../../../../..
@@ -34,6 +34,7 @@ RESOURCE_FILES	= \
 	$(PKGDIR)/DerivedJavaTry.lva \
 	$(PKGDIR)/DerivedJavaSecond.lva \
 	$(PKGDIR)/DerivedLlavaDefineD.lva \
+	$(PKGDIR)/DerivedScmVectors.lva \
 	$(PKGDIR)/DerivedTest.lva \
 	$(PKGDIR)/import.lva 
 
