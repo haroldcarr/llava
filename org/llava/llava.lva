@@ -929,6 +929,22 @@ share the static factory methods).
  (location "reflect on Pair"))
 
 (-doc-
+ (name -car)
+ (param pairOrNull)
+ (location org.llava)
+ (description
+  "Like <code>car</code> except returns <code>null</code>
+   if given <code>null</code>."))
+
+(-doc-
+ (name -cdr)
+ (param pairOrNull)
+ (location org.llava)
+ (description
+  "Like <code>cdr</code> except returns <code>null</code>
+   if given <code>null</code>."))
+
+(-doc-
  (name setCar)
  (param pair)
  (location "reflect on Pair"))
