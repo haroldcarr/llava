@@ -11,12 +11,17 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 20 (Mon) 00:07:05 by Harold Carr.
- * Last Modified : 2004 Dec 07 (Tue) 20:38:30 by Harold Carr.
+ * Last Modified : 2004 Dec 14 (Tue) 12:20:03 by Harold Carr.
  */
 
 package test;
 
+import org.llava.F;
+import org.llava.impl.util.List;
+
 public class Test {
+
+    public static Object TRUE = F.newBoolean(true);
 
     public static boolean printResults    = false;
     public static boolean printProgress   = false;
@@ -56,16 +61,10 @@ public class Test {
 
     public static void check (String msg, Object shouldBe, Object is)
     {
-	if (shouldBe == null) {
-	    if (shouldBe == is) {
-		psop(msg + " : " + is);
-	    } else {
-		bad(msg, shouldBe, is);
-	    }
-	} else if (! shouldBe.equals(is)) {
-	    bad(msg, shouldBe, is);
-	} else {
+	if (TRUE.equals(List.equalp(shouldBe, is))) {
 	    psop(msg + " : " + is);
+	} else {
+	    bad(msg, shouldBe, is);
 	}
     }
 
