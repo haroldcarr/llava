@@ -11,7 +11,7 @@ or send a letter to
 
 //
 // Created       : 2000 Oct 21 (Sat) 10:46:48 by Harold Carr.
-// Last Modified : 2004 Dec 22 (Wed) 17:06:38 by Harold Carr.
+// Last Modified : 2004 Dec 22 (Wed) 17:23:10 by Harold Carr.
 //
 
 package org.llava.impl.runtime;
@@ -810,11 +810,6 @@ else
 	    if (result != classVariables.NOT_FOUND) {
 		if (result == classVariables.NULL_VALUE) {
 		    return null;
-		    /*
-		} else if (result instanceof GenericProcedure) {
-		    // WORKAROUND/SET/UNDEFINED. See UndefinedIdHandlerGenericImpl
-		    ;
-		    */
 		} else {
 		    return result;
 		}
@@ -905,10 +900,6 @@ else
 	    if (result != classVariables.NOT_FOUND) {
 		if (result == classVariables.NULL_VALUE) {
 		    return null;
-		    /*
-		} else if (result instanceof GenericProcedure) {
-		    // WORKAROUND/SET/UNDEFINED. See UndefinedIdHandlerGenericImpl		    ;
-		    */
 		} else {
 		    return result;
 		}
