@@ -1146,7 +1146,18 @@ share the static factory methods).
 (-doc-
  (name display)
  (param obj)
- (location org.llava))
+ (location org.llava)
+ (description
+  "Examples:"
+  (example "(display '(\"foo\" #\c #(1 2))) prints (foo c [Ljava.lang.Object;@988707)")))
+
+(-doc-
+ (name write)
+ (param obj)
+ (location org.llava)
+ (description
+  "Examples:"
+  (example "(display '(\"foo\" #\c #(1 2))) prints (\"foo\" #\c #(1 2))")))
 
 (-doc-
  (name newline)
