@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 2000 Jan 11 (Tue) 21:23:51 by Harold Carr.
- * Last Modified : 2004 Dec 08 (Wed) 10:40:39 by Harold Carr.
+ * Last Modified : 2004 Dec 14 (Tue) 12:10:46 by Harold Carr.
  */
 
 package test;
@@ -117,6 +117,7 @@ public class TestTop
 	    libTest(libDir + "/Control.lva");
 	    libTest(libDir + "/Lists.lva");
 	    libTest(libDir + "/Program.lva");
+	    libTest(libDir + "/SimpleRecord.lva");
 	    libTest(libDir + "/Strings.lva");
 	    libTest(libDir + "/Vectors.lva");
 
