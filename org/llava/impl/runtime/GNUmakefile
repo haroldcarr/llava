@@ -9,7 +9,7 @@
 
 #
 # Created       : 1999 Dec 15 (Wed) 16:30:21 by Harold Carr.
-# Last Modified : 2004 Dec 22 (Wed) 15:49:56 by Harold Carr.
+# Last Modified : 2005 Mar 14 (Mon) 19:11:06 by Harold Carr.
 #
 
 TOPDIR		=	../../../..
@@ -36,7 +36,6 @@ FILES_java	= \
 	$(PKGDIR)/CodeSchemeIf.java \
 	$(PKGDIR)/CodeSequence.java \
 	$(PKGDIR)/EngineImpl.java \
-	$(PKGDIR)/EngineStepImpl.java \
 	$(PKGDIR)/EnvTopLevelInitImpl.java \
 	$(PKGDIR)/EnvironmentTopLevelImpl.java \
 	$(PKGDIR)/LlavaRuntimeImpl.java \
