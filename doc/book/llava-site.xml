@@ -3,7 +3,7 @@
 <!--
 //
 // Created       : 1999 Dec 29 (Wed) 14:53:37 by Harold Carr.
-// Last Modified : 2004 Dec 11 (Sat) 10:58:37 by Harold Carr.
+// Last Modified : 2004 Dec 22 (Wed) 18:22:21 by Harold Carr.
 //
 -->
 
@@ -29,7 +29,6 @@
 <!ENTITY lib-macros      SYSTEM "../.generated/org/llava/lib/Macros.xml">
 <!ENTITY lib-program     SYSTEM "../.generated/org/llava/lib/Program.xml">
 <!ENTITY lib-strings     SYSTEM "../.generated/org/llava/lib/Strings.xml">
-<!ENTITY lib-system      SYSTEM "../.generated/org/llava/lib/System.xml">
 <!ENTITY lib-threads     SYSTEM "../.generated/org/llava/lib/Threads.xml">
 <!ENTITY lib-vectors     SYSTEM "../.generated/org/llava/lib/Vectors.xml">
 
