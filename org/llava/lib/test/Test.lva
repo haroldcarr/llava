@@ -9,7 +9,7 @@
 
 ;;;
 ;;; Created       : 1999 Dec 25 (Sat) 22:10:35 by Harold Carr.
-;;; Last Modified : 2004 Sep 09 (Thu) 21:26:27 by Harold Carr.
+;;; Last Modified : 2004 Dec 14 (Tue) 12:38:38 by Harold Carr.
 ;;;
 
 (package org.llava.lib.test.Test)
@@ -59,6 +59,21 @@
 	 (print (-sf 'out 'java.lang.System) 
 		(string-append (toString (car args)) "<-: ")))
     (-si 'endTest 'test.Test)))
+
+;;;
+;;; tprintln
+;;;
+
+(-doc-
+ (name tprintln)
+ (param obj)
+ (description
+  "testBuiltins cannot use -println because it is running a llava that
+   is not connected to System.out."))
+
+(define (tprintln x)
+  (println (-sf 'out 'java.lang.System) x)
+  x)
 
 ;;;
 ;;; dprintln
