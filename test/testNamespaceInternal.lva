@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2000 Oct 21 (Sat) 10:46:48 by Harold Carr.  
-;;;; Last Modified : 2004 Dec 22 (Wed) 10:37:38 by Harold Carr.
+;;;; Last Modified : 2004 Dec 22 (Wed) 16:32:07 by Harold Carr.
 ;;;;
 
 (-comment-
@@ -68,14 +68,17 @@
     ;; Just using repl for bootstrap - not because it is the replace package.
     (set! *X* (findNamespace newEnv (-si 'initialReplPackageName 'org.llava.F)))
     (setIsSealed (findNamespace newEnv (-si 'llavaPackageName 'org.llava.F)) false)
-    (setUndefinedIdHandler newEnv (-si 'newUndefinedIdHandler 'org.llava.F))
+    ;; REVISIT - maybe change test to use built-in.
+    ;(setUndefinedIdHandler newEnv (-si 'newUndefinedIdHandler 'org.llava.F))
+    (setUndefinedIdHandler newEnv 
+			   (new 'org.llava.impl.runtime.UndefinedIdHandlerImpl))
 
     (set! *llavaPackageName* (-si 'llavaPackageName 'org.llava.F))
     (set! *replPackageName* (-si 'initialReplPackageName 'org.llava.F))
     (set! *testPackageName* "org.llava.lib.test.Test") ;; REVISIT name
     (set! *replNs* (eval `(package ,(-si 'newSymbol 'org.llava.F
-				     (-si 'initialReplPackageName
-					  'org.llava.F)))))
+					 (-si 'initialReplPackageName
+					      'org.llava.F)))))
     ))
 
 ;;;;
@@ -268,59 +271,59 @@
   (check 2.7 'Llava-a (get *X* 'org.llava.a))
 
   (set! *X* (_package *X* 'foo.bar.Baz))
-  (check 3 (list "foo.bar.Baz" *llavaPackageName*)
+  (check 3.0 (list "foo.bar.Baz" *llavaPackageName*)
 	 (getRefListNames (getCurrentNamespace *X*)))
-  (check 3 'Llava-a (get *X* 'a))
+  (check 3.1 'Llava-a (get *X* 'a))
   (set *X* 'a 'Baz-a)
-  (check 2 'Baz-a (get *X* 'a))
-  (check 2 'Baz-a (get *X* 'Baz.a))
-  (check 2 'Llava-a (get *X* '.a))
-  (check 2 'Llava-a (get *X* 'llava.a))
-  (check 2 'Baz-a (get *X* 'foo.bar.Baz.a))
-  (check 2 'Llava-a (get *X* 'org.llava.a))
-  (check 2
+  (check 2.8 'Baz-a (get *X* 'a))
+  (check 2.9 'Baz-a (get *X* 'Baz.a))
+  (check 2.10 'Llava-a (get *X* '.a))
+  (check 2.11 'Llava-a (get *X* 'llava.a))
+  (check 2.12 'Baz-a (get *X* 'foo.bar.Baz.a))
+  (check 2.13 'Llava-a (get *X* 'org.llava.a))
+  (check 2.14
 	 "Undefined top level variable: repl.a"
 	 (try (get *X* 'repl.a) 
 	      (catch (java.lang.Throwable e) (extractMessage e))))
   ;; It is ok to reference long names from any package.
   ;; Necessary for macros to work between packages.
-  (check 2 'REPL-a (get *X* 'llava-.a))
+  (check 2.15 'REPL-a (get *X* 'llava-.a))
 
   (set! *X* (_package *X* 'test.testNamespace.one.One))
-  (check 4 "test.testNamespace.one.One" (getName (getCurrentNamespace *X*)))
-  (check 4 'Llava-a (get *X* 'a))
-  (check 4 'Llava-a (get *X* '.a))
+  (check 4.0 "test.testNamespace.one.One" (getName (getCurrentNamespace *X*)))
+  (check 4.1 'Llava-a (get *X* 'a))
+  (check 4.2 'Llava-a (get *X* '.a))
   (set *X* 'a 'One-a)
 
   (set! *X* (_package *X* 'foo.bar.Baz))
-  (check 4 "foo.bar.Baz" (getName (getCurrentNamespace *X*)))
-  (check 3
+  (check 4.3 "foo.bar.Baz" (getName (getCurrentNamespace *X*)))
+  (check 3.2
 	 (list "foo.bar.Baz" *llavaPackageName*)
 	 (getRefListNames (getCurrentNamespace *X*)))
-  (check 0 'Baz-a (get *X* 'a))
-  (check 0 'Llava-a (get *X* '.a))
-  (check 4 'Baz-a (get *X* 'a))
-  (check 0 'One-a (get *X* 'test.testNamespace.one.One.a))
-  (check 0 'Llava-a (get *X* 'org.llava.a))
-  (check 0 'One-a (get *X* 'test.testNamespace.one.One.a))
+  (check 0.8 'Baz-a (get *X* 'a))
+  (check 0.9 'Llava-a (get *X* '.a))
+  (check 4.4 'Baz-a (get *X* 'a))
+  (check 0.10 'One-a (get *X* 'test.testNamespace.one.One.a))
+  (check 0.11 'Llava-a (get *X* 'org.llava.a))
+  (check 0.12 'One-a (get *X* 'test.testNamespace.one.One.a))
 
   (set! *X* (_package *X* 'org.llava))
-  (check 0 (list *llavaPackageName*)
+  (check 0.13 (list *llavaPackageName*)
 	 (getRefListNames (getCurrentNamespace *X*)))
-  (check 0 'Llava-a (get *X* 'a))
-  (check 0 'Llava-a (get *X* '.a))
-  (check 0 'Llava-a (get *X* 'org.llava.a))
-  (check 2
+  (check 0.14 'Llava-a (get *X* 'a))
+  (check 0.15 'Llava-a (get *X* '.a))
+  (check 0.16 'Llava-a (get *X* 'org.llava.a))
+  (check 2.16
 	 "Undefined top level variable: One.a"
 	 (try (get *X* 'One.a) 
 	      (catch (java.lang.Throwable e) (extractMessage e))))
-  (check 2 'One-a (get *X* 'test.testNamespace.one.One.a))
+  (check 2.17 'One-a (get *X* 'test.testNamespace.one.One.a))
 
   (set! *X* (_package *X* '.Only))
   (set *X* 'a 'Only-a)
-  (check 0 'Only-a (get *X* 'a))
-  (check 0 'Only-a (get *X* 'Only.a))
-  (check 0 'Llava-a (get *X* '.a))
+  (check 0.17 'Only-a (get *X* 'a))
+  (check 0.18 'Only-a (get *X* 'Only.a))
+  (check 0.19 'Llava-a (get *X* '.a))
 
   (end-test 'testNamespaceRefSet))
 

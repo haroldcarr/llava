@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 21 (Tue) 20:01:34 by Harold Carr.
- * Last Modified : 2004 Dec 08 (Wed) 10:39:43 by Harold Carr.
+ * Last Modified : 2004 Dec 22 (Wed) 16:17:10 by Harold Carr.
  */
 
 package test;
@@ -148,6 +148,8 @@ public class TestEnv
 	Symbol undefinedSymbol = F.newSymbol(undefined);
 
 	EnvironmentTopLevel env = F.newEnvironmentTopLevel();
+	// The default one is generic.
+	env.setUndefinedIdHandler(new UndefinedIdHandlerImpl());
 	Test.dsop(env.toString());
 
 	Test.check("envtl1", undefined, get(env, one));
