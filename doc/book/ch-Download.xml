@@ -1,7 +1,7 @@
 <!--
 //
 // Created       : 1999 Dec 29 (Wed) 14:53:37 by Harold Carr.
-// Last Modified : 2004 Sep 05 (Sun) 22:21:20 by Harold Carr.
+// Last Modified : 2004 Nov 28 (Sun) 12:29:15 by Harold Carr.
 //
 -->
 <chapter id="llava-ch-download">
@@ -29,6 +29,10 @@
 
       <listitem><para>
       Unzip it resulting in <literal>llava.jar</literal>
+      </para></listitem>
+
+      <listitem><para>
+      Put <literal>llava.jar</literal> in your <literal>CLASSPATH</literal>
       </para></listitem>
 
       <listitem><para>
