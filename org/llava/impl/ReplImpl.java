@@ -311,6 +311,8 @@ public class ReplImpl
     public EnvironmentTopLevel getEnvironmentTopLevel () { return env; }
     public Evaluator           getEvaluator           () { return evaluator; }
     public LlavaRuntime        getLlavaRuntime        () { return runtime; }
+    public LlavaReader         getLlavaReader         () { return reader; }
+    public LlavaWriter         getLlavaWriter         () { return writer; }
 
     public class JavaBacktrace
 	implements Procedure

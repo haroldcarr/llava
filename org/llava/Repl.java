@@ -9,10 +9,9 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 29 (Wed) 20:09:32 by Harold Carr.
- * Last Modified : 2004 Dec 04 (Sat) 23:20:41 by Harold Carr.
+ * Last Modified : 2004 Dec 05 (Sun) 10:39:58 by Harold Carr.
  */
 
 package org.llava;
@@ -89,8 +88,9 @@ public interface Repl
     public Compiler            getCompiler            ();
     public EnvironmentTopLevel getEnvironmentTopLevel ();
     public Evaluator           getEvaluator           ();
-    public LlavaRuntime         getLlavaRuntime         ();
-
+    public LlavaRuntime        getLlavaRuntime        ();
+    public LlavaReader         getLlavaReader         ();
+    public LlavaWriter         getLlavaWriter         ();
 }
 
 // End of file.
