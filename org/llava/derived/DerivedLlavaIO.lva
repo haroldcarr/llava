@@ -1,6 +1,6 @@
 ;;;;
 ;;;; Created       : 1999 Dec 18 (Sat) 17:14:40 by Harold Carr.
-;;;; Last Modified : 2004 Dec 10 (Fri) 22:00:14 by Harold Carr.
+;;;; Last Modified : 2004 Dec 11 (Sat) 09:43:53 by Harold Carr.
 ;;;;
 
 (define (read)
@@ -74,10 +74,5 @@
 (define (newline . out)
   (-i 'println (if (null? out) (getPrintWriter _%writer) (car out)))
   null)
-
-(define -newline
-  (lambda out
-    (-i 'println (if (null? out) (getPrintWriter _%writer) (car out)))
-    null))
 
 ;;; End of file.

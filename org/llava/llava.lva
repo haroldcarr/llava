@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2004 Sep 05 (Sun) 11:27:57 by Harold Carr.
-;;;; Last Modified : 2004 Dec 10 (Fri) 23:10:39 by Harold Carr.
+;;;; Last Modified : 2004 Dec 11 (Sat) 09:44:09 by Harold Carr.
 ;;;;
 
 (-package-
@@ -1232,14 +1232,6 @@ share the static factory methods).
  (param " . ")
  (param optional-java.io.PrinterWriter)
  (location org.llava))
-
-(-doc-
- (name -newline)
- (param " . ")
- (param optional-java.io.PrinterWriter)
- (location org.llava)
- (description
-  "Alias for <code>newline</code>."))
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
