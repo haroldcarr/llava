@@ -1,7 +1,7 @@
 <!--
 //
 // Created       : 1999 Dec 29 (Wed) 14:53:37 by Harold Carr.
-// Last Modified : 2004 Dec 01 (Wed) 09:23:51 by Harold Carr.
+// Last Modified : 2004 Dec 06 (Mon) 12:31:45 by Harold Carr.
 //
 -->
 <chapter id="llava-ch-download">
@@ -37,6 +37,11 @@
 
       <listitem><para>
       Or: <literal>java -cp llava.jar org.llava.impl.Llava</literal>
+      </para></listitem>
+
+      <listitem><para>
+      Examples: check out the libraries in <literal>org.llava.lib</literal>
+      in <literal>llava.jar</literal>.
       </para></listitem>
 
       <listitem><para>
