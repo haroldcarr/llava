@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2004 Dec 01 (Wed) 10:12:40 by Harold Carr.
+;;;; Last Modified : 2004 Dec 22 (Wed) 18:33:28 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.Control)
@@ -155,10 +155,24 @@
  (param "&lt;bindings&gt;")
  (param "&lt;body&gt;")
  (category syntax)
- (description "Like let* but <parameter>&lt;bindings&gt;</parameter>
-  happen inside a <function>try</function> and 
-  <parameter>&lt;body&gt;</parameter>
-  can contain <function>catch</function> and <function>finally</function>."))
+ (description 
+  "Like let* but <parameter>&lt;bindings&gt;</parameter> happen inside
+  a <function>try</function> and <parameter>&lt;body&gt;</parameter>
+  can contain <function>catch</function> and <function>finally</function>."
+
+  "Known bug: if you bind a variable which shadows an outer variable and
+  uses the value of the outer variable for its initial value the newly
+  bound variable will always have false for a value:"
+
+  (example
+"(define (foo b)
+  (list
+   (tlet* ((b b))
+     b
+     (catch (java.lang.Exception e) -1))
+   b))
+
+(foo 3) &lva-et; <code>(false 3)</code>")))
 
 (define-syntax tlet*
   (lambda (bindings . body)
