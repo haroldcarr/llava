@@ -1,6 +1,6 @@
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2000 Feb 16 (Wed) 18:10:12 by Harold Carr.
+ * Last Modified : 2000 Feb 16 (Wed) 18:18:50 by Harold Carr.
  */
 
 package libLava.r1.procedure.generic;
@@ -105,7 +105,7 @@ public class DI {
 	    c = mostSpecific(goodConstructors);
 	    break;
 	}
-	setAccessible(c, true);
+	c.setAccessible(true);
 	try {
 	    return c.newInstance(args);
 	} catch (InvocationTargetException e) {
@@ -242,7 +242,7 @@ public class DI {
     {
 	try {
 	    Method m = target.getMethod(name, argTypes); 
-	    setAccessible(m, true);
+	    m.setAccessible(true);
 	    return m;
 	} catch (NoSuchMethodException e) {	
 	    ;
@@ -270,7 +270,7 @@ public class DI {
 	    m = mostSpecificMethod(goodMethods);
 	    break;
 	}
-	setAccessible(m, true);
+	m.setAccessible(true);
 	return m;
     }
 
@@ -307,7 +307,7 @@ public class DI {
 	} catch (NoSuchFieldException e) {
 	    field = fieldLookup0(myClass, fieldName);
 	}
-	setAccessible(field, true);	// public fields can be inaccessible
+	field.setAccessible(true);
 	return field;
     }
 
@@ -330,24 +330,6 @@ public class DI {
 	    throw new NoSuchFieldException(fieldName);
 	else
 	    return fieldLookup(sup, fieldName);
-    }
-
-
-    // go thru reflection so I can compile this damned thing under 1.1
-    private static Method setAccessibleMethod = null;
-
-    private static void setAccessible (Object thing, boolean accessible) 
-    {
-	try {
-	    if (setAccessibleMethod == null) {
-		Class aclass = Class.forName("java.lang.reflect.AccessibleObject");
-		setAccessibleMethod =
-		    aclass.getMethod("setAccessible", new Class[]{ booleanClass });
-	    }
-	    setAccessibleMethod.invoke(thing, new Object[]{ Boolean.TRUE }); // +++ array can be cached
-	} catch (Throwable e) {
-	    System.out.println("Error trying to set accessibility for " + thing);
-	}
     }
 
     private static boolean equalTypes (Class[] parmTypes, 
