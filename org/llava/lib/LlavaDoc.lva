@@ -15,7 +15,7 @@
 (package org.llava.lib.LlavaDoc)
 
 (import org.llava.lib.Files)
-(import org.llava.lib.io.FileWalker)
+(import org.llava.lib.io.FileWalkerNew)
 (import org.llava.lib.scm.Lists)
 
 (-package-
@@ -125,8 +125,6 @@ chapter llava features
  &org.llava;
 )
 
-;;lisa 486-0624 noon friday
-
 ;;;;
 ;;;; TODO
 ;;;;
@@ -135,17 +133,26 @@ chapter llava features
 ;;;; Make file-walker-files work without output file.
 ;;;;
 
+This *MUST* be outside of outer LET.
+
+(-doc-
+ (name llava-doc)
+ (param source-dir)
+ (param destination-dir)
+ (description "..."))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
-;;;; Variables.
+;;;; State
 ;;;;
 
-(define *current-doc-package* 'nothing)
-(define *current-builtin-package* 'nothing)
-(define *llava-suffix* ".lva")
-(define *doc-suffix* ".xml")
-(define *tmp-contains-llava-doc?-file* "/tmp/junk-contains-llava-doc")
-(define *found-llava-doc-true* "TRUE")
+(let ((*fw* null)
+      (*current-doc-package* 'nothing)
+      (*current-builtin-package* 'nothing)
+      (*llava-suffix* ".lva")
+      (*doc-suffix* ".xml")
+      (*tmp-contains-llava-doc?-file* "/tmp/junk-contains-llava-doc")
+      (*found-llava-doc-true* "TRUE"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
@@ -153,17 +160,17 @@ chapter llava features
 ;;;;
 
 (define _%-package-
-  (lambda (doc)
-    (file-walker-newline)
-    (file-walker-print
+  (lambda (fw doc)
+    (file-walker-newline fw)
+    (file-walker-print fw
      (format-package
       (set! *current-builtin-package* (parse-location doc))
       (parse-description doc)))))
 
 (define _%-doc-
-  (lambda (doc)
-    (file-walker-newline)
-    (file-walker-print
+  (lambda (fw doc)
+    (file-walker-newline fw)
+    (file-walker-print fw
      (format-entry
       (parse-name doc)
       (parse-category doc)
@@ -176,17 +183,17 @@ chapter llava features
 ;;; The following only used for documenting builtin syntax and procedures.
 
 (define _%-section-
-  (lambda (doc)
-    (file-walker-newline)
-    (file-walker-print
+  (lambda (fw doc)
+    (file-walker-newline fw)
+    (file-walker-print fw
      (format-section
       (parse-name doc)
       (parse-description doc)))))
 
 (define _%-section-end-
-  (lambda ()
-    (file-walker-newline)
-    (file-walker-print "</section>
+  (lambda (fw)
+    (file-walker-newline fw)
+    (file-walker-print fw "</section>
 ")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -194,14 +201,9 @@ chapter llava features
 ;;;; Walking directories, looking for files with -doc- documentation.
 ;;;;
 
-(-doc-
- (name llava-doc)
- (param source-dir)
- (param destination-dir)
- (description "..."))
-
 (define llava-doc
   (lambda (source-root destination-root)
+    (set! *fw*                      (new-FileWalkerNew))
     (set! *current-builtin-package* 'nothing)
     (set! *current-doc-package*     'nothing)
     (for-each-dir
@@ -248,22 +250,22 @@ chapter llava features
 
 (define contains-llava-doc?
   (lambda (file)
-    ;(-println `(contains-llava-doc? ,file))
-    (let ((save-file-walker-dispatcher   (get-file-walker-dispatcher)))
+    (let ((save-file-walker-dispatcher   (get-dispatcher *fw*)))
       (try
        (begin
-	 (set-file-walker-dispatcher! contains-llava-doc?-dispatch)
-	 (file-walker-files (toString file) *tmp-contains-llava-doc?-file*)
+	 (set-dispatcher! *fw* contains-llava-doc?-dispatch)
+	 (file-walker-files *fw* 
+			    (toString file) *tmp-contains-llava-doc?-file*)
 	 false)
        (catch (java.lang.Exception e)
 	 (if (eq? (getMessage e) *found-llava-doc-true*)
 	     true
 	     false))
        (finally
-	(set-file-walker-dispatcher!   save-file-walker-dispatcher))))))
+	(set-dispatcher! *fw* save-file-walker-dispatcher))))))
        
 (define contains-llava-doc?-dispatch
-  (lambda (sexpr indent)
+  (lambda (fw sexpr indent)
     (if (and (pair? sexpr)
 	     (eq? (car sexpr) '-doc-))
 	(throw (new 'java.lang.Exception *found-llava-doc-true*))
@@ -276,41 +278,41 @@ chapter llava features
 
 (define extract-doc-files 
   (lambda (inFileName outFileName)
-    (let ((save-file-walker-dispatcher   (get-file-walker-dispatcher))
-	  (save-file-walker-print-header (get-file-walker-print-header))
-	  (save-file-walker-print-footer (get-file-walker-print-footer)))
+    (let ((save-file-walker-dispatcher   (get-dispatcher   *fw*))
+	  (save-file-walker-print-header (get-print-header *fw*))
+	  (save-file-walker-print-footer (get-print-footer *fw*)))
       (try
        (begin
-	 (set-file-walker-dispatcher!   extract-doc-dispatch)
-	 (set-file-walker-print-header! extract-doc-print-header)
-	 (set-file-walker-print-footer! extract-doc-print-footer)
-	 (file-walker-files inFileName outFileName))
+	 (set-dispatcher!   *fw* extract-doc-dispatch)
+	 (set-print-header! *fw* extract-doc-print-header)
+	 (set-print-footer! *fw* extract-doc-print-footer)
+	 (file-walker-files *fw* inFileName outFileName))
        (finally
-	 (set-file-walker-dispatcher!   save-file-walker-dispatcher)
-	 (set-file-walker-print-header! save-file-walker-print-header)
-	 (set-file-walker-print-footer! save-file-walker-print-footer))))))
+	 (set-dispatcher!   *fw* save-file-walker-dispatcher)
+	 (set-print-header! *fw* save-file-walker-print-header)
+	 (set-print-footer! *fw* save-file-walker-print-footer))))))
 
 ;; convenience for testing
 (define extract-doc
-  (lambda (forms)
-    (set-file-walker-dispatcher!   extract-doc-dispatch)
-    (set-file-walker-print-header! extract-doc-print-header)
-    (set-file-walker-print-footer! extract-doc-print-footer)
-    (file-walker-with-indent forms 0)))
+  (lambda (fw forms)
+    (set-file-walker-dispatcher!   fw extract-doc-dispatch)
+    (set-file-walker-print-header! fw extract-doc-print-header)
+    (set-file-walker-print-footer! fw extract-doc-print-footer)
+    (file-walker-with-indent fw forms 0)))
 
 (define extract-doc-dispatch
-  (lambda (sexpr indent)
+  (lambda (fw sexpr indent)
     (cond ((pair? sexpr)
 	   (case (car sexpr)
 	     ((package)       (set! *current-doc-package* (cadr sexpr)))
-	     ((-package-)     (_%-package- (cdr sexpr)))
-	     ((-section-)     (_%-section- (cdr sexpr)))
-	     ((-section-end-) (_%-section-end-))
-	     ((-doc-)         (_%-doc- (cdr sexpr)))
+	     ((-package-)     (_%-package-     fw (cdr sexpr)))
+	     ((-section-)     (_%-section-     fw (cdr sexpr)))
+	     ((-section-end-) (_%-section-end- fw))
+	     ((-doc-)         (_%-doc-         fw (cdr sexpr)))
 	     (else            null))))))
 
 (define extract-doc-print-header
-  (lambda (out inFileName outFileName)
+  (lambda (fw out inFileName outFileName)
     (println out "<!--")
     (print out " Extracted on ")
     (println out (toString (new 'java.util.Date)))
@@ -321,7 +323,7 @@ chapter llava features
     (println out "-->")))
 
 (define extract-doc-print-footer
-  (lambda (out inFileName outFileName)
+  (lambda (fw out inFileName outFileName)
     (println out (format-package-end)) ;; REVISIT - kludge
     (println out)
     (println out "<!-- End of file. -->")))
@@ -560,6 +562,8 @@ chapter llava features
     ;(-println msg)
     null
     ))
+
+) ;; End of LET
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
