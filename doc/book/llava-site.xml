@@ -3,7 +3,7 @@
 <!--
 //
 // Created       : 1999 Dec 29 (Wed) 14:53:37 by Harold Carr.
-// Last Modified : 2004 Dec 22 (Wed) 18:22:21 by Harold Carr.
+// Last Modified : 2005 Feb 08 (Tue) 09:59:35 by Harold Carr.
 //
 -->
 
@@ -43,8 +43,6 @@
 
 
 <!ENTITY lib-java-lang SYSTEM "../.generated/org/llava/lib/java/Lang.xml">
-<!ENTITY lib-java-corba-cosnaming SYSTEM "../.generated/org/llava/lib/java/corba/CosNaming.xml">
-<!ENTITY lib-java-corba-orb SYSTEM "../.generated/org/llava/lib/java/corba/Orb.xml">
 
 <!ENTITY  lib-reflect-namespace SYSTEM "../.generated/org/llava/lib/reflect/Namespace.xml">
 <!ENTITY  lib-reflect-reflect SYSTEM "../.generated/org/llava/lib/reflect/Reflect.xml">
