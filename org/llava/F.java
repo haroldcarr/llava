@@ -607,9 +607,9 @@ public class F {
     private static PrimNew primNewFactory =
 	new PrimNew();
     
-    public static PrimNew newPrimNew (Namespace namespace)
+    public static PrimNew newPrimNew ()
     {
-	return primNewFactory.newPrimNew(namespace);
+	return primNewFactory.newPrimNew();
     }
 
     // PrimPackage
