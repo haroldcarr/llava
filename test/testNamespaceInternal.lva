@@ -28,6 +28,11 @@
 (define (initTest)
   (define *ns* (newNamespace (new 'testLava.proto.NamespaceImpl))))
 
+(define (extractMessage throwable)
+  (if (instanceof throwable 'lava.lang.exceptions.LavaException)
+      (getMessage (getThrowable throwable))
+      (getMessage throwable)))
+
 (define (doTest)
   (testFoundation)
   (testPackage)
@@ -240,11 +245,11 @@
   (check 2
 	 "refDotted: undefined: REPL.a" 
 	 (try (refE 'REPL.a) 
-	      (catch (java.lang.Exception e) (getMessage e))))
+	      (catch (java.lang.Throwable e) (extractMessage e))))
   (check 2
 	 "refDotted: undefined: lava.REPL.a" 
 	 (try (refE 'lava.REPL.a) 
-	      (catch (java.lang.Exception e) (getMessage e))))
+	      (catch (java.lang.Throwable e) (extractMessage e))))
 
   (importX 'testLava.proto.ns.one.One)
   (check 3
@@ -280,11 +285,11 @@
   (check 2
 	 "refDotted: undefined: One.a" 
 	 (try (refE 'One.a) 
-	      (catch (java.lang.Exception e) (getMessage e))))
+	      (catch (java.lang.Throwable e) (extractMessage e))))
   (check 2
 	 "refDotted: undefined: testLava.proto.ns.one.One.a"
 	 (try (refE 'testLava.proto.ns.one.One.a) 
-	      (catch (java.lang.Exception e) (getMessage e))))
+	      (catch (java.lang.Throwable e) (extractMessage e))))
 
   (package "" 'Only)
   (setE! 'a 'Only-a)
