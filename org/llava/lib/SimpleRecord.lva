@@ -1,0 +1,89 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+;;;;
+;;;; Created       : 2004 Nov 24 (Wed) 07:42:48 by Harold Carr.
+;;;; Last Modified : 2004 Nov 26 (Fri) 09:51:57 by Harold Carr.
+;;;;
+
+(package org.llava.lib.SimpleRecord)
+
+(-package- 
+ (description "A very simple flat record with accessors and setters."))
+
+;;;
+;;; define-simple-record
+;;;
+
+(-doc-
+ (name define-simple-record)
+ (param record-name)
+ (param slot-name)
+ (param ...)
+ (category syntax)
+ (description
+  "Defines a constructor: make-<record-name>.  It can take 0 to
+   N arguments, where N is the number of <slot-name>s.  For each
+   argument it initializes the slot in that position or null if no
+   corresponding argument."
+  "For each <slot-name> it defines: get-<slot-name> and set-<slot-name>!"))
+
+(define-syntax define-simple-record
+  (lambda (record-name . slot-names)
+    (let* ((N -1)
+	   (positions 
+	    (map (lambda (x) (set! N (+ N 1))) 
+		 slot-names))
+	   (setter-names 
+	    (map (lambda (x) (string->symbol (s+ "set-" (toString x) "!")))
+		 slot-names))
+	   (setters 
+	    (map (lambda (x n)
+		   `(define ,x
+		      (lambda (r v)
+			(-si 'set 'java.lang.reflect.Array r ,n v)
+			v)))
+		 setter-names
+		 positions))
+	   (getters 
+	    (map (lambda (x n)
+		   `(define ,(string->symbol (s+ "get-" (toString x)))
+		      (lambda (r)
+			(-si 'get 'java.lang.reflect.Array r ,n))))
+		 slot-names
+		 positions)))
+      `(begin
+	 (define ,(string->symbol (s+ "make-" (toString record-name)))
+	   (lambda args
+	     (do ((r (-si 'toArray 'org.llava.impl.util.List ',slot-names))
+		  (sn ',setter-names (cdr sn)))
+		 ((null? sn) r)
+	       (cond ((null? args)
+		      (apply (eval (car sn)) (list r null)))
+		     (else
+		      (apply (eval (car sn)) (list r (car args)))
+		      (set! args (cdr args)))))))
+	 ,@setters
+	 ,@getters
+	 ',record-name))))
+
+(define display-record
+  (lambda (r)
+    (-print "#(" )
+    (do ((len (-si 'getLength 'java.lang.reflect.Array r))
+	 (i 0 (+ i 1)))
+	((>= i len))
+      (-print (-si 'get 'java.lang.reflect.Array r i))
+      (if (not (>= (+ i 1) len))
+	  (-print " ")))
+    (-println ") " ) ;;; REVISIT - reader bug
+    null
+    ))
+
+;;; End of file.
