@@ -1,6 +1,6 @@
 ;;;;
 ;;;; Created       : 1999 Dec 18 (Sat) 17:14:40 by Harold Carr.
-;;;; Last Modified : 2004 Dec 12 (Sun) 13:28:03 by Harold Carr.
+;;;; Last Modified : 2004 Dec 18 (Sat) 23:53:48 by Harold Carr.
 ;;;;
 
 (define -read
@@ -65,8 +65,14 @@
 		(-newline out)))))
     (if (pair? msg-and-out) (first msg-and-out) null)))
 
-(define (-newline . out)
-  (-i 'println (if (null? out) (getPrintWriter _%writer) (car out)))
-  null)
+(define -newline 
+  (lambda out
+    (-i 'println (if (null? out) (getPrintWriter _%writer) (car out)))
+    null))
+
+(define -flush
+  (lambda out
+    (-i 'flush (if (null? out) (getPrintWriter _%writer) (car out)))
+    null))
 
 ;;; End of file.
