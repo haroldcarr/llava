@@ -1,7 +1,7 @@
 <!--
 //
 // Created       : 2004 Sep 05 (Sun) 22:19:59 by Harold Carr.
-// Last Modified : 2004 Sep 09 (Thu) 21:41:04 by Harold Carr.
+// Last Modified : 2004 Nov 27 (Sat) 09:32:55 by Harold Carr.
 //
 -->
 <chapter id="llava-ch-libraries">
@@ -25,6 +25,7 @@
   &lib-cl-control;
   &lib-cl-macros;
   &lib-cl-symbols;
+  &lib-cl-sequences;
 
   &lib-io-filewalker;
 
@@ -35,7 +36,6 @@
   &lib-scm-lists;
   &lib-scm-predicates;
   &lib-scm-strings;
-  &lib-scm-vectors;
 
   &lib-test-test;
 

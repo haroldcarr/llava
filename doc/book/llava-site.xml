@@ -3,7 +3,7 @@
 <!--
 //
 // Created       : 1999 Dec 29 (Wed) 14:53:37 by Harold Carr.
-// Last Modified : 2004 Nov 26 (Fri) 09:02:44 by Harold Carr.
+// Last Modified : 2004 Nov 27 (Sat) 11:07:03 by Harold Carr.
 //
 -->
 
@@ -39,6 +39,7 @@
 <!ENTITY lib-cl-control SYSTEM "../.generated/org/llava/lib/cl/Control.xml">
 <!ENTITY lib-cl-macros  SYSTEM "../.generated/org/llava/lib/cl/Macros.xml">
 <!ENTITY lib-cl-symbols SYSTEM "../.generated/org/llava/lib/cl/Symbols.xml">
+<!ENTITY lib-cl-sequences SYSTEM "../.generated/org/llava/lib/cl/Sequences.xml">
 
 
 <!ENTITY lib-io-filewalker SYSTEM "../.generated/org/llava/lib/io/FileWalker.xml">
