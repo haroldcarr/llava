@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2004 Sep 05 (Sun) 11:27:57 by Harold Carr.
-;;;; Last Modified : 2004 Dec 12 (Sun) 14:51:35 by Harold Carr.
+;;;; Last Modified : 2004 Dec 14 (Tue) 13:17:53 by Harold Carr.
 ;;;;
 
 (-package-
@@ -785,7 +785,9 @@ share the static factory methods).
  (param obj2)
  (location org.llava)
  (description
-  "Equivalent to Java <code>==</code>."))
+  "Equivalent to Java <code>==</code>."
+
+  "Handles <code>null</code> arguments."))
 
 (-doc-
  (name equal?)
@@ -793,8 +795,11 @@ share the static factory methods).
  (param obj2)
  (location org.llava)
  (description
-  "Equivalent to Java <code>equals</code>.  Note: this means it
-   does not check equality of vectors."))
+  "Equivalent to Java <code>equals</code>."
+
+  "Handles <code>null</code> arguments."
+
+  "Handles vector arguments."))
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
