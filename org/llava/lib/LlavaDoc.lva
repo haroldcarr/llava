@@ -5,6 +5,7 @@
 
 (package org.llava.lib.LlavaDoc)
 
+(import org.llava.lib.Files)
 (import org.llava.lib.io.FileWalker)
 (import org.llava.lib.scm.Lists)
 
@@ -12,45 +13,22 @@
 ;;;; TODO
 ;;;;
 ;;;; Replace s+ idiom with FileWalker indent print.
+;;;; Make file-walker-dispatcher and friends safe for concurrency.
+;;;; Make file-walker-files work without output file.
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;
+;;;; Variables.
 ;;;;
 
-(define extract-doc-files 
-  (lambda (inFileName outFileName)
-    (file-walker-files inFileName outFileName)))
+(define *current-doc-package* 'nothing)
+(define *llava-suffix* ".lva")
+(define *tmp-contains-llava-doc?-file* "/tmp/junk-contains-llava-doc")
 
-(define extract-doc
-  (lambda (forms)
-    (file-walker-with-indent forms 0)))
-
-(define extract-doc-dispatch
-  (lambda (sexpr indent)
-    (cond ((pair? sexpr)
-	   (case (car sexpr)
-	     ((package) (set! current-doc-package (cadr sexpr)))
-	     ((-doc-)   (_%-doc- (cdr sexpr)))
-	     (else      null))))))
-
-(set-file-walker-dispatcher! extract-doc-dispatch)
-
-(set-file-walker-print-header!
-  (lambda (out inFileName outFileName)
-    (println out "<!--")
-    (print out " Extracted on ")
-    (println out (toString (new 'java.util.Date)))
-    (print out " Extracted from ")
-    (println out inFileName)
-    (print out " Extracted to   ")
-    (println out outFileName)
-    (println out "-->")))
-
-(set-file-walker-print-footer!
-  (lambda (out inFileName outFileName)
-    (println out)
-    (println out "<!-- End of file. -->")))
- 
-;;;;;;;;
-
-(define current-doc-package 'nothing)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;
+;;;; First you parse the you format.
+;;;;
 
 (define _%-doc-
   (lambda (doc)
@@ -65,6 +43,106 @@
       (parse-throws doc)
       (parse-description doc)))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;
+;;;; Walking directories, looking for files with -doc- documentation.
+;;;;
+
+(define llava-doc
+  (lambda (source-root destination-root)
+    (for-each-dir
+     (lambda (x) 
+       (cond ((and (isFile x) 
+		   (endsWith (toString x) *llava-suffix*)
+		   (contains-llava-doc? x))
+	      (_println (toString x))
+	      false)))
+     source-root)))
+
+;;;
+;;; REVISIT - I wrote this with call/cc with the continuation passed
+;;; to the dispatcher but got
+;;; llava-> (-jbt)
+;;; java.lang.Exception: ContinuationException
+;;;	at org.llava.lang.exceptions.LlavaException.<init>(LlavaException.java:41)
+;;;	at org.llava.impl.runtime.procedure.primitive.llava.PrimCallCC$ContinuationException.<init>(PrimCallCC.java:83)
+;;;	at org.llava.impl.runtime.procedure.primitive.llava.PrimCallCC$Continuation.apply(PrimCallCC.java:69)
+;;;
+;;; The call/cc version is in RCS.
+;;;
+
+(define contains-llava-doc?
+  (lambda (file)
+    (call/cc
+     (lambda (return)
+       (let ((save-file-walker-dispatcher   (get-file-walker-dispatcher)))
+	 (try
+	  (begin
+	    (set-file-walker-dispatcher!
+	     (lambda (sexpr indent) 
+	       (contains-llava-doc?-dispatch-aux sexpr indent return)))
+	    (file-walker-files (toString file) *tmp-contains-llava-doc?-file*)
+	    (return false))
+	  (finally
+	   (set-file-walker-dispatcher!   save-file-walker-dispatcher))))))))
+       
+(define contains-llava-doc?-dispatch-aux
+  (lambda (sexpr indent return)
+    (cond ((pair? sexpr)
+	   (case (car sexpr)
+	     ((-doc-)   (return true)))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;
+;;;; Extracting and writing results to a file.
+;;;;
+
+(define extract-doc-files 
+  (lambda (inFileName outFileName)
+    (let ((save-file-walker-dispatcher   (get-file-walker-dispatcher))
+	  (save-file-walker-print-header (get-file-walker-print-header))
+	  (save-file-walker-print-footer (get-file-walker-print-footer)))
+      (try
+       (begin
+	 (set-file-walker-dispatcher!   extract-doc-dispatch)
+	 (set-file-walker-print-header! extract-doc-print-header)
+	 (set-file-walker-print-footer! extract-doc-print-footer)
+	 (file-walker-files inFileName outFileName))
+       (finally
+	 (set-file-walker-dispatcher!   save-file-walker-dispatcher)
+	 (set-file-walker-print-header! save-file-walker-print-header)
+	 (set-file-walker-print-footer! save-file-walker-print-footer))))))
+
+;; convenience for testing
+(define extract-doc
+  (lambda (forms)
+    (file-walker-with-indent forms 0)))
+
+(define extract-doc-dispatch
+  (lambda (sexpr indent)
+    (cond ((pair? sexpr)
+	   (case (car sexpr)
+	     ((package) (set! *current-doc-package* (cadr sexpr)))
+	     ((-doc-)   (_%-doc- (cdr sexpr)))
+	     (else      null))))))
+
+(define extract-doc-print-header
+  (lambda (out inFileName outFileName)
+    (println out "<!--")
+    (print out " Extracted on ")
+    (println out (toString (new 'java.util.Date)))
+    (print out " Extracted from ")
+    (println out inFileName)
+    (print out " Extracted to   ")
+    (println out outFileName)
+    (println out "-->")))
+
+(define extract-doc-print-footer
+  (lambda (out inFileName outFileName)
+    (println out)
+    (println out "<!-- End of file. -->")))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
 ;;;;
 ;;;; format to DocBook
 ;;;;
@@ -167,6 +245,7 @@
   (lambda () "</refentry>
 "))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
 ;;;; Parsing -doc-
 ;;;;
@@ -186,7 +265,7 @@
     (let ((location (assq 'location doc)))
       (_if location
 	   (second location)
-	   (list 'import current-doc-package)))))
+	   (list 'import *current-doc-package*)))))
 
 (define parse-params
   (lambda (doc) (collect 'param doc)))
@@ -204,8 +283,9 @@
 	   (cdr description)
 	   ""))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
-;;;; Implementation
+;;;; Implementation utilities
 ;;;;
 
 (define (collect x doc)
@@ -227,12 +307,14 @@
 	     false)
 	(eq? x d))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
 ;;;; Test
 ;;;;
 
 (-comment-
 (import org.llava.lib.LlavaDoc)
+(llava-doc "." "/tmp")
 (extract-doc-files (s+ (llava-dir) "/org/llava/lib/scm/Lists.lva") "/tmp/junk.xml")
 (extract-doc
  '((package org.foo)
