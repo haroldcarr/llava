@@ -64,18 +64,19 @@
 
     (define (userHome) (-si 'getProperty 'java.lang.System "user.home"))
 
-    ;; This is used to test everything independently of the built
-    ;; in namespace.
-    (set! *newNs* (findNamespace newEnv (-si 'initialReplPackageName 'org.llava.F)))
+    ;; Use something different than the built-in namespace.
+    ;; Just using repl for bootstrap - not because it is the replace package.
+    (set! *X* (findNamespace newEnv (-si 'initialReplPackageName 'org.llava.F)))
     (setIsSealed (findNamespace newEnv (-si 'llavaPackageName 'org.llava.F)) false)
     (setUndefinedIdHandler newEnv (-si 'newUndefinedIdHandler 'org.llava.F))
 
-    (set! *llavaPackage* (-si 'llavaPackageName 'org.llava.F))
-    (set! *replPackage* (-si 'initialReplPackageName 'org.llava.F))
-    (set! *testPackage* "org.llava.lib.test.Test") ;; REVISIT name
-
-    ;; This one is used for import testing.
-    (set! *ns* (package llava-)))) ;; REVISIT name
+    (set! *llavaPackageName* (-si 'llavaPackageName 'org.llava.F))
+    (set! *replPackageName* (-si 'initialReplPackageName 'org.llava.F))
+    (set! *testPackageName* "org.llava.lib.test.Test") ;; REVISIT name
+    (set! *replNs* (eval `(package ,(-si 'newSymbol 'org.llava.F
+				     (-si 'initialReplPackageName
+					  'org.llava.F)))))
+    ))
 
 ;;;;
 ;;;; Test foundation.
@@ -85,37 +86,37 @@
 
   (initTest)
 
-  (begin-test)
+  (begin-test 'testNamespaceFoundation)
 
   (check 1
-	 (list *llavaPackage*)
-	 (getRefListNames (getRootNamespace *newNs*)))
+	 (list *llavaPackageName*)
+	 (getRefListNames (getRootNamespace *X*)))
   (check 1
-	 (list *replPackage* *llavaPackage*)
-	 (getFullNameNamespaceMapKeys *newNs*))
+	 (list *replPackageName* *llavaPackageName*)
+	 (getFullNameNamespaceMapKeys *X*))
   
-  (createNamespace *newNs* "foo.bar" (-f 'classVariables *newNs*))
+  (createNamespace *X* "foo.bar" (-f 'classVariables *X*))
   (check 2 
-	 (list "foo.bar" *replPackage* *llavaPackage*)
-	 (getFullNameNamespaceMapKeys *newNs*))
+	 (list "foo.bar" *replPackageName* *llavaPackageName*)
+	 (getFullNameNamespaceMapKeys *X*))
   
-  (findOrCreateNamespace *newNs* "foo.bar")
+  (findOrCreateNamespace *X* "foo.bar")
   (check 3
-	 (list "foo.bar" *replPackage* *llavaPackage*)
-	 (getFullNameNamespaceMapKeys *newNs*))
+	 (list "foo.bar" *replPackageName* *llavaPackageName*)
+	 (getFullNameNamespaceMapKeys *X*))
   
   (check 4
-	 (list "foo.bar" *llavaPackage*)
-	 (getRefListNames (findNamespace *newNs* "foo.bar")))
+	 (list "foo.bar" *llavaPackageName*)
+	 (getRefListNames (findNamespace *X* "foo.bar")))
   
-  (findOrCreateNamespace *newNs* "bar.baz")
+  (findOrCreateNamespace *X* "bar.baz")
   (check 5
-	 (list "bar.baz" "foo.bar" *replPackage* *llavaPackage*)
-	 (getFullNameNamespaceMapKeys *newNs*))
+	 (list "bar.baz" "foo.bar" *replPackageName* *llavaPackageName*)
+	 (getFullNameNamespaceMapKeys *X*))
   
   (check 6
-	 (list "bar.baz" *llavaPackage*)
-	 (getRefListNames (findOrCreateNamespace *newNs* "bar.baz")))
+	 (list "bar.baz" *llavaPackageName*)
+	 (getRefListNames (findOrCreateNamespace *X* "bar.baz")))
   
   (end-test 'testNamespaceFoundation))
 
@@ -129,44 +130,44 @@
 
   (initTest)
 
-  (begin-test)
+  (begin-test 'testNamespacePackage)
 
   (check 1
-	 (list *replPackage* *llavaPackage*)
-	 (getRefListNames (getCurrentNamespace *newNs*)))
+	 (list *replPackageName* *llavaPackageName*)
+	 (getRefListNames (getCurrentNamespace *X*)))
   
-  (_package *newNs* 'foo.bar)
-  (check 2 (list "foo.bar" *replPackage* *llavaPackage*)
-	 (getFullNameNamespaceMapKeys *newNs*))
-  (check 3 (list "foo.bar" *llavaPackage*)
-	 (getRefListNames (getCurrentNamespace *newNs*)))
+  (_package *X* 'foo.bar)
+  (check 2 (list "foo.bar" *replPackageName* *llavaPackageName*)
+	 (getFullNameNamespaceMapKeys *X*))
+  (check 3 (list "foo.bar" *llavaPackageName*)
+	 (getRefListNames (getCurrentNamespace *X*)))
   
-  (_package *newNs* 'foo.bar)
-  (check 2 (list "foo.bar" *replPackage* *llavaPackage*)
-	 (getFullNameNamespaceMapKeys *newNs*))
-  (check 3 (list "foo.bar" *llavaPackage*)
-	 (getRefListNames (getCurrentNamespace *newNs*)))
+  (_package *X* 'foo.bar)
+  (check 2 (list "foo.bar" *replPackageName* *llavaPackageName*)
+	 (getFullNameNamespaceMapKeys *X*))
+  (check 3 (list "foo.bar" *llavaPackageName*)
+	 (getRefListNames (getCurrentNamespace *X*)))
   
-  (_package *newNs* 'foo.baz)
-  (check 2 (list "foo.bar" "foo.baz" *replPackage* *llavaPackage*)
-	 (getFullNameNamespaceMapKeys *newNs*))
-  (check 2  (list "foo.baz" *llavaPackage*)
-	 (getRefListNames (getCurrentNamespace *newNs*)))
+  (_package *X* 'foo.baz)
+  (check 2 (list "foo.bar" "foo.baz" *replPackageName* *llavaPackageName*)
+	 (getFullNameNamespaceMapKeys *X*))
+  (check 2  (list "foo.baz" *llavaPackageName*)
+	 (getRefListNames (getCurrentNamespace *X*)))
   
-  (_package *newNs* 'buz.saw)
-  (check 2 (list "buz.saw" "foo.bar" "foo.baz" *replPackage* *llavaPackage*)
-	 (getFullNameNamespaceMapKeys *newNs*))
+  (_package *X* 'buz.saw)
+  (check 2 (list "buz.saw" "foo.bar" "foo.baz" *replPackageName* *llavaPackageName*)
+	 (getFullNameNamespaceMapKeys *X*))
   
   (check 1
-	 (list "buz.saw" *llavaPackage*)
-	 (getRefListNames (getCurrentNamespace *newNs*)))
+	 (list "buz.saw" *llavaPackageName*)
+	 (getRefListNames (getCurrentNamespace *X*)))
   
-  (_package *newNs* '.Only)
-  (check 1 (list ".Only" "buz.saw" "foo.bar" "foo.baz" *replPackage* *llavaPackage*)
-	 (getFullNameNamespaceMapKeys *newNs*))
+  (_package *X* '.Only)
+  (check 1 (list ".Only" "buz.saw" "foo.bar" "foo.baz" *replPackageName* *llavaPackageName*)
+	 (getFullNameNamespaceMapKeys *X*))
   (check 1
-	 (list ".Only" *llavaPackage*)
-	 (getRefListNames (getCurrentNamespace *newNs*)))
+	 (list ".Only" *llavaPackageName*)
+	 (getRefListNames (getCurrentNamespace *X*)))
   
   (end-test 'testNamespacePackage))
 
@@ -180,12 +181,12 @@
 
   (initTest)
 
-  (begin-test)
+  (begin-test 'testNamespaceImport)
 
-  (check 1 (list  *replPackage* *llavaPackage* *testPackage*)
-	 (getFullNameNamespaceMapKeys *ns*))
-  (check 2 (list *replPackage* *testPackage* *llavaPackage*) 
-	 (getRefListNames (getCurrentNamespace *ns*)))
+  (check 1 (list  *replPackageName* *llavaPackageName* *testPackageName*)
+	 (getFullNameNamespaceMapKeys *replNs*))
+  (check 2 (list *replPackageName* *testPackageName* *llavaPackageName*) 
+	 (getRefListNames (getCurrentNamespace *replNs*)))
 
   (check 1 (string-append "(re)load: " (userHome)
 			  "/.sync/.llava.org/.system/test/testNamespace/one/OneI.lva")
@@ -193,35 +194,35 @@
   (check 2 (string-append "no change: " (userHome) 
 			  "/.sync/.llava.org/.system/test/testNamespace/one/OneI.lva")
 	 (import test.testNamespace.one.OneI))
-  (check 3 (list  *replPackage* *llavaPackage* *testPackage*
+  (check 3 (list  *replPackageName* *llavaPackageName* *testPackageName*
 	     "test.testNamespace.one.OneI" "test.testNamespace.two.TwoI")
-	 (getFullNameNamespaceMapKeys *ns*))
+	 (getFullNameNamespaceMapKeys *replNs*))
   (check 4
-	 (list *replPackage* *testPackage* "test.testNamespace.one.OneI" *llavaPackage*)
-	 (getRefListNames (getCurrentNamespace *ns*)))
+	 (list *replPackageName* *testPackageName* "test.testNamespace.one.OneI" *llavaPackageName*)
+	 (getRefListNames (getCurrentNamespace *replNs*)))
   (check 5
-	 (list "test.testNamespace.one.OneI" "test.testNamespace.two.TwoI" *llavaPackage*)
-	 (getRefListNames (findNamespace *ns* "test.testNamespace.one.OneI")))
+	 (list "test.testNamespace.one.OneI" "test.testNamespace.two.TwoI" *llavaPackageName*)
+	 (getRefListNames (findNamespace *replNs* "test.testNamespace.one.OneI")))
   (check 6
-	 (list "test.testNamespace.two.TwoI" *llavaPackage*)
-	 (getRefListNames (findNamespace *ns* "test.testNamespace.two.TwoI")))
+	 (list "test.testNamespace.two.TwoI" *llavaPackageName*)
+	 (getRefListNames (findNamespace *replNs* "test.testNamespace.two.TwoI")))
 
   (check 6 (string-append "no change: " (userHome) 
 			  "/.sync/.llava.org/.system/test/testNamespace/two/TwoI.lva")
 	 (import test.testNamespace.two.TwoI))
-  (check 6 (list *replPackage* *llavaPackage* *testPackage*
+  (check 6 (list *replPackageName* *llavaPackageName* *testPackageName*
 	     "test.testNamespace.one.OneI" "test.testNamespace.two.TwoI")
-	 (getFullNameNamespaceMapKeys *ns*))
-  (check 7 (list *replPackage* *testPackage* "test.testNamespace.one.OneI"
-	     "test.testNamespace.two.TwoI" *llavaPackage*)
-	 (getRefListNames (getCurrentNamespace *ns*)))
+	 (getFullNameNamespaceMapKeys *replNs*))
+  (check 7 (list *replPackageName* *testPackageName* "test.testNamespace.one.OneI"
+	     "test.testNamespace.two.TwoI" *llavaPackageName*)
+	 (getRefListNames (getCurrentNamespace *replNs*)))
 
   (check 6 (string-append "no change: " (userHome)
 			  "/.sync/.llava.org/.system/test/testNamespace/two/TwoI.lva")
 	 (import test.testNamespace.two.TwoI))
-  (check 8 (list *replPackage* *testPackage* "test.testNamespace.one.OneI"
-	     "test.testNamespace.two.TwoI" *llavaPackage*)
-	 (getRefListNames (getCurrentNamespace *ns*)))
+  (check 8 (list *replPackageName* *testPackageName* "test.testNamespace.one.OneI"
+	     "test.testNamespace.two.TwoI" *llavaPackageName*)
+	 (getRefListNames (getCurrentNamespace *replNs*)))
 
   (check 9 "class java.util.StringTokenizer"
 	 (import java.util.StringTokenizer))
@@ -241,85 +242,86 @@
 
   (initTest)
 
-  (begin-test)
+  (begin-test 'testNamespaceRefSet)
 
-  (set! *newNs* (_package *newNs* 'org.llava))
-  (check 0 (list *llavaPackage*)
-	 (getRefListNames (getCurrentNamespace *newNs*)))
-  (set *newNs* 'a 'Llava-a)
-  (check 0 'Llava-a (get *newNs* 'a))
-  (check 0 'Llava-a (get *newNs* '.a))
-  (check 0 'Llava-a (get *newNs* 'llava.a))
-  (check 0 'Llava-a (get *newNs* 'org.llava.a))
+  (set! *X* (_package *X* 'org.llava))
+  (check 0.0 (list *llavaPackageName*)
+	 (getRefListNames (getCurrentNamespace *X*)))
+  (set *X* 'a 'Llava-a)
+  (check 0.1 'Llava-a (get *X* 'a))
+  (check 0.2 'Llava-a (get *X* '.a))
+  (check 0.3 'Llava-a (get *X* 'llava.a))
+  (check 0.4 'Llava-a (get *X* 'org.llava.a))
 
-  (set! *newNs* (_package *newNs* 'llava-))
-  (check 0 *replPackage* (getName (getCurrentNamespace *newNs*)))
-  (check 0 (list *replPackage* *llavaPackage*) 
-	 (getRefListNames (getCurrentNamespace *newNs*)))
-  (check 0 'Llava-a (get *newNs* 'a))
-  (check 1 'REPL-a (set *newNs* 'a 'REPL-a))
-  (check 2 'REPL-a (get *newNs* 'a))
-  (check 2 'Llava-a (get *newNs* '.a))
-  (check 2 'Llava-a (get *newNs* 'llava.a))
-  (check 2 'REPL-a (get *newNs* 'llava-.a))
-  (check 2 'Llava-a (get *newNs* 'llava.a))
-  (check 2 'REPL-a (get *newNs* 'llava-.a))
-  (check 2 'Llava-a (get *newNs* 'org.llava.a))
+  ;(set! *X* (_package *X* (-si 'newSymbol 'org.llava.F *replPackageName*)))
+  (set! *X* (_package *X* 'llava-))
+  (check 0.5 *replPackageName* (getName (getCurrentNamespace *X*)))
+  (check 0.6 (list *replPackageName* *llavaPackageName*) 
+	 (getRefListNames (getCurrentNamespace *X*)))
+  (check 0.7 'Llava-a (get *X* 'a))
+  (check 1.0 'REPL-a (set *X* 'a 'REPL-a))
+  (check 2.1 'REPL-a (get *X* 'a))
+  (check 2.2 'Llava-a (get *X* '.a))
+  (check 2.3 'Llava-a (get *X* 'llava.a))
+  (check 2.4 'REPL-a (get *X* 'llava-.a))
+  (check 2.5 'Llava-a (get *X* 'llava.a))
+  (check 2.6 'REPL-a (get *X* 'llava-.a))
+  (check 2.7 'Llava-a (get *X* 'org.llava.a))
 
-  (set! *newNs* (_package *newNs* 'foo.bar.Baz))
-  (check 3 (list "foo.bar.Baz" *llavaPackage*)
-	 (getRefListNames (getCurrentNamespace *newNs*)))
-  (check 3 'Llava-a (get *newNs* 'a))
-  (set *newNs* 'a 'Baz-a)
-  (check 2 'Baz-a (get *newNs* 'a))
-  (check 2 'Baz-a (get *newNs* 'Baz.a))
-  (check 2 'Llava-a (get *newNs* '.a))
-  (check 2 'Llava-a (get *newNs* 'llava.a))
-  (check 2 'Baz-a (get *newNs* 'foo.bar.Baz.a))
-  (check 2 'Llava-a (get *newNs* 'org.llava.a))
+  (set! *X* (_package *X* 'foo.bar.Baz))
+  (check 3 (list "foo.bar.Baz" *llavaPackageName*)
+	 (getRefListNames (getCurrentNamespace *X*)))
+  (check 3 'Llava-a (get *X* 'a))
+  (set *X* 'a 'Baz-a)
+  (check 2 'Baz-a (get *X* 'a))
+  (check 2 'Baz-a (get *X* 'Baz.a))
+  (check 2 'Llava-a (get *X* '.a))
+  (check 2 'Llava-a (get *X* 'llava.a))
+  (check 2 'Baz-a (get *X* 'foo.bar.Baz.a))
+  (check 2 'Llava-a (get *X* 'org.llava.a))
   (check 2
 	 "Undefined top level variable: repl.a"
-	 (try (get *newNs* 'repl.a) 
+	 (try (get *X* 'repl.a) 
 	      (catch (java.lang.Throwable e) (extractMessage e))))
   ;; It is ok to reference long names from any package.
   ;; Necessary for macros to work between packages.
-  (check 2 'REPL-a (get *newNs* 'llava-.a))
+  (check 2 'REPL-a (get *X* 'llava-.a))
 
-  (set! *newNs* (_package *newNs* 'test.testNamespace.one.One))
-  (check 4 "test.testNamespace.one.One" (getName (getCurrentNamespace *newNs*)))
-  (check 4 'Llava-a (get *newNs* 'a))
-  (check 4 'Llava-a (get *newNs* '.a))
-  (set *newNs* 'a 'One-a)
+  (set! *X* (_package *X* 'test.testNamespace.one.One))
+  (check 4 "test.testNamespace.one.One" (getName (getCurrentNamespace *X*)))
+  (check 4 'Llava-a (get *X* 'a))
+  (check 4 'Llava-a (get *X* '.a))
+  (set *X* 'a 'One-a)
 
-  (set! *newNs* (_package *newNs* 'foo.bar.Baz))
-  (check 4 "foo.bar.Baz" (getName (getCurrentNamespace *newNs*)))
+  (set! *X* (_package *X* 'foo.bar.Baz))
+  (check 4 "foo.bar.Baz" (getName (getCurrentNamespace *X*)))
   (check 3
-	 (list "foo.bar.Baz" *llavaPackage*)
-	 (getRefListNames (getCurrentNamespace *newNs*)))
-  (check 0 'Baz-a (get *newNs* 'a))
-  (check 0 'Llava-a (get *newNs* '.a))
-  (check 4 'Baz-a (get *newNs* 'a))
-  (check 0 'One-a (get *newNs* 'test.testNamespace.one.One.a))
-  (check 0 'Llava-a (get *newNs* 'org.llava.a))
-  (check 0 'One-a (get *newNs* 'test.testNamespace.one.One.a))
+	 (list "foo.bar.Baz" *llavaPackageName*)
+	 (getRefListNames (getCurrentNamespace *X*)))
+  (check 0 'Baz-a (get *X* 'a))
+  (check 0 'Llava-a (get *X* '.a))
+  (check 4 'Baz-a (get *X* 'a))
+  (check 0 'One-a (get *X* 'test.testNamespace.one.One.a))
+  (check 0 'Llava-a (get *X* 'org.llava.a))
+  (check 0 'One-a (get *X* 'test.testNamespace.one.One.a))
 
-  (set! *newNs* (_package *newNs* 'org.llava))
-  (check 0 (list *llavaPackage*)
-	 (getRefListNames (getCurrentNamespace *newNs*)))
-  (check 0 'Llava-a (get *newNs* 'a))
-  (check 0 'Llava-a (get *newNs* '.a))
-  (check 0 'Llava-a (get *newNs* 'org.llava.a))
+  (set! *X* (_package *X* 'org.llava))
+  (check 0 (list *llavaPackageName*)
+	 (getRefListNames (getCurrentNamespace *X*)))
+  (check 0 'Llava-a (get *X* 'a))
+  (check 0 'Llava-a (get *X* '.a))
+  (check 0 'Llava-a (get *X* 'org.llava.a))
   (check 2
 	 "Undefined top level variable: One.a"
-	 (try (get *newNs* 'One.a) 
+	 (try (get *X* 'One.a) 
 	      (catch (java.lang.Throwable e) (extractMessage e))))
-  (check 2 'One-a (get *newNs* 'test.testNamespace.one.One.a))
+  (check 2 'One-a (get *X* 'test.testNamespace.one.One.a))
 
-  (set! *newNs* (_package *newNs* '.Only))
-  (set *newNs* 'a 'Only-a)
-  (check 0 'Only-a (get *newNs* 'a))
-  (check 0 'Only-a (get *newNs* 'Only.a))
-  (check 0 'Llava-a (get *newNs* '.a))
+  (set! *X* (_package *X* '.Only))
+  (set *X* 'a 'Only-a)
+  (check 0 'Only-a (get *X* 'a))
+  (check 0 'Only-a (get *X* 'Only.a))
+  (check 0 'Llava-a (get *X* '.a))
 
   (end-test 'testNamespaceRefSet))
 
@@ -333,15 +335,15 @@
 
   (initTest)
 
-  (begin-test)
+  (begin-test 'testNamespaceNew)
 
   (check 0 "java.util.Hashtable" 
-	 (getFullNameForClass *ns* 'java.util.Hashtable))
+	 (getFullNameForClass *replNs* 'java.util.Hashtable))
   (check 1 "getFullNameForClass: undefined: Hashtable"
-	 (try (getFullNameForClass *ns* 'Hashtable)
+	 (try (getFullNameForClass *replNs* 'Hashtable)
 	      (catch (java.lang.Throwable e) (extractMessage e))))
   (import java.util.Hashtable)
-  (check 3 "java.util.Hashtable" (getFullNameForClass *ns* 'Hashtable))
+  (check 3 "java.util.Hashtable" (getFullNameForClass *replNs* 'Hashtable))
   
   (end-test 'testNamespaceNew))
 
