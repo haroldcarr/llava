@@ -9,7 +9,7 @@
 
 ;;;
 ;;; Created       : 1999 Dec 25 (Sat) 22:10:35 by Harold Carr.
-;;; Last Modified : 2004 Dec 08 (Wed) 17:42:05 by Harold Carr.
+;;; Last Modified : 2004 Dec 10 (Fri) 21:50:10 by Harold Carr.
 ;;;
 
 (begin
@@ -714,19 +714,18 @@
 
 (set! r (new 'java.io.InputStreamReader
 	     (new 'java.io.FileInputStream test-filename)))
-(set! data-read (llava-read r))
+
+(set! data-read (-read r))
 (check "read/write1" data-after-display data-read)
 
-(set! data-read (llava-read r))
+(set! data-read (-read r))
 (check "read/write2" data data-read)
 
-(set! result true)
-(map (lambda (x y)
-       (if (not (equal? x y))
-	   (set! result false)))
-     data data-read)
+(set! data-read (-read r))
+(check "read/write4" (vector->list vector-data) (vector->list data-read))
 
-(check "read/write3" true result)
+(set! data-read (-read r))
+(check "read/write4" true (eof-object? data-read))
 
 (close r)
 
