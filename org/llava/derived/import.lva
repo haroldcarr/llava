@@ -10,7 +10,7 @@
 
 ;;;;
 ;;;; Created       : 1998 Dec 13 (Sun) 09:18:12 by Harold Carr.
-;;;; Last Modified : 2004 Sep 06 (Mon) 00:11:33 by Harold Carr.
+;;;; Last Modified : 2004 Nov 28 (Sun) 16:25:41 by Harold Carr.
 ;;;;
 ;;;; Provides import
 ;;;;
@@ -129,7 +129,7 @@
 				  (toString form)))))))
 
 ; Uncomment for debug.
-(set! *_%evalDefineCMF* 'writeEval)
+;(set! *_%evalDefineCMF* 'writeEval)
 ;(set! *_%evalDefineCMF* 'write)
 
 ;;;
