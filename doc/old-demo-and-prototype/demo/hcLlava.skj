@@ -1,6 +1,6 @@
 ;;;;
 ;;;; Created       : 1999 Jun 10 (Thu) 20:56:18 by Harold Carr.
-;;;; Last Modified : 1999 Nov 17 (Wed) 12:48:04 by Harold Carr.
+;;;; Last Modified : 1999 Nov 17 (Wed) 19:23:21 by Harold Carr.
 ;;;;
 
 ;;;;
@@ -264,20 +264,22 @@
     (hcLavaPrinc (string-append "public class " (first classHeader))
 		 javaBuffer)
     (hcLavaTerpri javaBuffer)
-    (hcLavaPrinc (car (third classHeader)) javaBuffer)
-    (hcLavaPrintContents (cdr (third classHeader))
-			 (lambda () (hcLavaTerpri javaBuffer))
-			 (lambda () #f)
-			 javaBuffer
-			 #t)
-    (hcLavaTerpri javaBuffer)
-    (hcLavaPrinc (car (second classHeader)) javaBuffer)
-    (hcLavaPrintContents (cdr (second classHeader))
-			 (lambda () (hcLavaTerpri javaBuffer))
-			 (lambda () #f)
-			 javaBuffer
-			 #t)
-    (hcLavaTerpri javaBuffer)
+    (cond ((not (null? (third classHeader)))
+	   (hcLavaPrinc (car (third classHeader)) javaBuffer)
+	   (hcLavaPrintContents (cdr (third classHeader))
+				(lambda () (hcLavaTerpri javaBuffer))
+				(lambda () #f)
+				javaBuffer
+				#t)
+	   (hcLavaTerpri javaBuffer)))
+    (cond ((not (null? (second classHeader)))
+	   (hcLavaPrinc (car (second classHeader)) javaBuffer)
+	   (hcLavaPrintContents (cdr (second classHeader))
+				(lambda () (hcLavaTerpri javaBuffer))
+				(lambda () #f)
+				javaBuffer
+				#t)
+	   (hcLavaTerpri javaBuffer)))
     (hcLavaPrinc "{" javaBuffer)))
 
 (define (hcLavaGenerateMembers parsed javaBuffer skijBuffer)
@@ -286,14 +288,14 @@
       (cond ((hcLavaCommentP (car members))
 	     (hcLavaGenerateComment (car members) javaBuffer skijBuffer))
 	    (else
-	     (hcLavaGenerateMember (car members) javaBuffer skijBuffer)))
+	     (hcLavaGenerateMember (car members) parsed javaBuffer skijBuffer)))
       (set! members (cdr members)))))
 
-(define (hcLavaGenerateMember member javaBuffer skijBuffer)
-  (hcLavaGenerateMemberJava member javaBuffer)
-  (hcLavaGenerateMemberSkij member skijBuffer))
+(define (hcLavaGenerateMember member parsed javaBuffer skijBuffer)
+  (hcLavaGenerateMemberJava member parsed javaBuffer)
+  (hcLavaGenerateMemberSkij member parsed skijBuffer))
 
-(define (hcLavaGenerateMemberJava member javaBuffer)
+(define (hcLavaGenerateMemberJava member parsed javaBuffer)
   (hcLavaTerpri javaBuffer)
   (hcLavaPrinc
    (string-append
@@ -317,15 +319,23 @@
   (hcLavaTerpri javaBuffer)
   (hcLavaPrinc "}" javaBuffer))
 
-(define (hcLavaGenerateMemberSkij member skijBuffer)
+(define (hcLavaMakeProcNameSkij member parsed)
+  ;(print (hcLavaSelect 'package parsed))
+  ;(print (first (hcLavaSelect 'classHeader parsed)))
+  (string-append (symbol->string (fourth member))
+		 "Impl"))
+
+(define (hcLavaGenerateMemberSkij member parsed skijBuffer)
   (hcLavaTerpri skijBuffer)
-  (hcLavaPrinc (string-append
-		"(define ("
-		(symbol->string (fourth member)) "Impl "
-		(if (hcLavaNeedsThis? member) " this " "")
-		(hcLavaMakeParameterString (fifth member) #f #f)
-		")")
-	       skijBuffer)
+  (let ((procName (hcLavaMakeProcNameSkij member parsed)))
+    (hcLavaPrinc (string-append
+		  "(define (" 
+		  procName 
+		  " "
+		  (if (hcLavaNeedsThis? member) " this " "")
+		  (hcLavaMakeParameterString (fifth member) #f #f)
+		  ")")
+		 skijBuffer))
   (let ((body (seventh member)))
     (while (not (null? body))
       (hcLavaTerpri skijBuffer)
@@ -475,7 +485,7 @@
 (load "hcLava.skj")
 
 (define-java-class
-  (package hc.util)
+  (package hc.lava)
   (public class FooImplGen (extends Foo)
 	  (public String (bar (String x))
 		  (string-append "it works!  "
@@ -483,14 +493,11 @@
 				 (to-string x)))))
 
 ;. ripEnvHc
-cp Foo.java            ../hc/tmp
-cp FooImplGen.java     ../hc/tmp
-pushd                  ../hc/tmp
 gm
 
 (define className 'nothing)
-;(set! className 'hc.tmp.FooImpl)
-(set! className 'hc.tmp.FooImplGen)
+;(set! className 'hc.lava.FooImpl)
+(set! className 'hc.lava.FooImplGen)
 (define (tryFoo)
   (let ((foo (new className)))
     (bar foo " The Argument")))
@@ -516,7 +523,7 @@ gm
 (define-java-class
   (/** "Comment before package."
        "Each line in a string.")
-  (package hc.tmp)
+  (package hc.lava)
   (/* "Comment before import."
       "Another line.")
   (import com.ibm.jikes.skij.*)
@@ -547,14 +554,12 @@ gm
 		  `(public Object baz ,x))))
 
 ;. ripEnvHc
-cp Baz.java            ../hc/tmp
-pushd                  ../hc/tmp
 gm
 
 (define (tryBaz)
-  (let ((foo (new 'hc.tmp.Baz)))
-    (hc.tmp.Baz.barNo)
-    (hc.tmp.Baz.barYes (new 'java.lang.Integer 1) (new 'java.util.Hashtable))
+  (let ((foo (new 'hc.lava.Baz)))
+    (hc.lava.Baz.barNo)
+    (hc.lava.Baz.barYes (new 'java.lang.Integer 1) (new 'java.util.Hashtable))
     (bazNo foo)
     (bazYes foo (new 'java.lang.Integer 2))))
 
