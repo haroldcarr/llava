@@ -3,7 +3,7 @@
 <!--
 //
 // Created       : 1999 Dec 29 (Wed) 14:53:37 by Harold Carr.
-// Last Modified : 2005 Feb 08 (Tue) 09:59:35 by Harold Carr.
+// Last Modified : 2005 Feb 16 (Wed) 16:20:24 by Harold Carr.
 //
 -->
 
@@ -23,7 +23,6 @@
 
 <!ENTITY lib-control     SYSTEM "../.generated/org/llava/lib/Control.xml">
 <!ENTITY lib-exceptions  SYSTEM "../.generated/org/llava/lib/Exceptions.xml">
-<!ENTITY lib-files       SYSTEM "../.generated/org/llava/lib/Files.xml">
 <!ENTITY lib-lists       SYSTEM "../.generated/org/llava/lib/Lists.xml">
 <!ENTITY lib-llava-doc   SYSTEM "../.generated/org/llava/lib/LlavaDoc.xml">
 <!ENTITY lib-macros      SYSTEM "../.generated/org/llava/lib/Macros.xml">
@@ -39,6 +38,7 @@
 <!ENTITY lib-cl-sequences SYSTEM "../.generated/org/llava/lib/cl/Sequences.xml">
 
 
+<!ENTITY lib-io-directorwalker SYSTEM "../.generated/org/llava/lib/io/DirectoryWalker.xml">
 <!ENTITY lib-io-filewalker SYSTEM "../.generated/org/llava/lib/io/FileWalker.xml">
 
 

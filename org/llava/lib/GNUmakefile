@@ -20,7 +20,6 @@ PKGDIR		=	org/llava/lib
 RESOURCE_FILES	= \
 	$(PKGDIR)/Control.lva \
 	$(PKGDIR)/Exceptions.lva \
-	$(PKGDIR)/Files.lva \
 	$(PKGDIR)/Lists.lva \
 	$(PKGDIR)/LlavaDoc.lva \
 	$(PKGDIR)/Macros.lva \
@@ -33,6 +32,7 @@ RESOURCE_FILES	= \
 	$(PKGDIR)/cl/Macros.lva \
 	$(PKGDIR)/cl/Sequences.lva \
 	$(PKGDIR)/cl/Symbols.lva \
+	$(PKGDIR)/io/DirectoryWalker.lva \
 	$(PKGDIR)/io/FileWalker.lva \
 	$(PKGDIR)/java/Lang.lva \
 	$(PKGDIR)/reflect/Namespace.lva \

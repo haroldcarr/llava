@@ -1,7 +1,7 @@
 <!--
 //
 // Created       : 2004 Sep 05 (Sun) 22:19:59 by Harold Carr.
-// Last Modified : 2005 Feb 08 (Tue) 09:59:10 by Harold Carr.
+// Last Modified : 2005 Feb 16 (Wed) 16:20:52 by Harold Carr.
 //
 -->
 <chapter id="llava-ch-libraries">
@@ -10,7 +10,6 @@
 
   &lib-control;
   &lib-exceptions;
-  &lib-files;
   &lib-lists;
   &lib-llava-doc;
   &lib-macros;
@@ -25,6 +24,7 @@
   &lib-cl-symbols;
   &lib-cl-sequences;
 
+  &lib-io-directorywalker;
   &lib-io-filewalker;
 
   &lib-java-lang;

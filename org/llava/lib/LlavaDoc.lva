@@ -1,20 +1,20 @@
-;;;; Copyright (c) 1997 - 2004 Harold Carr
-;;;;
-;;;; This work is licensed under the Creative Commons Attribution License.
-;;;; To view a copy of this license, visit 
-;;;;   http://creativecommons.org/licenses/by/2.0/
-;;;; or send a letter to
-;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
-;;;;---------------------------------------------------------------------------
+;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;
+;;; This work is licensed under the Creative Commons Attribution License.
+;;; To view a copy of this license, visit 
+;;;   http://creativecommons.org/licenses/by/2.0/
+;;; or send a letter to
+;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;---------------------------------------------------------------------------
 
 ;;;;
 ;;;; Created       : 2004 Sep 03 (Fri) 18:32:41 by Harold Carr.
-;;;; Last Modified : 2005 Feb 16 (Wed) 14:09:10 by Harold Carr.
+;;;; Last Modified : 2005 Feb 16 (Wed) 16:18:51 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.LlavaDoc)
 
-(import org.llava.lib.Files)
+(import org.llava.lib.io.DirectoryWalker)
 (import org.llava.lib.io.FileWalker)
 (import org.llava.lib.scm.Lists)
 
