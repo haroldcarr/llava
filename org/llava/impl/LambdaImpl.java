@@ -12,7 +12,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 23 (Thu) 18:36:42 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:33:55 by Harold Carr.
+ * Last Modified : 2004 Dec 01 (Wed) 21:58:34 by Harold Carr.
  */
 
 package org.llava.impl.runtime.procedure;
@@ -110,10 +110,11 @@ public class LambdaImpl
     public String toString ()
     {
 	// REVISIT: duplicated in GenericProcedureImpl, LambdaImpl, Syntax
-	// REVISIT - not quite - need to update to namespace.
-	String result = "{" + getClass().getName() + " " + name;
-	result +=
-	    ((namespace != null) ? " " + namespace.toString() : "") + "}";
+	String result = 
+	    "{lambda " 
+	    + ((namespace != null) ? namespace.getName() + "." : "")
+	    + name 
+	    + "}";
 	return result;
     }
 
