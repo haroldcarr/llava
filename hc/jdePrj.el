@@ -1,25 +1,26 @@
 ;;;;
 ;;;; Created       : 1999 Dec 17 (Fri) 21:16:19 by Harold Carr.
-;;;; Last Modified : 2000 Apr 14 (Fri) 18:16:30 by .
+;;;; Last Modified : 2001 Mar 26 (Mon) 16:42:11 by Harold Carr.
 ;;;;
 
 (require 'hcJdeRip)
 
 (defun hcJdeRip-sourcePathlistExtras (ps)
   (hcJde-makePath ps
-		  "~/.sync/.esync/java/"
-		  "~/.sync/.esync/java/lava/"
+		  "~/.sync/.lsync/lava/"
+		  "~/.sync/.lsync/lava/testLava/"
 		  ))
 
 (defun hcJdeRip-classpathExtras (ps)
   (hcJde-makePath ps
-		  "~/.sync/.esync/java/.classes"
-		  "~/.sync/.esync/java/lava/.classes"
+		  "~/.sync/.lsync/lava/.classes"
+		  "~/.sync/.lsync/lava/testLava"
+		  "~/.sync/.lsync/lava/lib" ;; Necessary for libs
 		  ))
 
 (defun s ()
   (interactive)
-  (hcJdeRip-shell "lava.Lava" ""))
+  (hcJdeRip-shell "lavaProfile.Lava" ""))
 
 (defun c ()
   (interactive)
@@ -28,24 +29,24 @@
 (comment
 (load-file "jdePrj.el")
 
-;stop in testLava.TestTop.testTop
-;stop in libLava.r1.code.CodeLiteral.<init>()
-;stop in libLava.r1.code.CodeLiteral.<init>(java.lang.Object, java.lang.Object)
-;stop in libLava.r1.procedure.primitive.lava.opt.PrimPairP.apply
-;stop in libLava.r1.procedure.primitive.lava.opt.PrimPairP.<init>
-;stop in libLava.r1.procedure.primitive.lava.PrimNewThread$LavaRunnable.run
-;stop in lava.lang.exceptions.LavaException newLavaException(java.lang.Throwable)
-;stop in libLava.r1.procedure.primitive.lava.PrimNewThread
-;stop in libLava.r1.procedure.primitive.lava.PrimNewThread$LavaThread.run
-;stop in libLava.r1.syntax.UserSyntax.compileprint 
-;stop in libLava.r1.code.CodeApplication.run
-;stop in libLava.r1.procedure.primitive.lava.PrimLoad.apply
-;stop in libLava.r1.procedure.primitive.lava.PrimStringAppend.apply
-;stop in libLava.c1.CompilerImpl.compile(java.lang.Object, libLava.c1.EnvironmentLexical, libLava.rt.LavaRuntime)
-;stop in libLava.r1.procedure.primitive.lava.PrimLoad.apply
-;stop in lava.Repl.eval
-;stop in lava.Repl.read(java.lang.String)
-;stop in lava.io.LavaReaderImpl.readToken
+stop in testLava.TestTop.testTop
+stop in lavaProfile.runtime.code.CodeLiteral.<init>()
+stop in lavaProfile.runtime.code.CodeLiteral.<init>(java.lang.Object, java.lang.Object)
+stop in lavaProfile.runtime.procedure.primitive.lava.opt.PrimPairP.apply
+stop in lavaProfile.runtime.procedure.primitive.lava.opt.PrimPairP.<init>
+stop in lavaProfile.runtime.procedure.primitive.lava.PrimNewThread$LavaRunnable.run
+stop in lava.lang.exceptions.LavaException newLavaException(java.lang.Throwable)
+stop in lavaProfile.runtime.procedure.primitive.lava.PrimNewThread
+stop in lavaProfile.runtime.procedure.primitive.lava.PrimNewThread$LavaThread.run
+stop in lavaProfile.runtime.syntax.UserSyntax.compileprint 
+stop in lavaProfile.runtime.code.CodeApplication.run
+stop in lavaProfile.runtime.procedure.primitive.lava.PrimLoad.apply
+stop in lavaProfile.runtime.procedure.primitive.lava.PrimStringAppend.apply
+stop in lavaProfile.compiler.CompilerImpl.compile(java.lang.Object, lavaProfile.compiler.EnvironmentLexical, lava.runtime.LavaRuntime)
+stop in lavaProfile.runtime.procedure.primitive.lava.PrimLoad.apply
+stop in lava.Repl.eval
+stop in lava.Repl.read(java.lang.String)
+stop in lava.io.LavaReaderImpl.readToken
 
 (load "hcChangeWords")
 (defun is-ignored-p (full-path-and-name)
@@ -54,24 +55,32 @@
 (defun is-ignored-suffix-p (full-path-and-name) nil)
 
 (hcChangeWords
- '(("master". "leader")
-   ("slave". "follower")
+ '(
+   ("case-eval-l" . "case-eval-r")
+;   ("FR1" . "FR")
+;   ("FC1" . "FC")
+;   ("lavaProfile.compiler" . "lavaProfile.compiler")
+;   ("libLava.r1" . "lavaProfile.runtime")
+;   ("libLava.co" . "lava.compiler")
+;   ("libLava.rt" . "lava.runtime")
+;   ("define ." . "define _")
+;   ("define-syntax ." . "define-syntax _")
+;   (".%" . "_%")
+;   ("\(." . "\(_")
+;   ("\'." . "\'_")
+;   ("\"." . "\"_")
    )
- "~/rip/.ripsync/examples/corba/sync/InterSync"
- "~/rip/.ripsync/examples/corba/sync/InterSync"
+ "~/.sync/.lsync/lava"
+ "~/.sync/.lsync/lava"
  t)
 
 
-(hcChangeWords
- '(("(require 'java/import) ". "(require 'java/lang/import)")
+ '(
+   ("(require 'java/import) ". "(require 'java/lang/import)")
    ("(require 'java/newArray) ". "(require 'java/lang/newArray)")
    ("(require 'corba/CosNaming) ". "(require 'java/corba/CosNaming)")
    ("(require 'corba/orb) ". "(require 'java/corba/orb)")
    )
- "~/.sync/.esync/java/lava"
- "~/.sync/.esync/java/lava"
- t)
-
 
  '(
    ;;  Syntax
