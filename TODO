@@ -1,0 +1,129 @@
+Created       : 1999 Dec 18 (Sat) 17:14:40 by Harold Carr.
+Last Modified : 2000 Oct 22 (Sun) 14:00:37 by .
+
+To do:
+
+* Check out how to deal with inner class creation/refer from lava syntax level.
+
+------------------------------------------------------------------------------
+Before initial release:
+
+* checkNumArgs
+
+* PrimNot
+
+* case-eval-l should be case-eval-r
+
+* 1. Rewrite DII (i.e., dynvoke - call it Reflect, or DII).
+	DII and DIIImpl.  -> PrimInvoke (etc.) will then need DII instance.
+  2. Enable auto-generic toggling
+
+* reader: make object eq constants for all tokens.
+
+* Make scheme IF be default.
+
+* lambda, assignment, etc as pluggable syntax rather than built
+  into the compiler.
+
+* Interface and *Impl for all Prim* Code* etc.
+
+* Make other procedures like c*r as generics off of Pair rather
+  than explicit primitives.
+
+* Make undefinedIdHandler into two distinct classes rather than anonymous.
+
+* define-final (use on lambdas, not generics).
+
+* Internally use define and define-final rather than set
+
+* Implement pluggability in factories.
+  Plus, do not create individual type factories until needed.
+
+* Check close after load - and check logic of PrimLoad
+
+* make .print/display/newline use current std out (in repl).
+
+------------------------------------------------------------------------------
+Near term:
+
+* Optimize
+	startup 
+		- collect all derived into one internal string.
+		- or convert derived into explicit Java code.
+		- or speed up system itself so code runs faster (do this first)
+	Enable non-generic version which explicitly has primitives
+		in one class and switch statement in apply.
+
+* support serialization of Lava
+
+* Enable anonymous classes for primitives (and maybe use them).
+
+* Factor primitive invoke/field methods.
+
+* try code running without compiler or repl
+
+* javadoc lava
+
+* LavaInteger subtype of Integer which preallocates range: ?-128.
+
+* LavaDouble  subtype of Double  which preallocates 0.0, 1.0, ?
+
+* If you see a message like:
+
+Error: java.lang.Exception: setq: not enough arguments
+
+it means you defined a macro *AFTER* you referenced it.
+Example:
+
+(begin 
+  (require 'cl/control/setq)
+  (setq a 34))
+
+That is because Lava is apply the syntax procedure for setq
+to the list (1 34) but the expander expects two arguments.
+
+------------------------------------------------------------------------------
+Someday:
+
+* Visit "REVISIT" in code.
+
+* REVISIT ThreadDeath in EngineImpl and GenericProcedureImpl.
+
+* Reconsider undefined turning in GenericProcedure.
+  Obviates define before set!.
+
+* Macro handling - right now it seems they must be defined first.
+
+* Macros lambdas always get top level environment.
+  SHould get current lexical environment.  See SyntaxDefineSyntax.lva
+
+(let ((test -1))
+  (define foo (lambda () foo)))
+(getSavedFrame foo)
+(let ((test -1))
+  (define-syntax bar (lambda () foo)))
+(getSavedFrame (getMacroLambda bar))
+
+* Write Scheme write (i.e., String printing, quotes, characters).
+
+* Macroexpand and prettyprint.
+
+* Lava and Repl should go in libLava?
+
+* Architecture
+
+	- top level and what is passed between compiler and evaluator.
+	- environments.
+	   Runtime
+		Top
+		Frame
+	   Compiletime
+		Lexical
+		Macro env ?? (probably should go in top or frame).
+
+* Write R5RS compiler/runtime.
+  Useful and demonstrates plugability/reusablity.
+
+;; End of file.
+
+

@@ -1,0 +1,58 @@
+;;;;
+;;;; Created       : 1998 Dec 05 (Sat) 21:41:11 by Harold Carr.
+;;;; Last Modified : 2000 Jan 21 (Fri) 23:55:46 by Harold Carr.
+;;;;
+
+(require 'test/test)
+
+(begin-test 'lava/program/define-with-exc-hand)
+
+(test-require 'lava/program/define-with-exc-hand)
+
+(define-with-exc-hand (-expected- ex str a b c)
+  (/ a b)
+  (charAt str a) 
+  (new 'java.lang.Long str)
+  (car c))
+
+(check "define-with-exc-hand1"
+       'a
+       (-expected- #f "123" 2 4.0 '(a b)))
+
+(check "define-with-exc-hand1"
+       "Exception in procedure -expected- : java.lang.ArithmeticException: / by zero"
+       (-expected- #f "123" 4 0 '(a b)))
+
+(test-require 'lava/control/case-type)
+
+(define test--expected-
+  (lambda (s a b c)
+    (-expected- (lambda args
+	   (let ((e (member-cadr :exc args)))
+	     (case-type e
+	       ((java.lang.ArithmeticException 
+		 java.lang.StringIndexOutOfBoundsException) "arith or string")
+	       ((java.lang.NumberFormatException)           "number")
+	       (else                                        'else))))
+	 s a b c)))
+
+(check "define-with-exc-hand1"
+       "arith or string"
+       (test--expected- "123" 2 0 4))
+
+(check "define-with-exc-hand1"
+       "arith or string"
+       (test--expected- "123" 5 -1 -1))
+
+(check "define-with-exc-hand1"
+       "number"
+       (test--expected- "aa123" 1 1 -1))
+
+(check "define-with-exc-hand1"
+       'else
+       (test--expected- "123" 1 1 -1))
+
+(end-test 'lava/program/define-with-exc-hand)
+
+;;; End of file.
+

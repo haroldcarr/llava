@@ -1,0 +1,22 @@
+;;;;
+;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
+;;;; Last Modified : 2000 Feb 04 (Fri) 07:17:02 by Harold Carr.
+;;;;
+
+(require 'lava/exceptions/error)
+
+(define apply-fail-on-false 
+  (lambda (procedure args)
+    (let ((result (apply procedure args)))
+      (cond (result)
+	    (else (error* (cons procedure args) " failed"))))))
+
+(provide 'lava/exceptions/apply-fail-on-false)
+
+(.comment
+(require 'exceptions/apply-fail-on-false)
+(apply-fail-on-false (lambda (x) (pair? x)) '(x))
+(apply-fail-on-false (lambda (x) (pair? x)) '((x)))
+)
+
+;;; End of file.

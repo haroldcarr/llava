@@ -1,0 +1,54 @@
+
+
+;;; /**
+;;; Comment before package.
+;;; Each line in a string.
+
+;;; (package hc.lava)
+
+;;; /*
+;;; Comment before import.
+;;; Another line.
+
+(hcRequire "importJava")
+(importJava 'hc.lava.Baz)
+
+;;; (import com.ibm.jikes.skij.*)
+;;; (import java.util.Hashtable)
+
+;;; //
+;;; Comment before class.
+;;; Another line.
+
+
+;;; /**
+;;; Constructor with no args.
+
+(define (hc.lava.Baz.BazImpl  this )
+(print "Baz no arg constructor"))
+
+;;; /*
+;;; Static method with no args.
+
+(define (hc.lava.Baz.barNoImpl )
+(print "barNo"))
+
+;;; /*
+;;; Static method with args.
+
+(define (hc.lava.Baz.barYesImpl x y)
+(let ((return (list 'public 'static 'Object 'barYes x))) (print return) return))
+
+;;; //
+;;; Virtual method with no args.
+
+(define (hc.lava.Baz.bazNoImpl  this )
+(print "bazNo"))
+
+;;; //
+;;; Virtual method with args.
+
+(define (hc.lava.Baz.bazYesImpl  this x)
+`(public Object baz ,x))
+
+;;; End of file.

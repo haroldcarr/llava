@@ -1,0 +1,47 @@
+;;;;
+;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
+;;;; Last Modified : 2000 Jan 22 (Sat) 17:11:09 by Harold Carr.
+;;;;
+
+(require 'test/test)
+
+(begin-test 'cl/macros/defmacro)
+
+(test-require 'cl/macros/defmacro)
+
+(defmacro ffff (x y . r) `(list ,x ,y ',@r))
+
+(check "defmacro1"
+       '(3 4 (5 6))
+       (ffff (+ 1 2) 4 (5 6)))
+
+(end-test 'cl/macros/defmacro)
+
+(.comment
+;; See if macros only expanded once at compiletime.
+
+(define macrocalled 0)
+
+(define (foo x)
+  (test x))
+macrocalled
+(foo 3)
+
+(defmacro test (a)
+  (set! macrocalled (+ macrocalled 1))
+  `(list ',a))
+
+(foo 3)
+macrocalled
+
+(define (foom x)
+  (test x))
+macrocalled
+
+(foom 4)
+macrocalled
+(foom 4)
+macrocalled
+)
+;;; End of file.
+

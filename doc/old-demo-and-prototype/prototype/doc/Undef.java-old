@@ -1,0 +1,69 @@
+import java.util.Hashtable;
+
+class _JistSystem {
+  protected static Object handleUndefinedLookup(String classname,
+                                                String methodName) {
+    System.out.println("Undefined lookup: " + classname + "." + methodName);
+    return new _Undef_not_interface() {
+                 public String not() {
+                   return "Undef NOT";
+                 };
+           };
+  }
+  protected static Object handleUndefinedCast(String classname,
+                                              String methodName) {
+    System.out.println("Undefined cast: " + classname + "." + methodName);
+    return "Substitute result";
+  }
+}
+
+public class Undef {
+  public static void main(String[] av){
+    new _Undef_indirect_load_1();  // Load methods.
+    System.out.println(
+     ((_Undef_sayIt_interface)_Undef_indirect.getMethod("sayIt")).sayIt("World!")
+    );
+    System.out.println(
+     ((_Undef_not_interface)_Undef_indirect.getMethod("not")).not()
+    );
+    Object method =_Undef_indirect.getMethod("sayIt");
+    Object result = null;
+    if (method instanceof  _Undef_sayIt_interface_2)
+      result = ((_Undef_sayIt_interface_2)method).sayIt();
+    else
+      result = _JistSystem.handleUndefinedCast("Undef", "sayIt");
+    System.out.println(result);
+  }
+}
+
+public class Undef {
+  public static void main(String[] av){
+    new _Undef_indirect_load_1();  // Load methods.
+    Object methodThenResult;
+
+    // Undef.sayIt("World!");
+    methodThenResult =_Undef_indirect.getMethod("sayIt");
+    if (methodThenResult instanceof  _Undef_sayIt_interface)
+      methodThenResult = ((_Undef_sayIt_interface)methodThenResult).sayIt("World!");
+    else
+      methodThenResult = _JistSystem.handleUndefined("Undef", "sayIt");
+    System.out.println(methodThenResult);
+
+    // Undef.not();
+    methodThenResult =_Undef_indirect.getMethod("not");
+    if (methodThenResult instanceof  _Undef_not_interface)
+      methodThenResult = ((_Undef_not_interface)methodThenResult).not();
+    else
+      methodThenResult = _JistSystem.handleUndefined("Undef", "not");
+    System.out.println(methodThenResult);
+
+    // Undef.sayIt();
+    methodThenResult =_Undef_indirect.getMethod("sayIt");
+    if (methodThenResult instanceof  _Undef_sayIt_interface_2)
+      methodThenResult = ((_Undef_sayIt_interface_2)methodThenResult).sayIt();
+    else
+      methodThenResult = _JistSystem.handleUndefined("Undef", "sayIt");
+    System.out.println(methodThenResult);
+  }
+}
+

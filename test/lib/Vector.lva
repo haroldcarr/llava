@@ -1,0 +1,28 @@
+;;;;
+;;;; Created       : 2000 Feb 10 (Thu) 04:12:22 by Harold Carr.
+;;;; Last Modified : 2000 Feb 10 (Thu) 04:18:04 by Harold Carr.
+;;;;
+
+(require 'test/test)
+
+(begin-test 'lava/vectors/vector-map)
+
+(test-require 'lava/vectors/vector-map)
+
+(require 'scm/vectors/list2vector)
+
+(check "vector-map"
+       '(1 2 3)
+       (vector-map (lambda (x) (+ x 1)) (list->vector '(0 1 2))))
+
+(check "vector-for-each"
+       '(5 null)
+       (let* ((result 0)
+	      (for-each-result 
+	       (vector-for-each (lambda (ignore) (set! result (+ result 1)))
+				(list->vector '(a b c d e)))))
+	 (list result for-each-result)))
+
+(end-test 'lava/vectors/vector-map)
+
+;;; End of file.

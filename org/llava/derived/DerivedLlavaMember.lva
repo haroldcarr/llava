@@ -1,0 +1,17 @@
+;;;;
+;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
+;;;; Last Modified : 2000 Feb 21 (Mon) 02:14:06 by Harold Carr.
+;;;;
+
+(define (memq this that)
+  (cond ((null? that) false)
+	((eq? this (car that)) that)
+	(else (member this (cdr that)))))
+
+(define (member this that)
+  (cond ((null? that) false)
+	((equal? this (car that)) that)
+	(else (member this (cdr that)))))
+
+;;; End of file.
+

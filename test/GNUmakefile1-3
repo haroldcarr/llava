@@ -1,0 +1,29 @@
+#
+# Created       : 2000 Feb 10 (Thu) 23:32:03 by Harold Carr.
+# Last Modified : 2000 Feb 10 (Thu) 23:33:26 by Harold Carr.
+#
+
+TOPDIR		=	..
+
+PACKAGE		=	testLava
+PKGDIR		=	testLava
+
+# The CLIENT name is misleading.
+# I am reusing some of my CORBA client/server rules.
+
+CLIENT		=	$(PACKAGE).TestReflection1_3
+
+FILES_java	= \
+	$(PKGDIR)/TestReflection1_3.java
+
+all :: classes
+
+hcMakefiles=$(shell hcMakefiles)
+#include $(hcMakefiles)/javaDefs.gmk
+#include $(hcMakefiles)/javaRules.gmk
+# Following just to get "c" rule
+include $(hcMakefiles)/ripDefs.gmk
+include $(hcMakefiles)/ripRules.gmk
+
+# End of file.
+

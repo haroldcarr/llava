@@ -1,0 +1,32 @@
+;;;;
+;;;; Created       : 1997 Nov 17 (Mon) 20:38:08 by Harold Carr.
+;;;; Last Modified : 2000 Feb 10 (Thu) 04:10:55 by Harold Carr.
+;;;;
+
+(define vector-map
+  (lambda (proc java-array)
+    (.%map-java-array #t proc java-array)))
+
+(define vector-for-each
+  (lambda (proc java-array)
+    (.%map-java-array #f proc java-array)))
+
+(define .%map-java-array 
+  (lambda (cons? proc java-array)
+    (let ((result '()))
+      (do ((len (.si 'getLength 'java.lang.reflect.Array java-array))
+	   (i 0 (+ i 1))
+	   (ptr '()
+		(let* 
+		  ((el (proc (.si 'get 'java.lang.reflect.Array java-array i)))
+		   (el-cons (cons el '()))) ;; ***** not if cons? #f
+		  (cond (cons?
+			 (if (not (null? ptr))
+			     (setCdr ptr el-cons)
+			     (set! result el-cons)) ;; First element.
+			 el-cons)))))
+	  ((>= i len) result)))))
+
+(provide 'lava/vectors/vector-map)
+
+;;; End of file.

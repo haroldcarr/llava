@@ -1,0 +1,16 @@
+(package foo) ...
+(package foo ...)
+
+Basic types OK inside method, just not passed.
+
+Keep comments and javadoc.
+
+Attribute in class file to indicate JIST.
+So JIST loader can recognize non-JIST classes
+and create/load indirect tables.
+
+Granularity of redefinition
+
+Serialization
+
+Distribution

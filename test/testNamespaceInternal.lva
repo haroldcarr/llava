@@ -1,0 +1,340 @@
+;;;;
+;;;; Created       : 2000 Oct 21 (Sat) 10:46:48 by Harold Carr.
+;;;; Last Modified : 2004 Dec 22 (Wed) 10:37:38 by Harold Carr.
+;;;;
+
+;; Think about:
+;; * From any package you must import to enable BOTH short and long references.
+;; * Have import precompute as much reflection as possible on all methods
+;;   on each class to avoid full DI.
+
+
+
+(require 'test/test)
+
+(define *topLevelNamespace* null)
+
+(define *fullNameNamespaceMap*
+  (new 'java.util.Hashtable))
+
+(define (createNamespace x)
+  (let ((ns (new 'testLava.Namespace x *topLevelNamespace*)))
+    (put *fullNameNamespaceMap* x ns)
+    ns))
+
+;; N.B.: Each namespace always contains the topLevelNamespace
+;; at the end of its refList.  During initialization we need to
+;; explicitly remove this reference - both because it doesn't
+;; exist so it is null - and if it did exist would cause a circular
+;; lookup.
+(set! *topLevelNamespace* (createNamespace "topLevelNamespace"))
+(remove (getRefList *topLevelNamespace*) 1)
+
+(define *replNamespace* (createNamespace "REPL"))
+(define *currentNamespace* *replNamespace*)
+
+(define (findNamespace x)
+  (get *fullNameNamespaceMap* x))
+
+(define (findOrCreateNamespace x)
+  (let ((ns (findNamespace x)))
+    (if (null? ns)
+        (createNamespace x)
+	ns)))
+
+(define (getRefListNames ns)
+  (let ((refList (getRefList ns)))
+    (do ((result '()    
+		 (cons (getName (elementAt refList i)) result))
+	 (i      (- (size refList) 1) 
+		 (- i 1)))
+	((= i -1) result))))
+
+(.comment
+(begin
+(load "ns.lva")
+(begin-test)
+
+(check 1
+       '("topLevelNamespace")
+       (getRefListNames *topLevelNamespace*))
+*fullNameNamespaceMap*
+(check 2 2 (size *fullNameNamespaceMap*))
+(createNamespace "foo.bar")
+*fullNameNamespaceMap*
+(check 3 3 (size *fullNameNamespaceMap*))
+(findOrCreateNamespace "foo.bar")
+*fullNameNamespaceMap*
+(check 4 3 (size *fullNameNamespaceMap*))
+(check 5
+       '("foo.bar" "topLevelNamespace")
+       (getRefListNames (findOrCreateNamespace "foo.bar")))
+(findOrCreateNamespace "bar.baz")
+*fullNameNamespaceMap*
+(check 4 4 (size *fullNameNamespaceMap*))
+(check 6
+       '("bar.baz" "topLevelNamespace")
+       (getRefListNames (findOrCreateNamespace "bar.baz")))
+(end-test)
+)
+)
+
+;-------------------------
+
+(define *nextPackageShouldBe* '())
+
+(define (package p c)
+  (let ((PC (string-append (toString p) "." (toString c))))
+    (if (not (null? *nextPackageShouldBe*))
+	(if (not (equals PC *nextPackageShouldBe*))
+	    (error (string-append "incorrect package: "
+				  PC
+				  " should be: "
+				  *nextPackageShouldBe*))))
+    (set! *currentNamespace* (findOrCreateNamespace PC))))
+
+(.comment
+(begin
+(load "ns.lva")
+(begin-test)
+(check 1
+       '("REPL" "topLevelNamespace")
+       (getRefListNames *currentNamespace*))
+*fullNameNamespaceMap*
+(check 2 2 (size *fullNameNamespaceMap*))
+(package 'foo 'bar)
+*fullNameNamespaceMap*
+(check 3 3 (size *fullNameNamespaceMap*))
+(check 4 
+       '("foo.bar" "topLevelNamespace")
+       (getRefListNames *currentNamespace*))
+(package 'foo 'bar)
+*fullNameNamespaceMap*
+(check 3 3 (size *fullNameNamespaceMap*))
+(check 4 
+       '("foo.bar" "topLevelNamespace")
+       (getRefListNames *currentNamespace*))
+(package 'foo 'baz)
+*fullNameNamespaceMap*
+(check 3 4 (size *fullNameNamespaceMap*))
+(check 2
+       '("foo.baz" "topLevelNamespace")
+       (getRefListNames *currentNamespace*))
+(package 'buz 'saw)
+*fullNameNamespaceMap*
+(check 3 5 (size *fullNameNamespaceMap*))
+(check 1
+       '("buz.saw" "topLevelNamespace")
+       (getRefListNames *currentNamespace*))
+(end-test)
+)
+)
+
+;-------------------------
+
+(define (importX name)
+  (set! name (toString name))
+  (let ((loadName (replace name #\. #\/)))
+    (if (not (eq? (member name (getRefListNames *currentNamespace*))
+		  false))
+	true ;; but load it if touched since load time to pick up changes
+	     ;; but that doesn't handle erasures.
+	(try
+	 (begin
+	   ;; Try a file load first.
+	   (importXAux 
+	    name
+	    (lambda ()
+	      ;; Depends on package procedure doing set! *currentNamespace*.
+	      (require loadName)))) 
+	 (catch (java.lang.Exception ex)
+		;; If that does not work try to "load" the class.
+		(.print (list 'Exception ex))
+		;; This statement will need a try/catch to reset current.
+		(set! *currentNameSpace* (findOrCreateNamespace name))
+		;; If class and already loaded do nothing
+		;; since you can't reload classes nothing changes
+		(importXAux 
+		 name
+		 (lambda ()
+		   (.print "need to importX")
+		   (throw 
+		    (new 'java.lang.Exception
+			 "static loading not implemented")))))))))
+
+(define (importXAux name proc)
+  (let ((savedPackage #f))
+    (try
+     (begin
+       (set! savedPackage *currentNamespace*)
+       (set! *nextPackageShouldBe* name) ; ignored if class
+       (proc)
+       (add (getRefList savedPackage)
+	    (- (size (getRefList savedPackage)) 1)
+	    *currentNamespace*))
+     (finally
+      (set! *currentNamespace* savedPackage)
+      (set! *nextPackageShouldBe* '())))))
+  
+(.comment
+(begin
+(load "ns.lva")
+(begin-test)
+*fullNameNamespaceMap*
+(check 1 2 (size *fullNameNamespaceMap*))
+(check 2
+       '("REPL" "topLevelNamespace")
+       (getRefListNames *currentNamespace*))
+(importX 'testLava.ns.one.One)
+*fullNameNamespaceMap*
+(check 3 4 (size *fullNameNamespaceMap*))
+(check 4
+       '("REPL" "testLava.ns.one.One" "topLevelNamespace")
+       (getRefListNames *currentNamespace*))
+(check 5
+       '("testLava.ns.one.One" "testLava.ns.two.Two" "topLevelNamespace")
+       (getRefListNames (findNamespace "testLava.ns.one.One")))
+(check 6
+       '("testLava.ns.two.Two" "topLevelNamespace")
+       (getRefListNames (findNamespace "testLava.ns.two.Two")))
+
+(importX 'testLava.ns.two.Two)
+(check 7
+       '("REPL" "testLava.ns.one.One" "testLava.ns.two.Two" "topLevelNamespace")
+       (getRefListNames *currentNamespace*))
+(importX 'testLava.ns.two.Two)
+(check 8
+       '("REPL" "testLava.ns.one.One" "testLava.ns.two.Two" "topLevelNamespace")
+       (getRefListNames *currentNamespace*))
+(end-test)
+)
+)
+
+;-------------------------
+
+(define (isDotted? x)
+  (if (= (indexOf x ".") -1)
+      false
+      true))
+
+(define (setE! x val)
+  (set! x (toString x))
+  (if (isDotted? x)
+      (error (string-append "setE!: no dots allowed: " x))
+      (put (getMap *currentNamespace*) x val))
+  val)
+
+(define (packageAndClassOf x)
+  (substring x 0 (lastIndexOf x ".")))
+
+(define (variableOf x)
+  (substring x (+ (lastIndexOf x ".") 1) (length x)))
+
+(define (hasMultipleDots? x)
+  (if (or (= (indexOf x ".") -1)
+	  (= (indexOf x ".") (lastIndexOf x ".")))
+      false
+      true))
+
+(define (refE x)
+  (set! x (toString x))
+  (if (isDotted? x)
+      (refDotted (packageAndClassOf x) (variableOf x))
+      (refNotDotted x)))
+
+(define (refNotDotted x)
+  (.print (list 'refNotDotted x))
+  (if (containsKey (getMap *currentNamespace*) x)
+      (get (getMap *currentNamespace*) x)
+      (error (string-append "undefined: " x))))
+
+(define (classNameOf x)
+  (variableOf x))
+
+(define (endsWithMatch ns x)
+  (let ((refList (getRefList ns)))
+    (call/cc
+     (lambda (return)
+       (do ((i (- (size refList) 1) (- i 1)))
+	   ((= i -1) false)
+	 (if (equals x (classNameOf (getName (elementAt refList i))))
+	     (return (elementAt refList i))))))))
+
+(define (refDotted pc m)
+  (.print (list 'refDotted pc m))
+  ;; REVISIT - only allow abbreviated or full refs to names in refList
+  ;; instead of global as is done here.
+  (cond ((containsKey *fullNameNamespaceMap* pc)
+	 (lookup (get *fullNameNamespaceMap* pc) m))
+	((hasMultipleDots? pc) (error (string-append "undefined: " m)))
+	((let ((ns (endsWithMatch *currentNamespace* pc)))
+	   (.print (list "NS" ns m))
+	   (if (and (not (eq? ns false))
+		    (containsKey (getMap ns) m))
+	       (lookup ns m)
+	       (error (string-append "refDotted: undefined: " 
+				     pc "." m)))))))
+
+(define (lookup namespace x)
+  (let ((savedNamespace *currentNamespace*))
+    (try 
+     (begin
+       (set! *currentNamespace* namespace)
+       (refNotDotted x))
+     (finally
+      (set! *currentNamespace* savedNamespace)))))
+
+
+(.comment
+(begin
+(load "ns.lva")
+(begin-test)
+(check 1 34 (setE! 'a 34))
+(check 2 34 (refE 'a))
+(check 3
+       '("REPL" "topLevelNamespace")
+       (getRefListNames *currentNamespace*))
+(package 'foo.bar 'Baz)
+(check 3
+       '("foo.bar.Baz" "topLevelNamespace")
+       (getRefListNames *currentNamespace*))
+(setE! 'a 69)
+(check 2 69 (refE 'a))
+(check 2 69 (refE 'foo.bar.Baz.a))
+(check 2 34 (refE 'REPL.a))
+(importX 'testLava.ns.one.One)
+(check 3
+       '("foo.bar.Baz" "testLava.ns.one.One" "topLevelNamespace")
+       (getRefListNames *currentNamespace*))
+(package 'testLava.ns.one 'One)
+(check 4 "testLava.ns.one.One" (getName *currentNamespace*))
+(setE! 'foo -69)
+(package 'foo.bar 'Baz)
+(check 4 "foo.bar.Baz" (getName *currentNamespace*))
+(refE 'One.foo)
+(end-test)
+)
+)
+
+;-------------------------
+
+(define (newE x . args)
+  (let ((xAsString (toString x)))
+    (if (isDotted? xAsString)
+	(apply new (cons x args))
+	(newNotDotted xAsString args))))
+
+(define (newNotDotted x args)
+  (let ((ns (endsWithMatch *currentNamespace* x)))
+    (if (not (eq? ns false))
+	(apply new (cons (string->symbol (getName ns)) args))
+	(else (error (string-append "Undefined: " x))))))
+
+(.comment
+(load "ns.lva")
+(newE 'java.util.Hashtable)
+(importX 'java.util.Hashtable)
+(newE 'Hashtable)
+)
+
+;;; End of file.

@@ -1,0 +1,52 @@
+;;;;
+;;;; Created       : 1998 Dec 05 (Sat) 21:41:11 by Harold Carr.
+;;;; Last Modified : 2000 Jan 21 (Fri) 23:32:13 by Harold Carr.
+;;;;
+
+(require 'test/test)
+
+(begin-test 'lava/control/case-type)
+
+(test-require 'lava/control/case-type)
+
+(define test-case-type
+  (lambda (x)
+    (case-type x
+      ((java.lang.Integer java.lang.Double) "Integer or Double")
+      ((java.lang.String)                   "String")
+      ((lava.lang.types.Procedure)          "Procedure")
+      ((lava.lang.types.Pair)               "Pair")
+      (else                                 x))))
+
+(check "case-type1"
+       "Integer or Double"
+       (test-case-type 1))
+
+(check "case-type1"
+       "Integer or Double"
+       (test-case-type 2.0))
+
+(check "case-type1"
+       "String"
+       (test-case-type "3"))
+
+(check "case-type1"
+       "Procedure"
+       (test-case-type (lambda () '())))
+
+(check "case-type1"
+       "Pair"
+       (test-case-type '(5)))
+
+(check "case-type1"
+       'a
+       (test-case-type 'a))
+
+(check "case-type1"
+       #\c
+       (test-case-type #\c))
+
+(end-test 'lava/control/case-type)
+
+;;; End of file.
+

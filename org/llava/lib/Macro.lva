@@ -1,0 +1,16 @@
+;;;;
+;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
+;;;; Last Modified : 2000 Jan 22 (Sat) 00:09:22 by Harold Carr.
+;;;;
+
+(require 'cl/symbols/gensym)
+
+(define-syntax with-gensyms
+  (lambda (syms . body)
+    `(let ,(map (lambda (s) `(,s (gensym))) syms)
+       ,@body)))
+
+(provide 'lava/macros/with-gensyms)
+
+;;; End of file.
+

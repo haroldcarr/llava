@@ -1,0 +1,9 @@
+
+;;; (package hc.lava)
+(hcRequire "importJava")
+(importJava 'hc.lava.FooImplGen)
+
+(define (hc.lava.FooImplGen.barImpl  this x)
+(string-append "it works!  " (to-string this) (to-string x)))
+
+;;; End of file.

@@ -1,0 +1,12 @@
+;;;;
+;;;; Created       : 2000 Jan 23 (Sun) 17:28:32 by Harold Carr.
+;;;; Last Modified : 2000 Jan 23 (Sun) 19:20:55 by Harold Carr.
+;;;;
+
+;; This file is a convenient place to put definitions
+;; and then exercise those definitions from TestTop.testTop
+;; under control of a Java debug stepper.
+
+;; Intentionally blank.
+
+;;; End of file.

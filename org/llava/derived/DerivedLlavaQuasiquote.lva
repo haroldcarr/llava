@@ -1,0 +1,90 @@
+;;;;
+;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
+;;;; Last Modified : 2000 Feb 04 (Fri) 07:02:27 by Harold Carr.
+;;;;
+
+(define-syntax quasiquote
+  (lambda (x)
+    (.%expand-quasiquote x 0)))
+
+(define .%expand-quasiquote
+  (lambda (exp nesting)
+    (cond
+     ((not (pair? exp))
+      ;;(.print 1)
+      (if (.%constant? exp) 
+	  (begin 
+	    ;;(.print 1.1)
+	    exp)
+	  (begin 
+	    ;;(.print 1.2)
+	    (.list 'quote exp))))
+     ((and (eq? (car exp) 'unquote) 
+	   (equal? (length exp) 2))
+      ;;(.print 2)
+      (if (equal? nesting 0)
+	  (begin 
+	    ;;(.print 2.1)
+	    (car (cdr exp)))
+	  (begin
+	    ;;(.print 2.2)
+	    (.%combine-skeletons ''unquote
+			       (.%expand-quasiquote (cdr exp) (- nesting 1))
+			       exp))))
+     ((and (eq? (car exp) 'quasiquote)
+	   (equal? (length exp) 2))
+      ;;(.print 3)
+      (.%combine-skeletons ''quasiquote
+			 (.%expand-quasiquote (cdr exp) (+ nesting 1))
+			 exp))
+     ((and (pair? (car exp))
+	   (eq? (car (car exp)) 'unquote-splicing)
+	   (equal? (length (car exp)) 2))
+      ;;(.print 4)
+      (if (equal? nesting 0)
+	  (begin
+	    ;;(.print 4.1)
+	    (.list 'append (car (cdr (car exp)))
+		  (.%expand-quasiquote (cdr exp) nesting)))
+	  (begin
+	    ;;(.print 4.2)
+	    (.%combine-skeletons (.%expand-quasiquote (car exp) (- nesting 1))
+			       (.%expand-quasiquote (cdr exp) nesting)
+			       exp))))
+     (else 
+      ;;(.print 5)
+      (.%combine-skeletons (.%expand-quasiquote (car exp) nesting)
+			 (.%expand-quasiquote (cdr exp) nesting)
+			 exp)))))
+
+(define .%constant?
+  (lambda (exp)
+    (if (pair? exp)
+	(eq? (car exp) 'quote)
+	(not (symbol? exp)))))
+
+(define .%combine-skeletons
+  (lambda (left right exp)
+    (cond
+     ((and (.%constant? left) (.%constant? right))
+      ;; (.print'cb1)
+      (if (and (equal? (eval left ) (car exp))
+	       (equal? (eval right) (cdr exp)))
+	  (begin 
+	    ;;(.print 'cb1.1)
+	    (.list 'quote exp))
+	  (begin 
+	    ;;(.print 'cb1.2) 
+	    (.list 'quote (cons (eval left )
+			       (eval right))))))
+     ((null? right)
+      ;;(.print 'cb2)
+      (.list '.list left))
+     ((and (pair? right) (eq? (car right) '.list))
+      ;;(.print 'cb3)
+      (cons '.list (cons left (cdr right))))
+     (else 
+      ;;(.print 'cb4)
+      (.list 'cons left right)))))
+
+;;; End of file.

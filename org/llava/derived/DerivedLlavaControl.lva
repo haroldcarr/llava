@@ -1,0 +1,34 @@
+;;;;
+;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
+;;;; Last Modified : 2000 Feb 20 (Sun) 22:35:42 by Harold Carr.
+;;;;
+
+;; map made into primitive for speed.
+
+;(define (map f . lists) 
+;  (if (null? lists)
+;      '() 
+;      (if (null? (cdr lists))
+;	  (.%mapone f (car lists)) 
+;	  (.%mapmany f lists))))
+;
+;(define .%mapone
+;  (lambda (f x)  
+;    (if (null? x)
+;	'() 
+;	(cons (f (car x))
+;	      (.%mapone f (cdr x))))))
+;
+;(define .%mapmany
+;  (lambda (f xs)  
+;    (if (null? (car xs))
+;	'() 
+;	(cons (apply f (.%mapone car xs))
+;	      (.%mapmany f (.%mapone cdr xs))))))
+;
+
+;;; REVISIT
+
+(define for-each map)
+
+;;;; End of file.

@@ -1,0 +1,5 @@
+(package 'testLava.ns.one 'One)
+
+(importX 'testLava.ns.two.Two)
+
+;; blank

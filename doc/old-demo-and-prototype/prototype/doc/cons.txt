@@ -1,0 +1,6 @@
+We are going to create JIST from the bottom up so if you followed the
+narrative of this book you would end up with a working, although
+partial, system at each step.
+
+The first thing we need are CONS cells.
+

@@ -1,0 +1,26 @@
+;;;;
+;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
+;;;; Last Modified : 2000 Jan 25 (Tue) 17:30:03 by Harold Carr.
+;;;;
+
+(letrec ((gensymCounter -1)
+	 (genSymOrTemp
+	  (lambda (kind prefix)
+	    (set! prefix (if (null? prefix) ".%_G_" (car prefix)))
+	    (set! gensymCounter (+ gensymCounter 1))
+	    (make kind prefix (toString gensymCounter))))
+	 (make
+	  (lambda (kind . args)
+	    (.si kind 'lava.F (apply string-append (map toString args))))))
+
+  (define (gentemp . prefix)
+    (genSymOrTemp 'newSymbol prefix))
+
+  (define (gensym  . prefix)
+    (genSymOrTemp 'newSymbolUninterned prefix))
+
+)
+
+(provide 'cl/symbols/gensym)
+
+;;; End of file.

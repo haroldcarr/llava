@@ -1,0 +1,51 @@
+;;;
+;;; Created       : 1999 Dec 25 (Sat) 22:10:35 by Harold Carr.
+;;; Last Modified : 2000 Jan 21 (Fri) 20:19:42 by Harold Carr.
+;;;
+
+(define test-require
+  (lambda (name)
+    (check "test-require first" 
+	   true 
+	   (instanceof (require name) 'java.lang.String))
+    (check "test-require second" 
+	   null
+	   (require name))))
+
+(define (check msg shouldBe is)
+  (.si 'check 'testLava.Test (toString msg) shouldBe is)
+  'ok)
+
+(define begin-test
+  (lambda args
+    (.si 'beginTest 'testLava.Test)))
+
+(define end-test
+  (lambda args
+    (.if (not (null? args))
+	 (print (.sf 'out 'java.lang.System) 
+		(string-append (toString (car args)) " : ")))
+    (.si 'endTest 'testLava.Test)))
+
+(define (dprintln x)
+  (if (.sf 'printProgress 'testLava.Test)
+      (println (.sf 'out 'java.lang.System) x)
+      null)
+  x)
+
+(define toggle-print-results 
+  (lambda ()
+    (.sf 'printResults 'testLava.Test 
+	 (not (.sf 'printResults  'testLava.Test)))))
+
+(define toggle-print-progress
+  (lambda ()
+    (.sf 'printProgress 'testLava.Test
+	 (not (.sf 'printProgress 'testLava.Test)))))
+
+;(toggle-print-results)
+;(toggle-print-progress)
+
+(provide 'test/test)
+
+;;; End of file.

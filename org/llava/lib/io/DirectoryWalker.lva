@@ -1,0 +1,56 @@
+;;;;
+;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
+;;;; Last Modified : 2000 Jan 25 (Tue) 18:58:03 by Harold Carr.
+;;;;
+
+(require 'cl/control/dotimes)
+
+;;;
+;;; for-each-dir
+;;;
+;;; Given a procedure and directory name or file object.
+;;; Applies the procedure to each file and directory in that directory.
+;;; Recursively descends subdirectories.
+;;; Stops if given procedure returns true.
+;;; Given procedure should discriminate between files and directories.
+;;;
+
+(define for-each-dir
+  (lambda (proc dir)
+    (call/cc
+     (lambda (return)
+       (let* ((contents
+	       (listFiles 
+		(cond ((instanceof dir 'java.io.File)		
+		       dir)
+		      ((instanceof dir 'java.lang.String)
+		       (new 'java.io.File dir))
+		      (else
+		       (error "bad arg")))))
+	      (len  (if (null? contents)
+			0
+			(.si 'getLength 'java.lang.reflect.Array contents)))
+	      (current '()))
+	 (dotimes (i len)
+	   (set! current (.si 'get 'java.lang.reflect.Array contents i))
+	   ;;(.print (list 'current current))
+	   ;;(.print (list 'class (invoke current 'getClass)))
+	   (cond ((isDirectory current)
+		  (if (proc current) (return #t))
+		  (for-each-dir proc current))
+		 ((isFile current)
+		  (if (proc current) (return #t)))
+		 (else
+		  (.print (string-append "Unknown: " (to-string current)))
+		  (.print " ... skipping ...")))))))))
+
+(provide 'lava/files/for-each-dir)
+
+(.comment
+(require 'lava/files/for-each-dir)
+(define (pf x) (.print (list 'YES x)) #f)
+(for-each-dir pf ".")
+(for-each-dir pf "d:/home/carr/.sync/.esync/java/lava")
+)
+
+;;; End of file.

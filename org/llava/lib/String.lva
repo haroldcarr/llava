@@ -1,0 +1,16 @@
+;;;;
+;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
+;;;; Last Modified : 2000 Jan 22 (Sat) 06:05:22 by Harold Carr.
+;;;;
+
+(require 'lava/lists/add-between)
+
+(define list->string-with-space
+  (lambda (lst)
+    (apply string-append
+	   (map toString
+		(add-between " " lst)))))
+
+(provide 'lava/strings/list2string-with-space)
+
+;;; End of file.

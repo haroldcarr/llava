@@ -1,0 +1,100 @@
+/*
+(public class MyExcept extends Exception
+  (public MyExcept () (super)))
+
+(public class Except
+  (public static String sayIt ((String it)) throws myExcept
+    (if (equals it "throw")
+        (throw (new (MyExcept)))
+        (return (+ "Hello " it)))))
+ */
+
+import java.util.Hashtable;
+
+class MyExcept extends Exception {
+  public MyExcept() { super(); }
+}
+
+class _Except_indirect {
+  private static  Hashtable methods = new Hashtable();
+  protected static void setMethod(String name, Object o) {
+    methods.put(name, o);
+  }
+  public static Object getMethod(String name) { 
+    return methods.get(name);
+  }
+}
+
+interface _Except_interface {
+  public String sayIt(String it) throws MyExcept;
+}  
+
+interface _Except_interface_2 {
+  public String sayIt(String it) throws Exception;
+}  
+
+class _Except_indirect_load_1 {
+  static {
+    _Except_indirect.setMethod(
+      "sayIt",
+      new _Except_interface() {
+        public String sayIt(String it) throws MyExcept {
+          if (it.equals("throw"))
+            throw new MyExcept();
+          else
+            return "Hello " + it;
+        }
+      }
+    );
+  }
+}
+
+class _Except_indirect_load_2 {
+  static {
+    _Except_indirect.setMethod(
+      "sayIt",
+      new _Except_interface_2() {
+        public String sayIt(String it) throws Exception {
+          if (it.equals("throw"))
+            throw new MyExcept();
+          else
+            return "Hello " + it;
+        }
+      }
+    );
+  }
+}
+
+public class Except {
+  public static void tryIt(String it){
+    String result = null;
+    try {
+      result =
+        ((_Except_interface)_Except_indirect.getMethod("sayIt")).sayIt(it);
+    } catch (MyExcept e) {
+        System.err.println("Caught it: " + e);
+    }
+    System.out.println(result);
+  }
+  public static void tryIt2(String it){
+    String result = null;
+    try {
+      result =
+        ((_Except_interface_2)_Except_indirect.getMethod("sayIt")).sayIt(it);
+    } catch (MyExcept e) {
+        System.err.println("Caught it: " + e);
+    } catch (Exception e) {
+        System.err.println("Caught Exception: " + e);
+    }
+    System.out.println(result);
+  }
+  public static void main(String[] av){
+    new _Except_indirect_load_1();  // Load methods.
+    tryIt("World!");
+    tryIt("throw");
+    new _Except_indirect_load_2();  // Redefine.
+    tryIt2("World!");
+    tryIt2("throw");
+  }
+}
+

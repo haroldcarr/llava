@@ -1,0 +1,14 @@
+;;;;
+;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
+;;;; Last Modified : 2000 Jan 21 (Fri) 21:25:51 by Harold Carr.
+;;;;
+
+(define-syntax defmacro
+  (lambda (name vars . body)
+    `(define-syntax ,name
+       (lambda ,vars ,@body))))
+
+(provide 'cl/macros/defmacro)
+
+;;; End of file.
+

@@ -1,0 +1,22 @@
+;;;;
+;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
+;;;; Last Modified : 2000 Jan 29 (Sat) 15:37:18 by Harold Carr.
+;;;;
+
+(let ((boxer (.si 'newWrapJavaPrimitive 'libLava.r1.FR1)))
+
+  (define build-list 
+    (lambda (terminate? step)
+      (let ((result '(dummy)))
+	(do ((rptr result 
+		   (begin 
+		     (setCdr rptr (cons (wrapJavaPrimitive boxer (step))
+					'()))
+		     (cdr rptr))))
+	    ((terminate?) (cdr result))))))
+
+)
+
+(provide 'lava/lists/build-list)
+
+;;; End of file.

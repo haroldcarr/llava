@@ -1,0 +1,18 @@
+;;;;
+;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
+;;;; Last Modified : 2000 Jan 22 (Sat) 05:58:11 by Harold Carr.
+;;;;
+
+(require 'test/test)
+
+(begin-test 'lava/strings/list2string-with-space)
+
+(test-require 'lava/strings/list2string-with-space)
+
+(check "list->string-with-space"
+       "a 34 34.5 s c"
+       (list->string-with-space '(a 34 34.5 "s" #\c)))
+
+(end-test 'lava/strings/list2string-with-space)
+
+;;; End of file.

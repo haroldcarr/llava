@@ -1,0 +1,77 @@
+;;;;
+;;;; Created       : 2000 Feb 10 (Thu) 03:17:11 by Harold Carr.
+;;;; Last Modified : 2000 Feb 10 (Thu) 05:43:45 by Harold Carr.
+;;;;
+
+;; Core Java 2 V1 p 209-214
+
+(require 'lava/vectors/vector-map)
+
+(define display-class
+  (lambda (class-name)
+    (set! class-name (toString class-name))
+    (let ((class (.si 'forName 'java.lang.Class class-name)))
+      (display-class-header class)
+      (display-class-parts #t "Constructors" (getDeclaredConstructors class))
+      (display-class-parts #t "Methods"      (getDeclaredMethods class))
+      (display-class-parts #t "Fields"       (getDeclaredFields class)))))
+
+(define display-object
+  (lambda (object)
+    (let* ((class (getClass object))
+	   (fields (getDeclaredFields class)))
+      (display-class-header class)
+      (.si 'setAccessible 'java.lang.reflect.AccessibleObject fields true)
+      (display-fields object fields))))
+
+(define display-class-header
+  (lambda (class)
+    (let ((extends    (getSuperclass class))
+	  (implements (getInterfaces class))); REVISIT try java.lang.System.out
+      (display "class ") (display (getName class)) (newline)
+      (cond ((and (not (null? extends))
+		  (not (equals extends (getClass (new 'java.lang.Object)))))
+	     (display " extends ") (display (getName extends)) 
+	     (newline)))
+      (cond ((not (null? implements))
+	     (display-class-parts #f " implements" implements)
+	     (newline)
+	     (newline))))))
+
+(define display-class-parts
+  (lambda (newline? msg parts)
+    (cond ((not (null? parts))
+	   (display msg)
+	   (cond (newline? (newline) (newline)))
+	   (vector-for-each (lambda (p) 
+			      (display " ")
+			      (display p) 
+			      (cond (newline? (newline) (newline))))
+			    parts)))))
+
+(define display-fields
+  (lambda (object fields)
+    (cond ((not (null? fields))
+	   (display "Fields")
+	   (newline)
+	   (vector-for-each (lambda (field)
+			      (newline)
+			      (display " ")
+			      (display field)
+			      (display " = ")
+			      (display (get field object))
+			      (newline))
+			    fields)))))
+
+(provide 'lava/reflect/display-class)
+
+(.comment
+(load-library 'lava/reflect/display-class)
+(display-class 'java.lang.Double)
+(display-class 'java.lang.Class)
+(display-class (getName (getClass (.sf 'out 'java.lang.System))))
+(display-object (.sf 'out 'java.lang.System))
+)
+
+
+;;; End of file.

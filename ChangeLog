@@ -1,0 +1,342 @@
+2000-02-26  Harold Carr  <carr@cs.utah.edu>
+
+	* Added PrimCurrentTimeMillis (could be derived but want direct).
+	* Did first performance testing.
+	- Cons up a 10000 element list.
+	  Take its length.  
+          Compare it to itself:
+	     With letrec           : 18026.0 ms
+	     With aux              : 17425.0 ms
+	     With non generic cons :  1352.0 ms
+	     Silk3                 :   591.0 ms
+	- Preliminary conclusions:
+	 + Heavy price to pay for making primitives generic.
+	 + Moderate price to pay for pluggability of primitives 
+	   (rather than Silk3's direct primitives in switch).
+
+2000-02-20  Harold Carr  <carr@cs.utah.edu>
+
+	* Changed some derived to primitives (for speed):
+	- eg: not, map, null?, pair? 
+	  in primitive/java/opt and primitive/lava/opt
+
+2000-02-10  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote PrimNewInvocationHandler and proxy.lva
+	to support Java 1.3 java.lang.reflect.Proxy and friends.
+
+2000-02-03  Harold Carr  <carr@cs.utah.edu>
+
+	* Added .list which always creates a list regardless
+	  of the first argument - so you can (list <file> <whatever>*).
+
+2000-01-27  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote Lava.newReplOnPort.   Starts a repl on the given port.
+	  Useful for looking inside a running program (if you have
+	  provided yourself with roots).
+
+2000-01-26  Harold Carr  <carr@cs.utah.edu>
+
+	* Looked at startup time.
+	  On a 300Mhz/P2:
+	       - 3.9s with individual derived files.
+	       - 3.8s with derived files collected into single file.
+	       - 0.6s with no derived.
+
+2000-01-25  Harold Carr  <carr@cs.utah.edu>
+
+	* Added support for uninterned symbols.
+
+2000-01-24  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote PrimLength to handle (length '()) case.
+	* Wrote PrimSynchronized.
+
+2000-01-22  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote PrimNewThread and LavaRunnable to enable thunks
+	  to run in a new thread.
+
+2000-01-21  Harold Carr  <carr@cs.utah.edu>
+
+	* Work on library and test framework.
+
+2000-01-19  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote LavaVersion.
+
+2000-01-18  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote require/provide.
+	* Wrote .lavarc init file reading on startup.
+	* Made primitive procedures which may be names of Java methods
+	  into generics (e.g., append, apply, cons, eval, list, load, ...).
+
+2000-01-17  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote PrimInvoke (e.g., so you can do (list <java.io.File) and
+	  get a file list rather than (<java.io.File>)).
+	* Added #t, #f, #\space, #\newliine, #\<char> reading.
+	* Experimented with EngineStepImpl.
+	* Made derived (Lava source) into resources that are
+          loaded at init time (pluggable too).
+
+2000-01-16  Harold Carr  <carr@cs.utah.edu>
+
+	* Modified the "import" I wrote for kawa and then skij two years
+	  ago to work with Lava.
+	* Wrote PrimThrow.
+	* Wrote PrimTryCatchFinally.
+	* Adapted my try macro I wrote for kawa and then skij two years
+	  ago to work with Lava.
+
+2000-01-15  Harold Carr  <carr@cs.utah.edu>
+
+	* Removed LavaIOException.
+	* Made LavaReaderImpl makes all exceptions LavaException.
+	* Split LavaException into abstract and impl.
+	  Needs more work since now the reader (or the lava type factory)
+	  needs knowledge of rt1.
+	* Add Java and Lava backtrace control to Repl.
+	* Removed PrimThisEnvironment.
+	* Added member, do, case, etc.
+	* Wrote PrimStringAppend.
+
+2000-01-14  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote PrimCallCC.
+
+2000-01-12  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote PrimAppend.
+	* Wrote Prim_Plus.
+	* Wrote Prim_Minus.
+	* Added ` , ,@ read macros.
+	* Added quasiquote handling.
+	* Added let, let*, letrec.
+
+2000-01-11  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote PrimLoad.
+	* Wrote LavaEOF.
+	* Added parsing and returning String.
+
+2000-01-09  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote WrapJavaPrimitive.
+	* Wrote CodeSchemeIf.
+
+2000-01-08  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote PrimThisEnvironment.
+	* Wrote PrimEval.
+
+2000-01-07  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote LavaRuntime and changed compiler to take it rather
+	  than an Evaluator (which is an Engine).
+	* Wrote Syntax, UserSyntax, SyntaxDefineSyntax.
+	* Milestone: macros work.
+	* Wrote PrimApply.
+	* Added derived initializer to EnvTopLevelInit.
+	  NB: this means compiler MUST be around.
+	* Wrote cond derived.
+
+2000-01-04  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote LavaIOException.
+	* Changed LavaReaderImpl to throw LavaIOException.
+	* Removed Util (only contained error and warning used by reader).
+
+2000-01-03  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote PrimDefGenInternal.
+	* Wrote language level support for (define (foo x) ...) of
+	generic procedures.
+	* Added arity checking.
+	* Added support for dotted (&rest) argument lists.
+
+2000-01-02  Harold Carr  <carr@cs.utah.edu>
+
+	* Extended LavaException to support backtrace.
+
+1999-12-30  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote PrimitiveProcedure abstract base class.
+	* Wrote PrimStaticInvoke, PrimField, PrimStaticField.
+	* Wrote PrimCar, PrimCdr, PrimCons, PrimList.
+	* Wrote PrimEq, PrimEquals.
+
+1999-12-29  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote Repl.
+	* Installed "'" shorthand for quote.
+	* Give Procedures names when bound to top level variables.
+	* Wrote EnvTopLevelInit.
+	* Wrote Lava (i.e., main).
+
+1999-12-28  Harold Carr  <carr@cs.utah.edu>
+
+	* Designed language level top level definitions
+	of values (including generic procedures and non-generic lambdas or
+	other values).
+	* Designed top level constant definitions.
+	* Designed language level interface to Java field access and
+	method invocation.
+	* Designed language level convention for top-level built-in
+	language specific special forms and procedures 
+	(e.g., define let cons list etc).
+
+1999-12-27  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote UndefinedIdHandler.
+	* Wrote PrimNew.
+	* Wrote GenericProcedure (using DI).
+	* Handle (quote <*>).
+	* MILESTONE: (doubleValue (new (quote java.lang.Integer) 123)) => 123.0
+
+1999-12-26  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote CodeAssignmentTopLevel.
+	* Wrote CodeReferenceTopLevel.
+	* Wrote LavaException.
+	* Wrote WrongNumberOfArgumentsException.
+
+1999-12-25  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote EnvironmentTopLevel.
+	* Wrote UndefinedIdException.
+
+1999-12-24  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote CodeApplication*.
+	* Wrote Symbol.
+	* Wrote CodeReference, CodeAssignment (shallow and deep).
+
+1999-12-23  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote CodeLiteral.
+	* Wrote CodeIf.
+	* Wrote CodeSequence.
+	* Wrote CodeLambda and Lambda.
+
+1999-12-22  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote Engine.
+	* Wrote Compiler.
+	* Wrote Code.
+
+1999-12-21  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote Fac (global factory).
+	* Wrote Util (global utilities).
+
+1999-12-20  Harold Carr  <carr@cs.utah.edu>
+
+	* Wrote EnvironmentLexical (compiletime lexical environment).
+	* Wrote ActivationFrame (runtime).
+
+1999-12-17  Harold Carr  <carr@cs.utah.edu>
+
+	* Design guidelines:
+
+	- All functions generic.
+	- Everything pluggable.
+	- Only necessary stuff in lava.* (src: lava/lava/*)
+	- Extras in libLava.* (src: lava/libLava/*)
+	- Only Java types/operators 
+	  + Pair
+	  + Procedure (i.e., Lambda)
+	  + Symbol
+	  + Macros, ...)
+	
+	* Wrote Pair.
+	* Wrote LavaReader (of lists, symbols, Integer and Double).
+
+1999-12-15  Harold Carr  <carr@cs.utah.edu>
+
+	* Start of scaled-down lava: no class definition.
+	* Obtained/installed GJ.
+	* Updated generic makes to provide GJ compiler.
+
+	@;;;;
+
+1999-11-19 Harold Carr
+
+	* Converted Elisp Java class generator to Scheme/Skij.
+
+	See doc/LAVA/hcLava.skj.
+
+1999-06-10 Harold Carr.
+
+	* Elisp code to take Lava (with class definitions) and
+	generate Java code for class calling back into Skij code
+	for method bodies.
+
+	See doc/LAVA/RCS/hcLava.skj.
+
+1999-summer Harold Carr.
+
+	* Wrote DI (Dynamic Invocation)
+	  - CLOS-like interface to dynamic class creation, method
+	  invocation, and field get/set.
+
+1998-12-13 Harold Carr	
+
+	* Emulation of Lava (without class definition ability) on Skij.
+
+	See importJava.skj.
+
+1998-Spring  Harold Carr
+
+	* Prototyping of full-featured Lava.
+	The idea is to be able to incrementally/dynamically
+	(re)define Java classes.
+
+	See doc/LAVA.
+
+1997-11-17 Harold Carr	
+
+	* Emulation of Lava (without class definition ability) on Kawa.
+
+	See k2j.kawa.
+
+Created       : 1999 Dec 15 (Wed) 19:57:16 by Harold Carr.
+Last Modified : 2000 Mar 20 (Mon) 16:29:01 by Harold Carr.
+
+Order for presentation:
+
+	- Factory
+	- Pair
+	- Lava (i.e., main)
+	- Repl
+	- LavaException
+	- Reader (lists, symbols (as String), Integer, Double)
+	- Evaluator. Engine. Code. 
+	- Compiler.
+	- CodeLiteral (handle quote).
+	- Add null, true, false constants to Reader
+	- CodeIf, CodeSequencee
+	- CodeLambda, Lambda,
+	- CodeApplication
+	- Symbol
+	- Compile time lexical environment and runtime activation frame.
+	- CodeReference, Shallow/Deep
+	- CodeAssignment, Shallow/Deep
+	- Top level environment. Assignment. Reference. Undefined handling.
+	- DI, PrimNew, GenericProcedure, 
+	- Undefined installs/executes GenericProcedure.  EnvTopLevelInit.
+	- Dotted.
+	- Macros.
+	- Environment reification.
+	- Eval.
+	- Quasiquote (and derived expressions supporting it).
+	- ...
+	- Load.
+	- call/cc.
+	- import.
+	- PrimThrow, PrimTryCatchFinally.
+	
+;;; End of file.
+

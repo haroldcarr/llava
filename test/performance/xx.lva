@@ -1,0 +1,80 @@
+;;;;
+;;;; Created       : 2000 Feb 27 (Sun) 07:48:43 by Harold Carr.
+;;;; Last Modified : 2000 Feb 27 (Sun) 08:21:41 by Harold Carr.
+;;;;
+
+(define build-list
+  (lambda (n)
+    (letrec ((build-it (lambda (n acc) 
+			 (if (= n 0) 
+			     acc 
+			     (build-it (- n 1) (cons n acc))))))
+      (build-it n '()))))
+
+(define build-list-aux
+  (lambda (n acc) 
+    (if (= n 0) 
+	acc 
+	(build-list-aux (- n 1) (cons n acc)))))
+
+(define build-list2
+  (lambda (n)
+    (.print 'build-list2)
+    (build-list-aux n '())))
+
+(define build-list3
+  (lambda (n)
+    (letrec ((build-it (lambda (n acc) 
+			 (if (= n 0) 
+			     acc 
+			     (build-it (- n 1) (.si 'cons 'lava.F n acc))))))
+      (build-it n '()))))
+
+(begin
+  (begin
+    (define start -1)
+    (define end -1)
+    (set! start (java.lang.System.currentTimeMillis))
+    (display start)
+    (display " ")
+    (define l (build-list 10000))
+    (display (length l))
+    (display " ")
+    (equal? l l)
+    (set! end (java.lang.System.currentTimeMillis))
+    (display end)
+    (display " ")
+    (display (- end start))
+    (newline)
+    )
+  (begin
+    (set! start (java.lang.System.currentTimeMillis))
+    (display start)
+    (display " ")
+    (define l (build-list2 10000))
+    (display (length l))
+    (display " ")
+    (equal? l l)
+    (set! end (java.lang.System.currentTimeMillis))
+    (display end)
+    (display " ")
+    (display (- end start))
+    (newline)
+    )
+  (begin
+    (set! start (java.lang.System.currentTimeMillis))
+    (display start)
+    (display " ")
+    (define l (build-list3 10000))
+    (display (length l))
+    (display " ")
+    (equal? l l)
+    (set! end (java.lang.System.currentTimeMillis))
+    (display end)
+    (display " ")
+    (display (- end start))
+    (newline)
+    )
+)
+
+;;; End of file.

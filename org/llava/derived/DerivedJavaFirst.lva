@@ -1,0 +1,12 @@
+;;;;
+;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
+;;;; Last Modified : 2000 Feb 20 (Sun) 22:32:45 by Harold Carr.
+;;;;
+
+;made into primitive for speed
+
+;(define instanceof
+;  (lambda (obj type)
+;    (isInstance (.si 'forName 'java.lang.Class (toString type)) obj)))
+
+;;; End of file.

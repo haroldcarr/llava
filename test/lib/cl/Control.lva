@@ -1,0 +1,33 @@
+;;;;
+;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
+;;;; Last Modified : 2000 Jan 22 (Sat) 17:11:01 by Harold Carr.
+;;;;
+
+(require 'test/test)
+
+(begin-test 'cl/control/dotimes)
+
+(test-require 'cl/control/dotimes)
+
+(define test-dotimes
+  (lambda (x)
+    (let ((result '()))
+      (dotimes (i x) (set! result (cons i result)))
+      result)))
+
+(check "dotimes1"
+       '(1 0)
+       (test-dotimes 2))
+
+(check "dotimes2"
+       '(3 2 1 0)
+       (test-dotimes 4))
+
+(end-test 'cl/control/dotimes)
+
+(.comment
+(require 'cl/control/dotimes)
+(macroexpand '(dotimes (i (+ 2 3)) (.print i)))
+)
+
+;;; End of file.

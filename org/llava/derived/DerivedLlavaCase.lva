@@ -1,0 +1,16 @@
+;;;;
+;;;; Created       : 2000 Jan 18 (Tue) 05:58:33 by Harold Carr.
+;;;; Last Modified : 2000 Jan 21 (Fri) 20:43:02 by Harold Carr.
+;;;;
+
+(define .%do-case 
+  (lambda (case)
+    (cond ((not (pair? case)) (error "bad syntax in case" case))
+	  ((eq? (first case) 'else) case)
+	  (else `((member __exp__ ',(first case)) . ,(rest case))))))
+
+(define-syntax case
+  (lambda (exp . cases)
+    `(let ((__exp__ ,exp)) (cond . ,(map .%do-case cases)))))
+
+;;; End of file.

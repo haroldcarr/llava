@@ -1,0 +1,10 @@
+;;;;
+;;;; Created       : 2000 Jan 24 (Mon) 20:42:21 by Harold Carr.
+;;;; Last Modified : 2000 Jan 24 (Mon) 20:42:30 by Harold Carr.
+;;;;
+
+(define-syntax synchronized
+  (lambda (lock . body)
+    `(.%synchronized ,lock (lambda () ,@body))))
+
+;;; End of file.

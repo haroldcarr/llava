@@ -1,0 +1,468 @@
+;;;;
+;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
+;;;; Last Modified : 2000 Feb 20 (Sun) 22:32:45 by Harold Carr.
+;;;;
+
+;made into primitive for speed
+
+;(define instanceof
+;  (lambda (obj type)
+;    (isInstance (.si 'forName 'java.lang.Class (toString type)) obj)))
+
+;;; End of file.;;;;
+;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
+;;;; Last Modified : 2000 Feb 21 (Mon) 01:52:16 by Harold Carr.
+;;;;
+
+;made into primitives for speed
+
+;(define not
+;  (lambda (x) (.if x false true)))
+
+;(define null?
+;  (lambda (x) (eq? x null)))
+
+;(define pair?
+;  (lambda (exp) (instanceof exp 'lava.lang.types.Pair)))
+
+;(define string->symbol
+;  (lambda (x) (.si 'newSymbol 'lava.F x)))
+
+;(define symbol?
+;  (lambda (exp) (instanceof exp 'lava.lang.types.Symbol)))
+
+;;; End of file.;;;;
+;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
+;;;; Last Modified : 2000 Feb 20 (Sun) 22:35:42 by Harold Carr.
+;;;;
+
+;; map made into primitive for speed.
+
+;(define (map f . lists) 
+;  (if (null? lists)
+;      '() 
+;      (if (null? (cdr lists))
+;	  (.%mapone f (car lists)) 
+;	  (.%mapmany f lists))))
+;
+;(define .%mapone
+;  (lambda (f x)  
+;    (if (null? x)
+;	'() 
+;	(cons (f (car x))
+;	      (.%mapone f (cdr x))))))
+;
+;(define .%mapmany
+;  (lambda (f xs)  
+;    (if (null? (car xs))
+;	'() 
+;	(cons (apply f (.%mapone car xs))
+;	      (.%mapmany f (.%mapone cdr xs))))))
+;
+
+;;; REVISIT
+
+(define for-each map)
+
+;;;; End of file.
+;;;;
+;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
+;;;; Last Modified : 2000 Jan 21 (Fri) 20:43:05 by Harold Carr.
+;;;;
+
+;;; Safe car and cdr.
+
+(define .%scar (lambda (x) (if (null? x) '() (car x))))
+(define .%scdr (lambda (x) (if (null? x) '() (cdr x))))
+
+;; REVISIT  handling of ==>
+;; REVISIT collapse cadr s
+
+(define-syntax cond 
+  (lambda args  
+    (if (null? args) 
+	false 
+	(if (equal? (.%scar (.%scar args)) 'else) 
+	    (cons 'begin (.%scdr (.%scar args))) 
+	    (if (equal? (.%scar (.%scdr (.%scar args))) '=>) 
+		(list '(lambda (x e c) (.if x (e x) (c))) 
+		      (.%scar (.%scar args)) 
+		      (.%scar (.%scdr (.%scdr (.%scar args)))) 
+		      (cons 'lambda (list () (cons 'cond (.%scdr args))))) 
+		(if (null? (.%scdr (.%scar args))) 
+		    (list '(lambda (x c) (.if x x (c))) 
+			  (.%scar (.%scar args)) 
+			  (cons 'lambda (list () (cons 'cond (.%scdr args))))) 
+		    (list '.if (.%scar (.%scar args)) 
+			  (cons 'begin (.%scdr (.%scar args))) 
+			  (cons 'cond (.%scdr args)))))))))
+
+(define-syntax or
+  (lambda args
+    (if (null? args)
+        false
+        (cons 'cond (map list args)))))
+
+(define-syntax and
+  (lambda args
+    (cond ((null? args) true)
+	  ((null? (cdr args)) (car args))
+	  (else (list '.if (car args) (cons 'and (cdr args)) false)))))
+
+;;; End of file.
+
+;;;;
+;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
+;;;; Last Modified : 2000 Feb 04 (Fri) 07:02:27 by Harold Carr.
+;;;;
+
+(define-syntax quasiquote
+  (lambda (x)
+    (.%expand-quasiquote x 0)))
+
+(define .%expand-quasiquote
+  (lambda (exp nesting)
+    (cond
+     ((not (pair? exp))
+      ;;(.print 1)
+      (if (.%constant? exp) 
+	  (begin 
+	    ;;(.print 1.1)
+	    exp)
+	  (begin 
+	    ;;(.print 1.2)
+	    (.list 'quote exp))))
+     ((and (eq? (car exp) 'unquote) 
+	   (equal? (length exp) 2))
+      ;;(.print 2)
+      (if (equal? nesting 0)
+	  (begin 
+	    ;;(.print 2.1)
+	    (car (cdr exp)))
+	  (begin
+	    ;;(.print 2.2)
+	    (.%combine-skeletons ''unquote
+			       (.%expand-quasiquote (cdr exp) (- nesting 1))
+			       exp))))
+     ((and (eq? (car exp) 'quasiquote)
+	   (equal? (length exp) 2))
+      ;;(.print 3)
+      (.%combine-skeletons ''quasiquote
+			 (.%expand-quasiquote (cdr exp) (+ nesting 1))
+			 exp))
+     ((and (pair? (car exp))
+	   (eq? (car (car exp)) 'unquote-splicing)
+	   (equal? (length (car exp)) 2))
+      ;;(.print 4)
+      (if (equal? nesting 0)
+	  (begin
+	    ;;(.print 4.1)
+	    (.list 'append (car (cdr (car exp)))
+		  (.%expand-quasiquote (cdr exp) nesting)))
+	  (begin
+	    ;;(.print 4.2)
+	    (.%combine-skeletons (.%expand-quasiquote (car exp) (- nesting 1))
+			       (.%expand-quasiquote (cdr exp) nesting)
+			       exp))))
+     (else 
+      ;;(.print 5)
+      (.%combine-skeletons (.%expand-quasiquote (car exp) nesting)
+			 (.%expand-quasiquote (cdr exp) nesting)
+			 exp)))))
+
+(define .%constant?
+  (lambda (exp)
+    (if (pair? exp)
+	(eq? (car exp) 'quote)
+	(not (symbol? exp)))))
+
+(define .%combine-skeletons
+  (lambda (left right exp)
+    (cond
+     ((and (.%constant? left) (.%constant? right))
+      ;; (.print'cb1)
+      (if (and (equal? (eval left ) (car exp))
+	       (equal? (eval right) (cdr exp)))
+	  (begin 
+	    ;;(.print 'cb1.1)
+	    (.list 'quote exp))
+	  (begin 
+	    ;;(.print 'cb1.2) 
+	    (.list 'quote (cons (eval left )
+			       (eval right))))))
+     ((null? right)
+      ;;(.print 'cb2)
+      (.list '.list left))
+     ((and (pair? right) (eq? (car right) '.list))
+      ;;(.print 'cb3)
+      (cons '.list (cons left (cdr right))))
+     (else 
+      ;;(.print 'cb4)
+      (.list 'cons left right)))))
+
+;;; End of file.;;;;
+;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
+;;;; Last Modified : 2000 Jan 21 (Fri) 20:42:59 by Harold Carr.
+;;;;
+
+;; REVISIT - add named-let
+
+(define-syntax let
+  (lambda (bindings . body)
+    `((lambda ,(map car bindings) . ,body) . ,(map cadr bindings))))
+
+(define-syntax let*
+  (lambda (bindings . body)
+    (if (null? bindings) `((lambda () . ,body))
+        `(let (,(car bindings))
+           (let* ,(cdr bindings) . ,body)))))
+
+(define-syntax letrec
+  (lambda (bindings . body)
+    (let ((vars (map car  bindings))
+	  (vals (map cadr bindings)))
+      `(let ,(map (lambda (var) `(,var false)) vars)
+	 ,@(map (lambda (var val) `(set! ,var ,val)) vars vals)
+	 . ,body))))
+
+;;; End of file.;;;;
+;;;; Created       : 2000 Jan 18 (Tue) 05:58:33 by Harold Carr.
+;;;; Last Modified : 2000 Jan 21 (Fri) 20:43:02 by Harold Carr.
+;;;;
+
+(define .%do-case 
+  (lambda (case)
+    (cond ((not (pair? case)) (error "bad syntax in case" case))
+	  ((eq? (first case) 'else) case)
+	  (else `((member __exp__ ',(first case)) . ,(rest case))))))
+
+(define-syntax case
+  (lambda (exp . cases)
+    `(let ((__exp__ ,exp)) (cond . ,(map .%do-case cases)))))
+
+;;; End of file.
+;;;;
+;;;; Created       : 2000 Jan 18 (Tue) 05:58:33 by Harold Carr.
+;;;; Last Modified : 2000 Jan 21 (Fri) 20:43:10 by Harold Carr.
+;;;;
+
+(define-syntax do
+  (lambda (bindings test-and-result . body)
+    (let ((variables (map first bindings))
+          (inits (map second bindings))
+          (steps (map (lambda (clause)
+                        (if (null? (cddr clause))
+                            (first clause)
+                            (third clause)))
+                      bindings))
+          (test (first test-and-result))
+          (result (rest test-and-result)))
+      `(letrec ((__loop__
+                 (lambda ,variables
+                   (if ,test
+                       (begin . ,result)
+                       (begin
+                         ,@body
+                         (__loop__ . ,steps))))))
+         (__loop__ . ,inits)))))
+
+;;; End of file.
+;;;;
+;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
+;;;; Last Modified : 2000 Feb 21 (Mon) 02:14:06 by Harold Carr.
+;;;;
+
+(define (memq this that)
+  (cond ((null? that) false)
+	((eq? this (car that)) that)
+	(else (member this (cdr that)))))
+
+(define (member this that)
+  (cond ((null? that) false)
+	((equal? this (car that)) that)
+	(else (member this (cdr that)))))
+
+;;; End of file.
+
+;;;;
+;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
+;;;; Last Modified : 2000 Jan 21 (Fri) 20:42:54 by Harold Carr.
+;;;;
+
+;;; REVISIT - gensym let vars
+
+(define-syntax try
+  (lambda exprs-catch-finally
+    (let ((tryExprs     (.%getTryExpressions     exprs-catch-finally))
+	  (catchClauses (.%getCatchClauses       exprs-catch-finally))
+	  (finallyExprs (.%getFinallyExpressions exprs-catch-finally)))
+      `(.%try
+	(lambda () ,@tryExprs)
+	(lambda (t)
+	  (let ((g2 (if (instanceof t 'lava.lang.exceptions.LavaException)
+			(getThrowable t)
+			t)))
+	    (cond ,@catchClauses
+		  (else (throw t)))))
+	(lambda () ,@finallyExprs)))))
+
+(define (.%getTryExpressions exprs)
+  (.%appendResults (lambda (x) (if (or (not (pair? x)) ; ref ok
+				       (and (not (eq? (car x) 'catch))
+					    (not (eq? (car x) 'finally))))
+				   ;;  extra list level for appendResults
+				   `(,x)
+				   '()))
+		   exprs))
+
+(define (.%getCatchClauses catch-finally)
+  (.%appendResults (lambda (x) (if (and (pair? x)
+					(eq? (car x) 'catch))
+				   `(((instanceof g2 ',(car (cadr x)))
+				      (let ((,(cadr (cadr x)) g2)) ,@(cddr x))))
+				   '()))
+		   catch-finally))
+
+(define (.%getFinallyExpressions catch-finally)
+  (.%appendResults (lambda (x) (if (and (pair? x)
+					(eq? (car x) 'finally))
+				   (cdr x)
+				   '()))
+		   catch-finally))
+
+;; removes empty lists
+
+(define (.%appendResults proc lst)
+  (apply append (map proc lst)))
+
+;;; End of file.
+
+;;;;
+;;;; Created       : 2000 Jan 24 (Mon) 20:42:21 by Harold Carr.
+;;;; Last Modified : 2000 Jan 24 (Mon) 20:42:30 by Harold Carr.
+;;;;
+
+(define-syntax synchronized
+  (lambda (lock . body)
+    `(.%synchronized ,lock (lambda () ,@body))))
+
+;;; End of file.;;;;
+;;;; Created       : 1999 Feb 10 (Wed) 21:35:48 by Harold Carr.
+;;;; Last Modified : 2000 Jan 30 (Sun) 18:07:35 by Harold Carr.
+;;;;
+
+;;;
+;;; Very simple require/provide.
+;;;
+
+;; REVISIT - make recursive calls to provide report correct
+;; file not found error.
+
+;;; This is the most interesting part.
+;;; It dynamically figures out where the */lib directory is located.
+
+(define .%getLibPath
+  (lambda ()
+    (let* ((LavaPath
+	    ;; getResource returns either "file:<path>" or "jar:file:<path>"
+	    ;; getFile returns either "<path>" or "file:<path>"
+	    (getFile (getResource (.si 'forName 'java.lang.Class "lava.Lava")
+				  "Lava.class")))
+	   (i -1))
+      (cond ((not (equal? (set! i (indexOf LavaPath "lava/.classes")) -1))
+	     (string-append (substring LavaPath 0 i) "lava/lib"))
+	    ((not (equal? (set! i (indexOf LavaPath "lava/jars/lava.jar!")) -1))
+	     ;; 6 skips the "file:"
+	     ;; i removes the !.
+	     (string-append (substring LavaPath 6 i) "lava/lib"))
+	    (else
+	     ;; REVISIT
+	     (.print (list "Cannot initialize require path." LavaPath)))))))
+
+(let ((load-path    (list (.%getLibPath)))
+      (provided '()))
+
+  (define load-path
+    (lambda () load-path))
+
+  (define (provided) provided)
+
+  (define reset-provided
+    (lambda () (set! provided '())))
+
+  (define push-on-load-path
+    (lambda (name)
+      (set! load-path 
+	    (if (pair? name)
+		(append (map toString name) load-path)
+		;; Assume it is a string or symbol.
+		(cons (toString name) load-path)))))
+
+  (define append-to-load-path
+    (lambda (name)
+      (set! load-path 
+	    (append load-path 
+		    (if (pair? name)
+			(map toString name)
+			(list (toString name)))))))
+
+  (define provided?
+    (lambda (name)
+      (.if (member (toString name) provided) #t #f)))
+
+  (define (provide name)
+    (let ((sname (toString name)))
+      (if (not (provided? name))
+	  (set! provided (cons sname provided)))
+      name))
+
+  (define (require name)
+    (.%require (toString name) load-path))
+
+  (define load-library
+    (lambda (name)
+      (.%load-library (toString name) load-path)))
+
+  (define .%require
+    (lambda (name loadPath)
+      (if (not (provided? name))
+	  (.%load-library name loadPath))))
+
+  (define .%load-library
+    (lambda (name loadPath)
+      (call/cc
+       (lambda (return)
+	 (for-each
+	  (lambda (path)
+	    (let ((pathAndName (string-append path "/" name ".lva")))
+	      (try 
+	       (load pathAndName)
+	       (return pathAndName)
+	       (catch (java.io.FileNotFoundException e)
+		      'ignore))))
+	  loadPath)
+	 (throw (new 'java.io.FileNotFoundException name))))))
+
+)
+
+(.comment
+(load "RequireProvide.lva")
+provided
+(require "foo")
+(provided? 'foo)
+(require 'import)
+)
+
+;;; End of file.
+;;;;
+;;;; Created       : 2000 Jan 23 (Sun) 17:28:32 by Harold Carr.
+;;;; Last Modified : 2000 Jan 23 (Sun) 19:20:55 by Harold Carr.
+;;;;
+
+;; This file is a convenient place to put definitions
+;; and then exercise those definitions from TestTop.testTop
+;; under control of a Java debug stepper.
+
+;; Intentionally blank.
+
+;;; End of file.

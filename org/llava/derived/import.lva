@@ -1,0 +1,264 @@
+;;;;
+;;;; Created       : 1998 Dec 13 (Sun) 09:18:12 by Harold Carr.
+;;;; Last Modified : 2000 Feb 21 (Mon) 17:14:53 by Harold Carr.
+;;;;
+;;;; Provides import
+;;;;
+
+; Given a Java class:
+;
+;     *****
+;
+; then
+;
+;     (import '*****)
+;
+; results in the following procedure definitions:
+;
+;     *****
+;
+; Alternatively, rather than define all public constructors, methods
+; fields, one can specify the subset to be defined:
+;
+;     (import '***** '*****)
+;
+
+(define-syntax .%setq
+  (lambda (var val)
+    `(let ((_lazy_hygenie_ ,val))
+       (set! ,var _lazy_hygenie_)
+       _lazy_hygenie_)))
+
+;;;;
+;;;; First we define a few by hand to be used by "import" and friends.
+;;;;
+
+(define (java.lang.Class.forName className)
+  (if (symbol? className) (set! className (toString className)))  
+  (.si 'forName 'java.lang.Class className))
+
+(define (java.lang.reflect.Modifier.isPublic int)
+  (.si 'isPublic 'java.lang.reflect.Modifier int))
+
+(define (java.lang.reflect.Modifier.isStatic int)
+  (.si 'isStatic 'java.lang.reflect.Modifier int))
+
+(define (java.lang.reflect.Array.get o i)
+  (.si 'get 'java.lang.reflect.Array o i))
+
+(define (java.lang.reflect.Array.getLength o)
+  (.si 'getLength 'java.lang.reflect.Array o))
+
+;;;
+;;; .%isPublic? .%isStatic?
+;;;
+
+(define (.%isPublic? x)
+  (java.lang.reflect.Modifier.isPublic (getModifiers x)))
+
+(define (.%isStatic? x)
+  (java.lang.reflect.Modifier.isStatic (getModifiers x)))
+
+;;;
+;;; .%isMemberOfArray
+;;;
+;;; false if not present.  Otherwise the first element which passes the test.
+;;;
+
+(define (.%isMemberOfArray test array)
+  (call/cc
+   (lambda (return)
+     (do ((len (java.lang.reflect.Array.getLength array))
+	  (i 0 (+ i 1)))
+	 ((>= i len) (return false))
+       (let ((el (java.lang.reflect.Array.get array i)))
+	 (if (test el)
+	     (return el)))))))
+
+;;;
+;;; .%mapJavaArray
+;;;
+
+(define (.%mapJavaArray proc array)
+  (let ((result '(dummy)))
+    (do ((len (java.lang.reflect.Array.getLength array))
+	 (rptr result
+	       (begin
+		 (setCdr rptr
+			 (cons (proc (java.lang.reflect.Array.get array i))
+			       '()))
+		 (cdr rptr)))
+	 (i 0 (+ i 1)))
+	((>= i len) (cdr result)))))
+
+;;;
+;;; For defining the procedures.  Also for debugging.
+;;;
+
+(define *.%evalDefineCMF* 'eval)
+(define (.%evalDefineCMFWrite form) (.print form) form)
+(define (.%evalDefineCMFEval  form) (eval form))
+
+(define (.%evalDefineCMF form)
+  (case *.%evalDefineCMF*
+    ((write    ) (.%evalDefineCMFWrite form))
+    ((eval     ) (.%evalDefineCMFEval  form))
+    ((writeEval) (.%evalDefineCMFEval  (.%evalDefineCMFWrite form)))
+    ((none     ) 'none)
+    (else (error (string-append ".%evalDefineCMF - unknown: "
+				(toString form))))))
+
+; Uncomment for debug.
+;(set! *.%evalDefineCMF* 'writeEval)
+
+;;;
+;;; Always useful.
+;;;
+
+(define (.%makeSymOrStr symOrStr . args)
+  (let ((result (apply string-append
+		       (map (lambda (x)
+			      (if (symbol? x)
+				  (toString x)
+				  x))
+			    args))))
+    (if (eq? symOrStr 'symbol)
+	(string->symbol result)
+	result)))
+
+;;;
+;;; import
+;;;
+;;; The main procedure.
+;;;
+
+(define (import className . methodOrFieldNames)
+  (let* ((class   (java.lang.Class.forName (.%makeSymOrStr 'string className)))
+	 (constructors (getConstructors    class))
+	 (methods      (getDeclaredMethods class))
+	 (fields       (getDeclaredFields  class)))
+    (if (null? methodOrFieldNames)
+	(.%defineAllCMF className class constructors methods fields)
+	(for-each
+	 (lambda (methodOrFieldName)
+	   (.%defineCMF
+	    className
+	    (.%makeSymOrStr 'symbol methodOrFieldName)
+	    class constructors methods fields))
+	 methodOrFieldNames)))
+  true)
+
+;; Define an individual constructor, method or field.
+
+(define (.%defineCMF
+	 className methodOrFieldName class constructors methods fields)
+  (if (eq? methodOrFieldName 'constructor)
+      (.%defineC className class constructors)
+      (.%defineMF className methodOrFieldName class methods fields)))
+
+;; Define an individual constructor.
+
+(define (.%defineC className class constructors)
+  (if (and (not (equal? 0 (java.lang.reflect.Array.getLength constructors)))
+	   (not (equal? 0 
+			(length (apply 
+				 append
+				 (.%mapJavaArray
+				  (lambda (x) (if (.%isPublic? x) '(true) '()))
+				  constructors))))))
+      (.%evalDefineCMF
+       `(define (,className . args) (apply new (cons ',className args))))
+      (error 
+       (string-append "No constructor for class: " (toString className)))))
+
+;; Define an individual method or field.
+
+(define (.%defineMF className methodOrFieldName class methods fields)
+  (let* ((nameString (.%makeSymOrStr 'string methodOrFieldName))
+	 (test       (lambda (el) (equal? (getName el) nameString)))
+	 (el         '()))
+    (cond ((.%setq el (.%isMemberOfArray test methods))
+	   (if (.%isPublic? el) 
+	       (.%defineM className methodOrFieldName class el)))
+	  ((.%setq el (.%isMemberOfArray test fields))
+	   (if (.%isPublic? el) 
+	       (.%defineF className methodOrFieldName class el)))
+	  (else
+	   (error (string-append "Unknown method or field: "
+				 (toString className)
+				 " "
+				 (toString methodOrFieldName)))))))
+
+;; Define an individual method.
+
+(define (.%defineM className methodName class method)
+  ;; Only static methods since virtual are picked up automatically.
+  (if (.%isStatic? method)
+    (.%evalDefineCMF
+     `(define (,(.%makeSymOrStr 'symbol  className "." methodName) . args)
+	(apply .si (cons ',methodName (cons ',className args)))))))
+
+;; Define an individual field.
+
+(define (.%defineF className fieldName class field)
+  (let* ((isStatic (.%isStatic? field))
+	 (name     (if isStatic
+		       (.%makeSymOrStr 'symbol className "." fieldName)
+		       fieldName))
+	 (name!    (.%makeSymOrStr 'symbol name "!"))
+	 (andArg   (if isStatic `(,name)  `(,name  o)))
+	 (andArg!  (if isStatic `(,name!) `(,name! o)))
+	 (andVal   (append andArg  '(v)))
+	 (andVal!  (append andArg! '(v))))
+    (.%evalDefineCMF
+     `(define ,andArg
+	,(if isStatic
+	     `(.sf ',fieldName ',className)
+	     `(.f  ',fieldName o))))
+    (.%evalDefineCMF
+     `(define ,andVal!
+	,(if isStatic
+	     `(.sf ',fieldName ',className v)
+	     `(.f  ',fieldName o           v))))))
+
+; Define procedures for all public constructors, methods and fields.
+
+(define (.%defineAllCMF className class constructors methods fields)
+  (let* ((methodNames (.%mapJavaArray (lambda (x) (getName x)) methods))
+	 (fieldNames  (.%mapJavaArray (lambda (x) (getName x)) fields))
+	 (methodAndFieldNames (append methodNames fieldNames))
+	 (importArgs
+	  (cons className
+		(if (> (java.lang.reflect.Array.getLength constructors) 0)
+		    (cons 'constructor methodAndFieldNames)
+		    methodAndFieldNames))))
+    (apply import importArgs)))
+      
+
+(provide 'java/lang/import)
+
+
+(.comment
+
+(load "import.lva")
+(import 'java.lang.Float)
+(import 'java.lang.Float 'constructor)
+(java.lang.Float "34")
+(java.lang.Float.MAX_VALUE)
+(java.lang.Float.MAX_VALUE! (java.lang.Float 3.4028235E38))
+(import 'java.util.Vector)
+(import 'java.lang.System 'out)
+(import 'java.lang.System 'constructor)
+(import 'java.lang.System 'bar)
+(import 'java.util.Vector 'constructor 'addElement 'contains 'toString)
+(define v (java.util.Vector))
+(isEmpty v)
+(define o (java.lang.System.out))
+(addElement v o)
+(isEmpty v)
+(contains v o)
+(toString v)
+)
+
+
+;;; End of file.

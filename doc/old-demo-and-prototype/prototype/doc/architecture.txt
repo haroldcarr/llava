@@ -1,0 +1,195 @@
+CONS -> READ -> JIST COMPILER -> BYTECODE -> JVM
+                LAMBDA  
+		VALUE CELLS
+
+------------
+
+PHILOSOPHY
+
+Philosophy: maximum leverage of Java.  Only add to the language and
+only build what is missing or cannot be done in Java/JVM.  E.g., list
+syntax and library, repl, incremental (re)definition, macros.
+
+--------------
+
+ORDER OF PRESENTATION
+
+Initial order:
+
+Java
+libcons
+reader
+compiler
+loader (redef and incremental)
+lambda
+package level pub/prot/priv variables
+repl
+quasiquote
+macros
+Java syntax writer
+
+Revised order:
+
+Java
+by hand
+automate indirect
+automate nonjist indirect_load
+libcons
+JIST reader
+Java synatx writer
+JIST compile
+REPL
+quasiquote
+macros
+Java compiler
+
+---------------
+
+The fundamental problems to solve are class redefinition and
+references to undefined classes and methods.
+
+CLASS REDEFINITION
+
+JIST handles class redefinition via "indirect" classes.  This approach
+enables addition and deletion of fields and methods when a class is
+redefined.
+
+Given a JIST class definition we create an indirect class for it and a
+class to load the indirect class method and field tables.  It is this
+second class which actually contains the methods for the given class.
+We use anonymous classes to represent methods.  The anonymous objects
+are loaded into the indirect tables.  Whenever we redefine a class we
+just load the tables with the latest "anonymous" objects containing
+the methods as shown in the following working example.
+
+#include Redef.java
+
+Note that this mechanism restricts JIST methods to only passing and
+returning values to/from methods which derive from java.lang.Object.
+In other words, JIST parameters and return values cannot be one of the
+Java basic types (e.g., int, float).
+
+REFERENCES TO UNDEFINED CLASSES and METHODS
+
+Method calls are compiled to full path calls.  The paths are built:
+
+1. Explicit full path.
+2. Found in current package.
+3. Found in import and signature matches.
+4. Implicit Java Language.
+5. Undef to current package.
+
+Method interfaces must have full path signature.
+
+If not in indirect tables then two possibilities:
+  Not optimal but easy:
+	Return null and make JIST method invocation protocol check
+	and dispatch to handler.
+  Hard but complete:
+	Have lookup dispatch to handler which creates and returns
+        an applicable object with user specified results.
+
+Impossible to get cast error if using full path signature in indirect
+set/get.
+
+Cannot use different class for def and refs:
+	java.lang.ClassCastException: _Undef_indirect_load_1$1
+		at Undef.main(Undef.java:58)
+
+
+#include Undef.java
+
+------------------------------------------------------------------------------
+
+INDIRECT and EXCEPTIONS
+
+is "throws Exception" too much? too little?
+
+Everything automatically throws Exception, but nonJist?
+
+Might have to write Java compiler depending of what's possible at
+Java language level and JVM level.  Downing/JVM p 159 says
+declarations only used by compiler not JVM.
+
+Therefore indirect_load "knows" exceptions so it can be Java.
+indirect does not know so must be generated on the fly.
+
+Looks like it works:
+
+#include Except.java
+
+------------------------------------------------------------------------------
+
+NEW
+
+STATIC, VIRTUAL, SPECIAL METHODS
+
+FIELDS
+
+Up until now we have only been showing static methods.  We need to
+actually handle classes which contain both dynamic and static fields
+and methods and class constructors.
+
+#include TheRestOfIt.java
+
+------------------------------------------------------------------------------
+
+COMPILING, LOADING and INDIRECT
+
+COMPILE:
+
+indirect_load: special forms and basic ops tranlated directly to Java.
+               invocations translate to indirect invocations.
+
+
+
+class foo -> compile -> foo_N.java (deployment -N)
+                        _foo_interface
+                        _foo_indirect
+                        _foo_indirect_load_N
+                        _foo.jistinfo (latest N)
+
+What is the difference between N.java and _interface?
+Probably interface does not have info on constructors.
+
+Interface will not have info on fields.
+
+No need to write/compile indirect.  When unloaded class referenced
+create indirect via reflection.
+
+LOAD:
+
+if no jistinfo then
+  // it's either a non-jist class or not defined
+  if load or already resident then
+    // it's a non-jist class
+    create indirect via reflection
+    load indirect
+    create indirect_load via reflection
+    load indirect_load
+  else
+    // it's not defined
+    create indirect explicitly
+    load indirect
+else if indirect not resident then
+  // First time this jist class seen
+  load N.class
+  create indirect via reflection
+  load indirect
+  load indirect_load
+else
+  // Just do redefinition
+  load indirect_load
+
+-----------------------
+
+get/set Method/Field - only Object
+fields could have basic type get/set methods which indirect_load would
+use appropriately.
+
+Cannot do this for methods -- combinatorial explosion
+
+-------------------
+
+
+

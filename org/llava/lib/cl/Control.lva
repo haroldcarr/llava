@@ -1,0 +1,20 @@
+;;;;
+;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
+;;;; Last Modified : 2000 Feb 06 (Sun) 22:18:29 by Harold Carr.
+;;;;
+
+(require 'cl/symbols/gensym)
+
+;; TODO - missing result
+
+(define-syntax dotimes
+  (lambda (iAndStop . body)
+    (let ((gstop (gensym)))
+      `(do ((,(car iAndStop) 0 (+ ,(car iAndStop) 1))
+	    (,gstop ,(cadr iAndStop)))
+	   ((>= ,(car iAndStop) ,gstop))
+	 ,@body))))
+
+(provide 'cl/control/dotimes)
+
+;;; End of file.

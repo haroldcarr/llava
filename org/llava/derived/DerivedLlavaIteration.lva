@@ -1,0 +1,26 @@
+;;;;
+;;;; Created       : 2000 Jan 18 (Tue) 05:58:33 by Harold Carr.
+;;;; Last Modified : 2000 Jan 21 (Fri) 20:43:10 by Harold Carr.
+;;;;
+
+(define-syntax do
+  (lambda (bindings test-and-result . body)
+    (let ((variables (map first bindings))
+          (inits (map second bindings))
+          (steps (map (lambda (clause)
+                        (if (null? (cddr clause))
+                            (first clause)
+                            (third clause)))
+                      bindings))
+          (test (first test-and-result))
+          (result (rest test-and-result)))
+      `(letrec ((__loop__
+                 (lambda ,variables
+                   (if ,test
+                       (begin . ,result)
+                       (begin
+                         ,@body
+                         (__loop__ . ,steps))))))
+         (__loop__ . ,inits)))))
+
+;;; End of file.

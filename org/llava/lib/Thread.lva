@@ -1,0 +1,18 @@
+;;;;
+;;;; Created       : 2000 Jan 23 (Sun) 08:04:29 by Harold Carr.
+;;;; Last Modified : 2000 Jan 25 (Tue) 04:39:36 by Harold Carr.
+;;;;
+
+(define start-new-thread
+  (lambda (thunk)
+    (let ((thread (new-thread thunk)))
+      (start thread)
+      thread)))
+
+(define-syntax start-new-thread*
+  (lambda body
+    `(start-new-thread (lambda () ,@body))))
+
+(provide 'lava/threads/start-new-thread)
+
+;;; End of file.

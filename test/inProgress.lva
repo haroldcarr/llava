@@ -1,0 +1,49 @@
+(define l
+  '(
+    "lava/tt.lva" 
+    "tt.lva"
+    "PrimTT.lva"
+    ))
+
+(define (gr l)
+  (map (lambda (x)
+	 (list
+	  (getResourceAsStream 
+	   (.si 'forName 'java.lang.Class "lava.Lava") x)
+	  (getResourceAsStream 
+	   (.si 'forName 'java.lang.Class "libLava.r1.procedure.primitive.lava.PrimAppend") x)))
+       l))
+
+(define (lc l)
+  (map (lambda (x)
+	 (try 
+	  (.si 'forName 'java.lang.Class x)
+	  (catch (java.lang.Exception e) '())))
+       l))
+
+(gr l)
+(lc l)
+(.si 'getProperties 'java.lang.System)
+(.si 'getProperty 'java.lang.System "java.class.path")
+
+
+;(load "inProgress.lva")
+(getEnvTopLevelIndex '%defineM)
+(getDefaultLambda %defineM)
+(getCode (getDefaultLambda %defineM))
+
+
+(getEnvTopLevelIndex 'java.lang.Float)
+(getEnvTopLevelIndex '%defineCMF)
+(getEnvTopLevelIndex '%defineC)
+(getEnvTopLevelIndex '%defineMF)
+(getEnvTopLevelIndex '%defineM)
+
+(getDefaultLambda java.lang.Float)
+(getDefaultLambda %defineMF)
+(getDefaultLambda %defineM)
+
+(getCode (getDefaultLambda java.lang.Float))
+(getCode (getDefaultLambda %defineMF))
+(getCode (getDefaultLambda %defineM))
+

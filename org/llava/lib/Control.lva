@@ -1,0 +1,31 @@
+;;;;
+;;;; Created       : 1998 Dec 05 (Sat) 21:41:11 by Harold Carr.
+;;;; Last Modified : 2000 Jan 21 (Fri) 23:30:19 by Harold Carr.
+;;;;
+
+(require 'cl/symbols/gensym)
+
+;;; Syntax is like Scheme case.
+;;; Functionality is like CL typecase.
+
+;; REVISIT - optimize away instanceof
+
+(define-syntax case-type
+  (lambda (object . cases)
+    (let ((g_object (gensym)))
+      `(let ((,g_object ,object))
+	 (cond ,@(map (lambda (case) 
+			(if (eq? (car case) 'else)
+			    case
+			    `((or ,@(.%instanceof-ify g_object (car case)))
+			      ,@(cdr case))))
+		      cases))))))
+
+(define .%instanceof-ify
+  (lambda (object types)
+    (map (lambda (type) `(instanceof ,object ',type)) types)))
+
+(provide 'lava/control/case-type)
+
+;;; End of file.
+

@@ -1,0 +1,54 @@
+;;;;
+;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
+;;;; Last Modified : 2000 Jan 21 (Fri) 23:00:15 by Harold Carr.
+;;;;
+
+;; REVISIT - make aux functions internal (after define-syntax env fixed).
+;; REVISIT - handle . args
+
+;;;
+;;; defineWithKeywords
+;;;
+
+(define-syntax define-with-keywords
+  (lambda (functionNameAndKeywordNames . body)
+    (let* ((functionName   (car functionNameAndKeywordNames))
+	   (parameterNames (cdr functionNameAndKeywordNames))
+	   (keywords       (map (lambda (keyword) (.%make-symbol ":" keyword))
+				parameterNames))
+	   (bodyFunctionName (.%make-symbol '_% functionName)))
+      `(begin ,@(.%defineKeywords keywords)
+	      ,(.%defineKeywordEntryFunction functionName bodyFunctionName keywords)
+	      ,(.%defineBodyFunction bodyFunctionName parameterNames body)))))
+
+(define .%defineKeywords 
+  (lambda (keywords)
+    (map (lambda (keyword) `(define ,keyword ',keyword)) keywords)))
+
+(define .%defineKeywordEntryFunction 
+  (lambda (functionName bodyFunctionName keywords)
+    `(define (,functionName . args)
+       (apply ,bodyFunctionName (.%listKeywordValues ',keywords args)))))
+
+(define .%defineBodyFunction 
+  (lambda (bodyFunctionName parameterNames body)
+    `(define (,bodyFunctionName ,@parameterNames) ,@body)))
+
+(define .%listKeywordValues
+  (lambda (keywords args)
+    (map (lambda (keyword) (.%keywordValue keyword args)) keywords)))
+
+
+(define .%keywordValue
+  (lambda (keyword args)
+    (let ((keywordValue (memq keyword args)))
+      (.if keywordValue
+	   (cadr keywordValue)
+	   false))))
+
+(define (.%make-symbol . args)
+  (.si 'newSymbol 'lava.F (apply string-append (map toString args))))
+
+(provide 'lava/program/define-with-keywords)
+
+;;; End of file.

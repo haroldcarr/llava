@@ -1,0 +1,61 @@
+;;;;
+;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
+;;;; Last Modified : 2000 Jan 25 (Tue) 17:49:00 by Harold Carr.
+;;;;
+
+(require 'test/test)
+
+(begin-test 'cl/symbols/gensym)
+
+(test-require 'cl/symbols/gensym)
+
+
+(define this-gensym '())
+
+(check "gensym0"
+       ".%_G_0"
+       (toString (set! this-gensym (gensym))))
+
+(check "gensym1"
+       false
+       (eq? '.%_G_0 this-gensym))
+
+(check "gentemp2"
+       ".%_G_1"
+       (toString (set! this-gensym (gentemp))))
+
+(check "gentemp2.1"
+       true
+       (eq? '.%_G_1 this-gensym))
+
+(check "gensym3"
+       "gensym-test-2"
+       (toString (gensym 'gensym-test-)))
+
+(check "gentemp4"
+       true
+       (eq? 'gentemp-test-3 (gentemp 'gentemp-test-)))
+
+(define gensym-test-4 35)
+
+(check "gensym5"
+       "gensym-test-4"
+       (toString (set! this-gensym (gensym 'gensym-test-))))
+
+(check "gensym6"
+       -1
+       (getEnvTopLevelIndex this-gensym))
+
+(check "gensym7"
+       true
+       (not (= -1 (getEnvTopLevelIndex 'gensym-test-4))))
+
+(define gentemp-test-5 35)
+
+(check "gentemp8"
+       35
+       (eval (gentemp 'gentemp-test-)))
+
+(end-test 'cl/symbols/gensym)
+
+;;; End of file.

@@ -1,0 +1,892 @@
+;;;
+;;; Created       : 1999 Dec 25 (Sat) 22:10:35 by Harold Carr.
+;;; Last Modified : 2000 May 16 (Tue) 02:43:36 by Harold Carr.
+;;;
+
+(begin
+
+(require 'test/test)
+
+;(toggle-print-results)
+;(toggle-print-progress)
+
+(begin-test)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test if
+
+(check 'testIf1 'f (if false 't 'f))
+;; REVISIT - how to test
+;(check 'testIf2 't (if 1 't 'f))
+
+(check 'testIf3 't (.if 1 't 'f))
+(check 'testIf4 't (.if null 't 'f))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test print of lambdas with names
+
+(define foo (lambda (x) x))
+(check 'lambdaName (toString foo) (toString foo)) ;; REVISIT "Lambda foo"
+;(check 'lambdaRename (toString 'REVISIT) ((lambda (x) (set! x foo)  (set! foo 3)  x) 'dummy))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test new and generic.
+
+;; NB. do not use doubleValue here - TestGeneric makes it null.
+(check 'newAndGeneric 
+       (new 'java.lang.Float 123.0)
+       (floatValue (new 'java.lang.Integer 123)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test static invocation.
+
+; REVISIT 1.2.2  
+
+(check 'staticInvocation
+       (toString '1.2.2)
+       (.si 'getProperty 'java.lang.System (toString 'java.version)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test field access
+
+(define test (new 'libLava.r1.procedure.primitive.java.PrimNew))
+;; REVISIT - no more singleton field
+;(check 'fieldGet1 null (.f 'singleton test))
+;(check 'fieldSet1 test (.f 'singleton test test))
+;(check 'fieldGet2 test (.f 'singleton test))
+
+(.sf 'TYPE 'java.lang.Double)
+;(.sf 'TYPE 'java.lang.Double 'typeMismatch)
+(.sf 'out 'java.lang.System)
+
+(check 'staticFieldGet1
+       (toString 'undefined)
+       (.sf 'undefined 'testLava.TestEnv))
+(check 'staticFieldSet1
+       (toString 'foo)
+       (.sf 'undefined 'testLava.TestEnv (toString 'foo)))
+(check 'staticFieldGet1
+       (toString 'foo)
+       (.sf 'undefined 'testLava.TestEnv))
+(.sf 'undefined 'testLava.TestEnv (toString 'undefined))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test WrapJavaPrimitive
+
+(define .%instanceof
+  (lambda (obj type)
+    (isInstance (.si 'forName 'java.lang.Class (toString type)) obj)))
+
+(check 'wrap1
+       true
+       (.%instanceof 'a 'lava.lang.types.Symbol))
+
+(check 'wrap2
+       false
+       (.%instanceof 1 'lava.lang.types.Symbol))
+
+;; REVISIT - add more
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test equality
+
+(check 'equality1   true (eq? null null))
+(check 'equality1.1 true (eq? null null))
+(check 'equality2 true (eq? true true))
+(check 'equality3 false (eq? true false))
+(check 'equality4 true (eq? 'a 'a))
+(check 'equality4.1 true (eq? 'a 'a))
+(check 'equality5 false (eq? 1 1))
+(check 'equality5.1 true (= 1 1))
+(check 'equality6 true (equals 1 1))
+(check 'equality6 false (equal? null 1))
+(check 'equality7 false (equals 1 1.0)) ;; REVISIT
+(check 'equality7.1 true (= 1 1.0))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test list operations
+
+(check 'list0 '() (list))
+(check 'list1 '(1) (list 1))
+(check 'list2 '(1 2) (list 1 2))
+(check 'list3 '(1 2 3) (list 1 2 3))
+(check 'list4 '(1 2 3 4) (list 1 2 3 4))
+(check 'list5 '(1 2 3 4 5) (list 1 2 3 4 5))
+(check 'list6 '(1 2 3 4 5 6) (list 1 2 3 4 5 6))
+;(check 'list7 '(1 2 3 4 5 6 7) (list 1 2 3 4 5 6 7)) ;; Revisit
+
+;;(car) ;; REVISIT
+(check 'car1 1 (car '(1 2 3)))
+(check 'cdr2 '(2 3) (cdr '(1 2 3)))
+(check 'cdr3 2 (cdr (cons 1 2)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test numerics operators
+
+(define test-numerics
+  (lambda (arg-lists)
+    (map (lambda (op)
+	   (map (lambda (args) (apply op args))
+		arg-lists))
+	 (list / = >= > < - + *))))
+
+(check 'numerics1
+       ;; REVISIT results
+       '((0.5  0.6666666666666666 
+                     1     2.0   0.25) 
+	 (true false true  false true)
+	 (true false true  true  true) 
+	 (true false false true  false) 
+	 (true true  false false false) 
+	 (-2   -1    0     1.0   -4.0) 
+	 (2    5     8     7.0   12.0)
+	 (2    6    16     8.0   64.0))
+       (test-numerics 
+	'(
+	  ;;() ;; REVISIT
+	  (2)
+	  (2 3)
+	  (4 4) 
+	  (4 2 1.0)
+	  (4 4 4.0)
+	  )))
+
+(check 'numerics2
+       ;; REVISIT results
+       '((1.000000000001053)
+	 (false)
+	 (true)
+	 (true) 
+	 (false)
+	 (1.0)
+	 (1.899278600853E12)
+	 (9.018148009145323E23))
+       (test-numerics 
+	`((,(new 'java.lang.Long "949639300427")
+	   ,(new 'java.lang.Long "949639300426")))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test tail recursion
+
+(define (printList x)
+  (if (eq? x null)
+      (dprintln 'done)
+      (begin (dprintln (car x))
+	     (printList (cdr x)))))
+
+(printList '(1 2 3 4))
+
+(define (reverseList x)
+  (reverseListAux x '()))
+
+(define (reverseListAux x accumulator)
+  (if (eq? x null)
+      accumulator
+      (reverseListAux (cdr x) (cons (car x) accumulator))))
+
+(check 'tailRecursion1 '(4 3 2 1) (reverseList '(1 2 3 4)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test map
+
+(check 'map1
+       '(1 2 3)
+       (map + '(1 2 3)))
+(check 'map2
+       '(5 7 9)
+       (map + '(1 2 3) '(4 5 6)))
+(check 'map3
+       '(12 15 18)
+       (map + '(1 2 3) '(4 5 6) '(7 8 9)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test backtrace.
+
+;;(reverseList '(1 2 3 4 5 . 6))
+;;(reverseList '(1 2 3 4 5 6 7 8 9 10 11 12 13 14 . 15))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test generic procedure definition
+
+(define x 3)
+(define x (lambda (x) x))
+(check 'generic1 4 (x 4))
+(define (foo x) (list x))
+(check 'generic2 '(3) (foo 3))
+(define (floatValue x y) (list x y))
+(check 'generic3 
+       (new 'java.lang.Float 23.0)
+       (floatValue (new 'java.lang.Integer 23)))
+(check 'generic3.1 '(a b) (floatValue 'a 'b))
+
+
+(define ffffff (lambda (x) x))
+(.%defGenInternal 'ffffff)
+
+(check 'generic4 '(1 2 3) (list 1 2 3))
+(define f (new 'java.io.File (toString '/home/carr)))
+(check 'generic5-list 
+       true
+       (not (equal? (cons f null)
+		    (list f))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test dotted
+
+(define (foo a b . rest) (list a b rest))
+(check 'dotted1 '(1 2 (3 4 5)) (foo 1 2 3 4 5))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test macros
+
+;; REVISIT - since this is in a begin everything is first compiled
+;; then executed.  But if the following is called "foo" then
+;; the tests above which have applications of foo fail with wrong 
+;; number of arguments.  
+;;
+;; This points out the need for INITCODE - do not install
+;; the macro at compile time, but at eval time.
+;; OR: some other model of macro environments.
+
+(define-syntax foom
+  (lambda (x y) (list 'quote (list x y))))
+(check 'macro1 '(a b) (foom a b))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test derived
+
+(check 'derived1 
+       '(.if true (begin true) (cond))
+       (apply cond '(cond (true true))))
+
+(define condTest
+  (lambda (x)
+    (cond ((null? x) 'itIsNull)
+	  ((equal? x 1) 'itIsOne)
+	  ((equal? x -3) 'itIsMinusThree)
+	  ((equals x 'x) 'itIsX)
+	  (else (list 'itIsElse x)))))
+
+(check 'derived2 'itIsNull (condTest null))
+(check 'derived3 'itIsOne  (condTest 1))
+(check 'derived4 'itIsMinusThree (condTest -3))
+(check 'derived5 'itIsX (condTest 'x))
+(check 'derived6 '(itIsElse whatEver) (condTest 'whatEver))
+
+(check 'derived6.1 null (cond (null)))
+(check 'derived6.1 1 (cond (1)))
+(check 'derived6.11 2 (cond (1 2)))
+(check 'derived6.2 1 (cond (false) (else 1)))
+
+(define testor
+  (lambda (x)
+    (or (begin (set! x (cons 1 x)) false)
+	(begin (set! x (cons 2 x)) false)
+	(begin (set! x (cons 3 x)) true)
+	(begin (set! x 0) false))
+    x))
+
+(check 'derived7 false (or))
+(check 'derived8 '(3 2 1) (testor null))
+(check 'derived9 '(3 2 1 . -1) (testor -1))
+
+(check "let" '4 (let* ((a 3)) (+ a 1)))
+(check "let*" '(3 4) (let* ((a 3) (b (+ a 1))) (list a b)))
+(check "letrec"
+       '(3 2 1)
+       (letrec ((a (lambda (x y)
+		      (if (null? x) 
+			  y 
+			  (a (cdr x)
+			     (cons (car x) y))))))
+          (a '(1 2 3) null)))
+
+(define testand
+  (lambda (x)
+    (and (begin (set! x (cons 1 x)) true)
+	(begin (set! x (cons 2 x)) true)
+	(begin (set! x (cons 3 x)) false)
+	(begin (set! x 0) true))
+    x))
+
+(check 'derived10 true (and))
+(check 'derived11 '(3 2 1) (testand null))
+(check 'derived12 '(3 2 1 . 2) (testand 2))
+
+
+(define (testDo x)
+  (let ((result null))
+    (do ((i 1 (+ i 1)))
+	((equal? i 10) result)
+      (set! result (cons i result)))))
+
+(check 'derived13 '(9 8 7 6 5 4 3 2 1) (testDo 10))
+
+(define (testCase x)
+  (case x
+    ((1 2) (list 'one 'two))
+    ((three) (list 3))
+    (else 'else)))
+
+(check 'case1 '(one two) (testCase 1))
+(check 'case2 '(one two) (testCase 2))
+(check 'case3 '(3) (testCase 'three))
+(check 'case4 'else (testCase 4))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test misc
+
+(check ".print" true (null? (.print null)))
+(check ".comment" null (.comment (throw (new 'java.lang.Exception))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test eval
+
+(check 'eval1 eval (eval 'eval))
+;; REVISIT - interaction of eval and local environments
+;(check 'eval2 
+;       '(1 1)
+;       ((lambda (x) 
+;	   (list x (eval 'x (.thisEnvironment)))) 1))
+(check 'eval3
+       3
+       (begin
+	 (eval '(define (fooe x) x))
+	 (fooe 3)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test quasiquote
+
+;; 1.1
+(check "quasi1" 1 (apply quasiquote '(quasiquote 1)))
+(check "quasi2" 1 (apply quasiquote '`1))
+(check "quasi3" 1 `1)
+;; 1.2
+(check "quasi4" ''a (apply quasiquote '(quasiquote a)))
+(check "quasi5" ''a (apply quasiquote '`a))
+(check "quasi6" 'a `a)
+;; 2.1
+(check "quasi7"
+       '(.list 1 (list 1))
+       (apply quasiquote '(quasiquote (1 (unquote (list 1))))))
+(check "quasi8"
+       '(.list 1 (list 1))
+       (apply quasiquote '`(1 ,(list 1))))
+(check "quasi9" '(1 (1)) `(1 ,(list 1)))
+;; 3
+(check "quasi10"
+       '(.list (quote a) (+ 2 3) (quasiquote (c (unquote (+ 4 5)))))
+       (apply quasiquote '`(a ,(+ 2 3) ,`(c ,(+ 4 5)))))
+(check "quasi11"
+       '(a 5 (c 9))
+       `(a ,(+ 2 3) ,`(c ,(+ 4 5))))
+;; 4.1
+(check "quasi12" '(a b 1 2) `(a b ,@(list 1 2)))
+(check "quasi13" '(a 5 (c 1 2)) `(a ,(+ 2 3) ,`(c ,@(list 1 2))))
+;; 5
+(check "quasi14" 
+       ''(1 'two "three")
+       (apply quasiquote '(quasiquote (1 'two "three"))))
+(check "quasi15" 
+       ''(1 'two "three")
+       (apply quasiquote '`(1 'two "three")))
+(check "quasi16" 
+       '(1 'two "three")
+       `(1 'two "three"))
+
+;; etc
+(check "quasi17"
+       '(x 2)
+       ((lambda (x) `(x ,x)) 2))
+(check "quasi18"
+       '(x 2 y 3)
+       ((lambda (x y) `(x ,x y ,y)) 2 3))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Test call/cc
+
+(define (tc x)
+ (list 'r1
+	(call/cc
+         (lambda (r1)
+          (list 'r2
+		 (call/cc
+                  (lambda (r2)
+                   (list 'r3
+			  (call/cc
+                           (lambda (r3)
+                            (if (null? x) (r1 null) null)
+			    (let ((cx (car x)))
+			     (cond ((equal? cx 1)
+				     (r1 x))
+				    ((equal? cx 2)
+				     (r2 x))
+				    ((equal? cx 3)
+				     (r3 x))
+				    (else
+				     (dprintln (car x))
+				     (tc (cdr x)))))))))))))
+	x))
+
+(check "call/cc1"
+       '(r1 (r2 (r3 (r1 (r2 (r3 (3 2 1 1 2 3 4))) (3 2 1 1 2 3 4)))) (4 3 2 1 1 2 3 4))
+       (tc '(4 3 2 1 1 2 3 4)))
+(check "call/cc2"
+       '(r1 (r2 (r3 (r1 (r2 (r3 (r1 (r2 (r3 (r1 (r2 (r3 (r1 (1 2 3 4) (1 2 3 4)))) (d 1 2 3 4)))) (c d 1 2 3 4)))) (b c d 1 2 3 4)))) (a b c d 1 2 3 4))
+       (tc '(a b c d 1 2 3 4)))
+;; *****
+(check "call/cc3"
+       '(r1 (r2 (r3 (3 2 1 1 2 3 4))) (3 2 1 1 2 3 4))
+       (tc   '(3 2 1 1 2 3 4)))
+(check "call/cc4"
+       '(r1 (r2 (r3 (r1 (r2 (r3 (r1 (r2 (r3 (r1 (1 2 3 4) (1 2 3 4)))) (d 1 2 3 4)))) (c d 1 2 3 4)))) (b c d 1 2 3 4))
+       (tc   '(b c d 1 2 3 4)))
+(check "call/cc5"
+       '(r1 (r2 (2 1 1 2 3 4)) (2 1 1 2 3 4))
+       (tc     '(2 1 1 2 3 4)))
+(check "call/cc6"
+       '(r1 (r2 (r3 (r1 (r2 (r3 (r1 (1 2 3 4) (1 2 3 4)))) (d 1 2 3 4)))) (c d 1 2 3 4))
+       (tc     '(c d 1 2 3 4)))
+(check "call/cc7"
+       '(r1 (1 1 2 3 4) (1 1 2 3 4))
+       (tc       '(1 1 2 3 4)))
+(check "call/cc8"
+       '(r1 (r2 (r3 (r1 (1 2 3 4) (1 2 3 4)))) (d 1 2 3 4))
+       (tc       '(d 1 2 3 4)))
+(check "call/cc9"
+       '(r1 (r2 (r3 (r1 (r2 (r3 (r1 null null))) (b)))) (a b))
+       (tc '(a b)))
+
+(define (tc2 x)
+ (list 'R1
+	(call/cc
+         (lambda (R1)
+          (list 'R2
+		 (call/cc
+                  (lambda (R2)
+                   (list 'R3
+			  (call/cc
+                           (lambda (R3)
+			     (tcaux R1 R2 R3 x)))))))))
+	x))
+
+(define (tcaux r1 r2 r3 x)
+  (if (null? x) (r1 null) null)
+  (let ((cx (car x)))
+    (cond ((equal? cx 1)
+	    (r1 x))
+	   ((equal? cx 2)
+	    (r2 x))
+	   ((equal? cx 3)
+	    (r3 x))
+	   (else
+	    (dprintln (car x))
+	    (tc2 (cdr x))))))
+
+(check "call/cc11"
+       '(R1 (R2 (R3 (R1 (R2 (R3 (3 2 1 1 2 3 4))) (3 2 1 1 2 3 4)))) (4 3 2 1 1 2 3 4))
+       (tc2 '(4 3 2 1 1 2 3 4)))
+(check "call/cc12"
+       '(R1 (R2 (R3 (R1 (R2 (R3 (R1 (R2 (R3 (R1 (R2 (R3 (R1 (1 2 3 4) (1 2 3 4)))) (d 1 2 3 4)))) (c d 1 2 3 4)))) (b c d 1 2 3 4)))) (a b c d 1 2 3 4))
+       (tc2 '(a b c d 1 2 3 4)))
+(check "call/cc13"
+       '(R1 (R2 (R3 (3 2 1 1 2 3 4))) (3 2 1 1 2 3 4))
+       (tc2   '(3 2 1 1 2 3 4)))
+(check "call/cc14"
+       '(R1 (R2 (R3 (R1 (R2 (R3 (R1 (R2 (R3 (R1 (1 2 3 4) (1 2 3 4)))) (d 1 2 3 4)))) (c d 1 2 3 4)))) (b c d 1 2 3 4))
+       (tc2   '(b c d 1 2 3 4)))
+(check "call/cc15"
+       '(R1 (R2 (2 1 1 2 3 4)) (2 1 1 2 3 4))
+       (tc2     '(2 1 1 2 3 4)))
+(check "call/cc16"
+       '(R1 (R2 (R3 (R1 (R2 (R3 (R1 (1 2 3 4) (1 2 3 4)))) (d 1 2 3 4)))) (c d 1 2 3 4))
+       (tc2     '(c d 1 2 3 4)))
+(check "call/cc17"
+       '(R1 (1 1 2 3 4) (1 1 2 3 4))
+       (tc2       '(1 1 2 3 4)))
+(check "call/cc18"
+       '(R1 (R2 (R3 (R1 (1 2 3 4) (1 2 3 4)))) (d 1 2 3 4))
+       (tc2       '(d 1 2 3 4)))
+(check "call/cc19"
+       '(R1 (R2 (R3 (R1 (R2 (R3 (R1 null null))) (b)))) (a b))
+       (tc2 '(a b)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; test throw
+
+(.comment
+;; revisit
+(check "throw1"
+       (.si 'newLavaException 
+	    'lava.F
+	    (new 'java.lang.Exception "check-throw1"))
+       (throw (new 'java.lang.Exception "check-throw1")))
+
+(check "throw2"
+       (.si 'newLavaException 
+	    'lava.F
+	    (new 'java.lang.Exception "check-throw2"))
+       (throw (new 'java.lang.IllegalArgumentException "check-throw2")))
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; test try
+
+(define (test.%try tryProcedure)
+  (.%try 
+   (lambda () (tryProcedure))
+   (lambda (t)
+     (let ((g2 (if (instanceof t 'lava.lang.exceptions.LavaException)
+		   (getThrowable t)
+		   t)))
+       (cond ((instanceof g2 'java.lang.NumberFormatException)
+	      (let ((e g2)) (dprintln 'NumberFormatException)))
+	     ((instanceof g2 'java.lang.IllegalArgumentException)
+	      (let ((e g2)) (dprintln 'IllegalArgumentException)))
+	     ((instanceof g2 'java.lang.AbstractMethodError)
+	      (let ((e g2)) (dprintln 'AbstractMethodError)))
+	     (else (throw t)))))
+   (lambda () (dprintln 'finally))))
+
+(check ".%try1" 'try (test.%try (lambda () (dprintln 'try))))
+(check ".%try2" 
+       'IllegalArgumentException
+       (test.%try (lambda () 
+		    (dprintln 'try)
+		    (throw (new 'java.lang.IllegalArgumentException "ill")))))
+(check ".%try3"
+       'NumberFormatException
+       (test.%try (lambda () 
+		    (dprintln 'try)
+		    (.si 'parseInt 'java.lang.Integer ".."))))
+(check ".%try4"
+       'AbstractMethodError
+       (test.%try (lambda () 
+		    (dprintln 'try)
+		    (throw (.si 'newLavaException 'lava.F
+				(new 'java.lang.AbstractMethodError "ab"))))))
+
+(define (testTry tryProcedure)
+  (try
+   (tryProcedure)
+   (catch (java.lang.NumberFormatException e)
+	  (dprintln e)
+	  (dprintln 'NumberFormatException))
+   (catch (java.lang.IllegalArgumentException e)
+	  (dprintln e)
+	  (dprintln 'IllegalArgumentException))
+   (catch (java.lang.AbstractMethodError e)
+	  (dprintln e)
+	  (dprintln 'AbstractMethodError))
+   (finally 
+    (dprintln 'finally))))
+
+(check "try1" 'try (testTry (lambda () (dprintln 'try))))
+(check "try2" 
+       'IllegalArgumentException
+       (testTry (lambda () 
+		  (dprintln 'try)
+		  (throw (new 'java.lang.IllegalArgumentException "ill")))))
+(check "try3"
+       'NumberFormatException
+       (testTry (lambda () 
+		  (dprintln 'try)
+		  (.si 'parseInt 'java.lang.Integer ".."))))
+(check "try4"
+       'AbstractMethodError
+       (testTry (lambda () 
+		  (dprintln 'try)
+		  (throw (.si 'newLavaException 'lava.F
+			      (new 'java.lang.AbstractMethodError "ab"))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test require/provide
+
+(require 'lava/system/win32p)
+
+(define user.home 
+  (.si 'getProperty 'java.lang.System "user.home"))
+
+(check "provided1"
+       '("lava/system/win32p" "test/test")
+       (provided))
+(check "reset-provided1"
+       null
+       (reset-provided))
+(check "provided2"
+       null
+       (provided))
+(check "load-library1"
+       (string-append user.home
+		      "/.sync/.esync/java/lava/lib/test/do-not-provide.lva")
+       (toLowerCase (load-library 'test/do-not-provide)))
+(check "provided3"
+       null
+       (provided))
+(check "provided?1"
+       false
+       (provided? 'cl/control/setq))
+(check "require1"
+       (string-append user.home
+		      "/.sync/.esync/java/lava/lib/cl/control/setq.lva")
+       (toLowerCase (require 'cl/control/setq)))
+(check "provided4"
+       '("cl/control/setq" "cl/symbols/gensym")
+       (provided))
+(check "provided?2"
+       true
+       (provided? 'cl/control/setq))
+(check "require2"
+       null
+       (require 'cl/control/setq))
+
+;; REVISIT - load-path, push-on-load-path, append-to-load-path
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test import
+
+(require 'java/lang/import)
+
+(import 'java.lang.Double 'constructor)
+;; REVISIT - no floats
+(check "import1" 34.0 (java.lang.Double "34"))
+(import 'java.lang.Double 'MAX_VALUE)
+(check "import2" (java.lang.Double.MAX_VALUE) (java.lang.Double.MAX_VALUE))
+(check "import3"
+       (java.lang.Double.MAX_VALUE)
+       (java.lang.Double.MAX_VALUE! (java.lang.Double.MAX_VALUE))) 
+(import 'java.util.Vector 'constructor 'addElement 'contains 'toString)
+(define v (java.util.Vector))
+(check "import4" true (isEmpty v))
+(import 'java.lang.System 'out)
+(define o (java.lang.System.out))
+(addElement v o)
+(check "import5" false (isEmpty v))
+(check "import6" true (contains v o))
+(toString v)
+(import 'java.lang.Integer 'parseInt)
+(check "import7" 34 (java.lang.Integer.parseInt "34"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test threads and synchronization
+
+(test-require 'lava/threads/start-new-thread)
+
+(define current-time 
+  (lambda () 
+    ;; REVISIT - intValue
+    (intValue (.si 'currentTimeMillis 'java.lang.System))))
+
+; p 243
+
+;;(define *visual?* #t)
+(define *visual?* #f)
+
+(define CHILD-LOOP-SLEEP 100)
+(define CHILD-ITERATIONS  10)
+(define PARENT-SLEEP     (* CHILD-LOOP-SLEEP (/ CHILD-ITERATIONS 2)))
+(define WAIT             (* CHILD-LOOP-SLEEP 4))
+(define INFINITY         10000000)
+
+(define parent-thread #f)
+(define child-thread #f)
+
+(define parent-end-time -1)
+(define child-end-time -1)
+(define child-progress '())
+
+(define child-progress1 -1)
+(define child-progress2 -1)
+
+(define (parent how-long-to-wait)
+  (set! child-end-time -1)
+  (set! child-thread 
+	(start-new-thread 
+	 (lambda () (child CHILD-ITERATIONS))))
+  (set! parent-end-time -1)
+  (set! parent-thread 
+	(start-new-thread 
+	 (lambda ()
+	   (join child-thread 
+		 (new 'java.lang.Long (toString how-long-to-wait)))
+	   (set! parent-end-time (current-time))
+	   (if *visual?* (.print 'parent-done-waiting)))))
+  child-thread)
+
+(define (child num-iterations)
+  (set! child-progress '())
+  (do ((i 0 (+ i 1)))
+      ((> i num-iterations))
+    (set! child-progress (cons i child-progress))
+    (if *visual?* (.print child-progress))
+    (sleep (.si 'currentThread 'java.lang.Thread) CHILD-LOOP-SLEEP))
+  (set! child-end-time (current-time))
+  (if *visual?* (.print 'child-done)))
+
+(define (print-parent-and-child-end-times)
+  (if *visual?*
+      (.print (list 
+	       'parent-end-time parent-end-time 
+	       'child-end-time child-end-time))))
+
+(define (check-child-progress msg expected)
+  (set! child-progress1 (length child-progress))
+  (sleep (.si 'currentThread 'java.lang.Thread) WAIT)
+  (set! child-progress2 (length child-progress))
+  (check msg  expected (equal? child-progress1 child-progress2)))
+
+;;; Start both threads running, with parent waiting for child to terminate.
+;;; Be sure parent waits longer than child is expected to run.
+
+(check "thread1"
+       true
+       (instanceof (parent INFINITY) 'java.lang.Thread))
+
+;;; Check that the child is making progress.
+
+(check-child-progress "thread1.3" false)
+
+;;; Suspend the child thread and check that it is not running.
+
+(check "thread2"
+       null
+       (suspend child-thread))
+
+(check-child-progress "thread2.3" true)
+
+;;; Resume the child thread and check that the child is making progress again.
+
+(check "thread3"
+       null
+       (resume child-thread))
+
+(check-child-progress "thread3.3" false)
+
+;;; Wait for parent to complete then check that it completed
+;;; after the child.
+
+(check "thread4"
+       null
+       (join parent-thread (new 'java.lang.Long (toString INFINITY))))
+
+(print-parent-and-child-end-times)
+
+(check "thread4.1"
+       true
+       (>= parent-end-time child-end-time))
+
+;;; Now start parent/child again, suspend child, wait for parent to
+;;; time out and check that parent ended even though child did
+;;; not complete
+
+(parent PARENT-SLEEP)
+(suspend child-thread)
+(join parent-thread (new 'java.lang.Long (toString INFINITY)))
+
+(print-parent-and-child-end-times)
+
+(check "thread5"
+       true
+       (= child-end-time -1))
+
+(check "thread5.1"
+       true
+       (not (= parent-end-time -1)))
+
+;;; Resume the child and check its progress.
+
+(check "thread6.0"
+       null
+       (resume child-thread))
+
+(check-child-progress "thread6.3" false)
+
+;;; Wait for child to terminate before starting next test.
+
+(join child-thread (new 'java.lang.Long (toString INFINITY)))
+
+
+;;; Now start parent/child again, stop child, wait for parent to
+;;; time out.  Then try to start child and see that it doesn't
+;;; make progress since it has been stopped.
+;;; Note: stop is deprecated in Java 1.2.
+
+(parent PARENT-SLEEP)
+(stop child-thread)
+(join parent-thread (new 'java.lang.Long (toString INFINITY)))
+
+(print-parent-and-child-end-times)
+
+(check "thread7"
+       true
+       (= child-end-time -1))
+(check "thread7.1"
+       true
+       (not (= parent-end-time -1)))
+
+(resume child-thread)
+
+(check-child-progress "thread7.2" true)
+
+;;; Wait for child to terminate so we are in a clean state.
+(join child-thread (new 'java.lang.Long (toString INFINITY)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test synchronized
+
+(define lock-and-run-child
+  (lambda (lock)
+    (set! child-end-time -1)
+    (synchronized lock 
+		  (child CHILD-ITERATIONS))))
+
+(define try-lock
+  (lambda (lock)
+    (set! parent-end-time -1)
+    (synchronized lock 
+		  (set! parent-end-time (current-time)))))
+
+(define lock1 (new 'java.lang.Object))
+(define lock2 (new 'java.lang.Object))
+
+(begin
+  (start-new-thread (lambda () (lock-and-run-child lock1)))
+  (sleep (.si 'currentThread 'java.lang.Thread) WAIT)
+  (try-lock lock1))
+
+(print-parent-and-child-end-times)
+
+(check "synchronized1"
+       true
+       (>= parent-end-time child-end-time))
+
+(define thread '())
+
+(begin
+  (set! thread (start-new-thread (lambda () (lock-and-run-child lock1))))
+  (sleep (.si 'currentThread 'java.lang.Thread) WAIT)
+  (try-lock lock2))
+
+(print-parent-and-child-end-times)
+
+(check "synchronized2"
+       true
+       (not (= parent-end-time -1)))
+
+(check "synchronized3"
+       true
+       (= child-end-time -1))
+
+;;; Wait for first thread before continuing test.
+(join thread (new 'java.lang.Long (toString INFINITY)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; End test
+
+(end-test 'testBuiltIns)
+
+)
+
+;;; End of file.
+

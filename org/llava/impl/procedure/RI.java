@@ -1,6 +1,6 @@
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2000 Feb 18 (Fri) 17:27:27 by Harold Carr.
+ * Last Modified : 2000 Feb 18 (Fri) 17:31:02 by Harold Carr.
  */
 
 package libLava.r1.procedure.generic;
@@ -152,7 +152,7 @@ public class DI {
 	    NoSuchMethodException,
 	    Throwable 
     {
-	Constructor constructor=findConstructor(targetClass, getClasses(args));
+	Constructor constructor =findConstructor(targetClass,getClasses(args));
 
 	if (constructor == null) {
 	    throw new NoSuchMethodException(targetClass.getName());

@@ -1,0 +1,23 @@
+;;;;
+;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
+;;;; Last Modified : 2000 Jan 22 (Sat) 00:29:17 by Harold Carr.
+;;;;
+
+(define (boolean? x)
+  (or (eq? x true)
+      (eq? x false)))
+
+(define (char? x)
+  (instanceof x 'java.lang.Character))
+
+(define (procedure? x)
+  (instanceof x 'lava.lang.types.Procedure))
+
+(define (string? x)
+  (instanceof x 'java.lang.String))
+
+;; REVISIT vector?
+
+(provide 'scm/predicates)
+
+;;; End of file.

@@ -1,0 +1,92 @@
+/*
+
+(import java.util.Hashtable.*)
+
+(public class TheRest
+  (private static int (numCreated 0))
+  (public  static int numberCreated () (return numCreated))
+  (private Hashtable table)
+  (public TheRest ()
+    (set! numCreated (+ numCreated 1))
+    (set! table (new (Hashtable))))
+  (public void put ((Object key) (Object value))
+    (put table key value))
+  (public Object get ((Object key))
+    (return (get table key))))
+ */
+
+import java.util.Hashtable;
+
+class _TheRest_indirect {
+  private static  Hashtable methods = new Hashtable();
+  protected static void setMethod(String name, Object o) {
+    methods.put(name, o);
+  }
+  public static Object getMethod(String name) { 
+    return methods.get(name);
+  }
+}
+
+class _TheRest_fields_1 {
+  protected static int numCreated = 0;
+  public Hashtable table;
+}
+
+interface _TheRest_TheRest_interface_1 {
+  public _TheRest_fields_1 TheRest();
+}  
+
+interface _TheRest_put_interface_1 {
+  public void put(_TheRest_fields_1 _jthis, Object key, Object value);
+}  
+
+interface _TheRest_get_interface_1 {
+  public Object get(_TheRest_fields_1 _jthis, Object key);
+}  
+
+class _TheRest_indirect_load_1 {
+  static {
+
+    _TheRest_indirect.setMethod(
+      "TheRest",
+      new _TheRest_TheRest_interface_1() {
+        public _TheRest_fields_1 TheRest() {
+          _TheRest_fields_1 result = new _TheRest_fields_1();
+	  _TheRest_fields_1.numCreated += 1;
+	  result.table = new Hashtable();
+          return result;
+        }
+      }
+    );
+
+    _TheRest_indirect.setMethod(
+      "put",
+      new _TheRest_put_interface_1() {
+        public void put(_TheRest_fields_1 _jthis, Object key, Object value) {
+          _jthis.table.put(key, value);
+        }
+      }
+    );
+
+    _TheRest_indirect.setMethod(
+      "get",
+      new _TheRest_get_interface_1() {
+        public Object get(_TheRest_fields_1 _jthis, Object key) {
+          return _jthis.table.get(key);
+        }
+      }
+    );
+
+  }
+}
+
+public class TheRest {
+  public static void main(String[] av){
+    new _TheRest_indirect_load_1();  // Load methods.
+    _TheRest_fields_1 o = ((_TheRest_TheRest_interface_1)_TheRest_indirect.getMethod("TheRest")).TheRest();
+    ((_TheRest_put_interface_1)_TheRest_indirect.getMethod("put")).put(o, o, o);
+    System.out.println(
+    ((_TheRest_get_interface_1)_TheRest_indirect.getMethod("get")).get(o, o)
+                      );
+  }
+}

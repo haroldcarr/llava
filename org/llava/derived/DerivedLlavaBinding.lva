@@ -1,0 +1,26 @@
+;;;;
+;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
+;;;; Last Modified : 2000 Jan 21 (Fri) 20:42:59 by Harold Carr.
+;;;;
+
+;; REVISIT - add named-let
+
+(define-syntax let
+  (lambda (bindings . body)
+    `((lambda ,(map car bindings) . ,body) . ,(map cadr bindings))))
+
+(define-syntax let*
+  (lambda (bindings . body)
+    (if (null? bindings) `((lambda () . ,body))
+        `(let (,(car bindings))
+           (let* ,(cdr bindings) . ,body)))))
+
+(define-syntax letrec
+  (lambda (bindings . body)
+    (let ((vars (map car  bindings))
+	  (vals (map cadr bindings)))
+      `(let ,(map (lambda (var) `(,var false)) vars)
+	 ,@(map (lambda (var val) `(set! ,var ,val)) vars vals)
+	 . ,body))))
+
+;;; End of file.
