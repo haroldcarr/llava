@@ -1,15 +1,14 @@
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2000 Feb 18 (Fri) 16:57:12 by Harold Carr.
+ * Last Modified : 2000 Feb 18 (Fri) 17:16:39 by Harold Carr.
  */
 
 package libLava.r1.procedure.generic;
 
 import java.lang.reflect.*;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Hashtable;
-
-// REVISIT - use collections instead of Vector and Hashtable.
+import java.util.List;
 
 public class DI {
 
@@ -234,16 +233,16 @@ public class DI {
 	throws 
 	    NoSuchMethodException 
     {
-	Vector candidates = collectCandidateMethodsFromSupers(methodName,
-							      targetClass,
-							      argTypes);
+	List candidates = collectCandidateMethodsFromSupers(methodName,
+							    targetClass,
+							    argTypes);
 	
 	Method method;
 	switch (candidates.size()) {
 	case 0:
 	    return null;
 	case 1:
-	    method = (Method)candidates.firstElement();
+	    method = (Method)candidates.get(0);
 	    break;
 	default:
 	    method = mostSpecificMethod(candidates);
@@ -258,14 +257,14 @@ public class DI {
 	throws
 	    NoSuchMethodException
     {
-	Vector candidates = collectCandidateConstructors(targetClass,argTypes);
+	List candidates = collectCandidateConstructors(targetClass,argTypes);
 
 	Constructor constructor;
 	switch (candidates.size()) {
 	case 0:
 	    return null;
 	case 1:
-	    constructor = (Constructor)candidates.firstElement();
+	    constructor = (Constructor)candidates.get(0);
 	    break;
 	default:
 	    constructor = mostSpecificConstructor(candidates);
@@ -275,27 +274,27 @@ public class DI {
 	return constructor;
     }
 
-    private static Vector collectCandidateConstructors(Class targetClass,
-						       Class[] argTypes)
+    private static List collectCandidateConstructors(Class targetClass,
+						     Class[] argTypes)
     {
-	Vector candidates = new Vector();
+	List candidates = new ArrayList();
 
 	Constructor[] constructors = targetClass.getDeclaredConstructors();
 	for (int i = 0; i < constructors.length; i++) {
 	    if (equalTypes(constructors[i].getParameterTypes(), argTypes)) {
-		candidates.addElement(constructors[i]);
+		candidates.add(constructors[i]);
 	    }
 	}
 	return candidates;
     }
 
-    private static Vector collectCandidateMethodsFromSupers(String methodName,
-							    Class targetClass,
-							    Class[] argTypes)
+    private static List collectCandidateMethodsFromSupers(String methodName,
+							  Class targetClass,
+							  Class[] argTypes)
 	throws
 	    NoSuchMethodException
     {
-	Vector candidates = new Vector();
+	List candidates = new ArrayList();
 
 	for (; targetClass != null; targetClass = targetClass.getSuperclass()){
 	    Method[] methods = targetClass.getDeclaredMethods();
@@ -304,7 +303,7 @@ public class DI {
 		if (methodName.equals(methods[i].getName()) &&
 		    equalTypes(parmTypes, argTypes))
 		{
-		    candidates.addElement(methods[i]);
+		    candidates.add(methods[i]);
 		}
 	    }
 	}
@@ -315,17 +314,17 @@ public class DI {
     // Picking most specific constructors/methods from similar candidates.
     //
 
-    private static Constructor mostSpecificConstructor (Vector constructors) 
+    private static Constructor mostSpecificConstructor (List constructors) 
 	throws
 	    NoSuchMethodException
     {
 	for (int i = 0; i < constructors.size(); i++) {
 	    for (int j = 0; j < constructors.size(); j++) {
 		if ((i != j) &&
-		    (isMoreSpecific((Constructor)constructors.elementAt(i), 
-				    (Constructor)constructors.elementAt(j)))) 
+		    (isMoreSpecific((Constructor)constructors.get(i), 
+				    (Constructor)constructors.get(j)))) 
                 {
-		    constructors.removeElementAt(j);
+		    constructors.remove(j);
 		    if (i > j) {
 			i--;
 		    }
@@ -334,22 +333,22 @@ public class DI {
 	    }
 	}
 	if (constructors.size() == 1) {
-	    return (Constructor)constructors.elementAt(0);
+	    return (Constructor)constructors.get(0);
 	}
 	throw new NoSuchMethodException("more than one most specific constructor");
     }
 
-    private static Method mostSpecificMethod (Vector methods) 
+    private static Method mostSpecificMethod (List methods) 
 	throws
 	    NoSuchMethodException 
     {
 	for (int i = 0; i < methods.size(); i++) {
 	    for (int j = 0; j < methods.size(); j++) {
 		if ((i != j) &&
-		    (isMoreSpecific((Method)methods.elementAt(i),
-				    (Method)methods.elementAt(j)))) 
+		    (isMoreSpecific((Method)methods.get(i),
+				    (Method)methods.get(j)))) 
                 {
-		    methods.removeElementAt(j);
+		    methods.remove(j);
 		    if (i > j) {
 			i--;
 		    }
@@ -358,7 +357,7 @@ public class DI {
 	    }
 	}
 	if (methods.size() == 1) {
-	    return (Method)methods.elementAt(0);
+	    return (Method)methods.get(0);
 	}
 	throw new NoSuchMethodException("more than one most specific method");
     }
@@ -379,6 +378,8 @@ public class DI {
 
     private static boolean isMoreSpecific (Method m1, Method m2) 
     {
+	// REVISIT - m2/m1 order
+
 	// True IFF m1 is more specific than m2
 	if (! equalType(m2.getDeclaringClass(), m1.getDeclaringClass())) {
 	    return false;
