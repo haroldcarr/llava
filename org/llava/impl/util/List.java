@@ -16,8 +16,8 @@ or send a letter to
 
 package org.llava.impl.util;
 
-import org.llava.impl.F;
-import org.llava.lang.types.Pair;
+import org.llava.F;
+import org.llava.Pair;
 
 public class List
 {
@@ -109,14 +109,24 @@ public class List
 	return array;
     }
 
+
     public static Pair vector2list(Object v)
+    {
+	return vector2list(v, Integer.MAX_VALUE);
+    }
+
+    public static Pair vector2list(Object v, int resultLength)
     {
 	Pair result = List.list("dummy");
 	Pair rptr   = result;
 	int len     = java.lang.reflect.Array.getLength(v);
-	for (int i = 0; i < len; i++) {
+	int i;
+	for (i = 0; i < len && i < resultLength; i++) {
 	    rptr.setCdr(List.list(java.lang.reflect.Array.get(v, i)));
 	    rptr = (Pair) rptr.cdr();	    
+	}
+	if (i < len) {
+	    rptr.setCdr(List.list(F.newSymbol("...")));
 	}
 	return (Pair) result.cdr();
     }
