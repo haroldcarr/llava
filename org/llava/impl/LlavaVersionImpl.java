@@ -12,7 +12,7 @@ or send a letter to
 
 /**
  * Created       : 2000 Jan 19 (Wed) 17:30:46 by Harold Carr.
- * Last Modified : 2004 Sep 06 (Mon) 10:58:39 by Harold Carr.
+ * Last Modified : 2004 Nov 26 (Fri) 09:54:02 by Harold Carr.
  */
 
 package org.llava.impl;
@@ -36,9 +36,9 @@ public class LlavaVersionImpl
 
     public String getYear    ()  { return "2004"; }
 
-    public String getMonth   ()  { return "09"; }
+    public String getMonth   ()  { return "11"; }
     
-    public String getDay     ()  { return "06"; }
+    public String getDay     ()  { return "26"; }
 
     public String getOptional()  { return "alpha"; }
 
