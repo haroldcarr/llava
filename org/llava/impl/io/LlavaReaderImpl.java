@@ -12,7 +12,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 17 (Fri) 20:11:43 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:33:02 by Harold Carr.
+ * Last Modified : 2004 Nov 30 (Tue) 06:11:22 by Harold Carr.
  */
 
 package org.llava.impl.io;
@@ -31,9 +31,10 @@ public class LlavaReaderImpl
     implements
 	LlavaReader
 {
-    private Reader in;
+    private Reader   in;
     private LlavaEOF EOF      = F.newLlavaEOF();
-    private Object  CONS_DOT = new Object();
+    private Object   CONS_DOT = new Object();
+    private Pair     STRING   = F.newPair(null, null);
 
     // REVISIT: maybe do not allocate until needed.
     private StringBuffer tmpBuff = new StringBuffer();
@@ -72,18 +73,19 @@ public class LlavaReaderImpl
     {
 	Object token = readToken(in); 
 
-	if      (token == "(") return readTail(in, false);
-	else if (token == "'") return List.list(F.newSymbol("quote"),
+	if      (token == "(")      return readTail(in, false);
+	else if (token == "'")      return List.list(F.newSymbol("quote"),
+						     read(in));
+	else if (token == "`")      return List.list(F.newSymbol("quasiquote"),
+						     read(in));
+	else if (token == ",")      return List.list(F.newSymbol("unquote"),
+						     read(in));
+	else if (token == ",@")     return List.list(F.newSymbol("unquote-splicing"),
 						read(in));
-	else if (token == "`") return List.list(F.newSymbol("quasiquote"),
-						read(in));
-	else if (token == ",") return List.list(F.newSymbol("unquote"),
-						read(in));
-	else if (token == ",@")return List.list(F.newSymbol("unquote-splicing"),
-						read(in));
-	else if (token == ")") throw F.newLlavaException("Extra ')'");
+	else if (token == ")")      throw F.newLlavaException("Extra ')'");
+	else if (token == STRING)   return STRING.car();
 	else if (token == CONS_DOT) throw F.newLlavaException("Extra '.'");
-	else                   return token;
+	else                        return token;
     }
 
     // Implementation.
@@ -158,7 +160,8 @@ public class LlavaReaderImpl
 	    if (ch == -1) {
 		throw F.newLlavaException("EOF inside of a string.");
 	    }
-	    return tmpBuff.toString().intern();
+	    STRING.setCar(tmpBuff.toString().intern());
+	    return STRING;
 	case '#' :
 	    switch (ch = in.read()) {
 	    case 't' :
