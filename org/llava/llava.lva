@@ -439,7 +439,7 @@
  (description
   "Controls the indentation of the call stack tracing of procedures
   defined with <code>define-d</code>.  If <code>false</code> then no
-  indentation.  Otherwise by the integer amount given."))
+  indentation.  Otherwise tracing is indented the integer amount given."))
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
