@@ -1,6 +1,6 @@
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2000 Feb 18 (Fri) 06:12:16 by Harold Carr.
+ * Last Modified : 2000 Feb 18 (Fri) 16:57:12 by Harold Carr.
  */
 
 package libLava.r1.procedure.generic;
@@ -195,7 +195,7 @@ public class DI {
 	// REVISIT - rewrite so cache and keys are its own
 	// class which encapsulate concurrency so synchronized
 	// may be removed here.
-	MethodKey key = MethodKey.newMethodKey(methodName, targetClass, argTypes);
+	Key key = Key.initReusableKey(methodName, targetClass, argTypes);
 	Method method = (Method) cachedMethods.get(key);
 	if (method != null) {
 	    return method;
@@ -607,42 +607,31 @@ public class DI {
     }
 }
 
-class MethodKey 
+class Key 
 {
-
     private String  methodName;
     private Class   targetClass;
     private Class[] argTypes;
 
-    private static MethodKey reusableKey; // N.B.: concurrency
+    private static Key reusableKey = new Key();
 
-    private MethodKey (String methodName, Class targetClass, Class[] argTypes) 
+    private Key ()
     {
-	this.init(methodName, targetClass, argTypes);
     }
 
-    private void init (String methodName, Class targetClass, Class[] argTypes) 
+    static Key initReusableKey (String methodName, 
+				Class targetClass, 
+				Class[] argTypes) 
     {
-	this.methodName  = methodName; 
-	this.targetClass = targetClass; 
-	this.argTypes    = argTypes;
-    }
-
-    static MethodKey newMethodKey (String methodName, 
-				   Class targetClass, 
-				   Class[] argTypes) 
-    {
-	if (reusableKey == null) {
-	    reusableKey = new MethodKey(methodName, targetClass, argTypes);
-	} else {
-	    reusableKey.init(methodName, targetClass, argTypes);
-	}
+	reusableKey.methodName  = methodName; 
+	reusableKey.targetClass = targetClass; 
+	reusableKey.argTypes    = argTypes;
 	return reusableKey;
     }
 
     void remember() 
     {
-	reusableKey = null;
+	reusableKey = new Key();
     }
 
     public int hashCode () 
@@ -656,10 +645,10 @@ class MethodKey
 
     public boolean equals (Object x) 
     {
-	if (! (x instanceof MethodKey)) {
+	if (! (x instanceof Key)) {
 	    return false;
 	}
-	MethodKey m = (MethodKey)x;
+	Key m = (Key)x;
 	return
 	    targetClass == m.targetClass &&
 	    methodName.equals(m.methodName) &&
