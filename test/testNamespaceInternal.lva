@@ -3,101 +3,13 @@
 ;;;; Last Modified : 2004 Dec 22 (Wed) 10:37:38 by Harold Carr.
 ;;;;
 
-;; TODO:
-;;
-;; - Implement importJavaClassIntoCurrentPackage
-;;
-;; - try/catch should know about current imports
-;;   (like new does - or rather will)
-;;
-;; - Same goes for instanceof.  What else?
-;;
-;; - Convert to Java.
-;;
-;; - Integrate with Lava.
-;;
-;; - new, try/catch/instanceof should take short names if imported
-;;   long names regardless.
-
-;; Think about:
-;;
-;; * From any package you must import to enable BOTH short and long references.
-;;   In other words, only can ref imported things.
-;;
-;; * Have import precompute as much reflection as possible on all methods
-;;   on each class to avoid full DI.
-
 (require 'test/test)
 
-;; Maps foo.bar to its namespace representation.
-;; Used to find existing namespaces.
-(define *fullNameNamespaceMap*
-  (new 'java.util.Hashtable))
+(define *ns* (newNamespace (new 'testLava.proto.NamespaceImpl)))
 
-(define (findNamespace name)
-  (get *fullNameNamespaceMap* name))
-
-(define (createNamespace name)
-  ;; This should not be called if the name exists.
-  ;; It does not check.  It just overwrites in that case.
-  (let ((ns (new 'testLava.proto.Namespace name *rootNamespace*)))
-    (put *fullNameNamespaceMap* name ns)
-    ns))
-
-(define (findOrCreateNamespace name)
-  (let ((ns (findNamespace name)))
-    (if (null? ns)
-        (createNamespace name)
-	ns)))
-
-;; N.B.: Each namespace always contains the topLevelNamespace
-;; at the end of its refList.  During initialization we need to
-;; explicitly remove this reference - both because it doesn't
-;; exist so it is null - and if it did exist would cause a circular
-;; lookup.
-
-; This MUST start as null so create call will work.
-(define *rootNamespace* null) ; Contains the built-in system procedures.
-
-(set! *rootNamespace* (createNamespace "lava.Lava"))
-(remove (getRefList *rootNamespace*) 1)
-
-
-;; The system starts in the REPL namespace.
-
-(define *replNamespace* (createNamespace "lava.REPL"))
-
-
-;; The "package" statement switches the current namespace.
-
-(define *currentNamespace* *replNamespace*)
-
-
-;;;
-;;; Returns a list of the namespaces imported by a namespace
-;;; in reference order (i.e., most recent to root).
-;;;
-
-(define (getRefListNames ns)
-  (let ((refList (getRefList ns)))
-    (do ((result '()    
-		 (cons (getName (elementAt refList i)) result))
-	 (i      (- (size refList) 1) 
-		 (- i 1)))
-	((= i -1) result))))
-
-;; For testing only.  Results in alpha order.
-
-(define (getFullNameNamespaceMapKeys)
-  (do ((keys (keys *fullNameNamespaceMap*))
-       (arrayList (new 'java.util.ArrayList) 
-		  (begin (add arrayList (next keys))
-			 arrayList)))
-      ((not (hasNext keys)) 
-       (_si 'sort 'java.util.Collections arrayList)
-       (do ((i (- (size arrayList) 1) (- i 1))
-	    (result '() (cons (get arrayList i) result)))
-	   ((= i -1) result)))))
+;;;;
+;;;; Test foundation.
+;;;;
 
 (_comment
 (begin
@@ -106,26 +18,33 @@
 
 (check 1
        '("lava.Lava")
-       (getRefListNames *rootNamespace*))
-(check 1 '("lava.Lava" "lava.REPL") (getFullNameNamespaceMapKeys))
+       (getRefListNames (getRootNamespace *ns*)))
+(check 1
+       '("lava.Lava" "lava.REPL")
+       (getFullNameNamespaceMapKeys *ns*))
 
-(createNamespace "foo.bar")
-(check 2 '("foo.bar" "lava.Lava" "lava.REPL") (getFullNameNamespaceMapKeys))
+(createNamespace *ns* "foo.bar")
+(check 2 
+       '("foo.bar" "lava.Lava" "lava.REPL")
+       (getFullNameNamespaceMapKeys *ns*))
 
-(findOrCreateNamespace "foo.bar")
-(check 3 '("foo.bar" "lava.Lava" "lava.REPL") (getFullNameNamespaceMapKeys))
+(findOrCreateNamespace *ns* "foo.bar")
+(check 3
+       '("foo.bar" "lava.Lava" "lava.REPL")
+       (getFullNameNamespaceMapKeys *ns*))
 
 (check 4
        '("foo.bar" "lava.Lava")
-       (getRefListNames (findNamespace "foo.bar")))
+       (getRefListNames (findNamespace *ns* "foo.bar")))
 
-(findOrCreateNamespace "bar.baz")
-(check 5 '("bar.baz" "foo.bar" "lava.Lava" "lava.REPL")
-       (getFullNameNamespaceMapKeys))
+(findOrCreateNamespace *ns* "bar.baz")
+(check 5
+       '("bar.baz" "foo.bar" "lava.Lava" "lava.REPL")
+       (getFullNameNamespaceMapKeys *ns*))
 
 (check 6
        '("bar.baz" "lava.Lava")
-       (getRefListNames (findOrCreateNamespace "bar.baz")))
+       (getRefListNames (findOrCreateNamespace *ns* "bar.baz")))
 
 (end-test)
 )
@@ -133,20 +52,13 @@
 
 ;-------------------------
 
-;;;
-;;; import, if a .lva file is found, will load that file.
-;;; It ensures that the package statement in that file is correct.
-;;;
-
-(define *nextPackageShouldBe* '())
+;;;;
+;;;; Test "package".
+;;;;
 
 (define (package p c)
-  (let ((PC (string-append (toString p) "." (toString c))))
-    (if (not (null? *nextPackageShouldBe*))
-	(if (not (equals PC *nextPackageShouldBe*))
-	    (error (string-append "incorrect package: " PC
-				  " should be: " *nextPackageShouldBe*))))
-    (set! *currentNamespace* (findOrCreateNamespace PC))))
+  (_package *ns* p c))
+
 
 (_comment
 (begin
@@ -155,35 +67,40 @@
 
 (check 1
        '("lava.REPL" "lava.Lava")
-       (getRefListNames *currentNamespace*))
+       (getRefListNames (getCurrentNamespace *ns*)))
 
 (package 'foo 'bar)
-(check 2 '("foo.bar" "lava.Lava" "lava.REPL") (getFullNameNamespaceMapKeys))
-(check 3 '("foo.bar" "lava.Lava") (getRefListNames *currentNamespace*))
+(check 2 '("foo.bar" "lava.Lava" "lava.REPL")
+       (getFullNameNamespaceMapKeys *ns*))
+(check 3 '("foo.bar" "lava.Lava")
+       (getRefListNames (getCurrentNamespace *ns*)))
 
 (package 'foo 'bar)
-(check 2 '("foo.bar" "lava.Lava" "lava.REPL") (getFullNameNamespaceMapKeys))
-(check 3 '("foo.bar" "lava.Lava") (getRefListNames *currentNamespace*))
+(check 2 '("foo.bar" "lava.Lava" "lava.REPL")
+       (getFullNameNamespaceMapKeys *ns*))
+(check 3 '("foo.bar" "lava.Lava")
+       (getRefListNames (getCurrentNamespace *ns*)))
 
 (package 'foo 'baz)
 (check 2 '("foo.bar" "foo.baz" "lava.Lava" "lava.REPL")
-       (getFullNameNamespaceMapKeys))
-(check 2  '("foo.baz" "lava.Lava") (getRefListNames *currentNamespace*))
+       (getFullNameNamespaceMapKeys *ns*))
+(check 2  '("foo.baz" "lava.Lava")
+       (getRefListNames (getCurrentNamespace *ns*)))
 
 (package 'buz 'saw)
 (check 2 '("buz.saw" "foo.bar" "foo.baz" "lava.Lava" "lava.REPL")
-       (getFullNameNamespaceMapKeys))
+       (getFullNameNamespaceMapKeys *ns*))
 
 (check 1
        '("buz.saw" "lava.Lava")
-       (getRefListNames *currentNamespace*))
+       (getRefListNames (getCurrentNamespace *ns*)))
 
 (package "" 'Only)
 (check 1 '(".Only" "buz.saw" "foo.bar" "foo.baz" "lava.Lava" "lava.REPL")
-       (getFullNameNamespaceMapKeys))
+       (getFullNameNamespaceMapKeys *ns*))
 (check 1
        '(".Only" "lava.Lava")
-       (getRefListNames *currentNamespace*))
+       (getRefListNames (getCurrentNamespace *ns*)))
 
 (end-test)
 )
@@ -191,211 +108,62 @@
 
 ;-------------------------
 
-(_comment
-
-if alreadyImportedInPackage?
-    loadLavaFileIfTouched
-        if not classAlreadyImported
-            ignore FileNotFoundException
-	        loadLoop false lastModified
-		    if file not exists
-		         throw FileNotFoundException
-		    if lastModified = 0 || fileTime > lastModified
-		         ;; may be 0 if initially created interactively
-		         ;; but now has an associated file
-		         load file
-else existsInFullNameNamespaceMap
-    addToRefList
-    loadLavaFileIfTouched
-else if java class exists
-    import class
-    classAlreadyImported = true
-    addToRefList
-else
-    loadLoop true 0
-        if file not exists
-	    throw FileNotFoundException
-        load file
-	addToRefList
-)
+;;;;
+;;;; Test "import".
+;;;;
 
 (define (importX name)
-  (set! name (toString name))
-  (if (alreadyImportedInPackage? name *currentNamespace*)
-      (alreadyImportedInCurrentPackage name)
-      (importIntoCurrentPackage name)))
-
-(define (alreadyImportedInCurrentPackage name)
-  ;; No need to import again. 
-  ;; Stops infinite loading for packages which import each other.
-  ;; Pick up any changes since last load.
-  (or (loadLavaFileIfTouched name) ; Does not handle erasures.
-      name))
-
-(define (alreadyImportedInPackage? name package)
-  (not (eq? (member name (getRefListNames package)) false)))
-
-(define (importIntoCurrentPackage name)
-  (cond ((handleExistsInFullNameNamespaceMap name))
-	((importJavaClassIntoCurrentPackage name))
-	((importLavaFileIntoCurrentPackage name))
-	(else (error "importIntoCurrentPackage: should not happen."))))
-
-(define (handleExistsInFullNameNamespaceMap name)
-  (let ((ns (findNamespace name)))
-    (cond ((not (null? ns))
-	   ;; This is useful so one can interactively create packages
-	   ;; and have them import each other.
-	   (addToRefList *currentNamespace* ns)
-	   (or (loadLavaFileIfTouched name) ; Does not handle erasures.
-	       name))
-	  (else false))))
-
-(define (importJavaClassIntoCurrentPackage name)
-  (try 
-   (let* ((class (_si 'forName 'java.lang.Class name))
-	  (savedNamespace *currentNamespace*))
-     ;; REVISIT - probably only use create since it can't exist at this point.
-     (set! *currentNameSpace* (findOrCreateNamespace name))
-     (try
-      (begin
-	;; No need to check if already imported since this procedure
-	;; is only called in that case.
-	(_print "here we would import the static methods and fields")
-	(setClassAlreadyImported *currentNameSpace* true)
-	(addToRefList savedNamespace *currentNameSpace*))
-      (finally (set! *currentNameSpace* savedNamespace)))
-     (string-append "class " name))
-   (catch (java.lang.ClassNotFoundException e) false)))
-
-(define (importLavaFileIntoCurrentPackage name)
-  (importLavaFileIntoCurrentPackageLoop name true 0))
-
-(define (loadLavaFileIfTouched name)
-  (if (classAlreadyImported (findNamespace name))
-      (string-append "existing class " name)
-      (try 
-       ;; This will load the file if has been touched since last load time
-       ;; or if it is newly existent, i.e., if the import was created
-       ;; interactively and then later had a file associated with it.
-       (importLavaFileIntoCurrentPackageLoop 
-	name false (getFileLastModified (findNamespace name)))
-       (catch (java.lang.Exception e)
-	      (if (not (equals (getMessage e)
-			       (string-append "Does not exist: " name)))
-		  (throw e)
-		  false)))))
-
-(define (importLavaFileIntoCurrentPackageLoop name addToRefList?
-					      fileLastModified)
-  (let ((pathStream (classPathStream))
-	(loadName (replace name #\. #\/)))
-    (call/cc 
-     (lambda (return)
-       (do ((result false)
-	    (currentPath (pathStream) (pathStream)))
-	   ((null? currentPath)
-	    (error (string-append "Does not exist: " name)))
-	 (set! result (importLavaFileIntoCurrentPackageLoopAux
-		       name loadName currentPath addToRefList? 
-		       fileLastModified))
-	 (_if result (return result)))))))
-
-(define (importLavaFileIntoCurrentPackageLoopAux 
-	 name loadName currentPath addToRefList? fileLastModified)
-  (let* ((loadPathAndName (string-append currentPath "/" loadName ".lva"))
-	 ;; Depends on package procedure doing set! *currentNamespace*.
-	 (loadProcedure (lambda () (load loadPathAndName)))
-	 (file (new 'java.io.File loadPathAndName)))
-    (call/cc
-     (lambda (return)
-       (try
-	(begin
-	  (cond ((not (exists file)) (return false))
-		((or (= fileLastModified 0)
-		     (> (lastModified file) fileLastModified))
-		 (importXAux name loadProcedure addToRefList?))
-		(else (return (string-append "no change " loadPathAndName))))
-	  ;; We loaded the file, either because it was a new import
-	  ;; or because it had been touched.
-	  (setFileLastModified (findNamespace name) (lastModified file))
-	  (string-append (if addToRefList? "reload" "") loadPathAndName))
-	(catch (java.io.FileNotFoundException e) 
-	       false))))))
-
-(define (importXAux name proc addToRefList?)
-  (let ((savedPackage #f))
-    (try
-     (begin
-       (set! savedPackage *currentNamespace*)
-       (set! *nextPackageShouldBe* name) ; ignored if class
-       (proc)
-       (if addToRefList?
-	   (addToRefList savedPackage *currentNamespace*)))
-     (finally
-      (set! *currentNamespace* savedPackage)
-      (set! *nextPackageShouldBe* '())))))
-
-(define (addToRefList namespace reference)
-  (let ((refList (getRefList namespace)))
-    (add refList (- (size refList) 1) reference)))
-
-(define (classPathStream)
-  (let* ((separator (_si 'getProperty 'java.lang.System "path.separator"))
-	 (pathTokens
-	  (new 'java.util.StringTokenizer
-	       (_si 'getProperty 'java.lang.System "java.class.path")
-	       separator)))
-    (lambda ()
-      (if (hasMoreTokens pathTokens)
-	  (nextToken pathTokens)
-	  '()))))
+  (_import *ns* name))
 
 (_comment
 (begin
 (load "ns.lva")
 (begin-test)
 
-(check 1 '("lava.Lava" "lava.REPL") (getFullNameNamespaceMapKeys))
-(check 2 '("lava.REPL" "lava.Lava") (getRefListNames *currentNamespace*))
+(check 1 '("lava.Lava" "lava.REPL") (getFullNameNamespaceMapKeys *ns*))
+(check 2 '("lava.REPL" "lava.Lava") 
+       (getRefListNames (getCurrentNamespace *ns*)))
 
-(check 1 (string-append (userHome)
+(check 1 (string-append "(re)load: " (userHome)
 			"/.sync/.lsync/lava/testLava/proto/ns/one/One.lva")
        (importX 'testLava.proto.ns.one.One))
-(check 2 "testLava.proto.ns.one.One"
+(check 2 (string-append "no change: " (userHome) 
+			"/.sync/.lsync/lava/testLava/proto/ns/one/One.lva")
        (importX 'testLava.proto.ns.one.One))
 (check 3 '("lava.Lava" "lava.REPL"
 	   "testLava.proto.ns.one.One" "testLava.proto.ns.two.Two")
-       (getFullNameNamespaceMapKeys))
+       (getFullNameNamespaceMapKeys *ns*))
 (check 4
        '("lava.REPL" "testLava.proto.ns.one.One" "lava.Lava")
-       (getRefListNames *currentNamespace*))
+       (getRefListNames (getCurrentNamespace *ns*)))
 (check 5
        '("testLava.proto.ns.one.One" "testLava.proto.ns.two.Two" "lava.Lava")
-       (getRefListNames (findNamespace "testLava.proto.ns.one.One")))
+       (getRefListNames (findNamespace *ns* "testLava.proto.ns.one.One")))
 (check 6
        '("testLava.proto.ns.two.Two" "lava.Lava")
-       (getRefListNames (findNamespace "testLava.proto.ns.two.Two")))
+       (getRefListNames (findNamespace *ns* "testLava.proto.ns.two.Two")))
 
-(check 6 "testLava.proto.ns.two.Two"
+(check 6 (string-append "no change: " (userHome) 
+			"/.sync/.lsync/lava/testLava/proto/ns/two/Two.lva")
        (importX 'testLava.proto.ns.two.Two))
 (check 6 '("lava.Lava" "lava.REPL"
 	   "testLava.proto.ns.one.One" "testLava.proto.ns.two.Two")
-       (getFullNameNamespaceMapKeys))
+       (getFullNameNamespaceMapKeys *ns*))
 (check 7 '("lava.REPL" "testLava.proto.ns.one.One"
 	   "testLava.proto.ns.two.Two" "lava.Lava")
-       (getRefListNames *currentNamespace*))
+       (getRefListNames (getCurrentNamespace *ns*)))
 
-(check 6 "testLava.proto.ns.two.Two"
+(check 6 (string-append "no change: " (userHome)
+			"/.sync/.lsync/lava/testLava/proto/ns/two/Two.lva")
        (importX 'testLava.proto.ns.two.Two))
 (check 8 '("lava.REPL" "testLava.proto.ns.one.One"
 	   "testLava.proto.ns.two.Two" "lava.Lava")
-       (getRefListNames *currentNamespace*))
+       (getRefListNames (getCurrentNamespace *ns*)))
 
 (check 9 "class java.util.Hashtable"
        (importX 'java.util.Hashtable))
 
-(check 9 "existing class java.util.Hashtable"
+(check 9 "already loaded: class java.util.Hashtable"
        (importX 'java.util.Hashtable))
 
 (end-test)
@@ -404,88 +172,15 @@ else
 
 ;-------------------------
 
-(define (isDotted? x)
-  (if (= (indexOf x ".") -1) false true))
+;;;;
+;;;; Test ref/set
+;;;;
 
-(define (setE! x val)
-  (set! x (toString x))
-  (if (isDotted? x)
-      (error (string-append "setE!: no dots allowed: " x))
-      (put (getMap *currentNamespace*) x val))
-  val)
+(define (setE! var val)
+  (setE *ns* var val))
 
-(define (packageAndClassOf x)
-  (substring x 0 (lastIndexOf x ".")))
-
-(define (variableOf x)
-  (substring x (+ (lastIndexOf x ".") 1) (length x)))
-
-(define (hasMultipleDots? x)
-  (if (or (= (indexOf x ".") -1)
-	  (= (indexOf x ".") (lastIndexOf x ".")))
-      false
-      true))
-
-(define (refE x)
-  (set! x (toString x))
-  (if (isDotted? x)
-      (refDotted (packageAndClassOf x) (variableOf x))
-      (refNotDotted x *currentNamespace*)))
-
-;;;
-;;; This is the critical routine.
-;;; Possibilities:
-;;; 1. Only look in current namespace.
-;;;    But this means you do not pick up builtin lava variables.
-;;; 2. Look in current namespace.
-;;;    If not found look in lava namespace.
-;;;    But this means all lava imported functions must have
-;;;    at least its "class" name (e.g., Aif.aif).
-;;;    This most closely resembles static class methods/fields accessed.
-;;;    But it is inconvenient in terms of Lisp.
-;;; 3. Go through refList until found or undefined.
-;;;    We choose this one.
-;;;
-
-(define (refNotDotted v namespace)
-  ;;(_print (list 'refNotDotted v))
-  (let ((refList (getRefList namespace)))
-    (call/cc
-     (lambda (return)
-       (do ((i 0 (+ i 1)))
-	   ((= i (size refList)) (error (string-append "undefined: " v)))
-	 (cond ((containsKey (getMap (elementAt refList i)) v)
-		(_comment
-		(_print (list 'foundIn
-			      (getName (elementAt refList i))
-			      (get (getMap (elementAt refList i)) v)))
-		)
-		(return (get (getMap (elementAt refList i)) v)))))))))
-
-(define (classNameOf x)
-  (variableOf x))
-
-(define (findMatch ns pc)
-  (let ((refList (getRefList ns)))
-    (call/cc
-     (lambda (return)
-       (do ((i 0 (+ i 1)))
-	   ((= i (size refList)) false)
-	 (if (or (equals pc              (getName (elementAt refList i)))
-		 (equals pc (classNameOf (getName (elementAt refList i)))))
-	     (return (elementAt refList i))))))))
-
-(define (refDotted pc m)
-  ;;(_print (list 'refDotted pc m))
-  (let* ((originalPC pc)
-	 ;; Enables .foo shorthand for built-in procedures.
-	 (pc (if (equals pc "") "lava.Lava" pc))
-	 (ns (findMatch *currentNamespace* pc)))
-    ;;(_print (list "NS" ns m))
-    (if (and (not (eq? ns false))
-	     (containsKey (getMap ns) m))
-	(refNotDotted m ns)
-	(error (string-append "refDotted: undefined: " originalPC "." m)))))
+(define (refE var)
+  (refE *ns* var))
 
 (_comment
 (begin
@@ -493,7 +188,7 @@ else
 (begin-test)
 
 (package 'lava 'Lava)
-(check 0 '("lava.Lava") (getRefListNames *currentNamespace*))
+(check 0 '("lava.Lava") (getRefListNames (getCurrentNamespace *ns*)))
 (setE! 'a 'Lava-a)
 (check 0 'Lava-a (refE 'a))
 (check 0 'Lava-a (refE '.a))
@@ -501,8 +196,9 @@ else
 (check 0 'Lava-a (refE 'lava.Lava.a))
 
 (package 'lava 'REPL)
-(check 0 "lava.REPL" (getName *currentNamespace*))
-(check 0 '("lava.REPL" "lava.Lava") (getRefListNames *currentNamespace*))
+(check 0 "lava.REPL" (getName (getCurrentNamespace *ns*)))
+(check 0 '("lava.REPL" "lava.Lava") 
+       (getRefListNames (getCurrentNamespace *ns*)))
 (check 0 'Lava-a (refE 'a))
 (check 1 'REPL-a (setE! 'a 'REPL-a))
 (check 2 'REPL-a (refE 'a))
@@ -514,7 +210,8 @@ else
 (check 2 'Lava-a (refE 'lava.Lava.a))
 
 (package 'foo.bar 'Baz)
-(check 3 '("foo.bar.Baz" "lava.Lava") (getRefListNames *currentNamespace*))
+(check 3 '("foo.bar.Baz" "lava.Lava")
+       (getRefListNames (getCurrentNamespace *ns*)))
 (check 3 'Lava-a (refE 'a))
 (setE! 'a 'Baz-a)
 (check 2 'Baz-a (refE 'a))
@@ -535,22 +232,22 @@ else
 (importX 'testLava.proto.ns.one.One)
 (check 3
        '("foo.bar.Baz" "testLava.proto.ns.one.One" "lava.Lava")
-       (getRefListNames *currentNamespace*))
+       (getRefListNames (getCurrentNamespace *ns*)))
 (check 4 'Baz-a (refE 'a))
 (check 4 'Lava-a (refE 'Lava.a))
 (check 4 'Lava-a (refE '.a))
 
 (package 'testLava.proto.ns.one 'One)
-(check 4 "testLava.proto.ns.one.One" (getName *currentNamespace*))
+(check 4 "testLava.proto.ns.one.One" (getName (getCurrentNamespace *ns*)))
 (check 4 'Lava-a (refE 'a))
 (check 4 'Lava-a (refE '.a))
 (setE! 'a 'One-a)
 
 (package 'foo.bar 'Baz)
-(check 4 "foo.bar.Baz" (getName *currentNamespace*))
+(check 4 "foo.bar.Baz" (getName (getCurrentNamespace *ns*)))
 (check 3
        '("foo.bar.Baz" "testLava.proto.ns.one.One" "lava.Lava")
-       (getRefListNames *currentNamespace*))
+       (getRefListNames (getCurrentNamespace *ns*)))
 (check 0 'Baz-a (refE 'a))
 (check 0 'Lava-a (refE '.a))
 (check 4 'Baz-a (refE 'a))
@@ -559,7 +256,7 @@ else
 (check 0 'One-a (refE 'testLava.proto.ns.one.One.a))
 
 (package 'lava 'Lava)
-(check 0 '("lava.Lava") (getRefListNames *currentNamespace*))
+(check 0 '("lava.Lava") (getRefListNames (getCurrentNamespace *ns*)))
 (check 0 'Lava-a (refE 'a))
 (check 0 'Lava-a (refE '.a))
 (check 0 'Lava-a (refE 'lava.Lava.a))
@@ -584,17 +281,12 @@ else
 
 ;-------------------------
 
-(define (newE x . args)
-  (let ((xAsString (toString x)))
-    (if (isDotted? xAsString)
-	(apply new (cons x args))
-	(newNotDotted xAsString args))))
+;;;;
+;;;; Test new.
+;;;;
 
-(define (newNotDotted x args)
-  (let ((ns (findMatch *currentNamespace* x)))
-    (if (not (eq? ns false))
-	(apply new (cons (string->symbol (getName ns)) args))
-	(else (error (string-append "Undefined: " x))))))
+(define (newE class . args)
+  (newE *ns* class args))
 
 (_comment
 (begin
