@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2004 Sep 05 (Sun) 11:27:57 by Harold Carr.
-;;;; Last Modified : 2004 Dec 10 (Fri) 22:53:17 by Harold Carr.
+;;;; Last Modified : 2004 Dec 10 (Fri) 23:10:39 by Harold Carr.
 ;;;;
 
 (-package-
@@ -474,19 +474,6 @@ and
   "Controls the indentation of the call stack tracing of procedures
   defined with <code>define-d</code>.  If <code>false</code> then no
   indentation.  Otherwise tracing is indented the integer amount given."))
-
-(-section-end-)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(-section-
- (name "Planned Improvements")
- (description
-  "Integrate the library in llavalib.zip in llava.jar so it is
-   not necessary to separately download and unzip llavalib.zip into
-   your CLASSPATH."
-
-  "For a full list of improvements see the 
-   <ulink url=\"http://llava.org/TODO\">TODO</ulink> list."))
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
