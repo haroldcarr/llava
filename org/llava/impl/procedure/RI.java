@@ -1,6 +1,6 @@
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2000 Feb 16 (Wed) 22:59:47 by Harold Carr.
+ * Last Modified : 2000 Feb 16 (Wed) 23:21:45 by Harold Carr.
  */
 
 package libLava.r1.procedure.generic;
@@ -8,6 +8,8 @@ package libLava.r1.procedure.generic;
 import java.lang.reflect.*;
 import java.util.Vector;
 import java.util.Hashtable;
+
+// REVISIT - use collections instead of Vector and Hashtable.
 
 public class DI {
 
@@ -158,20 +160,20 @@ public class DI {
 		candidates.addElement(constructors[i]);
 	    }
 	}
-	Constructor c;
+	Constructor constructor;
 	switch (candidates.size()) {
 	case 0:
 	    throw new NoSuchMethodException("no applicable constructor");
 	case 1:
-	    c = (Constructor)candidates.firstElement();
+	    constructor = (Constructor)candidates.firstElement();
 	    break;
 	default:
-	    c = mostSpecificConstructor(candidates);
+	    constructor = mostSpecificConstructor(candidates);
 	    break;
 	}
-	c.setAccessible(true);
+	constructor.setAccessible(true);
 	try {
-	    return c.newInstance(args);
+	    return constructor.newInstance(args);
 	} catch (InvocationTargetException e) {
 	    throw(e.getTargetException()); 
 	}
@@ -210,20 +212,20 @@ public class DI {
     {
 	// synchronized because the key is reused.
 	MethodKey key = MethodKey.newMethodKey(methodName, targetClass, argTypes);
-	Method result = (Method) cachedMethods.get(key);
-	if (result != null) {
-	    return result;
+	Method method = (Method) cachedMethods.get(key);
+	if (method != null) {
+	    return method;
 	}
 
-	result = findMethodFromScratch(methodName, targetClass, argTypes);
+	method = findMethodFromScratch(methodName, targetClass, argTypes);
 
-	if (result == null) {
+	if (method == null) {
 	    return null;
 	}
 
 	key.remember();
-	cachedMethods.put(key, result);
-	return result; 
+	cachedMethods.put(key, method);
+	return method; 
     }
 
     private static Method findMethodFromScratch (String methodName,
@@ -248,22 +250,22 @@ public class DI {
 	throws 
 	    NoSuchMethodException 
     {
-	Vector goodMethods =
+	Vector candidates =
 	    collectCandidatesFromSupers(methodName, targetClass, argTypes);
 	
-	Method m;
-	switch (goodMethods.size()) {
+	Method method;
+	switch (candidates.size()) {
 	case 0:
 	    return null;
 	case 1:
-	    m = (Method)goodMethods.firstElement();
+	    method = (Method)candidates.firstElement();
 	    break;
 	default:
-	    m = mostSpecificMethod(goodMethods);
+	    method = mostSpecificMethod(candidates);
 	    break;
 	}
-	m.setAccessible(true);
-	return m;
+	method.setAccessible(true);
+	return method;
     }
 
     private static Vector collectCandidatesFromSupers(String methodName,
@@ -274,7 +276,7 @@ public class DI {
     {
 	Vector candidates = new Vector();
 
-	while (targetClass != null) {
+	for (; targetClass != null; targetClass = targetClass.getSuperclass()){
 	    Method[] methods = targetClass.getDeclaredMethods();
 	    for (int i = 0; i < methods.length; i++) {
 		Class[] parmTypes = methods[i].getParameterTypes();
@@ -284,7 +286,6 @@ public class DI {
 		    candidates.addElement(methods[i]);
 		}
 	    }
-	    targetClass = targetClass.getSuperclass();
 	}
 	return candidates;
     }
@@ -373,25 +374,23 @@ public class DI {
     {
 	// Also used by moreSpecific so argType could be primitive.
 	if (argType.isPrimitive()) {
-	    argType = wrappedClass(argType);
+	    argType = wrapPrim(argType);
 	}
 
 	if (parmType.isPrimitive()) {
 	    return 
-		wrappedClass(parmType) == argType ||
+		wrapPrim(parmType) == argType ||
 		isPrimAssignableFrom(parmType, argType);
 	}
 
-	// parmType is a reference type (reduces to isAssignableFrom)
+	// parmType is a reference type.
 	return 
 	    parmType == argType ||
 	    parmType.isAssignableFrom(argType) || 
 	    argType == NullClass;
     }
 
-    // parmType is a primitive Class, argType is a wrapper Class
-    // Assumes parmType and argType are not "identical" (modulo wrapping).
-    // see Widening Primitve Conversions in JLS 5.1.2.
+    // Refer to Java Language Specification 5.1.2.
 
     private static boolean isPrimAssignableFrom (Class parmType,
 						 Class argType) 
@@ -438,7 +437,9 @@ public class DI {
 				  (Constructor)constructors.elementAt(j)))) 
                 {
 		    constructors.removeElementAt(j);
-		    if (i > j) i--;
+		    if (i > j) {
+			i--;
+		    }
 		    j--;
 		}
 	    }
@@ -460,7 +461,9 @@ public class DI {
 				  (Method)methods.elementAt(j)))) 
                 {
 		    methods.removeElementAt(j);
-		    if (i > j) i--;
+		    if (i > j) {
+			i--;
+		    }
 		    j--;
 		}
 	    }
@@ -488,13 +491,13 @@ public class DI {
 
     // True IFF c1 is more specific than c2
 
-    private static boolean moreSpecific (Method c1, Method c2) 
+    private static boolean moreSpecific (Method m1, Method m2) 
     {
-	if (! equalType(c2.getDeclaringClass(), c1.getDeclaringClass())) {
+	if (! equalType(m2.getDeclaringClass(), m1.getDeclaringClass())) {
 	    return false;
 	}
-	Class[] parmTypes1 = c1.getParameterTypes();
-	Class[] parmTypes2 = c2.getParameterTypes();
+	Class[] parmTypes1 = m1.getParameterTypes();
+	Class[] parmTypes2 = m2.getParameterTypes();
 	int n = parmTypes1.length;
 	for (int i = 0; i < n; i++) {
 	    if (! equalType(parmTypes2[i], parmTypes1[i])) {
@@ -517,7 +520,7 @@ public class DI {
 	return classes; 
     }
 
-    private static Class wrappedClass (Class cl) 
+    private static Class wrapPrim (Class cl) 
     {
 	if (cl.isPrimitive()) {
 	    if (cl == booleanClass)   return BooleanClass;
@@ -528,7 +531,7 @@ public class DI {
 	    if (cl == longClass)      return LongClass;
 	    if (cl == floatClass)     return FloatClass;
 	    if (cl == doubleClass)    return DoubleClass;
-	    throw new Error("DI.wrappedClass: unknown type" + cl);
+	    throw new Error("DI.wrapPrim: unknown type" + cl);
 	}
 	return cl;
     }
@@ -541,7 +544,6 @@ public class DI {
     private static Hashtable cachedMethods = new Hashtable();
 
     private static Class NullClass;
-    private static Class nullClass;
     private static Class BooleanClass;
     private static Class booleanClass;
     private static Class CharacterClass;
@@ -561,7 +563,6 @@ public class DI {
 
     static {
 	try {
-	    nullClass      = Void.TYPE;
 	    NullClass      = Class.forName("java.lang.Void");
 	    booleanClass   = Boolean.TYPE;
 	    BooleanClass   = Class.forName("java.lang.Boolean");
@@ -584,10 +585,6 @@ public class DI {
 	}
     }
 }
-
-/*
- * Keys to method cache.
- */
 
 class MethodKey 
 {
