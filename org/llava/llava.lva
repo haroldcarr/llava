@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2004 Sep 05 (Sun) 11:27:57 by Harold Carr.
-;;;; Last Modified : 2005 Feb 21 (Mon) 16:59:29 by Harold Carr.
+;;;; Last Modified : 2005 Mar 16 (Wed) 12:44:26 by Harold Carr.
 ;;;;
 
 (-package-
@@ -368,7 +368,7 @@
 (-section-
  (name Macros)
  (description
-  "Same as Common LISP. See <code>org.llava.lib.cl.Macro</code>."))
+  "Same as Common Lisp. See <code>org.llava.lib.cl.Macro</code>."))
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
