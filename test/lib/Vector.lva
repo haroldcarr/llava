@@ -7,10 +7,9 @@
 ;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
 ;;;;---------------------------------------------------------------------------
 
-
 ;;;;
 ;;;; Created       : 2000 Feb 10 (Thu) 04:12:22 by Harold Carr.
-;;;; Last Modified : 2004 Nov 26 (Fri) 17:23:49 by Harold Carr.
+;;;; Last Modified : 2004 Dec 05 (Sun) 18:59:46 by Harold Carr.
 ;;;;
 
 (import org.llava.lib.test.Test)
@@ -29,6 +28,21 @@
 	       (vector-for-each (lambda (ignore) (set! result (+ result 1)))
 				(list->vector '(a b c d e)))))
 	 (list result for-each-result)))
+
+(check "vector-equal?1"
+       true
+       (vector-equal? #(null 1 2.0 three "four" #5 (6))
+		      #(null 1 2.0 three "four" #5 (6))))
+
+(check "vector-equal?2"
+       false
+       (vector-equal? #(null 1)
+		      #(null 1 2.0 three "four" #5 (6))))
+
+(check "vector-equal?2"
+       false
+       (vector-equal? #(#(1))
+		      #(#(1))))
 
 (end-test 'vectors/vector-map)
 
