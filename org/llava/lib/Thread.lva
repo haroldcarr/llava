@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2000 Jan 23 (Sun) 08:04:29 by Harold Carr.
-;;;; Last Modified : 2005 Feb 21 (Mon) 16:57:40 by Harold Carr.
+;;;; Last Modified : 2005 Mar 15 (Tue) 13:43:09 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.Thread)
@@ -50,7 +50,7 @@
 ;;;
 
 (-doc-
- (name start-new-thread)
+ (name start-new-thread*)
  (param expression)
  (param ...)
  (category syntax)

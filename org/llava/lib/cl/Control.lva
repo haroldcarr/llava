@@ -9,14 +9,14 @@
 
 ;;;;
 ;;;; Created       : 1998 Dec 05 (Sat) 21:41:11 by Harold Carr.
-;;;; Last Modified : 2005 Feb 21 (Mon) 16:57:58 by Harold Carr.
+;;;; Last Modified : 2005 Mar 16 (Wed) 13:10:59 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.cl.Control)
 
 (import org.llava.lib.cl.Symbol)
 
-(-package- (description "Common LISP control features."))
+(-package- (description "Common Lisp control features."))
 
 ;;;
 ;;; setq
