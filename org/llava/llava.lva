@@ -1091,7 +1091,25 @@ share the static factory methods).
  (name map)
  (param proc)
  (param list)
- (location org.llava))
+ (param ".")
+ (param optionalList)
+ (param ...)
+ (location org.llava)
+ (description
+  "Examples:"
+  (example "(map (lambda (x) (+ x 1)) '(1 2 3)) &lva-et; (2 3 4)")
+  (example "(map (lambda (x y) (+ x y)) '(1 2 3) '(0.1 0.2 0.3)) &lva-et; (1.1 2.2 3.3)")))
+
+(-doc-
+ (name for-each)
+ (param proc)
+ (param list)
+ (param ".")
+ (param optionalList)
+ (param ...)
+ (location org.llava)
+ (description
+  "Like <code>map</code> but does not collect results in a list."))
 
 (-doc-
  (name call/cc)
