@@ -1,6 +1,6 @@
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2000 Feb 16 (Wed) 18:46:34 by Harold Carr.
+ * Last Modified : 2000 Feb 16 (Wed) 19:03:02 by Harold Carr.
  */
 
 package libLava.r1.procedure.generic;
@@ -197,7 +197,7 @@ public class DI {
 	    NoSuchMethodException  
     {
 
-	MethodKey key = MethodKey.make(target, name, argTypes);
+	MethodKey key = MethodKey.newMethodKey(target, name, argTypes);
 	Method result = (Method) cachedMethods.get(key);
 	if (result != null) {
 	    return result;
@@ -536,28 +536,75 @@ public class DI {
  * Keys to method cache.
  */
 
-class MethodKey {
-    Class target;
-    String name;
-    Class[] argTypes;
+class MethodKey 
+{
 
-    static MethodKey spareKey;
+    private Class   target;
+    private String  name;
+    private Class[] argTypes;
 
-    // use this instead of a constructor (but beware of concurrency)
-    static MethodKey make (Class t,String n, Class[] a) 
+    private static MethodKey reusableKey; // N.B.: concurrency
+
+    private MethodKey (Class target, String name, Class[] argTypes) 
     {
-	if (spareKey == null)
-	    spareKey = new MethodKey(t, n, a);
-	else
-	    spareKey.setup(t, n, a);
-	return spareKey;
+	this.init(target, name, argTypes);
     }
 
-    void setup(Class t,String n, Class[] a) {
-	target = t; name = n; argTypes = a; }
+    private void init (Class target, String name, Class[] argTypes) 
+    {
+	this.target   = target; 
+	this.name     = name; 
+	this.argTypes = argTypes;
+    }
 
-    void keep() {
-	spareKey = null;
+    static MethodKey newMethodKey (Class target, 
+				   String name, 
+				   Class[] argTypes) 
+    {
+	if (reusableKey == null) {
+	    reusableKey = new MethodKey(target, name, argTypes);
+	} else {
+	    reusableKey.init(target, name, argTypes);
+	}
+	return reusableKey;
+    }
+
+    void keep() 
+    {
+	reusableKey = null;
+    }
+
+    public int hashCode () 
+    {
+	int v = target.hashCode() ^ (37 * name.hashCode());
+	for (int i = 0; i < argTypes.length; i++) {
+	    v = (v * 43) ^ argTypes[i].hashCode();
+	}
+	return v;
+    }
+
+    public boolean equals (Object x) 
+    {
+	if (x instanceof MethodKey) {
+	    MethodKey m = (MethodKey)x;
+	    boolean v =	(target == m.target &&
+			 name.equals(m.name) &&
+			 arrayEquals(argTypes, m.argTypes));
+	    return v; 
+	} else
+	    return false;
+    }
+
+    private static boolean arrayEquals (Class[] c1, Class[] c2) 
+    {
+	if (c1.length != c2.length) {
+	    return false;
+	}
+	for (int i = 0; i < c1.length; i++) {
+	    if (c1[i] != c2[i])
+		return false;
+	}
+	return true; 
     }
 
     public String toString () 
@@ -565,8 +612,7 @@ class MethodKey {
 	return "<<" + target + "." + name + toStringArray(argTypes) + ">>"; 
     }
 
-    // Built-in array printing is lousy, so use this. Could be more generally useful
-    static String toStringArray (Object[] array) 
+    private static String toStringArray (Object[] array) 
     {
 	java.io.StringWriter out = new java.io.StringWriter();
 	out.write('[');
@@ -578,43 +624,6 @@ class MethodKey {
 	return out.toString(); 
     }
 
-    MethodKey (Class t,String n, Class[] a) 
-    {
-	target = t; name = n; argTypes = a; 
-    }
-
-    public boolean equals (Object mx) 
-    {
-	if (mx instanceof MethodKey) {
-	    MethodKey m = (MethodKey)mx;
-	    boolean v =
-		(target == m.target &&
-		 name.equals(m.name) &&
-		 arrayEquals(argTypes, m.argTypes));
-	    return v; 
-	} else
-	    return false;
-    }
-
-    static boolean arrayEquals (Class[] c1, Class[] c2) 
-    {
-	if (c1.length == c2.length) {
-	    for (int i = 0; i < c1.length; i++) {
-		if (c1[i] != c2[i])
-		    return false;
-	    }
-	    return true; 
-	} else
-	    return false;
-    }
-
-    public int hashCode () 
-    {
-	int v = target.hashCode() ^ (37*name.hashCode());
-	for (int i = 0; i < argTypes.length; i++) // added this, but seems to make things slower...
-	    v = (v * 43) ^ argTypes[i].hashCode();
-	return v;
-    }
 }
 
 // End of file.
