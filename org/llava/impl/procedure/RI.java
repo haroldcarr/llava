@@ -1,6 +1,6 @@
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2000 Feb 16 (Wed) 19:03:02 by Harold Carr.
+ * Last Modified : 2000 Feb 16 (Wed) 19:36:35 by Harold Carr.
  */
 
 package libLava.r1.procedure.generic;
@@ -82,12 +82,12 @@ public class DI {
     // Existing public API.
     //
 				  
-    public static Object create (Class myClass, Object[] args) 
+    public static Object create (Class targetClass, Object[] args) 
 	throws 
 	    Throwable 
     {
 	Class[] argTypes = getClasses(args);    
-	Constructor[] constructors = myClass.getDeclaredConstructors();
+	Constructor[] constructors = targetClass.getDeclaredConstructors();
 	Vector candidates = new Vector();
 	for (int i = 0; i < constructors.length; i++) {
 	    if (equalTypes(constructors[i].getParameterTypes(), argTypes)) {
@@ -113,110 +113,112 @@ public class DI {
 	}
     }
 
-    public static Object invoke (Object obj, String methodName, Object[] args) 
+    public static Object invoke (Object targetObject,
+				 String methodName, 
+				 Object[] args) 
 	throws 
 	    NoSuchMethodException, 
 	    Throwable 
     {
-	return invoke(obj.getClass(), obj, methodName, args); 
+	return invoke(targetObject.getClass(),targetObject, methodName, args); 
     }
 
-    public static Object invoke (Class myClass,
-				 Object obj,
+    public static Object invoke (Class targetClass,
+				 Object targetObject,
 				 String methodName,
 				 Object[] args) 
 	throws 
 	    NoSuchMethodException,
 	    Throwable 
     {
-	Method method = lookupMethod(myClass, methodName, getClasses(args));
+	Method method = findMethod(targetClass, methodName, getClasses(args));
 
 	if (method == null) {
 	    throw new NoSuchMethodException("DI.invoke: " + methodName);
 	}
 
 	try {
-	    return method.invoke(obj, args); 
+	    return method.invoke(targetObject, args); 
 	} catch (InvocationTargetException e) {
 	    throw(e.getTargetException()); 
 	}
     }
 
-    public static void setField (Object object,
+    public static void setField (Object targetObject,
 				 String fieldName,
 				 Object value)
 	throws 
 	    IllegalAccessException, 
 	    NoSuchFieldException 
     {
-	setField(object.getClass(), object, fieldName, value); 
+	setField(targetObject.getClass(), targetObject, fieldName, value); 
     }
 
 
-    public static void setField (Class myClass,
-				 Object object,
+    public static void setField (Class targetClass,
+				 Object targetObject,
 				 String fieldName,
 				 Object value)
 	throws
 	    IllegalAccessException, 
 	    NoSuchFieldException 
     {
-	Field field = fieldLookup(myClass, fieldName);
-	field.set(object, value); 
+	findField(targetClass, fieldName).set(targetObject, value); 
     }
 
-    public static Object getField (Object object, String fieldName) 
+    public static Object getField (Object targetObject, String fieldName) 
 	throws 
 	    IllegalAccessException,
 	    NoSuchFieldException 
     {
-	return getField(object.getClass(), object, fieldName);
+	return getField(targetObject.getClass(), targetObject, fieldName);
     }
 
-    public static Object getField (Class myClass,
-				   Object object,
+    public static Object getField (Class targetClass,
+				   Object targetObject,
 				   String fieldName) 
 	throws
 	    IllegalAccessException,
 	    NoSuchFieldException 
     {
-	Field field = fieldLookup(myClass, fieldName);
-	return field.get(object); 
+	return findField(targetClass, fieldName).get(targetObject);
     }
 
     //
     // Implementation.
     //
 
-    // synchronized since the key is reused
+    //
+    // Methods.
+    //
 
-    private static synchronized Method lookupMethod (Class target, 
-						     String name, 
-						     Class[] argTypes) 
+    private static synchronized Method findMethod (Class target, 
+						   String name, 
+						   Class[] argTypes) 
 	throws 
 	    NoSuchMethodException  
     {
-
+	// synchronized because the key is reused.
 	MethodKey key = MethodKey.newMethodKey(target, name, argTypes);
 	Method result = (Method) cachedMethods.get(key);
 	if (result != null) {
 	    return result;
 	}
 
-	result = lookupMethodFromScratch(target, name, argTypes);
+	result = findMethodFromScratch(target, name, argTypes);
 
 	if (result == null) {
 	    return null;
 	}
 
-	key.keep();
+	key.remember();
 	cachedMethods.put(key, result);
 	return result; 
     }
 
-    private static Method lookupMethodFromScratch (Class target,
-						   String name,
-						   Class[] argTypes) 
+    private static Method findMethodFromScratch (Class target,
+						 String name,
+						 Class[] argTypes) 
 	throws 
 	    NoSuchMethodException 
     {
@@ -227,12 +229,12 @@ public class DI {
 	} catch (NoSuchMethodException e) {	
 	    ;
 	}
-	return lookupMethodInSupers(target, name, argTypes);
+	return findMethodInSupers(target, name, argTypes);
     }
 
-    private static Method lookupMethodInSupers (Class target,
-						String name,
-						Class[] argTypes) 
+    private static Method findMethodInSupers (Class target,
+					      String name,
+					      Class[] argTypes) 
 	throws 
 	    NoSuchMethodException 
     {
@@ -260,7 +262,7 @@ public class DI {
 	throws
 	    NoSuchMethodException
     {
-	Vector goodMethods = new Vector();
+	Vector candidates = new Vector();
 
 	while (target != null) {
 	    Method[] methods = target.getDeclaredMethods();
@@ -269,48 +271,55 @@ public class DI {
 		if (name.equals(methods[i].getName()) &&
 		    equalTypes(parmTypes, argTypes))
 		{
-		    goodMethods.addElement(methods[i]);
+		    candidates.addElement(methods[i]);
 		}
 	    }
 	    target = target.getSuperclass();
 	}
-	return goodMethods;
+	return candidates;
     }
 
-    static Field fieldLookup (Class myClass, String fieldName) 
+    //
+    // Fields.
+    //
+
+    static Field findField (Class targetClass, String fieldName) 
 	throws
 	    NoSuchFieldException 
     {
 	Field field;
 	try {
-	    field = myClass.getField(fieldName);	   
+	    field = targetClass.getField(fieldName);	   
 	} catch (NoSuchFieldException e) {
-	    field = fieldLookup0(myClass, fieldName);
+	    // Either it is non-public, in a super, or it does not exist.
+	    field = findFieldNonPublicAndSupers(targetClass, fieldName);
 	}
 	field.setAccessible(true);
 	return field;
     }
 
-    // if it's a non-public field, use this uglier method
-
-    static Field fieldLookup0 (Class myClass, String fieldName) 
+    static Field findFieldNonPublicAndSupers (Class targetClass,
+					      String fieldName) 
 	throws
 	    NoSuchFieldException 
     {
-	Field[] localFields = myClass.getDeclaredFields();
+	Field[] localFields = targetClass.getDeclaredFields();
 	for (int i = 0; i < localFields.length; i++) {
 	    if (fieldName.equals(localFields[i].getName())) {
-		Field f = localFields[i];
-		return f;
+		return localFields[i];
 	    }
 	}
-	// didn't find it, go up to superclass
-	Class sup = myClass.getSuperclass();
+
+	Class sup = targetClass.getSuperclass();
 	if (sup == null) {
 	    throw new NoSuchFieldException(fieldName);
 	}
-	return fieldLookup(sup, fieldName);
+	return findField(sup, fieldName);
     }
+
+    //
+    // Type compatibility.
+    //
 
     private static boolean equalTypes (Class[] parmTypes, 
 				       Class[] argTypes) 
@@ -381,23 +390,10 @@ public class DI {
 	return false;
     }
 
-    private static Class wrappedClass (Class clazz) 
-    {
-	if (clazz.isPrimitive()) {
-	    Class wrappedClass;
-	    if (clazz == booleanClass)   return BooleanClass;
-	    if (clazz == integerClass)   return IntegerClass;
-	    if (clazz == characterClass) return CharacterClass;
-	    if (clazz == byteClass)      return ByteClass;
-	    if (clazz == shortClass)     return ShortClass;
-	    if (clazz == longClass)      return LongClass;
-	    if (clazz == floatClass)     return FloatClass;
-	    if (clazz == doubleClass)    return DoubleClass;
-	    throw new Error("DI.wrappedClass: unknown type" + clazz);
-	}
-	return clazz;
-    }
-  
+    //
+    // Picking most specific constructors/methods from similar candidates.
+    //
+
     static Constructor mostSpecificConstructor (Vector constructors) 
 	throws
 	    Throwable 
@@ -475,14 +471,39 @@ public class DI {
 	return true;
     }
 
+    //
+    // Utilities.
+    //
+
     private static Class[] getClasses (Object[] args) 
     {
 	Class[] classes = new Class[args.length];
-	for (int i = 0; i < args.length; i = i + 1)
+	for (int i = 0; i < args.length; i = i + 1) {
 	    classes[i] = ((args[i] == null) ? NullClass : args[i].getClass());
+	}
 	return classes; 
     }
 
+    private static Class wrappedClass (Class cl) 
+    {
+	if (cl.isPrimitive()) {
+	    if (cl == booleanClass)   return BooleanClass;
+	    if (cl == integerClass)   return IntegerClass;
+	    if (cl == characterClass) return CharacterClass;
+	    if (cl == byteClass)      return ByteClass;
+	    if (cl == shortClass)     return ShortClass;
+	    if (cl == longClass)      return LongClass;
+	    if (cl == floatClass)     return FloatClass;
+	    if (cl == doubleClass)    return DoubleClass;
+	    throw new Error("DI.wrappedClass: unknown type" + cl);
+	}
+	return cl;
+    }
+
+    //
+    // Class variables and initialization.
+    //
+  
     // REVISIT - use weak references
     static Hashtable cachedMethods = new Hashtable();
 
@@ -569,7 +590,7 @@ class MethodKey
 	return reusableKey;
     }
 
-    void keep() 
+    void remember() 
     {
 	reusableKey = null;
     }
@@ -585,45 +606,27 @@ class MethodKey
 
     public boolean equals (Object x) 
     {
-	if (x instanceof MethodKey) {
-	    MethodKey m = (MethodKey)x;
-	    boolean v =	(target == m.target &&
-			 name.equals(m.name) &&
-			 arrayEquals(argTypes, m.argTypes));
-	    return v; 
-	} else
-	    return false;
-    }
-
-    private static boolean arrayEquals (Class[] c1, Class[] c2) 
-    {
-	if (c1.length != c2.length) {
+	if (! (x instanceof MethodKey)) {
 	    return false;
 	}
-	for (int i = 0; i < c1.length; i++) {
-	    if (c1[i] != c2[i])
+	MethodKey m = (MethodKey)x;
+	return
+	    target == m.target &&
+	    name.equals(m.name) &&
+	    eqTypes(argTypes, m.argTypes);
+    }
+
+    private static boolean eqTypes (Class[] types1, Class[] types2) 
+    {
+	if (types1.length != types2.length) {
+	    return false;
+	}
+	for (int i = 0; i < types1.length; i++) {
+	    if (types1[i] != types2[i])
 		return false;
 	}
 	return true; 
     }
-
-    public String toString () 
-    {
-	return "<<" + target + "." + name + toStringArray(argTypes) + ">>"; 
-    }
-
-    private static String toStringArray (Object[] array) 
-    {
-	java.io.StringWriter out = new java.io.StringWriter();
-	out.write('[');
-	for (int i = 0; i < array.length; i++) {
-	    out.write(array[i].toString());
-	    out.write(' '); 
-	}
-	out.write(']');
-	return out.toString(); 
-    }
-
 }
 
 // End of file.
