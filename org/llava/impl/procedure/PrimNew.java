@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 2001 Mar 05 (Mon) 21:04:59 by Harold Carr.
- * Last Modified : 2005 Feb 06 (Sun) 11:47:16 by Harold Carr.
+ * Last Modified : 2005 Feb 07 (Mon) 09:42:14 by Harold Carr.
  */
 
 package org.llava.impl.procedure;
@@ -19,7 +19,6 @@ package org.llava.impl.procedure;
 import org.llava.F;
 import org.llava.Pair;
 import org.llava.runtime.Engine;
-import org.llava.runtime.Namespace;
 
 import org.llava.impl.procedure.DI;
 import org.llava.impl.procedure.PrimitiveProcedure;
@@ -29,26 +28,18 @@ public class PrimNew
     extends
 	PrimitiveProcedure
 {
-    private Namespace namespace;
-
     public PrimNew ()
     {
     }
 
-    public PrimNew (Namespace namespace)
+    public PrimNew newPrimNew ()
     {
-	this.namespace = namespace;
-    }
-
-    public PrimNew newPrimNew (Namespace namespace)
-    {
-	return new PrimNew(namespace);
+	return new PrimNew();
     }
 
     public Object apply (Pair args, Engine engine)
     {
 	String className = args.car().toString();
-	className = namespace.getFullNameForClass(className);
 	try {
 	    return DI.newInstance(className, List.toArray((Pair)args.cdr()));
 	} catch (Throwable t) {
