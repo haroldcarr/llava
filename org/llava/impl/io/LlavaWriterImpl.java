@@ -58,22 +58,27 @@ public class LlavaWriterImpl
 
     public Object write (Object x)
     {
+	return write(x, out);
+    }
+
+    public Object write (Object x, PrintWriter out)
+    {
 	if (x == null) {
-	    emit(null);
+	    emit(null, out);
 	} else if (x instanceof java.lang.String) {
-	    emit( "\"");
-	    emit(x);
-	    emit("\"");
+	    emit( "\"", out);
+	    emit(x, out);
+	    emit("\"", out);
 	} else if (x instanceof Pair) {
-	    writePair((Pair)x);
+	    writePair((Pair)x, out);
 	} else if (x instanceof java.lang.Character) {
-	    emit("#\\");
-	    emit(x);
+	    emit("#\\", out);
+	    emit(x, out);
 	} else if (x.getClass().isArray()) {
-	    emit("#");
-	    write(List.vector2list(x));
+	    emit("#", out);
+	    write(List.vector2list(x), out);
 	} else {
-	    emit(x);
+	    emit(x, out);
 	}
 	return x;
     }
@@ -83,7 +88,7 @@ public class LlavaWriterImpl
 	return out;
     }
 
-    private Object writePair(Pair pair) 
+    private Object writePair(Pair pair, PrintWriter out) 
     {
 	String uq = null;
 
@@ -96,32 +101,32 @@ public class LlavaWriterImpl
 	}
 
 	if (uq != null) {
-	    emit(uq);
-	    write(pair.cadr());
+	    emit(uq, out);
+	    write(pair.cadr(), out);
 	} else {
-	    emit("(");
-	    write(pair.car());
-	    writeList(pair.cdr());
+	    emit("(", out);
+	    write(pair.car(), out);
+	    writeList(pair.cdr(), out);
 	}
 	return pair;
     }
 
-    private void writeList(Object list)
+    private void writeList(Object list, PrintWriter out)
     {
 	if (list == null) {
-	    emit(")");
+	    emit(")", out);
 	} else if (! (list instanceof Pair)) {
-	    emit(" . ");
-	    write(list);
-	    emit(")");
+	    emit(" . ", out);
+	    write(list, out);
+	    emit(")", out);
 	} else {
-	    emit(" ");
-	    write(((Pair)list).car());
-	    writeList(((Pair)list).cdr());
+	    emit(" ", out);
+	    write(((Pair)list).car(), out);
+	    writeList(((Pair)list).cdr(), out);
 	}
     }
 
-    private void emit(Object x)
+    private void emit(Object x, PrintWriter out)
     {
 	out.print(x);
     }
