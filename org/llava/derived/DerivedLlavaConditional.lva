@@ -9,13 +9,13 @@
 
 ;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2004 Sep 09 (Thu) 19:40:13 by Harold Carr.
+;;;; Last Modified : 2004 Nov 30 (Tue) 10:22:58 by Harold Carr.
 ;;;;
 
 ;;; Safe car and cdr.
 
-(define _%scar (lambda (x) (if (null? x) '() (car x))))
-(define _%scdr (lambda (x) (if (null? x) '() (cdr x))))
+(define -car (lambda (x) (if (null? x) '() (car x))))
+(define -cdr (lambda (x) (if (null? x) '() (cdr x))))
 
 ;; REVISIT  handling of ==>
 ;; REVISIT collapse cadr s
@@ -24,20 +24,20 @@
   (lambda args  
     (if (null? args) 
 	false 
-	(if (equal? (_%scar (_%scar args)) 'else) 
-	    (cons 'begin (_%scdr (_%scar args))) 
-	    (if (equal? (_%scar (_%scdr (_%scar args))) '=>) 
+	(if (equal? (-car (-car args)) 'else) 
+	    (cons 'begin (-cdr (-car args))) 
+	    (if (equal? (-car (-cdr (-car args))) '=>) 
 		(list '(lambda (x e c) (-if x (e x) (c))) 
-		      (_%scar (_%scar args)) 
-		      (_%scar (_%scdr (_%scdr (_%scar args)))) 
-		      (cons 'lambda (list () (cons 'cond (_%scdr args))))) 
-		(if (null? (_%scdr (_%scar args))) 
+		      (-car (-car args)) 
+		      (-car (-cdr (-cdr (-car args)))) 
+		      (cons 'lambda (list () (cons 'cond (-cdr args))))) 
+		(if (null? (-cdr (-car args))) 
 		    (list '(lambda (x c) (-if x x (c))) 
-			  (_%scar (_%scar args)) 
-			  (cons 'lambda (list () (cons 'cond (_%scdr args))))) 
-		    (list '-if (_%scar (_%scar args)) 
-			  (cons 'begin (_%scdr (_%scar args))) 
-			  (cons 'cond (_%scdr args)))))))))
+			  (-car (-car args)) 
+			  (cons 'lambda (list () (cons 'cond (-cdr args))))) 
+		    (list '-if (-car (-car args)) 
+			  (cons 'begin (-cdr (-car args))) 
+			  (cons 'cond (-cdr args)))))))))
 
 (define-syntax or
   (lambda args
