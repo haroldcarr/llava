@@ -40,33 +40,25 @@
 (define-indirect-variable file-walker-out (-sf 'out 'java.lang.System))
 (define-indirect-variable file-walker-newline? true)
 (define-indirect-variable file-walker-indent? true)
-(define-indirect-variable dprint? false)
 
 (define file-walker-with-indent
-  (lambda (lxml indent)
-    (dprint 'file-walker-with-indent->)
-    (try 
-     (begin
-      (for-each (lambda (sexpr) (file-walker-dispatcher sexpr indent))
-		lxml)
-      null)
-     (finally
-      (dprint 'file-walker-with-indent<-)))))
+  (lambda (sexprs indent)
+    (for-each (lambda (sexpr) (file-walker-dispatcher sexpr indent))
+	      sexprs)
+    null))
 
 (define file-walker-string
-  (lambda (lxml)
-    (dprint 'file-walker-string->)
+  (lambda (sexprs)
     (let* ((sw (new 'java.io.StringWriter))
 	   (pw (new 'java.io.PrintWriter sw))
 	   (savedOut (file-walker-out)))
       (try
        (begin
 	 (file-walker-out pw)
-	 (file-walker-with-indent lxml 0)
+	 (file-walker-with-indent sexprs 0)
 	 (toString sw))
        (finally
-	(file-walker-out savedOut)
-	(dprint 'file-walker-string<-))))))
+	(file-walker-out savedOut))))))
 
 ;;;
 ;;; file-walker-files
@@ -103,7 +95,6 @@
 
 (define file-walker-streams
   (lambda (in out)
-    (dprint 'file-walker-streams->)
     (let ((savedOut (file-walker-out))
 	  (EOF      (-si 'newLlavaEOF 'org.llava.F)))
       (try
@@ -111,19 +102,14 @@
 	 (file-walker-out out)
 	 (file-walker-streams-aux in EOF))
        (finally
-	(file-walker-out savedOut)
-	(dprint 'file-walker-streams<-))))))
+	(file-walker-out savedOut))))))
 
 (define file-walker-streams-aux
   (lambda (in EOF)
-    (dprint 'file-walker-streams-aux->)
-    (try
-     (let ((sexpr (read in)))
-       (cond ((not (equals EOF sexpr))
-	      (file-walker-dispatcher sexpr 0)
-	      (file-walker-streams-aux in EOF))))
-     (finally
-      (dprint 'file-walker-streams-aux<-)))))
+    (let ((sexpr (read in)))
+      (cond ((not (equals EOF sexpr))
+	     (file-walker-dispatcher sexpr 0)
+	     (file-walker-streams-aux in EOF))))))
 
 (define file-walker-indent
   (lambda (indent)
@@ -132,17 +118,11 @@
 
 (define file-walker-print
   (lambda (x)
-    (dprint 'file-walker-print->)
-    (print (file-walker-out) x)
-    (dprint 'file-walker-print<-)))
+    (print (file-walker-out) x)))
 
 (define file-walker-newline
   (lambda ()
     (if (file-walker-newline?)
 	(println (file-walker-out)))))
-
-(define dprint
-  (lambda (msg) (if (dprint?) (-println msg))))
-
 
 ;;; End of file.
