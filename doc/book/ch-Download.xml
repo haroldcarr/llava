@@ -1,0 +1,68 @@
+<!--
+//
+// Created       : 1999 Dec 29 (Wed) 14:53:37 by Harold Carr.
+// Last Modified : 2004 Aug 26 (Thu) 23:52:58 by Harold Carr.
+//
+-->
+<chapter id="llava-ch-download">
+
+  <title>Download, install, run</title>
+
+  <!-- ================================================================= -->
+  <!-- ======================== DOWNLOAD  ============================== -->
+  <!-- ================================================================= -->
+  <sect1 id="llava-ch-1-sect-download">
+
+    <itemizedlist>
+
+      <listitem><para>
+      Requires J2SE 1.2 or greater.
+      </para></listitem>
+
+      <listitem><para>
+      Go to <ulink url="http://llava.org">llava.org</ulink>
+      </para></listitem>
+
+      <listitem><para>
+      Download <ulink url="http://llava.org/llava.zip">llava.zip</ulink>
+      </para></listitem>
+
+      <listitem><para>
+      Unzip it resulting in <literal>llava.jar</literal>
+      </para></listitem>
+
+      <listitem><para>
+      Download <ulink url="http://llava.org/llavalib.zip">llavalib.zip</ulink>
+      </para></listitem>
+
+      <listitem><para>
+      Unzip it into your <literal>CLASSPATH</literal>
+      </para></listitem>
+
+      <listitem><para>
+      Start up main class: <literal>org.llava.impl.Llava</literal>
+      </para></listitem>
+
+      <listitem><para>
+      Optional source code: <ulink url="http://llava.org/llavasrc.zip">llavasrc.zip</ulink>
+      </para></listitem>
+
+      <listitem><para>
+      <ulink url="http://llava.org/ChangeLog">ChangeLog</ulink>
+      </para></listitem>
+
+      <listitem><para>
+      <ulink url="http://llava.org/VERSION">VERSION</ulink>
+      </para></listitem>
+
+    </itemizedlist>
+
+  </sect1>
+
+</chapter>
+
+<!--
+local variables: 
+sgml-parent-document: ("llava.xml" "chapter")
+end:
+-->
