@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 28 (Tue) 03:42:27 by Harold Carr.
- * Last Modified : 2004 Dec 08 (Wed) 10:30:53 by Harold Carr.
+ * Last Modified : 2004 Dec 22 (Wed) 17:41:28 by Harold Carr.
  */
 
 package org.llava.impl.procedure;
@@ -69,28 +69,38 @@ public class GenericProcedureImpl
 
     public Object apply (Pair args, Engine engine)
     {
+	Object targetObject;
+
+	// These can NOT be a generic call:
+	// Calling a no arg procedure: (foo)
+	// Calling a procedure with a null argument (foo null)
+
+	if (args == null || (targetObject = args.car()) == null) {
+	    return tryDefaultLambdaOrUndefined(args, engine);
+	}
+
 	try {
-	    Object targetObject;
-	    // When iterating down a list the final arg will be null.
-	    if (args == null || (targetObject = args.car()) == null) {
-		throw new NoSuchMethodException("try the defaultLambda");
-	    }
 	    Object[] methodArgs = List.toArray((Pair)args.cdr());
 	    Object result = 
 		DI.invoke(name, targetObject, methodArgs);
 	    return wrapJavaPrimitive.wrapJavaPrimitive(result);
 	} catch (NoSuchMethodException e) {
-	    if (getDefaultLambda() != null) {
-		return getDefaultLambda().apply(args, engine);
-	    } else {
-		throw F.newUndefinedIdException(name); // REVISIT
-	    }
+	    return tryDefaultLambdaOrUndefined(args, engine);
 	} catch (ThreadDeath td) {
 	    // REVISIT - do not wrap so it shows up in automatic
 	    // jvm stacktrace.  See EngineImpl.
 	    throw td;
 	} catch (Throwable t) {
 	    throw F.newLlavaException(t);
+	}
+    }
+
+    private Object tryDefaultLambdaOrUndefined (Pair args, Engine engine)
+    {
+	if (getDefaultLambda() != null) {
+	    return getDefaultLambda().apply(args, engine);
+	} else {
+	    throw F.newUndefinedIdException(name); // REVISIT
 	}
     }
 
