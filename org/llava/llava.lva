@@ -1015,7 +1015,14 @@ share the static factory methods).
 (-doc-
  (name make-vector)
  (param k)
+ (param ".")
  (param optionalFill)
+ (location org.llava))
+
+(-doc-
+ (name vector)
+ (param obj)
+ (param ...)
  (location org.llava))
 
 (-doc-
