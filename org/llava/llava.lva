@@ -1161,6 +1161,9 @@ share the static factory methods).
  (param optional-java.io.PrinterWriter)
  (location org.llava)
  (description
+  "Equivalent to Java <code>print</code> except for special treatment
+   of <code>String</code>, <code>Character</code>, vectors and 
+   <code>quasiquote</code>"
   "Examples:"
   (example "(write '(\"foo\" #\\c #(1 2))) prints (\"foo\" #\\c #(1 2))")))
 
@@ -1171,6 +1174,7 @@ share the static factory methods).
  (param optional-java.io.PrinterWriter)
  (location org.llava)
  (description
+  "Equivalent to Java <code>print</code>"
   "Examples:"
   (example "(display '(\"foo\" #\\c #(1 2))) prints (foo c [Ljava.lang.Object;@988707)")))
 
@@ -1191,6 +1195,15 @@ share the static factory methods).
  (param obj)
  (location org.llava)
  (description "Prints <parameter>obj</parameter> to <code>System.out</code>."))
+
+(-doc-
+ (name set-vector-print-length!)
+ (param booleanOrInteger)
+ (location org.llava)
+ (description 
+  "Controls the number of vector elements printed.
+  <code>true</code> means all.
+  <code>false</code> means 0."))
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
