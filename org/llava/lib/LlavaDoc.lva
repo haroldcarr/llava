@@ -9,13 +9,13 @@
 
 ;;;;
 ;;;; Created       : 2004 Sep 03 (Fri) 18:32:41 by Harold Carr.
-;;;; Last Modified : 2005 Feb 16 (Wed) 14:47:30 by Harold Carr.
+;;;; Last Modified : 2005 Feb 16 (Wed) 14:09:10 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.LlavaDoc)
 
 (import org.llava.lib.Files)
-(import org.llava.lib.io.FileWalkerNew)
+(import org.llava.lib.io.FileWalker)
 (import org.llava.lib.scm.Lists)
 
 (-package-
@@ -128,9 +128,8 @@ chapter llava features
 ;;;;
 ;;;; TODO
 ;;;;
-;;;; Replace s+ idiom with FileWalker indent print.
-;;;; Make file-walker-dispatcher and friends safe for concurrency.
-;;;; Make file-walker-files work without output file.
+;;;; Replace s+ idiom with FileWalker indent print. (Maybe not?)
+;;;; Make file-walker-files work without output file (for contains-llava-doc?).
 ;;;;
 
 This *MUST* be outside of outer LET.
@@ -203,7 +202,7 @@ This *MUST* be outside of outer LET.
 
 (define llava-doc
   (lambda (source-root destination-root)
-    (set! *fw*                      (new-FileWalkerNew))
+    (set! *fw*                      (new-FileWalker))
     (set! *current-builtin-package* 'nothing)
     (set! *current-doc-package*     'nothing)
     (for-each-dir
