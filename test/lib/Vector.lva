@@ -10,12 +10,11 @@
 
 ;;;;
 ;;;; Created       : 2000 Feb 10 (Thu) 04:12:22 by Harold Carr.
-;;;; Last Modified : 2004 Sep 03 (Fri) 15:47:47 by Harold Carr.
+;;;; Last Modified : 2004 Nov 26 (Fri) 17:23:49 by Harold Carr.
 ;;;;
 
 (import org.llava.lib.test.Test)
 (import org.llava.lib.Vectors)
-(import org.llava.lib.scm.Vectors)
 
 (begin-test 'vectors/vector-map)
 
