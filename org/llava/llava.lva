@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2004 Sep 05 (Sun) 11:27:57 by Harold Carr.
-;;;; Last Modified : 2005 Feb 06 (Sun) 23:40:07 by Harold Carr.
+;;;; Last Modified : 2005 Feb 07 (Mon) 09:33:48 by Harold Carr.
 ;;;;
 
 (-package-
@@ -81,7 +81,9 @@
 or you can use new shorthand:
 
 (new 'Integer 3)"
-)))
+)
+  (example
+"Also note, even though new is syntax, all arguments are evaluated.")))
 
 (-doc-
  (name new*)
@@ -89,8 +91,9 @@ or you can use new shorthand:
  (param obj)
  (param ...)
  (description
-  "Like syntax new except it is a procedure.  Do not use this
-   in procedure in packages that are used by procedures in other packages."))
+  "Like syntax new except it is a procedure and it must be given
+  the full package and classname (i.e., it does not accept imported
+  shorthand like new)."))
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
