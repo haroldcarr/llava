@@ -10,7 +10,7 @@
 
 ;;;;
 ;;;; Created       : 1998 Dec 13 (Sun) 09:18:12 by Harold Carr.
-;;;; Last Modified : 2004 Dec 02 (Thu) 20:24:58 by Harold Carr.
+;;;; Last Modified : 2005 Feb 06 (Sun) 16:03:53 by Harold Carr.
 ;;;;
 ;;;; Provides import
 ;;;;
@@ -221,7 +221,7 @@
 				    (if (_%isPublic? x) '(true) '()))
 				  constructors))))))
 	  (_%evalDefineCMF
-	   `(define (,baseName . args) (apply new (cons ',className args))))
+	   `(define (,baseName . args) (apply new* (cons ',className args))))
 	  (error 
 	   (s+ "No constructor for class: " (toString className)))))))
 
