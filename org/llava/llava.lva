@@ -12,6 +12,747 @@
 ;;;; Last Modified : 2004 Dec 08 (Wed) 08:57:18 by Harold Carr.
 ;;;;
 
+(-package-
+ (location org.llava))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section- (name "Notation and Terminology"))
+(-section-
+ (name "Entry format")
+ (description
+  "Each entry describes one language feature (or group) where a
+      feature is either a syntactic construct or a procedure.  An entry
+      begins with lines of the form"))
+
+(-doc-
+ (name template)
+ (category category)
+ (location location)
+ (description
+  "where <emphasis>category</emphasis> may be \"syntax\" or
+      \"procedure\", and where <emphasis>location</emphasis> specifies
+      the package containing the feature.  If the location is
+      contained inside <code>(import </code>
+      <emphasis>location</emphasis><code>)</code> then the package
+      must be imported in order to use the feature.  Otherwise the
+      feature is already imported and <emphasis>location</emphasis>
+      simply gives the package location of the feature."))
+(-section-end-)
+
+(-section-
+ (name "Evaluation examples")
+ (description
+  "The symbol &lva-et; used in program examples should be read
+   \"evaluates to.\"  For example,"
+  
+  (example "(* 5 8)  &lva-et;    40")
+
+  "means that the expression <code>(* 5 8)</code> evalutes to the
+   object <code>40</code>."))
+(-section-end-)
+(-section-end-) ;; Notation
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section-
+ (name "Creating a Java Object"))
+
+(-doc-
+ (name new)
+ (param className)
+ (param obj)
+ (param ...)
+ (description
+  "Examples:"
+  (example
+"(new 'java.util.Date)
+(new 'java.lang.Integer 3)")))
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section-
+ (name "Virtual Method Invocation"))
+
+(-doc-
+ (name -i)
+ (param methodName)
+ (param targetObj)
+ (param obj)
+ (param ...)
+ (description
+  "Examples:"
+
+  (example "(-i 'getMonth (new 'java.util.Date))")
+
+  "Note, virtual methods may use standard (and preferred) prefix
+   generic procedure notation:"
+
+  "(<parameter>methodName</parameter>
+    <parameter>targetObj</parameter>
+    <parameter>obj ...</parameter>)"
+
+  "If <function>methodName</function> has not been bound or has
+   been bound to a generic procedure then this is equivalent
+   to:"
+
+  "(-i 
+    <parameter>methodName</parameter>
+    <parameter>targetObj</parameter>
+    <parameter>obj ...</parameter>)"
+
+  "The above example is best written as:"
+
+  (example "(getMonth (new 'java.util.Date))")))
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section-
+ (name "Static Method Invocation"))
+
+(-doc-
+ (name -si)
+ (param methodName)
+ (param classOrClassName)
+ (param obj)
+ (param ...)
+ (description
+  "Examples:"
+
+  (example "(-si 'parseInt 'java.lang.Integer \"ff\" 16)")
+
+  "Note, static methods may be called directly after their
+   class has been imported.  The above example can then be witten
+   as:"
+  
+  (example
+"(import java.lang.Integer)
+(parseInt \"ff\" 16)")))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section-
+ (name "Virtual Field Access"))
+
+(-doc-
+ (name -f)
+ (param fieldName)
+ (param targetObj)
+ (param optionalSetterValue)
+ (description
+  "Examples:"
+  
+  (example
+"(-f 'minor (new 'org.omg.CORBA.BAD_PARAM))    ; get
+(-f 'minor (new 'org.omg.CORBA.BAD_PARAM) 56) ; set")
+
+  "Note, virtual fields may be accessed directly after their
+   class has been imported.  The above example can then be written:"
+
+  (example
+"(import org.omg.CORBA.SystemException)
+(minor (new 'org.omg.CORBA.BAD_PARAM))
+(minor! (new 'org.omg.CORBA.BAD_PARAM) 56)")))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section-
+ (name "Static Field Access"))
+
+(-doc-
+ (name -sf)
+ (param fieldName)
+ (param classOrClassName)
+ (param optionalSetterValue)
+ (description
+  "Examples:"
+
+  (example 
+"(-sf 'out 'java.lang.System)   ; get
+(-sf 'out 'java.lang.System 0) ; set - and an error since Field is final")
+
+  "Note, static fields may be accessed directly after their
+   class has been imported.  The above example can then be witten
+   as:"
+
+  (example
+"(import java.lang.System)
+(out)
+(out! 0)")))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section-
+ (name "Generic Procedure Definitions"))
+
+(-doc-
+ (name define)
+ (param " ( ")
+ (param variable)
+ (param requiredArg)
+ (param ...)
+ (param ".")
+ (param optionalArg)
+ (param " ) ")
+ (param body)
+ (category syntax)
+ (description
+  "Binds a procedure to <parameter>variable</parameter> that,
+      when called, will first use Java reflection to find a method on
+      the first argument that matches the types of the remaining
+      arguments.  If one is found it is invoked.  Otherwise
+      <parameter>body</parameter> is executed after the arguments are
+      bound."
+
+  "Example:"
+
+  (example "(define (name requiredArg1 requiredArg2 . optionalArgs) body)")
+
+  "Defines a generic procedure which, when called as:"
+
+  (example "(name 1 2)")
+
+  "will first try:"
+
+  (example "(-i name 1 2)")
+
+  "If no Java method is found (and invoked) then 
+   the generic procedure <parameter>body</parameter> will be called:"
+
+  (example
+   "((lambda (requiredArg1 requiredArg2 . optionalArgs) body) 1 2)")))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section-
+ (name "Lambda Procedure Definitions"))
+
+(-doc-
+ (name define)
+ (param variable)
+ (param " ( ")
+ (param lambda)
+ (param " ( ")
+ (param requiredArg)
+ (param ...)
+ (param ".")
+ (param optionalArgs)
+ (param " ) ")
+ (param body)
+ (param " ) ")
+ (category syntax)
+ (description
+  "Binds a procedure to <parameter>variable</parameter> that,
+      when called, will always execute <parameter>body</parameter>
+      after the arguments are bound."
+
+  "Example:"
+
+  (example "(define name (lambda (requiredArg1 requiredArg2 . optionalArgs) body)")
+
+  "defines a generic procedure which, when called as:"
+
+  (example "(name 1 2)")
+
+  "will always call:"
+
+  (example "((lambda (requiredArg1 requiredArg2 . optionalArgs) body) 1 2)")))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section-
+ (name "try/catch/finally and throw")
+ (description
+  "Example:"
+  (example
+"(let ((bomb 1))
+  (define (demo)
+    (try
+     (begin
+       (if (&lt; bomb 0)
+	   (throw (new 'java.lang.RuntimeException \"Give up!\")))
+       (list \"Normal result is: \" (/ 2 bomb)))
+     (catch (java.lang.ArithmeticException e)
+       (list \"Arithmetic: \" e))
+     (catch (java.lang.Exception e)
+       (list \"Exception: \" e))
+     (finally
+       (set! bomb (- bomb 1))))))
+
+(demo) &lva-et; (Normal result is:  2)
+(demo) &lva-et; (Arithmetic:  java.lang.ArithmeticException: / by zero)
+(demo) &lva-et; (Exception:  java.lang.RuntimeException: Give up!)")))
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section-
+ (name Concurrency)
+ (description "Also see <code>org.llava.lib.Threads</code>"))
+
+(-doc-
+ (name synchronized)
+ (param lock-obj)
+ (param expression1)
+ (param ...))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section-
+ (name Macros)
+ (description
+  "Same as Common LISP. See <code>org.llava.lib.cl.Macros</code>."))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section-
+ (name "package/import Namespaces")
+ (description
+  "<function>package</function> and <function>import</function>
+    create, load and reference namespaces."))
+
+(-doc-
+ (name package)
+ (param symbol)
+ (category syntax)
+ (description
+  "<function>package</function> creates a namespace with the
+   given name if it does not exist."
+
+  "<function>package</function> changes to the named namespace
+   such that definitions and references occur with respect to that
+   namespace."))
+
+(-doc-
+ (name import)
+ (param symbol)
+ (category syntax)
+ (description
+  "<function>import</function> searches the roots of
+   <code>CLASSPATH</code> for files ending in *<code>.lva</code>
+   with the given path and name.  If one is found it is
+   loaded."
+
+  "The first form in an imported *.<code>lva</code> file must
+   be a <function>package</function> declaration."
+
+  "The namespace of the imported package is added to the end
+   of list of namespaces imported into the package current when
+   the <function>import</function> statement is evaluated."
+
+  "Variable definitions and references occur with respect to
+   the current package.  If the variable is not found in the
+   current package the import list is searched in order.  If not
+   found in the import list the top-level <code>org.llava</code>
+   package is searched last."
+
+  "If <parameter>symbol</parameter> names a
+   *<code>.class</code> file instead then it results in generic
+   procedure definitions for all virtual methods
+   and results in non-generic procedure definitions of
+   static methods and fields (both static and virtual):"
+
+  (example
+"(import java.lang.System)
+(java.lang.System.out)
+	equivalent to (-sf 'out 'java.lang.System)
+
+(import java.lang.Integer)
+(java.lang.Integer.TYPE)
+	equivalent to (-sf 'TYPE 'java.lang.Integer)
+(java.lang.Integer.parseInt \"ff\" 16)
+        equivalent to (-si 'parseInt 'java.lang.Integer \"ff\" 16)")
+
+  "Note: these definitions take places in the current
+   package.  In the future this will change such that a llava
+   namespace is created, the definitions will be placed in that
+   package and that package will be added to the import list of the
+   current package."))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section-
+ (name Misc))
+
+(-doc-
+ (name instanceof)
+ (param obj)
+ (param symbol-or-string))
+
+(-doc-
+ (name current-time-millis))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section-
+ (name "Read-Compile-Eval-Print-Loop"))
+
+(-doc-
+ (name -bt)
+ (description
+  "Prints a backtrace of the llava stack for the last
+   exception.  Note: the top of the stack is at the bottom of the
+   trace."))
+
+(-doc-
+ (name -jbt)
+ (description
+  "Prints a backtrace of the Java stack for the last
+   exception.  Note: the top of the stack is at the top of the
+   trace."))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section-
+ (name "Planned Improvements")
+ (description
+  "Integrate <function>new</function>,
+   <function>catch</function>, <function>instanceof</function> with
+   namespaces.  Currently, even if a namespace has been imported, it
+   is necessary to give the fullpath classname."
+
+  "Integrate the library in llavalib.zip in llava.jar so it is
+   not necessary to separately download and unzip llavalib.zip into
+   your CLASSPATH."
+
+  "For a full list of improvements see the 
+   <ulink url=\"http://llava.org/TODO\">TODO</ulink> list."))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section-
+ (name Semantics)
+ (description
+  "llava is statically scoped."
+  "llava is dynamically typed."
+  "llava is properly tail-recursive."
+  "Arguments to llava procedures are passed by value."
+  "Like Scheme, llava is a Lisp-1, meaning that functions and
+   variables are stored in the same namespaces (which is different
+   from Common Lisp, a Lisp-2, which uses different namespaces for
+   functions and variables)."))
+(-section-end-)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section-
+ (name Syntax)
+ (description
+  "llava uses a parenthesized prefix notation for programs and
+    (other) data."
+
+  "The <function>read</function> procedure performs syntactic as
+    well as lexical decomposition of the data it reads."))
+(-section-end-)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section-
+ (name "Immutable Syntax")
+ (description
+  "The following llava syntax (i.e., special forms) is immutable."
+  "From (or similar to) Scheme:"
+  (example
+"begin
+define
+define-final
+lambda
+let
+letrec
+quote
+set!")
+  
+  "From Java:"
+
+  (example "if")))
+
+(-comment-
+"Immutable Llava Primitive Procedures (non-generic):
+
+Unique to Llava:
+
+Variables:
+
+.isBound
+
+
+List:
+
+.car
+.cdr
+cons
+list
+
+
+Reflection:
+
+.classForName
+
+
+From Java:
+
+new
+
+=================
+
+Limitations:
+
+You cannot (re)define Java classes.
+
+You cannot locally change factory settings (i.e., all Llava instances
+share the static factory methods).
+")
+
+(-section-end-)
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section- 
+ (name "Lexical Conventions")
+ (description
+  "llava is case-sensitive.  For example, <code>Foo</code> is
+   <emphasis>not</emphasis> the same identifier as <code>FOO</code>."))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section-
+ (name Identifiers)
+ (description
+  "A sequence of letters, digits and \"extended alphabetic
+   characters\" is an identifier.  llava's extended
+   alphabetic characters are identical with R5RS."))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section-
+ (name Comments)
+ (description
+  "A semicolon (<code>;</code>) indicates the start of a
+   comment.  The comment continues to the end of the line on which
+   the semicolon appears."
+  "A block comment is anything appearing inside the syntax:
+   <code>(-comment- ...)</code>."
+  "<code>(-package- ...)</code> and <code>(-doc- ...)</code> are also
+   block comments.  They are recognized by
+   <code>org.llava.lib.LlavaDoc</code>."))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section-
+ (name "Other notations")
+ (description
+  "<code>. + -</code> As in R5RS."
+  "<code>(  )</code> Used for grouping and to notate lists, as in R5RS."
+  "<code>'</code> Indicates literal data, as in R5RS."
+  "<code>`</code> Indicates almost constant data, as in R5RS."
+  "<code>, ,@</code> Used in conjunction with backquote, as in R5RS."
+  "<code>\"</code> Used to delimit strings, as in R5RS."
+  "<code>\\</code> As in R5RS."
+  "<code>true false</code> These are the boolean constants."
+  "<code>#\\</code> Introduces a character constants, as in R5RS."
+  "<code>#(</code> Introduces a vector constant, as in R5RS."))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section-end-) ; Lexical Conventions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section- (name "Expressions"))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section- (name "Primitive Expression Types"))
+
+(-comment-
+(-doc-
+ (name "&lt;variable&gt;")
+ (category syntax)
+ (description "An expression consisting of a variable is a variable reference."))
+)
+
+(-doc-
+ (name quote)
+ (category syntax)
+ (param "&lt;datum&gt;")
+ (location org.llava))
+
+
+(-doc-
+ (name "&lt;operator&gt;")
+ (param "&lt;operand1&gt;")
+ (param ...)
+ (category syntax)
+ (location org.llava)
+ (description "A procedure call."))
+
+(-doc-
+ (name lambda)
+ (param "&lt;formals&gt;")
+ (param "&lt;body&gt;")
+ (category syntax)
+ (location org.llava)
+ (description "A procedure definition."))
+
+(-doc-
+ (name if)
+ (param "&lt;test&gt;")
+ (param "&lt;consequent&gt;")
+ (param "&lt;optional-alternate&gt;")
+ (category syntax)
+ (location org.llava))
+
+(-doc-
+ (name set!)
+ (param "&lt;variable&gt;")
+ (param "&lt;expression&gt;")
+ (category syntax)
+ (location org.llava))
+
+(-doc-
+ (name begin)
+ (param "&lt;expression1&gt;")
+ (param "&lt;expression2&gt;")
+ (param ...)
+ (category syntax)
+ (location org.llava))
+
+(-doc-
+ (name quasiquote)
+ (param "&lt;pp template&gt;")
+ (category syntax)
+ (description "Backquote.  Use <code>` ,</code> and <code>,@</code>")
+ (location org.llava))
+
+(-doc-
+ (name try)
+ (param "&lt;body&gt;")
+ (param "&lt;catch&gt;")
+ (param "&lt;finally&gt;")
+ (category syntax)
+ (location org.llava)
+ (description 
+  "Example: "
+  (example
+"(try
+ (/ 1 0)
+ (catch (java.lang.Throwble t)
+   (display (s+ \"Caught: \" (toString t))))
+ (finally
+   (display \"finally\")))")))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section- (name "Derived Conditionals"))
+
+(-doc-
+ (name cond)
+ (param ...)
+ (category syntax)
+ (location org.llava))
+
+(-doc-
+ (name or)
+ (param ...)
+ (category syntax)
+ (location org.llava))
+
+(-doc-
+ (name and)
+ (param ...)
+ (category syntax)
+ (location org.llava))
+
+(-doc-
+ (name case)
+ (param ...)
+ (category syntax)
+ (location org.llava))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section- (name "Binding Constructs"))
+
+(-doc-
+ (name let)
+ (param ...)
+ (category syntax)
+ (location org.llava))
+
+(-doc-
+ (name let*)
+ (param ...)
+ (category syntax)
+ (location org.llava))
+
+(-doc-
+ (name letrec)
+ (param ...)
+ (category syntax)
+ (location org.llava))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section- (name "Iteration"))
+
+(-doc-
+ (name do)
+ (param ...)
+ (category syntax)
+ (location org.llava))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section-end-) ; Expressions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section- (name "Procedures"))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section- (name "Equivalence Predicates"))
+
 (-doc-
  (name eq?)
  (param obj1)
@@ -23,5 +764,311 @@
  (param obj1)
  (param obj2)
  (location org.llava))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section- (name "Numbers"))
+
+(-doc-
+ (name =)
+ (param z1)
+ (param z2)
+ (param z3)
+ (param ...)
+ (location org.llava))
+
+
+(-doc-
+ (name "&lt;")
+ (param x1)
+ (param x2)
+ (param x3)
+ (param ...)
+ (location org.llava))
+
+
+(-doc-
+ (name "&gt;")
+ (param x1)
+ (param x2)
+ (param x3)
+ (param ...)
+ (location org.llava))
+
+
+(-doc-
+ (name "&lt;=")
+ (param x1)
+ (param x2)
+ (param x3)
+ (param ...)
+ (location org.llava))
+
+
+(-doc-
+ (name "&gt;=")
+ (param x1)
+ (param x2)
+ (param x3)
+ (param ...)
+ (location org.llava))
+
+
+(-doc-
+ (name +)
+ (param z1)
+ (param ...)
+ (location org.llava))
+
+
+(-doc-
+ (name *)
+ (param z1)
+ (param ...)
+ (location org.llava))
+
+
+(-doc-
+ (name -)
+ (param z1)
+ (param ...)
+ (location org.llava))
+
+
+(-doc-
+ (name /)
+ (param z1)
+ (param ...)
+ (location org.llava))
+
+
+(-doc-
+ (name modulo)
+ (param n1)
+ (param n2)
+ (location org.llava))
+
+
+(-doc-
+ (name |)
+ (param n1)
+ (param n2)
+ (param ...)
+ (location org.llava))
+
+
+(-doc-
+ (name "&amp;")
+ (param n1)
+ (param n2)
+ (param ...)
+ (location org.llava))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section- (name "Booleans"))
+
+(-doc-
+ (name not)
+ (param obj)
+ (location org.llava))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section- (name "Pairs and Lists"))
+
+(-doc-
+ (name pair?)
+ (param obj)
+ (location org.llava))
+
+(-doc-
+ (name cons)
+ (param obj1)
+ (param obj2)
+ (location org.llava))
+
+(-doc-
+ (name car)
+ (param pair)
+ (location "reflect on Pair"))
+
+(-doc-
+ (name cdr)
+ (param pair)
+ (location "reflect on Pair"))
+
+(-doc-
+ (name setCar)
+ (param pair)
+ (location "reflect on Pair"))
+
+(-doc-
+ (name setCdr)
+ (param pair)
+ (location "reflect on Pair"))
+
+(-doc-
+ (name c????r)
+ (param pair)
+ (location "reflect on Pair")
+ (description
+  "car, cdr, caar, cadr, cdar, cddr, caddr, cdddr"))
+
+(-doc-
+ (name first)
+ (param list)
+ (location "reflect on Pair")
+ (description
+  "rest, first, second, third, fourth, firth, sixth"))
+
+(-doc-
+ (name null?)
+ (param obj)
+ (location org.llava))
+
+(-doc-
+ (name list)
+ (param obj)
+ (param ...)
+ (location org.llava))
+
+(-doc-
+ (name -list)
+ (param obj)
+ (param ...)
+ (location org.llava)
+ (description 
+   "Alias for <function>list</function>.  Useful to circumvent generic
+    procedures."
+   (example "(-list (new 'java.io.File \"/tmp\")) &lva-et; (/tmp)")))
+
+(-doc-
+ (name length)
+ (param list)
+ (location "reflect on Pair"))
+
+(-doc-
+ (name append)
+ (param list)
+ (param ...)
+ (location org.llava))
+
+(-doc-
+ (name memq)
+ (param obj)
+ (param list)
+ (location org.llava))
+
+(-doc-
+ (name member)
+ (param obj)
+ (param list)
+ (location org.llava))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section- (name "Symbols"))
+
+(-doc-
+ (name symbol?)
+ (param obj)
+ (location org.llava))
+
+(-doc-
+ (name string->symbol)
+ (param string)
+ (location org.llava))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section- (name "Strings"))
+
+(-doc-
+ (name string-append)
+ (param string)
+ (param ...)
+ (location org.llava))
+
+(-doc-
+ (name s+)
+ (param string)
+ (param ...)
+ (location org.llava)
+ (description "Alias for <function>string-append</function>"))
+
+(-doc-
+ (name string->symbol)
+ (param string)
+ (location org.llava))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section- (name "Control Features"))
+
+(-doc-
+ (name apply)
+ (param proc)
+ (param list)
+ (location org.llava))
+
+(-doc-
+ (name map)
+ (param proc)
+ (param list)
+ (location org.llava))
+
+(-doc-
+ (name call/cc)
+ (param proc)
+ (location org.llava)
+ (description "Only downward continuations supported."))
+
+
+(-doc-
+ (name eval)
+ (param expression)
+ (location org.llava))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section- (name "Input and Output"))
+
+(-doc-
+ (name display)
+ (param obj)
+ (location org.llava))
+
+(-doc-
+ (name newline)
+ (location org.llava))
+
+(-doc-
+ (name -println)
+ (param obj)
+ (location org.llava)
+ (description "Prints <parameter>obj</parameter> to <code>System.out</code>."))
+
+(-doc-
+ (name -print)
+ (param obj)
+ (location org.llava)
+ (description "Prints <parameter>obj</parameter> to <code>System.out</code>."))
+
+(-section-end-)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(-section-end-) ; Procedures
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 ;;; End of file.
