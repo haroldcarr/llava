@@ -9,7 +9,6 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 29 (Wed) 20:09:32 by Harold Carr.
  * Last Modified : 2004 Dec 08 (Wed) 17:18:05 by Harold Carr.
@@ -52,16 +51,16 @@ public class ReplImpl
     implements
 	Repl
 {
-    private LlavaReader          reader;
+    private LlavaReader         reader;
     private PrintWriter         out;
     private PrintWriter         err;
-    private LlavaRuntime         runtime;
+    private LlavaRuntime        runtime;
     private EnvironmentTopLevel env;
     private Evaluator           evaluator;
     private Compiler            compiler;
 
-    protected LlavaException       lastException;
-    protected LlavaEOF             EOF;
+    protected LlavaException    lastException;
+    protected LlavaEOF          EOF;
 
     private BacktraceHandler    backtraceHandler;
     
@@ -75,10 +74,10 @@ public class ReplImpl
     // order: promptCallback, reader, env, compiler, evaluator, printCallback
     // printCallback handles actual output.
     private ReplImpl (LlavaReader  reader,
-		      PrintWriter out,
-		      PrintWriter err,
+		      PrintWriter  out,
+		      PrintWriter  err,
 		      LlavaRuntime runtime,
-		      Compiler    compiler)
+		      Compiler     compiler)
     {
 	this.reader    = reader;
 	this.out       = out;
@@ -135,10 +134,10 @@ public class ReplImpl
     }
 
     public Repl newRepl (LlavaReader  reader,
-			 PrintWriter out,
-			 PrintWriter err,
+			 PrintWriter  out,
+			 PrintWriter  err,
 			 LlavaRuntime runtime,
-			 Compiler    compiler)
+			 Compiler     compiler)
     {
 	return new ReplImpl(reader, out, err, runtime, compiler);
     }
@@ -268,11 +267,11 @@ public class ReplImpl
 		readCompileEvalUntilEOF(new InputStreamReader(in));
 	    } else {
 		throw F.newLlavaException("Resource file not found: " +
-					 loaderClass + " " + resource);
+					  loaderClass + " " + resource);
 	    }
 	} catch (ClassNotFoundException e) {
 	    throw F.newLlavaException("Resource load class not found: " +
-				     loaderClass + " " + resource);
+				      loaderClass + " " + resource);
 	}
     }
 
@@ -309,7 +308,7 @@ public class ReplImpl
     public Compiler            getCompiler            () { return compiler; }
     public EnvironmentTopLevel getEnvironmentTopLevel () { return env; }
     public Evaluator           getEvaluator           () { return evaluator; }
-    public LlavaRuntime         getLlavaRuntime         () { return runtime; }
+    public LlavaRuntime        getLlavaRuntime        () { return runtime; }
 
     public class JavaBacktrace
 	implements Procedure
