@@ -1,0 +1,71 @@
+("_i" . "-i")
+("_si" . "-si")
+("_f" . "-f")
+("_sf" . "-sf")
+("_println" . "-println")
+("_print" . "-print")
+("_if" . "-if")
+("_list" . "-list")
+
+diff ./doc/book/ch-llavaFeatures.xml~ ./doc/book/ch-llavaFeatures.xml
+diff ./examples/files/Ls.lva~ ./examples/files/Ls.lva
+diff ./examples/files/Zip.lva~ ./examples/files/Zip.lva
+diff ./examples/net/client.lva~ ./examples/net/client.lva
+diff ./examples/net/info.lva~ ./examples/net/info.lva
+diff ./examples/net/server.lva~ ./examples/net/server.lva
+diff ./examples/net/soap.lva~ ./examples/net/soap.lva
+diff ./examples/net/trail.lva~ ./examples/net/trail.lva
+diff ./examples/net/udp.lva~ ./examples/net/udp.lva
+diff ./examples/net/util.lva~ ./examples/net/util.lva
+diff ./org/llava/impl/compiler/CompilerImpl.java~ ./org/llava/impl/compiler/CompilerImpl.java
+diff ./org/llava/impl/runtime/derived/DerivedJavaFirst.lva~ ./org/llava/impl/runtime/derived/DerivedJavaFirst.lva
+diff ./org/llava/impl/runtime/derived/DerivedLlavaConditional.lva~ ./org/llava/impl/runtime/derived/DerivedLlavaConditional.lva
+diff ./org/llava/impl/runtime/derived/DerivedLlavaQuasiquote.lva~ ./org/llava/impl/runtime/derived/DerivedLlavaQuasiquote.lva
+diff ./org/llava/impl/runtime/derived/DerivedScmTypeProcs.lva~ ./org/llava/impl/runtime/derived/DerivedScmTypeProcs.lva
+diff ./org/llava/impl/runtime/derived/import.lva~ ./org/llava/impl/runtime/derived/import.lva
+diff ./org/llava/impl/runtime/doc-builtins/InputOutput.lva~ ./org/llava/impl/runtime/doc-builtins/InputOutput.lva
+diff ./org/llava/impl/runtime/doc-builtins/PairsAndLists.lva~ ./org/llava/impl/runtime/doc-builtins/PairsAndLists.lva
+diff ./org/llava/impl/runtime/EnvTopLevelInitImpl.java~ ./org/llava/impl/runtime/EnvTopLevelInitImpl.java
+diff ./org/llava/lib/cl/Symbols.lva~ ./org/llava/lib/cl/Symbols.lva
+diff ./org/llava/lib/Files.lva~ ./org/llava/lib/Files.lva
+
+diff ./org/llava/lib/image/Image.lva~ ./org/llava/lib/image/Image.lva
+
+diff ./org/llava/lib/io/FileWalker.lva~ ./org/llava/lib/io/FileWalker.lva
+
+diff ./org/llava/lib/java/corba/CosNaming.lva~ ./org/llava/lib/java/corba/CosNaming.lva
+
+diff ./org/llava/lib/java/corba/Orb.lva~ ./org/llava/lib/java/corba/Orb.lva
+
+diff ./org/llava/lib/java/Lang.lva~ ./org/llava/lib/java/Lang.lva
+
+diff ./org/llava/lib/Lists.lva~ ./org/llava/lib/Lists.lva
+
+diff ./org/llava/lib/LlavaDoc.lva~ ./org/llava/lib/LlavaDoc.lva
+diff ./org/llava/lib/NamespaceUtil.lva~ ./org/llava/lib/NamespaceUtil.lva
+diff ./org/llava/lib/Program.lva~ ./org/llava/lib/Program.lva
+diff ./org/llava/lib/Reflect.lva~ ./org/llava/lib/Reflect.lva
+diff ./org/llava/lib/scm/Vectors.lva~ ./org/llava/lib/scm/Vectors.lva
+diff ./org/llava/lib/System.lva~ ./org/llava/lib/System.lva
+diff ./org/llava/lib/test/Test.lva~ ./org/llava/lib/test/Test.lva
+diff ./org/llava/lib/Threads.lva~ ./org/llava/lib/Threads.lva
+diff ./org/llava/lib/Vectors.lva~ ./org/llava/lib/Vectors.lva
+diff ./org/llava/lib/xml/javaxmlBook/javaxmlBook.lva~ ./org/llava/lib/xml/javaxmlBook/javaxmlBook.lva
+diff ./org/llava/lib/xml/L2X.lva~ ./org/llava/lib/xml/L2X.lva
+diff ./org/llava/lib/xml/Old.lva~ ./org/llava/lib/xml/Old.lva
+diff ./org/llava/lib/xml/XSLT.lva~ ./org/llava/lib/xml/XSLT.lva
+diff ./org/llava/lib/xml/xsltBook/xsltBook.lva~ ./org/llava/lib/xml/xsltBook/xsltBook.lva
+diff ./test/inProgress.lva~ ./test/inProgress.lva
+diff ./test/lib/cl/Control.lva~ ./test/lib/cl/Control.lva
+diff ./test/lib/Control.lva~ ./test/lib/Control.lva
+diff ./test/macroTest.lva~ ./test/macroTest.lva
+diff ./test/performance/xx.lva~ ./test/performance/xx.lva
+diff ./test/testBuiltIns.lva~ ./test/testBuiltIns.lva
+diff ./test/TestGeneric.java~ ./test/TestGeneric.java
+diff ./test/testNamespace/one/One.lva~ ./test/testNamespace/one/One.lva
+diff ./test/testNamespace/testNS2.lva~ ./test/testNamespace/testNS2.lva
+diff ./test/testNamespace/two/Two.lva~ ./test/testNamespace/two/Two.lva
+diff ./test/testNamespaceExternal.lva~ ./test/testNamespaceExternal.lva
+diff ./test/testNamespaceInternal.lva~ ./test/testNamespaceInternal.lva
+diff ./test/TestTop.java~ ./test/TestTop.java
+diff ./TODO~ ./TODO
