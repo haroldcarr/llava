@@ -1,13 +1,11 @@
 ;;;;
 ;;;; Created       : 1999 Jun 10 (Thu) 20:56:18 by Harold Carr.
-;;;; Last Modified : 1999 Nov 17 (Wed) 21:54:36 by Harold Carr.
+;;;; Last Modified : 1999 Nov 19 (Fri) 17:18:51 by Harold Carr.
 ;;;;
 
 ;;;;
 ;;;; TODO
 ;;;;
-;;;; * Get '()/#f consistent.
-;;;; * Make abstract data type for parameters.
 ;;;;
 
 (hcRequire "util")
@@ -49,13 +47,14 @@
 
 (defmacro (hcLavaGetImplementsOrExtends implementsOrExtends)
   `(begin
-     (set! ,implementsOrExtends (first stream))
+     ;; rest -> skip actual "implements" or "extends" symbol.
+     (set! ,implementsOrExtends (rest (first stream))) 
      (set! stream (rest stream))))
 
 (define (hcLavaParseClassHeader stream)
-  (let ((name       '())
-	(implements '())
-	(extends    '()))
+  (let ((name       #f)
+	(implements #f)
+	(extends    #f))
     (if (or (not (eq? (first  stream) 'public))
 	    (not (eq? (second stream) 'class)))
 	(error (string-append "Expecting public class, got: "
@@ -81,7 +80,7 @@
   (let ((visibility "")
 	(static     "")
 	(returnType #f)
-	(name       '())
+	(name       #f)
 	(args       '())
 	(throws     '())
 	(body       '())
@@ -114,11 +113,9 @@
 		  (error (string-append "Expecting name and parameters, got: "
 					item))))
 	   (cond ((hcLavaThrowsP item)
-		  (set! throws item)
+		  (set! throws (rest item)) ; skip "throws" symbol.
 		  (hcLavaPopStream)))
 	   ;; Build in throwing of SchemeException.
-	   (cond ((null? throws)
-		  (set! throws (list 'throws))))
 	   (set! throws (append throws (list 'SchemeException)))
 	   (set! body stream)
 	   (set! result
@@ -249,6 +246,7 @@
   (hcLavaTerpri skijBuffer)
   (hcLavaPrinc "(hcRequire \"importJava\")" skijBuffer)
   (hcLavaTerpri skijBuffer)
+  ;; Two selects skip comments inside of package parse node.
   (let ((package (hcLavaSelect 'package (hcLavaSelect 'package parsed)))
 	(className (hcLavaGetClassHeaderName
 		    (hcLavaSelect 'classHeader parsed))))
@@ -272,17 +270,17 @@
     (hcLavaTerpri javaBuffer)
     (hcLavaPrinc (string-append "public class " name) javaBuffer)
     (hcLavaTerpri javaBuffer)
-    (cond ((not (null? extends))
+    (cond (extends
 	   (hcLavaPrinc "extends" javaBuffer)
-	   (hcLavaPrintContents (cdr extends)
+	   (hcLavaPrintContents extends
 				(lambda () (hcLavaTerpri javaBuffer))
 				(lambda () #f)
 				javaBuffer
 				#t)
 	   (hcLavaTerpri javaBuffer)))
-    (cond ((not (null? implements))
+    (cond (implements
 	   (hcLavaPrinc "implements" javaBuffer)
-	   (hcLavaPrintContents (cdr implements)
+	   (hcLavaPrintContents implements
 				(lambda () (hcLavaTerpri javaBuffer))
 				(lambda () #f)
 				javaBuffer
@@ -315,10 +313,10 @@
    javaBuffer)
   (hcLavaGenerateParametersJava (hcLavaGetClassMemberArgs member) javaBuffer)
   (let ((throws (hcLavaGetClassMemberThrows member)))
-    (cond (throws
+    (cond ((not (null? throws))
 	   (hcLavaTerpri javaBuffer)
 	   (hcLavaPrinc "throws" javaBuffer)
-	   (hcLavaPrintContents (cdr throws)
+	   (hcLavaPrintContents throws
 				(lambda () (hcLavaTerpri javaBuffer))
 				(lambda () #f)
 				javaBuffer
@@ -330,6 +328,7 @@
   (hcLavaPrinc "}" javaBuffer))
 
 (define (hcLavaMakeProcNameSkij member parsed)
+  ;; Two selects skip comments inside package parse node.
   (let ((package (hcLavaSelect 'package (hcLavaSelect 'package parsed)))
 	(className 
 	 (hcLavaGetClassHeaderName (hcLavaSelect 'classHeader parsed))))
@@ -360,15 +359,17 @@
   (hcLavaPrinc ")" skijBuffer))
 
 (define (hcLavaMakeParameterString params withTypesP withCommasP)
-  (let ((result ""))
+  (let ((result "")
+	(param #f))
     (while (not (null? params))
+      (set! param (first params))
       (set! result
 	    (string-append
 	     result
 	     (if withTypesP
 		 (string-append
-		  (first (first params)) " " (second (first params)))
-		 (second (first params)))))
+		  (hcLavaGetParameterType param) " " (hcLavaGetParameterName param))
+		 (hcLavaGetParameterName param))))
       (set! params (rest params))
       (if (not (null? params))
 	  (set! result (string-append result (if withCommasP ", " " ")))))
@@ -518,6 +519,13 @@
   (hcLavaCheckGetRecordSlot 'ClassMember record :throws))
 (define (hcLavaGetClassMemberBody record)
   (hcLavaCheckGetRecordSlot 'ClassMember record :body))
+
+;;; Parameters
+
+(define (hcLavaGetParameterType param)
+  (first param))
+(define (hcLavaGetParameterName param)
+  (second param))
 
 
 (define (hcLavaSelect this that)
