@@ -1,0 +1,20 @@
+;;;;
+;;;; Created       : 2004 Dec 01 (Wed) 09:08:07 by Harold Carr.
+;;;; Last Modified : 2004 Dec 01 (Wed) 09:13:30 by Harold Carr.
+;;;;
+
+-------------------------
+
+IMPORT libs from JAR:
+
+importing org.llava.lib files from llava.jar dependings on
+the location of org.llava.LlavaVersion.  If you move or rename that
+file be sure to update NamespaceImpl
+
+-------------------------
+
+-jar llava.jar
+
+depends on: Main-Class: org.llava.impl.Llava
+
+;;; End of file.
