@@ -1,6 +1,6 @@
 ;;;;
 ;;;; Created       : 1999 Jun 10 (Thu) 20:56:18 by Harold Carr.
-;;;; Last Modified : 1999 Jun 16 (Wed) 23:42:30 by Harold Carr.
+;;;; Last Modified : 1999 Jun 21 (Mon) 18:25:17 by Harold Carr.
 ;;;;
 
 ;;;;
@@ -333,14 +333,18 @@
 
 (defun hcSkijGenerateBody (member javaBuffer skijBuffer)
   (hcSkijTerpri javaBuffer)
-  (hcSkijPrinc "return" javaBuffer)
-  (hcSkijTerpri javaBuffer)
-  (cond ((third member)
+  (cond ((not (eq (third member) 'void))
+	 (hcSkijPrinc "return" javaBuffer)
+	 (hcSkijTerpri javaBuffer)))
+  (cond ((and (third member)
+	      (not (eq (third member) 'void)))
 	 (hcSkijPrinc (format "(%s) " (third member)) javaBuffer)
 	 (hcSkijTerpri javaBuffer)))
-  (hcSkijPrinc (format "Scheme.procedure(\"%sImpl\").apply(Cons.list(this%s %s));"
+  (hcSkijPrinc (format "Scheme.procedure(\"%sImpl\").apply(Cons.list(%s %s));"
 		 (fourth member)
-		 (if (fifth member) "," "")
+		 (if (eq (second member) 'static)
+		     ""
+		   (if (fifth member) "this," ""))
 		 (hcSkijMakeParameterString (fifth member) nil t))
 	       javaBuffer))
 
