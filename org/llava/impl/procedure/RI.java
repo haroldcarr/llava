@@ -1,6 +1,6 @@
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2000 Feb 16 (Wed) 19:45:34 by Harold Carr.
+ * Last Modified : 2000 Feb 16 (Wed) 20:50:15 by Harold Carr.
  */
 
 package libLava.r1.procedure.generic;
@@ -12,74 +12,11 @@ import java.util.Hashtable;
 public class DI {
 
     //
-    // New public API in progress.
+    // Public API.
     //
 
-    public static Object invoke (String   method,
-				 Object   targetObject, 
-				 Object[] args)
-	throws
-	    NoSuchMethodException,
-	    Throwable
-    {
-	return invoke(null, targetObject, method, args);
-    }
-
-    public static Object invokeStatic (String   method,
-				       Class    targetClass,
-				       Object[] args)
-	throws
-	    NoSuchMethodException,
-	    Throwable
-    {
-	return invoke(targetClass, null, method, args);
-    }
-
-    public static Object getField (String field,
-				   Object targetObject)
-	throws
-	    NoSuchFieldException,
-	    IllegalAccessException
-    {
-	return getField(targetObject, field);
-    }
-				  
-				      
-    public static Object getStaticField (String field,
-					 Class  targetClass)
-	throws
-	    NoSuchFieldException,
-	    IllegalAccessException
-    {
-	return getField(targetClass, null, field);
-    }
-				  
-				      
-    public static Object setField (String field,
-				   Object targetObject,
-				   Object value)
-	throws
-	    NoSuchFieldException,
-	    IllegalAccessException
-    {
-	setField(targetObject, field, value);
-	return value;
-    }
-				  
-				      
-    public static Object setStaticField (String field,
-					 Class  targetClass,
-					 Object value)
-	throws
-	    NoSuchFieldException,
-	    IllegalAccessException
-    {
-	setField(targetClass, null, field, value);
-	return value;
-    }
-
     //
-    // Existing public API.
+    // Instance creation.
     //
 
     public static Object newInstance (String targetClassName, Object[] args)
@@ -121,36 +58,46 @@ public class DI {
 	}
     }
 
-    public static Object invoke (Object targetObject,
-				 String methodName, 
+    //
+    // Method invocation.
+    //
+
+    public static Object invoke (String methodName, 
+				 Object targetObject,
 				 Object[] args) 
 	throws 
 	    NoSuchMethodException, 
 	    Throwable 
     {
-	return invoke(targetObject.getClass(),targetObject, methodName, args); 
+	return invokeInternal(methodName,
+			      targetObject.getClass(),
+			      targetObject, 
+			      args); 
     }
 
-    public static Object invoke (Class targetClass,
-				 Object targetObject,
-				 String methodName,
-				 Object[] args) 
+    public static Object invokeStatic (String methodName, 
+				       String targetClassName,
+				       Object[] args) 
 	throws 
-	    NoSuchMethodException,
+	    NoSuchMethodException, 
 	    Throwable 
     {
-	Method method = findMethod(targetClass, methodName, getClasses(args));
-
-	if (method == null) {
-	    throw new NoSuchMethodException("DI.invoke: " + methodName);
-	}
-
-	try {
-	    return method.invoke(targetObject, args); 
-	} catch (InvocationTargetException e) {
-	    throw(e.getTargetException()); 
-	}
+	return invokeStatic(methodName, Class.forName(targetClassName), args);
     }
+
+    public static Object invokeStatic (String methodName, 
+				       Class targetClass,
+				       Object[] args) 
+	throws 
+	    NoSuchMethodException, 
+	    Throwable 
+    {
+	return invokeInternal(methodName, targetClass, null, args); 
+    }
+
+    //
+    // Field access.
+    //
 
     public static void setField (Object targetObject,
 				 String fieldName,
@@ -195,6 +142,27 @@ public class DI {
     //
     // Implementation.
     //
+
+    private static Object invokeInternal (String methodName,
+					  Class targetClass,
+					  Object targetObject,
+					  Object[] args) 
+	throws 
+	    NoSuchMethodException,
+	    Throwable 
+    {
+	Method method = findMethod(targetClass, methodName, getClasses(args));
+
+	if (method == null) {
+	    throw new NoSuchMethodException("DI.invoke: " + methodName);
+	}
+
+	try {
+	    return method.invoke(targetObject, args); 
+	} catch (InvocationTargetException e) {
+	    throw(e.getTargetException()); 
+	}
+    }
 
     //
     // Methods.
