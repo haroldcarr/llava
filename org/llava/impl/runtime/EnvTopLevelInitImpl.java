@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 30 (Thu) 06:34:36 by Harold Carr.
- * Last Modified : 2004 Dec 22 (Wed) 16:50:14 by Harold Carr.
+ * Last Modified : 2005 Feb 06 (Sun) 15:28:56 by Harold Carr.
  */
 
 package org.llava.impl.runtime;
@@ -26,8 +26,6 @@ import org.llava.runtime.EnvTopLevelInit;
 import org.llava.runtime.EnvironmentTopLevel;
 import org.llava.runtime.Evaluator;
 import org.llava.runtime.Namespace;
-
-import org.llava.impl.procedure.PrimNewPrim;
 
 public class EnvTopLevelInitImpl
     implements
@@ -59,13 +57,10 @@ public class EnvTopLevelInitImpl
 	// Install primitive Java procedures.
 	//
 
-	PrimNewPrim primNewPrim =   F.newPrimNewPrim();
-
 	set(env, "_%boot-namespace",env);
 
 	set(env, "_%import",        F.newPrimImport((Namespace)env));
-	set(env, "_%new",           primNewPrim);
-	set(env, "new",             F.newPrimNew((Namespace)env, primNewPrim));
+	set(env, "new",             F.newPrimNew((Namespace)env));
 	set(env, "_%package",       F.newPrimPackage((Namespace)env));
 
 	set(env, "eq?",             F.newPrimEqP());

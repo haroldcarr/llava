@@ -9,7 +9,7 @@
 
 #
 # Created       : 1999 Dec 28 (Tue) 04:50:52 by Harold Carr.
-# Last Modified : 2004 Dec 07 (Tue) 20:03:48 by Harold Carr.
+# Last Modified : 2005 Feb 06 (Sun) 11:40:34 by Harold Carr.
 #
 
 TOPDIR		=	../../../..
@@ -41,7 +41,6 @@ FILES_java	= \
 	$(PKGDIR)/PrimMap.java \
 	$(PKGDIR)/PrimNew.java \
 	$(PKGDIR)/PrimNewInvocationHandler.java \
-	$(PKGDIR)/PrimNewPrim.java \
 	$(PKGDIR)/PrimNewThread.java \
 	$(PKGDIR)/PrimNot.java \
 	$(PKGDIR)/PrimNullP.java \

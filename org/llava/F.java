@@ -81,7 +81,6 @@ import org.llava.impl.procedure.PrimEqP;
 import org.llava.impl.procedure.PrimEqualP;
 import org.llava.impl.procedure.PrimImport;
 import org.llava.impl.procedure.PrimNew;
-import org.llava.impl.procedure.PrimNewPrim;
 import org.llava.impl.procedure.PrimPackage;
 import org.llava.impl.procedure.PrimSynchronized;
 import org.llava.impl.procedure.PrimThrow;
@@ -608,20 +607,9 @@ public class F {
     private static PrimNew primNewFactory =
 	new PrimNew();
     
-    public static PrimNew newPrimNew (Namespace namespace, 
-				      PrimNewPrim primNewPrim)
+    public static PrimNew newPrimNew (Namespace namespace)
     {
-	return primNewFactory.newPrimNew(namespace, primNewPrim);
-    }
-
-    // PrimNewPrim
-
-    private static PrimNewPrim primNewPrimFactory =
-	new PrimNewPrim();
-    
-    public static PrimNewPrim newPrimNewPrim ()
-    {
-	return primNewPrimFactory.newPrimNewPrim();
+	return primNewFactory.newPrimNew(namespace);
     }
 
     // PrimPackage
