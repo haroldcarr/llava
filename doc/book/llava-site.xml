@@ -3,7 +3,7 @@
 <!--
 //
 // Created       : 1999 Dec 29 (Wed) 14:53:37 by Harold Carr.
-// Last Modified : 2005 Feb 21 (Mon) 17:13:20 by Harold Carr.
+// Last Modified : 2005 Mar 16 (Wed) 13:09:35 by Harold Carr.
 //
 -->
 
@@ -75,15 +75,19 @@
     <legalnotice>
       <para>llava</para>
 
+      <para>llava is Java in 
+        <ulink url="http://www.alu.org/">Lisp</ulink> syntax
+        (or a <ulink url="http://www.schemers.org/">Scheme</ulink>-like
+        interface to Java).</para>
+
       <para><ulink url="http://www.lisp.org/">Lisp</ulink>
         + 
+	<!-- 
         <ulink url="http://java.sun.com/">jAVA</ulink>
+        -->
+        jAVA
         = lava (but lava.org already taken, 
         thus: <emphasis>llava</emphasis>)</para>
-
-      <para>llava is a 
-        <ulink url="http://www.schemers.org/">Scheme</ulink>-like
-        interface to Java.</para>
 
       <para>llava is pronounced "lava" - like the molten stuff, or "yava"
         - as in Spanish.</para>
