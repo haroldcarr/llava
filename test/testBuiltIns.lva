@@ -9,10 +9,10 @@
 
 ;;;
 ;;; Created       : 1999 Dec 25 (Sat) 22:10:35 by Harold Carr.
-;;; Last Modified : 2004 Dec 14 (Tue) 12:34:42 by Harold Carr.
+;;; Last Modified : 2005 Feb 06 (Sun) 16:49:14 by Harold Carr.
 ;;;
 
-(begin
+;;(begin
 
 (import org.llava.lib.test.Test)
 
@@ -973,11 +973,138 @@
 (tprintln "synchronized<-:")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test import/new
+
+;; DO THIS LAST SINCE IT CHANGES PACKAGES
+
+(tprintln "import/new->:")
+
+(package testing.one)
+(import org.llava.lib.test.Test)
+
+(import java.text.SimpleDateFormat)
+(check 'new1
+       "java.text.SimpleDateFormat"
+       (getName (getClass (new 'SimpleDateFormat))))
+(define (xx) 'SimpleDateFormat)
+(check 'new2
+       "java.text.SimpleDateFormat"
+       (getName (getClass (new (xx)))))
+
+(check 'new3
+       "java.util.Hashtable"
+       (getFullNameForClass _%boot-namespace 'java.util.Hashtable))
+(check 'new4
+       "java.util.Hashtable"
+       (getName (getClass (new 'java.util.Hashtable))))
+(check 'new5
+       "java.util.HashBad"
+       (getFullNameForClass _%boot-namespace 'java.util.HashBad))
+(check 'new6
+       'ok
+       (try (new 'java.util.HashBad)
+	 (catch (java.lang.ClassNotFoundException e) 'ok)))
+
+(import java.lang.String)
+(import java.util.ArrayList)
+(import java.util.LinkedList)
+(import java.util.Stack)
+(import java.util.Vector)
+;;; This is deeply nested to see if all macro expansion is
+;;; done at read time.
+;;; Don't try to figure out the (new 'String ...) stuff.
+;;; It is just ensuring evaluation of args to the new macro.
+(define test
+  (lambda (w x y z)
+    (let* ((str "should-not-see-this")
+	   (lst
+	    (cond ((eq? w 'one)
+		   (set! str (new 'String (toString w)))
+		   (cond ((eq? x 'two)
+			  (set! str (new 'String (toString x)))
+			  (cond ((eq? y 'three)
+				 (set! str (new 'String (toString y)))
+				 (cond ((eq? z 'four)
+					(new 'Vector))
+				       (else
+					(cond ((eq? z 'ArrayList)
+					       (new 'ArrayList))
+					      (else
+					       (new 'ArrayList))))))
+				(else
+				 (cond ((eq? y 'Stack)
+					(new 'Stack))
+				       (else
+					(new 'Stack))))))
+			 (else
+			  (cond ((eq? x 'LinkedList)
+				 (new 'LinkedList))
+				(else
+				 (new 'LinkedList))))))
+		  (else
+		   (set! str (new 'String (toString 'zero)))
+		   (cond ((eq? w 'ArrayList)
+			  (new 'ArrayList))
+			 (else
+			  (new 'ArrayList)))))))
+      (add lst w)
+      (add lst x)
+      (add lst y)
+      (add lst z)
+      (list str (getName (getClass lst)) lst))))
+
+(package testing.two)
+(import testing.one)
+(import org.llava.lib.test.Test)
+
+(define gen-test-data
+  (lambda (info)
+    (let* ((x (first info))
+	   (type (second info))
+	   (v (third info))
+	   (lst (new* type)))
+      (add lst (first v))
+      (add lst (second v))
+      (add lst (third v))
+      (add lst (fourth v))
+      (list (toString x) (getName (getClass lst)) lst))))
+             
+(check 'new7
+       (gen-test-data '(three java.util.Vector (one two three four)))
+       (test 'one 'two 'three 'four))
+(check 'new8
+       (gen-test-data '(three java.util.ArrayList (one two three ArrayList)))
+       (test 'one 'two 'three 'ArrayList))
+(check 'new9
+       (gen-test-data '(three java.util.ArrayList (one two three else-ArrayList)))
+       (test 'one 'two 'three 'else-ArrayList))
+(check 'new10
+       (gen-test-data '(two java.util.Stack (one two Stack whatever-z)))
+       (test 'one 'two 'Stack 'whatever-z))
+(check 'new11
+       (gen-test-data '(two java.util.Stack (one two else-Stack whatever-z)))
+       (test 'one 'two 'else-Stack 'whatever-z))
+(check 'new12
+       (gen-test-data '(one java.util.LinkedList (one LinkedList whatever-y whatever-z)))
+       (test 'one 'LinkedList 'whatever-y 'whatever-z))
+(check 'new13
+       (gen-test-data '(one java.util.LinkedList (one else-LinkedList whatever-y whatever-z)))
+       (test 'one 'else-LinkedList 'whatever-y 'whatever-z))
+(check 'new14
+       (gen-test-data '(zero java.util.ArrayList (ArrayList whatever-x whatever-y whatever-z)))
+       (test 'ArrayList 'whatever-x 'whatever-y 'whatever-z))
+(check 'new15
+       (gen-test-data '(zero java.util.ArrayList (else-ArrayList whatever-x whatever-y whatever-z)))
+       (test 'else-ArrayList 'whatever-x 'whatever-y 'whatever-z))
+
+(tprintln "import/new<-:")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; End test
 
 (end-test 'testBuiltIns)
 
-)
+;;)
 
 ;;; End of file.
 
