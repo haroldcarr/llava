@@ -12,7 +12,7 @@
 ;;;; Last Modified : 2004 Dec 03 (Fri) 13:56:21 by Harold Carr.
 ;;;;
 
-(package org.llava.lib.NamespaceUtil)
+(package org.llava.lib.reflect.Namespace)
 
 (import org.llava.lib.Lists) ; for build-list
 
