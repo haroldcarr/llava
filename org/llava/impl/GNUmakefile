@@ -10,7 +10,7 @@
 
 #
 # Created       : 1999 Dec 15 (Wed) 16:30:21 by Harold Carr.
-# Last Modified : 2004 Sep 03 (Fri) 15:39:13 by Harold Carr.
+# Last Modified : 2004 Dec 02 (Thu) 09:05:50 by Harold Carr.
 #
 
 TOPDIR		=	../../..
@@ -21,10 +21,8 @@ PKGDIR		=	org/llava/impl
 FILES_java	= \
 	$(PKGDIR)/F.java \
 	$(PKGDIR)/Llava.java \
-	$(PKGDIR)/LlavaBridge.java \
 	$(PKGDIR)/LlavaVersionImpl.java \
-	$(PKGDIR)/ReplImpl.java \
-	$(PKGDIR)/ReplBridgeImpl.java
+	$(PKGDIR)/ReplImpl.java
 
 all :: classes 
 
