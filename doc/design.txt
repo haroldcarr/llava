@@ -1,0 +1,108 @@
+;;;;
+;;;; Created       : 2004 Sep 08 (Wed) 22:06:46 by Harold Carr.
+;;;; Last Modified : 2004 Sep 08 (Wed) 23:48:24 by Harold Carr.
+;;;;
+
+-doc- for llavadoc only
+handwrite the intro/book
+
+-package- -> section with title same a (package ...) 
+             or (-package- (location ...))
+-doc-     -> refentry
+
+refentry id must be full path to be unique
+But need to strip path and only have name for alpha function list
+
+-package-
+-section-
+-section-end-
+    These are only meant to be used in the builtin file.
+    Therefore they do not have empty macro definitions.
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+Single builtin file:
+
+(-package-
+ (location org.llava)
+ (description "..."))
+
+(-section-
+ (name "Creating a Java Object")
+ (description "..."))
+(-doc-
+ ...)
+(-section-end-)
+
+(-section- 
+ (name "Virtual Method Invocation")
+ (description "..."))
+(-doc-
+ ...)
+(-section-end-)
+
+(-section- (name "Static Field Access"))
+(-doc-
+ ...)
+(-section-end-)
+
+(-section- (name "Procedures"))
+(-section- (name "Numbers"))
+(-doc-
+ ...)
+(-section-end-)
+(-section-end-)
+
+generates:
+
+<section id="org.llava">
+  <title>org.llava</title>
+  ...description...
+  <section id="CreatingAJavaObject">
+    <title>Creating a Java Object</title>
+    <refentry>...</refentry>
+  </section>
+  <section id="VirtualMethodInvocation">
+    <title>Virtual Method Invocation</title>
+    <refentry>...</refentry>
+  </section>
+  <section id="StaticFieldAccess">
+    <title>Static Field Access</title>
+    <refentry>...</refentry>
+  </section>
+  <section id="Procedures">
+    <title>Procedures</title>
+    <section id="Numbers">
+      <title>Numbers</title>
+    </section>
+  </section>
+</section>
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+Library file:
+
+(package org.foo.Lists)
+
+(-package-
+ (description "..."))
+
+(-doc-
+ ...)
+
+generates:
+
+<section id="org.foo.Lists">
+  <title>org.foo.Lists</title>
+  ...description...
+  <refentry>...</refentry>
+</section>
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+Site:
+
+chapter Download
+chapter llava features
+ &org.llava;
+
+;;; End of file.
