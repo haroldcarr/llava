@@ -1,0 +1,425 @@
+%!iTeXMac(project): pdflatex
+%! iTeXMac(mark): ADDED
+
+\documentclass{acm-final/sig-alternate-modified}
+
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse % we are not running PDFLaTeX
+\else
+\pdfoutput=1 % we are running PDFLaTeX
+\pdftrue
+\fi
+
+\ifpdf
+\usepackage[pdftex]{graphicx}
+\else
+\usepackage{graphicx}
+\fi
+
+% HC - Always use the EPS version
+%\DeclareGraphicsExtensions{.eps}
+
+\ifpdf
+\DeclareGraphicsExtensions{.pdf, .jpg}
+\else
+\DeclareGraphicsExtensions{.eps, .jpg}
+\fi
+
+\newcommand{\stt}[1]{\scriptsize {\tt #1}}
+
+\begin{document}
+
+%\conferenceinfo{ICSOC'04,} {November 15--19, 2004, New York, New York, USA.}  
+%\CopyrightYear{2004}  
+%\crdata{1-58113-871-7/04/0011}
+
+
+\title{llava - Java in Lisp Syntax}
+
+\numberofauthors{1}
+
+\author{
+\alignauthor Harold Carr \\
+       \email{carr@llava.org}
+}
+
+\toappearbox{Submitted to the International Lisp Conference 2005}
+
+\maketitle
+
+%======================================================================
+\begin{abstract}
+
+{\tt llava} is Java in Lisp (lack of) syntax (rather than a Lisp or
+Scheme written in Java).  {\tt llava} does not contain special syntax
+or functions to call Java methods nor does it define an orthogonal set
+of types (such as Scheme strings or Common Lisp arrays).  Instead,
+{\tt llava} is Java expressed in typical prefix list syntax with all
+data being native Java data types (e.g., instances of Java classes).
+{\tt llava} adds additional types (e.g., {\tt Pair}, {\tt Procedure},
+{\tt Symbol} and {\tt Syntax}) to enable one to work with lists and to
+define procedures and macros.
+
+This paper discusses the motivation for Java, presents how it differs
+from similar efforts, and describes its implementation: the
+Reflective-Invocation system that is the core of enabling {\tt llava}
+to provide a prefix notation for Java method calls; how {\tt llava}
+procedures (e.g., lambda) are integrated with Java such that method
+invocations on Java objects take precedence over {\tt llava}
+procedures; and extending {\tt package} and {\tt import} to work with
+both Java class files and {\tt llava} procedures and files; and
+finally, the {\tt llava} compilation strategy and the ``engine''-based
+runtime.
+
+The rest of this version of this paper is an extended abstract.
+
+\end{abstract}
+
+%======================================================================
+
+%\category{C.2.4}{Computer-Communication Networks}{Distributed Systems}
+%\category{D.2.11}{Software Engineering}{Software Architectures}[patterns - remoting]
+
+%\terms{Design}
+
+%\keywords{Middleware, Adaptive, RPC, RMI, Messaging, IIOP, SOAP}
+
+%======================================================================
+\section{Motivation}
+
+I once built Lisp systems \cite{LaSC5,LaSC3}.  Then funding caused me
+to do C++ \cite{DC++}.  Then Java arrived and programming felt fun
+again.  It reminded me I wanted more.  So I used Kawa \cite{kawa} for
+interactively and abstractions (i.e., macros).  But I kept running
+into missing Scheme library items.  So I made foreign-function calls
+to Java.  However, I had to convert between Kawa/Scheme I/O, strings,
+characters, etc., and Java types.  (Note: this was with an early
+version of Kawa.)  This lack of interoperability made me realize I
+didn't want Lisp/Scheme in Java.
+
+That's when I got the idea for {\tt llava}.  Why not create a version
+of Java that uses Lisp syntax to write Java classes?  Then extend that
+system to include a few special forms (e.g., {\tt lambda}, {\tt set!},
+{\tt if}, {\tt quote}, {\tt define-syntax}), pairs and symbols, a REPL
+and support for incremental (re)definition.
+
+{\tt llava} \emph{is} access to Java via Lisp syntax and features.
+The philosophy of {\tt llava} is: maximum leverage of Java---only add
+what is missing or cannot be done in Java.
+
+%======================================================================
+\section{The llava Language}
+
+{\tt llava} is a prefix version of Java expressed in list structure.
+As such, it is \emph{not} a version of Scheme with special notation to
+access Java (like Jscheme \cite{jscheme}) or a version of Common Lisp
+with a foreign-function interface to Java (like ArmedBear Common Lisp
+(ABCL) \cite{abcl}).  Table \ref{j-l-j-a} compares language features
+between Java, {\tt llava} and these other languages.  The table should
+make it clear that {\tt llava} is a more direct prefix/list notation
+of Java - {\tt llava}'s primary goal.
+
+\begin{table*}
+\centering
+\caption{Notation Comparisons}
+\begin{tabular}{|l|l|l|l|} \hline
+Java		&	{\tt llava}	&	jscheme	& abcl \\ \hline
+
+{\bf new} & & & \\ 
+
+{\stt import java.util.Hashtable;}
+                &{\stt (import java.util.Hashtable)}
+                                        &{\stt (import "java.util.Hashtable")}
+                                                        & \\
+{\stt Hashtable ht = new Hashtable();}
+                &{\stt (set! ht (new Hashtable))}
+                                        &{\stt (set! ht (Hashtable.))}
+                                            &{\stt (setq ht } \\
+                &                       &   &\hspace{0.5em}{\stt   (jnew (jconstructor "java.util.Hashtable")))} \\
+
+{\bf virtual method calls} & & & \\
+
+{\stt ht.put("three", 3);}
+                &{\stt (put ht "three" 3)}
+                                        &{\stt (.put ht "three" 3)}
+
+   &{\stt (jcall (jmethod "java.util.Hashtable" "put"} \\
+&&&\hspace{2em} {\stt "java.lang.Object" "java.lang.Object")} \\
+&&&\hspace{1em} {\stt ht "three" 3)} \\
+
+{\bf static method calls} & & & \\
+
+                &{\stt (import java.lang.Byte)}
+                                        &
+                                                     & \\
+{\stt Byte b = Byte.decode("3");}
+                &{\stt (set! b (Byte.decode "3"))}
+                                    &{\stt (set! b (Byte.decode "3"))}
+          &{\stt (setq b (jstatic } \\
+ &&&\hspace{2em}{\stt (jmethod "java.lang.Byte" "decode"} \\
+ &&&\hspace{2.5em}{\stt "java.lang.String")} \\
+ &&&\hspace{1em}{\stt nil "3"))} \\ \hline
+
+\end{tabular}
+\label{j-l-j-a}
+\end{table*}
+
+
+Jscheme uses ``dot'' notation.  This seems to have one advantage
+over {\tt llava}: accessing a static field can be accessed as a
+variable reference, whereas {\tt llava} chooses to represent this as a
+procedure call (perhaps not as ``direct'' a represent).  Table
+\ref{j-l-j} shows this (along with virtual field access).
+
+\begin{table*}
+\centering
+\caption{More Notation Comparisons}
+\begin{tabular}{|l|l|l|} \hline
+Java		&	{\tt llava}	&	jscheme	\\ \hline
+
+{\bf virtual fields} & & \\
+
+{\stt import org.omg.CORBA.IntHolder;}
+                &{\stt (import org.omg.CORBA.IntHolder)}
+  					&{\stt (import "org.omg.CORBA.IntHolder")} \\
+{\stt IntHolder ih = new IntHolder();}
+		&{\stt (set! ih (new IntHolder))}
+					&{\stt (set! ih (IntHolder.))} \\
+{\stt ih.value = 3;}
+		&{\stt (value! ih 3)}
+					&{\stt (.value\$ ih 3)} \\
+{\stt ih.value;}
+		&{\stt (value ih)}
+					&{\stt (.value\$ ih)} \\
+&&\\
+{\bf static fields} & & \\
+
+{\stt import java.io.File;}
+		&{\stt (import java.io.File)}
+					&{\stt (import "java.io.File")} \\
+{\stt File.pathSeparator;}
+		&{\stt (File.pathSeparator)}
+					&{\stt File.pathSeparator\$} \\ \hline
+
+\end{tabular}
+\label{j-l-j}
+\end{table*}
+
+{\tt llava} presents Java directly (e.g., {\tt true} and {\tt false}
+rather than Jscheme's {\tt \#t} and {\tt \#f}).  Along these lines,
+rather than invent new module and condition systems, {\tt llava}
+exposes {\tt package/import} and {\tt try/catch/finally} in a natural
+way:
+
+\small
+\begin{verbatim}
+(import java.lang.ArithmeticException)
+(import java.lang.Exception)
+(import java.lang.RuntimeException)
+
+(let ((bomb 1))
+  (define (demo)
+    (try
+       (if (< bomb 0)
+           (throw (new Exception "Give up!")))
+       (list "Normal result is: " (/ 2 bomb))
+     (catch (ArithmeticException e)
+       (list "Arithmetic: " e))
+     (catch (Exception e)
+       (list "Exception: " e))
+     (finally
+       (set! bomb (- bomb 1))))))
+\end{verbatim}
+\normalsize
+
+%======================================================================
+\section{Implementation}
+
+%==================================================
+\subsection{Reflective Invocation}
+
+{\tt llava}'s Reflective Invocation (RI) system enables access to Java
+without special syntax or explicit foreign-function interfaces.  Once
+a Java object is obtained its methods and fields are immediately
+available:
+
+\small
+\begin{verbatim}
+(toLowerCase (substring "Foo-Bar" 4))
+  => "bar"
+\end{verbatim}
+\normalsize
+
+{\tt llava} looks up {\tt llava} procedure definitions in internal
+symbol tables.  If a procedure is \emph{not} defined then control goes
+to the RI.  The RI uses Java reflection to invoke the appropriate
+method by using the procedure call name as the method name, the first
+argument as the class type (and message recipient) and the types of
+the remaining arguments.  The full paper gives details such as method
+overload resolution, caching techniques and handling overloaded
+methods when {\tt null} arguments are given.
+
+%==================================================
+\subsection{llava procedures viz Java method calls}
+
+A {\tt llava} procedure with the same name as a method of the first
+argument (and matching argument types) will be invoked if defined:
+
+\small
+\begin{verbatim}
+(define toLowerCase
+  (lambda (x) (toUpperCase x)))
+
+(toLowerCase (substring "Foo-Bar" 4))
+  => "BAR"
+\end{verbatim}
+\normalsize
+
+Most of the time that is \emph{not} what you want to happen.  {\tt
+llava} provides an alternate form of {\tt define} that allows Java
+methods to take precedence:
+
+\small
+\begin{verbatim}
+(define (toLowerCase x)
+  (- x))
+
+(toLowerCase (substring "Foo-Bar" 4))
+  => "bar"
+(toLowerCase 3.4)
+  => -3.4
+\end{verbatim}
+\normalsize
+
+In other words, if the lookup finds a procedure defined with an
+explicit {\tt lambda} then that procedure will always be invoked
+regardless of the argument types.  If lookup finds a procedure defined
+\emph{without} an explicit {\tt lambda} then {\tt llava} will first
+attempt an RI invocation.  If RI finds a method, it will invoke the
+method return the results.  If RI does not find a method then the {\tt
+llava} procedure will be invoked.  If lookup does not find either type
+of {\tt llava} procedure then it will attempt an RI invocation.  If RI
+does not find a method then {\tt llava} will throw a {\tt
+LlavaException} indicating an {\tt undefined top-level variable}.
+
+%==================================================
+\subsection{package/import system}
+
+Like Java, {\tt llava}'s {\tt import} enables ``short''-form access to
+constructors and static methods and fields.  Unlike Java, {\tt llava
+import} is required to enable access to virtual fields:
+
+\small
+\begin{verbatim}
+(import java.lang.Long)
+(set! l (new Long 34))
+(getName (getClass (Long.decode "23")))
+ => "java.lang.Long"
+(Long.MAX_VALUE)
+ => 9223372036854775807
+
+(import java.lang.System)
+(System.out)
+ => java.io.PrintStream@1434234
+\end{verbatim}
+\normalsize
+
+When a Java class is imported, {\tt llava} creates a {\tt llava}
+package for that class and defines procedures in that package to
+access fields.  It also adds the imported package to the list of
+packages imported by the package doing the importing.  Then, during
+variable lookup, any names with a single dot (``.'') in them will be
+expanded to the full package name.
+
+% What about foo.bar.inner to get inner classes?
+
+{\tt llava} code may define packages:
+
+\small
+\begin{verbatim}
+(package org.example)
+
+(define (whatZone x)
+  (let* ((tz (getTimeZone x))
+         (n  (getDisplayName tz)))
+    n))
+\end{verbatim}
+\normalsize
+
+%(whatZone (DateFormat.getInstance))
+
+The full paper shows how {\tt llava}'s {\tt package} and {\tt
+import} are implemented and how they interact with Java {\tt
+classpath}, the file system, and the REPL.
+
+
+%==================================================
+\subsection{Compiler and Runtime system}
+
+{\tt llava} is compiled to a few special forms: application, {\tt
+begin}, {\tt if}, {\tt lambda}, literal, ref, {\tt set!}.  Those forms
+are written as explicit Java classes, each with a {\tt run} method
+that takes the current lexical environment and an evaluation engine
+that also has a {\tt run method}.  The forms and the engine cooperate
+such that the same call to {\tt engine.run} is executed in a Java {\tt
+while} loop when evaluating tail calls.  This makes the {\tt llava}
+interface to Java properly tail-recursive.  More details on the
+engine-based runtime are given in the full paper.  The engine
+evaluator is similar to one used in older versions of Jscheme.
+
+%======================================================================
+\section{Full Paper}
+
+The main point of {\tt llava} is that it is Java in Lisp syntax rather
+than another language written in Java.  It extends Java by providing
+macros, procedures, lists, and symbols.  Its core feature is Reflective
+Invocation enabling method calls on Java objects without special
+syntax.
+
+The full paper gives more details on the features and techniques
+discussed above and performance results of Reflective Invocation;
+lookups in the {\tt package} {\tt import} system; and the Engine-based
+runtime.
+
+\begin{thebibliography}{1}
+
+\bibitem{LaSC5}
+R.~Kessler, H.~Carr, L.~Stoller, and M.~Swanson.
+\newblock Implementing Concurrent Scheme for the Mayfly distributed parallel processing system.
+\newblock {\em Lisp and Symbolic Computation}, Vol 5, Issue 1-2 (May 1992) pp 73-93.
+%http://portal.acm.org/citation.cfm?id=161270.161285&dl=GUIDE&dl=GUIDE&CFID=33708534&CFTOKEN=68233485
+
+\bibitem{LaSC3}
+P.~Pourheidari, R.~Kessler, and H.~Carr.
+\newblock Moped (a portable debugger)
+\newblock {\em Lisp and Symbolic Computation}, Vol 3, Issue 1 (January 1990) pp 39-65.
+%http://portal.acm.org/citation.cfm?id=83661.83679&coll=GUIDE&dl=GUIDE&CFID=33708534&CFTOKEN=68233485
+
+\bibitem{DC++}
+H.~Carr, R.~Kessler, and M.~Swanson.
+\newblock Distributed C++
+\newblock {\em ACM SIGPLAN Notices}, Vol 28, Issue 1 (January 1993)
+%http://portal.acm.org/citation.cfm?id=156702&jmp=indexterms&dl=GUIDE&dl=GUIDE
+
+\bibitem{kawa}
+Per Bothner
+\newblock kawa
+\newblock http://www.gnu.org/software/kawa/
+
+\bibitem{jscheme}
+K.~Andersen, T.~Hickey, and P.~Norvig
+\newblock jscheme
+\newblock http://jscheme.sourceforge.net/
+
+\bibitem{abcl}
+\newblock ArmedBear Common Lisp
+\newblock http://armedbear-j.sourceforge.net/
+
+
+\end{thebibliography}
+
+\end{document}
+
+% End of file.
+
