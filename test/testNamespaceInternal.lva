@@ -253,8 +253,7 @@
   (check 0.3 'Llava-a (get *X* 'llava.a))
   (check 0.4 'Llava-a (get *X* 'org.llava.a))
 
-  ;(set! *X* (_package *X* (-si 'newSymbol 'org.llava.F *replPackageName*)))
-  (set! *X* (_package *X* 'llava-))
+  (set! *X* (_package *X* (-si 'newSymbol 'org.llava.F *replPackageName*)))
   (check 0.5 *replPackageName* (getName (getCurrentNamespace *X*)))
   (check 0.6 (list *replPackageName* *llavaPackageName*) 
 	 (getRefListNames (getCurrentNamespace *X*)))
