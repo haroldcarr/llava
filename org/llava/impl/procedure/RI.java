@@ -1,6 +1,6 @@
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2000 Feb 16 (Wed) 18:18:50 by Harold Carr.
+ * Last Modified : 2000 Feb 16 (Wed) 18:26:14 by Harold Carr.
  */
 
 package libLava.r1.procedure.generic;
@@ -88,21 +88,21 @@ public class DI {
     {
 	Class[] argTypes = getClasses(args);    
 	Constructor[] constructors = myClass.getDeclaredConstructors();
-	Vector goodConstructors = new Vector();
-	for (int i = 0; i != constructors.length; i++) {
+	Vector candidates = new Vector();
+	for (int i = 0; i < constructors.length; i++) {
 	    if (equalTypes(constructors[i].getParameterTypes(), argTypes)) {
-		goodConstructors.addElement(constructors[i]);
+		candidates.addElement(constructors[i]);
 	    }
 	}
 	Constructor c;
-	switch (goodConstructors.size()) {
+	switch (candidates.size()) {
 	case 0:
 	    throw new NoSuchMethodException("no applicable constructor");
 	case 1:
-	    c = (Constructor)goodConstructors.firstElement();
+	    c = (Constructor)candidates.firstElement();
 	    break;
 	default:
-	    c = mostSpecific(goodConstructors);
+	    c = mostSpecificConstructor(candidates);
 	    break;
 	}
 	c.setAccessible(true);
@@ -284,7 +284,7 @@ public class DI {
 
 	while (target != null) {
 	    Method[] methods = target.getDeclaredMethods();
-	    for (int i = 0; i != methods.length; i++) {
+	    for (int i = 0; i < methods.length; i++) {
 		Class[] parmTypes = methods[i].getParameterTypes();
 		if (name.equals(methods[i].getName()) &&
 		    equalTypes(parmTypes, argTypes))
@@ -318,7 +318,7 @@ public class DI {
 	    NoSuchFieldException 
     {
 	Field[] localFields = myClass.getDeclaredFields();
-	for (int i = 0; i != localFields.length; i++) {
+	for (int i = 0; i < localFields.length; i++) {
 	    if (fieldName.equals(localFields[i].getName())) {
 		Field f = localFields[i];
 		return f;
@@ -338,7 +338,7 @@ public class DI {
 	if (parmTypes.length != argTypes.length) {
 	    return false;
 	}
-	for (int i = 0; i != parmTypes.length; i++) {
+	for (int i = 0; i < parmTypes.length; i++) {
 	    if (!equalType(parmTypes[i], argTypes[i])) {
 		return false; 
 	    }
@@ -418,12 +418,12 @@ public class DI {
 	return clazz;
     }
   
-    static Constructor mostSpecific (Vector constructors) 
+    static Constructor mostSpecificConstructor (Vector constructors) 
 	throws
 	    Throwable 
     {
-	for (int i = 0; i != constructors.size(); i++) {
-	    for (int j = 0; j != constructors.size(); j++) {
+	for (int i = 0; i < constructors.size(); i++) {
+	    for (int j = 0; j < constructors.size(); j++) {
 		if ((i != j) &&
 		    (moreSpecific((Constructor)constructors.elementAt(i), (Constructor)constructors.elementAt(j)))) {
 		    constructors.removeElementAt(j);
@@ -435,15 +435,15 @@ public class DI {
 	if (constructors.size() == 1)
 	    return (Constructor)constructors.elementAt(0);
 	else
-	    throw new NoSuchMethodException(">1 most specific constructor");
+	    throw new NoSuchMethodException("more than one most specific constructor");
     }
 
     private static Method mostSpecificMethod (Vector methods) 
 	throws
 	    NoSuchMethodException 
     {
-	for (int i = 0; i != methods.size(); i++) {
-	    for (int j = 0; j != methods.size(); j++) {
+	for (int i = 0; i < methods.size(); i++) {
+	    for (int j = 0; j < methods.size(); j++) {
 		if ((i != j) &&
 		    (moreSpecific((Method)methods.elementAt(i), (Method)methods.elementAt(j)))) {
 		    methods.removeElementAt(j);
@@ -455,7 +455,7 @@ public class DI {
 	if (methods.size() == 1)
 	    return (Method)methods.elementAt(0);
 	else
-	    throw new NoSuchMethodException(">1 most specific method");
+	    throw new NoSuchMethodException("more than one most specific method");
     }
 
     // True IFF c1 is more specific than c2
@@ -465,7 +465,7 @@ public class DI {
 	Class[] parmTypes1 = c1.getParameterTypes();
 	Class[] parmTypes2 = c2.getParameterTypes();
 	int n = parmTypes1.length;
-	for (int i = 0; i != n; i++) {
+	for (int i = 0; i < n; i++) {
 	    if (equalType(parmTypes1[i], parmTypes2[i])) {
 		return false;
 	    }
@@ -482,7 +482,7 @@ public class DI {
 	Class[] parmTypes1 = c1.getParameterTypes();
 	Class[] parmTypes2 = c2.getParameterTypes();
 	int n = parmTypes1.length;
-	for (int i = 0; i != n; i++) {
+	for (int i = 0; i < n; i++) {
 	    if (!equalType(parmTypes2[i], parmTypes1[i])) {
 		return false;
 	    }
@@ -494,7 +494,7 @@ public class DI {
     private static Class[] getClasses (Object[] args) 
     {
 	Class[] classes = new Class[args.length];
-	for (int i = 0; i != args.length; i = i + 1)
+	for (int i = 0; i < args.length; i = i + 1)
 	    classes[i] = ((args[i] == null) ? NullClass : args[i].getClass());
 	return classes; 
     }
@@ -586,7 +586,7 @@ class MethodKey {
     {
 	java.io.StringWriter out = new java.io.StringWriter();
 	out.write('[');
-	for (int i = 0; i != array.length; i++) {
+	for (int i = 0; i < array.length; i++) {
 	    out.write(array[i].toString());
 	    out.write(' '); 
 	}
@@ -615,7 +615,7 @@ class MethodKey {
     static boolean arrayEquals (Class[] c1, Class[] c2) 
     {
 	if (c1.length == c2.length) {
-	    for (int i = 0; i != c1.length; i++) {
+	    for (int i = 0; i < c1.length; i++) {
 		if (c1[i] != c2[i])
 		    return false;
 	    }
@@ -627,7 +627,7 @@ class MethodKey {
     public int hashCode () 
     {
 	int v = target.hashCode() ^ (37*name.hashCode());
-	for (int i = 0; i != argTypes.length; i++) // added this, but seems to make things slower...
+	for (int i = 0; i < argTypes.length; i++) // added this, but seems to make things slower...
 	    v = (v * 43) ^ argTypes[i].hashCode();
 	return v;
     }
