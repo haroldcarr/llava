@@ -12,7 +12,7 @@ or send a letter to
 
 /**
  * Created       : @author Peter Norvig, Copyright 1998, http://www.norvig.com/license.html 
- * Last Modified : 2004 Sep 03 (Fri) 15:35:16 by Harold Carr.
+ * Last Modified : 2004 Dec 01 (Wed) 22:09:11 by Harold Carr.
  */
 
 package org.llava.impl.runtime.syntax;
@@ -62,7 +62,7 @@ public abstract class Syntax
     public String toString ()
     {
 	// REVISIT: duplicated in GenericProcedureImpl, LambdaImpl, Syntax
-	return "{" + getClass().getName() + " " + name + "}";
+	return "{syntax " + name + "}";
     }
 }
 

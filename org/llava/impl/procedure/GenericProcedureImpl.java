@@ -12,7 +12,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 28 (Tue) 03:42:27 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:34:00 by Harold Carr.
+ * Last Modified : 2004 Dec 01 (Wed) 22:04:32 by Harold Carr.
  */
 
 package org.llava.impl.runtime.procedure.generic;
@@ -127,11 +127,10 @@ public class GenericProcedureImpl
     public String toString ()
     {
 	// REVISIT: duplicated in GenericProcedureImpl, LambdaImpl, Syntax
-	String result = "{" + getClass().getName() + " " + name;
-	result += 
-	    ((getDefaultLambda() != null) 
-	     ? " " + getDefaultLambda().toString()
-	     : "")
+	String result = 
+	    "{generic " 
+	    + ((getDefaultLambda() != null) ? getDefaultLambda().toString()
+	                                    : name)
 	    + "}";
 	return result;
     }
