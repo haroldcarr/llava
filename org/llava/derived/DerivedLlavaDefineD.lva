@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2004 Nov 25 (Thu) 14:56:00 by Harold Carr.
-;;;; Last Modified : 2004 Dec 07 (Tue) 22:05:52 by Harold Carr.
+;;;; Last Modified : 2004 Dec 07 (Tue) 22:05:00 by Harold Carr.
 ;;;;
 
 (define-syntax define-d
@@ -53,18 +53,20 @@
 (define print-enter
   (lambda (name . args)
     (print-indent 'enter)
-    (-print "->" )
+    (display "->" )
     (print-common name args)
-    (-println "" )))
+    (newline)))
 
 (define print-exit
   (lambda (error result name . args)
     (print-indent 'exit)
-    (-print "<" )
-    (-if error (-print "E") (-print "-"))
+    (display "<" )
+    (-if error (display "E") (display "-"))
     (print-common name args)
-    (-print "= " )
-    (-if error (-println error) (-println result))))
+    (display "= " )
+    (-if error 
+	 (begin (write error)  (newline))
+	 (begin (write result) (newline)))))
 
 
 (let ((current-indent 0)
@@ -80,7 +82,7 @@
 		 (set! current-indent (- current-indent indent)))
 	     (do ((i current-indent (- i 1)))
 		 ((<= i 0))
-	       (-print " "))
+	       (display " "))
 	     (if (eq? direction 'enter) 
 		 (set! current-indent (+ current-indent indent)))))))
 
@@ -88,13 +90,13 @@
 
 (define print-common
   (lambda (name args)
-    (-print "(" )
-    (-print name)
-    (for-each (lambda (a) (-print " " ) (-print a)) args)
-    (-print ") ")))
+    (display "(" )
+    (display name)
+    (for-each (lambda (a) (display " " ) (write a)) args)
+    (display ") ")))
 
 (-comment-
-(load (s+ (user-home) "/.sync/.llava.org/.system/org/llava/impl/runtime/derived/DerivedLlavaDefineD.lva"))
+(load (s+ (user-home) "/.sync/.llava.org/.system/org/llava/derived/DerivedLlavaDefineD.lva"))
 (define-d (f a n) n)
 (define-d (f a . n) n)
 (define-d a 3)
@@ -129,6 +131,16 @@
 	   (+ (first args) (second args))
 	   (* (first args) (third args))))))
 (b 10 0 1)
+
+(define-d v
+  (lambda (vec)
+    (cond ((= (vector-ref vec 0) 0) "done")
+	  ((= (vector-ref vec 0) -1) (new 'java.lang.Exception "BAD"))
+	  (else
+	   (vector-set! vec 0 (- (vector-ref vec 0) 1))
+	   (v vec)))))
+(v #(10 3))
+(v #(-1))
 
 )
 
