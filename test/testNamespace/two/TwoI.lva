@@ -1,0 +1,13 @@
+(package testNamespace.two Two)
+
+(letrec ((maxT (lambda args (maxAux (car args) (cdr args))))
+	 (maxAux (lambda (largest args)
+		   (if (null? args)
+		       largest
+		       (maxAux (if (> (car args) largest)
+				   (car args)
+				   largest)
+			       (cdr args))))))
+  (set! max maxT))
+
+;; End of file.
