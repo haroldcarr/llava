@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2004 Nov 25 (Thu) 14:56:00 by Harold Carr.
-;;;; Last Modified : 2004 Dec 12 (Sun) 12:52:22 by Harold Carr.
+;;;; Last Modified : 2004 Dec 22 (Wed) 06:47:12 by Harold Carr.
 ;;;;
 
 (define-syntax define-d
@@ -55,7 +55,8 @@
     (print-indent 'enter)
     (-print "->" )
     (print-common name args)
-    (-newline)))
+    (-newline)
+    (-flush)))
 
 (define print-exit
   (lambda (error result name . args)
@@ -66,7 +67,8 @@
     (-print "= " )
     (-if error 
 	 (-writeln error)
-	 (-writeln result))))
+	 (-writeln result))
+    (-flush)))
 
 
 (let ((current-indent 0)
