@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 30 (Thu) 06:34:36 by Harold Carr.
- * Last Modified : 2004 Dec 22 (Wed) 15:54:49 by Harold Carr.
+ * Last Modified : 2004 Dec 22 (Wed) 16:50:14 by Harold Carr.
  */
 
 package org.llava.impl.runtime;
@@ -56,13 +56,6 @@ public class EnvTopLevelInitImpl
 	env.setRepl(repl);
 
 	//
-	// Note: the default undefined id handler causes all
-	// all unbound top level variables become generic.
-	//
-
-	env.setUndefinedIdHandler(F.newUndefinedIdHandler());
-
-	//
 	// Install primitive Java procedures.
 	//
 
@@ -72,7 +65,7 @@ public class EnvTopLevelInitImpl
 
 	set(env, "_%import",        F.newPrimImport((Namespace)env));
 	set(env, "_%new",           primNewPrim);
-	set(env, "new",            F.newPrimNew((Namespace)env, primNewPrim));
+	set(env, "new",             F.newPrimNew((Namespace)env, primNewPrim));
 	set(env, "_%package",       F.newPrimPackage((Namespace)env));
 
 	set(env, "eq?",             F.newPrimEqP());
