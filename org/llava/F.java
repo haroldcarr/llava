@@ -75,6 +75,7 @@ import org.llava.impl.runtime.EngineStepImpl; // REVISIT - remove
 import org.llava.impl.runtime.EnvTopLevelInitImpl;
 import org.llava.impl.runtime.LlavaRuntimeImpl;
 import org.llava.impl.runtime.UndefinedIdHandlerImpl;
+import org.llava.impl.runtime.UndefinedIdHandlerGenericImpl;
 
 import org.llava.impl.procedure.PrimEqP;
 import org.llava.impl.procedure.PrimEqualP;
@@ -546,7 +547,8 @@ public class F {
     // UndefinedIdHandler
 
     private static UndefinedIdHandler undefinedIdHandlerFactory =
-	new UndefinedIdHandlerImpl();
+	//new UndefinedIdHandlerImpl();
+	new UndefinedIdHandlerGenericImpl();
     
     public static UndefinedIdHandler newUndefinedIdHandler ()
     {
