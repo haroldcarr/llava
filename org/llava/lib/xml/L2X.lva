@@ -1,0 +1,265 @@
+;;;;
+;;;; Created       : 2001 Mar 06 (Tue) 15:09:50 by Harold Carr.
+;;;; Last Modified : 2001 Nov 15 (Thu) 10:25:24 by Harold Carr.
+;;;;
+
+(package xml L2X)
+
+(import cl.Control) ; dotimes
+
+;(import lava.Control) 
+
+;;;;
+;;;; --------------------------------------------------
+;;;; LXML -> XML
+;;;;
+
+;;;
+;;; The main interactive routine.
+;;; Given an LXML expression, prints it out as XML.
+;;;
+
+(define l->x
+  (lambda (lxml)
+    (l->x-with-indent lxml 0)))
+
+(define *l->x-out* (_sf 'out 'java.lang.System))
+
+(define *l->x-newline?* true)
+(define l->x-newline?
+  (lambda (v)
+    (set! *l->x-newline?* v)))
+
+(define *l->x-indent?* true)
+(define l->x-indent?
+  (lambda (v)
+    (set! *l->x-indent?* v)))
+
+(define l->x-with-indent
+  (lambda (lxml indent)
+    (for-each (lambda (sexpr)
+		(l->x-dispatch sexpr indent))
+	      lxml)
+    null))
+
+(define l->x-dispatch
+  (lambda (sexpr indent)
+    (if (not (pair? sexpr))
+	(l->x-printText sexpr)
+	(case (car sexpr)
+	  ((?)   (l->x-printProcessingInstruction sexpr indent))
+	  ((!)   (_println (string-append "ignoring: " (toString sexpr))))
+	  ((!--) (l->x-printComment sexpr indent))
+	  ((&&)  (l->x-printEntity sexpr indent))
+	  ((~)   (l->x-printElement (list (cdr sexpr)) indent))
+	  (else  (l->x-printElement sexpr indent))))))
+
+(define l->x-printElement
+  (lambda (element indent)
+    (let* ((operator (car element))
+	   (hasAttributes (pair? operator))
+	   (name (if hasAttributes (car operator) operator))
+	   (attributes (if hasAttributes (cdr operator) null))
+	   (body (cdr element)))
+      (l->x-newline)
+      (l->x-indent indent)
+      (l->x-print "<")
+      (l->x-print name)
+      (l->x-printAttributes attributes)
+      (cond ((null? body)
+	     (l->x-print "/>"))
+	    (else
+	     (l->x-print ">")
+	     (l->x-with-indent (cdr element) (+ indent 4))
+	     (l->x-print "</")
+	     (l->x-print name)
+	     (l->x-print ">"))))))
+
+(define l->x-printEntity
+  (lambda (entity indent)
+    (l->x-print " &")
+    (l->x-print (cadr entity))
+    (l->x-print "; ")))
+
+(define l->x-printProcessingInstruction
+  (lambda (pi indent)
+    ;; XML declaration must be on first line.
+    (if (not (equals 'xml (cadr pi)))
+	(l->x-newline))
+    (l->x-indent indent)
+    (l->x-print "<?")
+    (l->x-print (cadr pi))
+    (l->x-printAttributes (cddr pi))
+    (l->x-print "?>")))
+
+(define l->x-printAttributes
+  (lambda (attributes)
+    (do ((atts attributes (cdr atts)))
+	((null? atts))
+      (l->x-print " ")
+      (l->x-print (caar atts))
+      (l->x-print "=")
+      (l->x-print "\"")
+      (l->x-print (car (cdar atts)))
+      (l->x-print "\""))))
+
+(define l->x-printText 
+  (lambda (text)
+    (l->x-print text)))
+
+(define l->x-printComment
+  (lambda (comment indent)
+    (l->x-newline)
+    (l->x-indent indent)
+    (l->x-print "<!--")
+    (l->x-print (cadr comment))
+    (l->x-print "-->")))
+
+(define l->x-indent
+  (lambda (indent)
+    (if *l->x-indent?*
+	(dotimes (i indent) (l->x-print " ")))))
+
+(define l->x-print
+  (lambda (x)
+    (print *l->x-out* x)))
+
+(define l->x-newline
+  (lambda ()
+    (if *l->x-newline?*
+	(println *l->x-out*))))
+
+;;;
+;;; Strings, Streams and files.
+;;;
+
+(define l->x-string
+  (lambda (lxml)
+    (let* ((sw (new 'java.io.StringWriter))
+	   (pw (new 'java.io.PrintWriter sw))
+	   (savedOut *l->x-out*))
+      (try
+       (begin
+	 (set! *l->x-out* pw)
+	 (l->x lxml)
+	 (toString sw))
+       (finally
+	(set! *l->x-out* savedOut))))))
+
+(define l->x-streams
+  (lambda (in out)
+    (let ((savedOut *l->x-out*)
+	  (EOF      (_si 'newLavaEOF 'lavaProfile.F)))
+      (try
+       (begin
+	 (set! *l->x-out* out)
+	 (l->x-streams-aux in EOF))
+       (finally
+	(set! *l->x-out* savedOut))))))
+
+(define l->x-streams-aux
+  (lambda (in EOF)
+    (let ((sexpr (read in)))
+      (cond ((not (equals EOF sexpr))
+	     (l->x-dispatch sexpr 0)
+	     (l->x-streams-aux in EOF))))))
+
+(define l->x-files
+  (lambda (inFileName outFileName)
+    (let ((inStream null)
+	  (in null)
+	  (out null))
+      (try
+       (begin
+	 (set! inStream (new 'java.io.InputStreamReader
+			     (new 'java.io.FileInputStream inFileName)))
+	 (set! in (_si 'newLavaReader 'lavaProfile.F inStream))
+	 (set! out (new 'java.io.PrintWriter
+			(new 'java.io.OutputStreamWriter
+			     (new 'java.io.FileOutputStream outFileName))))
+	 (l->x-streams in out))
+       (catch (java.lang.Throwable t)
+	      (_println (list "l->x-files error: " t)) ;; REVISIT
+	      (throw t))
+       (finally
+	(close inStream)
+	(close out))))
+    'done))
+
+;;;;
+;;;; --------------------------------------------------
+;;;; XML -> LXML
+;;;;
+
+;;; Based on _Java and XML_, Chapter 8, pp 210-211.
+
+(define x->l
+  (lambda (uri . out)
+    (apply x->l-aux `(DOM LXML ,uri ,@out))))
+
+(define x->l-aux
+  (lambda (builderType outputterType uri . out)
+    (set! out (if (null? out) (_sf 'out 'java.lang.System) (car out)))
+    (let* ((builder (case builderType
+		      ;; p 210.
+		      ((SAX) (new 'org.jdom.input.SAXBuilder false))
+		      ;; p 211.
+		      ((DOM) (new 'org.jdom.input.DOMBuilder
+				  "org.jdom.adapters.XercesDOMAdapter"))
+		      (else  (error (string-append "unknown: " builderType)))))
+	   ;; p 211.
+	   (doc (build builder (new 'java.io.File uri))))
+      (x->l-printDocument outputterType doc out))))
+
+;; p 223.
+(define x->l-printDocument
+  (lambda (outputterType doc out)
+    (let ((fmt (case outputterType
+		 ;; p 223.
+		 ((XML)  (new 'org.jdom.output.XMLOutputter))
+		 ;; HC extension.
+		 ((LXML) (new 'org.jdom.output.LXMLOutputter)))))
+      (setSuppressDeclaration fmt false)
+      (setOmitEncoding fmt false)
+      (setNewlines fmt false)
+      (setPadText fmt true)
+      (setTrimText fmt false)
+      (setExpandEmptyElements fmt true) ;; This one is necessary for LXML
+      (output fmt doc out))))
+
+;;;;
+;;;; --------------------------------------------------
+;;;; Test.
+;;;;
+
+(define (userHome)
+  (_si 'getProperty 'java.lang.System "user.home"))
+
+(define (demoRoot tail)
+  (string-append (userHome)
+		 "/.sync/.lsync/lava/lib/xml/"
+		 tail))
+
+(_comment
+
+(load "L2X.lva")
+
+(x->l "/export/home/carr/InteropTest.wsdl")
+
+(l->x-string '((? xml (version "1.0") (encoding "UTF-8"))))
+
+(l->x-files (demoRoot "xsltBook/me/03Example/bookings.lxml")
+	    "/tmp/bookings.xml")
+
+(l->x-files (string-append (userHome) "/.sync/.ksync/rpt/carrEstimates.lxml")
+	    "/tmp/carrEstimates.xml")
+
+(x->l (demoRoot "test.xml"))
+(x->l-aux 'DOM 'LXML (demoRoot "test.xml"))
+;; Must be connected to specs.
+(x->l (demoRoot "specs/REC-xml-20001006.xml"))
+
+)
+
+
+;;; End of file.

@@ -1,0 +1,58 @@
+;;;;
+;;;; Created       : 2001 Mar 06 (Tue) 15:09:50 by Harold Carr.
+;;;; Last Modified : 2001 May 04 (Fri) 21:15:57 by Harold Carr.
+;;;;
+
+(package xml XSLT)
+
+(import java.Lang) ; newArray
+(import xml.L2X)
+
+;;;;
+;;;; Run the XSLT processor.
+;;;;
+
+(define (transform lxml lxsl . out)
+  (let* ((tfactory (_si 'newInstance 'javax.xml.transform.TransformerFactory))
+	 (stylesheet
+	  (newTemplates tfactory
+			(new 'javax.xml.transform.stream.StreamSource
+			     (new 'java.io.StringReader (l->x-string lxsl)))))
+	 (outputStream (if (not (null? out)) 
+			   (car out)
+			   (_sf 'out 'java.lang.System)))
+	 (transformer (newTransformer stylesheet)))
+    ;;(setParameter transformer "foo" "bar")
+    (transform transformer
+	       (new 'javax.xml.transform.stream.StreamSource
+		    (new 'java.io.StringReader (l->x-string lxml)))
+	       ;; REVISIT - more flexible to obtain string
+	       (new 'javax.xml.transform.stream.StreamResult
+		    outputStream))))
+
+(define transform-files
+  (lambda (lxml lxslt result . options)
+    ;; REVISIT - tmp files - should be internal
+    (l->x-files lxml  "/tmp/ttXML.xml")
+    (l->x-files lxslt "/tmp/ttXSLT.xslt")
+    (apply transform-via-main 
+	   `("/tmp/ttXML.xml" "/tmp/ttXSLT.xslt" ,result ,@options))))
+
+(define transform-via-main
+  (lambda (xmlDoc xslDoc outDoc . options)
+    (let* ((avLen (+ 6 (length options)))
+	   (av (newArray 'java.lang.String avLen))
+	   (s! (lambda (i v) (_si 'set 'java.lang.reflect.Array av i v))))
+      (s! 0 "-IN")
+      (s! 1 xmlDoc)
+      (s! 2 "-XSL")
+      (s! 3 xslDoc)
+      (s! 4 "-OUT")
+      (s! 5 outDoc)
+      (do ((i 6 (+ i 1))
+	   (opt options (cdr opt)))
+	  ((>= i avLen))
+	(s! i (car opt)))
+      (_si 'main 'org.apache.xalan.xslt.Process av))))
+
+;;; End of file.
