@@ -12,7 +12,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 30 (Thu) 19:28:20 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:35:12 by Harold Carr.
+ * Last Modified : 2004 Nov 30 (Tue) 06:50:09 by Harold Carr.
  */
 
 package org.llava.impl.runtime.procedure.primitive.llava.opt;
@@ -50,32 +50,47 @@ public class PrimMap
 		return null;
 	    }
 	    if (lists.cdr() == null) {
-		return mapone(procedure, (Pair)lists.car(), engine);
+		return mapone(true, procedure, (Pair)lists.car(), engine);
 	    }
-	    return mapmany(procedure, lists, engine);
+	    return mapmany(true, procedure, lists, engine);
 	}
     }
 
-    private Object mapone (Procedure procedure, Pair list, Engine engine)
+    // NOTE: This is used by PrimForEach.
+    Object mapone (boolean isMap,
+		   Procedure procedure, Pair list, Engine engine)
     {
 	if (list == null) {
 	    return null;
 	}
 	// REVISIT - turn into iteration.
-	return F.cons(engine.apply(procedure, List.list(list.car())),
-		      mapone(procedure, (Pair) list.cdr(), engine));
+	Object _car = engine.apply(procedure, List.list(list.car()));
+	Object _cdr = mapone(isMap, procedure, (Pair) list.cdr(), engine);
+	if (isMap) {
+	    return F.cons(_car, _cdr);
+	} else {
+	    return null;
+	}
     }
 
-    private Object mapmany (Procedure procedure, Pair lists, Engine engine)
+    // NOTE: This is used by PrimForEach.
+    Object mapmany (boolean isMap,
+		    Procedure procedure, Pair lists, Engine engine)
     {
 	if (lists.car() == null) {
 	    return null;
 	}
 	// REVISIT - turn into iteration.
-	return F.cons(engine.apply(procedure,
-				   (Pair) mapone(car, lists, engine)),
-		      mapmany(procedure, 
-			      (Pair) mapone(cdr, lists, engine), engine));
+	Object _car = 
+	    engine.apply(procedure, (Pair) mapone(isMap, car, lists, engine));
+	Object _cdr = 
+	    mapmany(isMap,
+		    procedure, (Pair) mapone(isMap, cdr, lists, engine), engine);
+	if (isMap) {
+	    return F.cons(_car, _cdr);
+	} else {
+	    return null;
+	}
     }
 
     private Procedure car =
