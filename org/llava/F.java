@@ -188,6 +188,8 @@ public class F {
     }
 
     // package in which repl starts
+    // NOTE: You cannot name it "llava" since the dotted namespace search
+    // will confuse org.llava and llava.
     public static String initialReplPackageName() {
 	return "llava-";
     }
