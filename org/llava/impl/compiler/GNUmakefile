@@ -7,10 +7,9 @@
 #   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
 #-----------------------------------------------------------------------------
 
-
 #
 # Created       : 1999 Dec 15 (Wed) 16:30:21 by Harold Carr.
-# Last Modified : 2004 Sep 03 (Fri) 15:39:15 by Harold Carr.
+# Last Modified : 2004 Dec 07 (Tue) 18:07:18 by Harold Carr.
 #
 
 TOPDIR		=	../../../..
@@ -20,9 +19,7 @@ PKGDIR		=	org/llava/impl/compiler
 
 FILES_java	= \
 	$(PKGDIR)/CompilerImpl.java \
-	$(PKGDIR)/EnvironmentLexical.java \
-	$(PKGDIR)/EnvironmentLexicalImpl.java \
-	$(PKGDIR)/FC.java
+	$(PKGDIR)/EnvironmentLexicalImpl.java
 
 all :: classes
 

@@ -9,21 +9,21 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 2000 Jan 14 (Fri) 14:57:59 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:34:58 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 10:22:30 by Harold Carr.
  */
 
-package org.llava.impl.runtime.procedure.primitive.llava;
+package org.llava.impl.procedure;
 
-import org.llava.lang.exceptions.LlavaException;
-import org.llava.lang.types.Pair;
-import org.llava.lang.types.Procedure;
+import org.llava.F;
+import org.llava.LlavaException;
+import org.llava.Pair;
+import org.llava.Procedure;
+import org.llava.runtime.Engine;
+
+import org.llava.impl.procedure.PrimitiveProcedure;
 import org.llava.impl.util.List;
-import org.llava.impl.runtime.FR;
-import org.llava.impl.runtime.Engine;
-import org.llava.impl.runtime.procedure.primitive.PrimitiveProcedure;
 
 public class PrimCallCC
     extends
@@ -64,7 +64,7 @@ public class PrimCallCC
 	public Continuation () {}
 	public Object apply (Pair args, Engine engine) {
 	    if (args == null || args.length() != 1) {
-		throw FR.newWrongNumberOfArgumentsException(name);
+		throw F.newWrongNumberOfArgumentsException(name);
 	    }
 	    throw new ContinuationException(this, args.car());
 	}

@@ -9,16 +9,15 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 28 (Tue) 03:20:33 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:33:58 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 18:52:38 by Harold Carr.
  */
 
-package org.llava.impl.runtime.procedure.generic;
+package org.llava.procedure;
 
-import org.llava.lang.types.Procedure;
-import org.llava.impl.runtime.procedure.Lambda;
+import org.llava.Lambda;
+import org.llava.Procedure;
 
 public interface GenericProcedure
     extends

@@ -9,21 +9,22 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 28 (Tue) 03:42:27 by Harold Carr.
- * Last Modified : 2004 Dec 01 (Wed) 22:04:32 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 10:30:53 by Harold Carr.
  */
 
-package org.llava.impl.runtime.procedure.generic;
+package org.llava.impl.procedure;
 
-import org.llava.impl.F;
-import org.llava.lang.types.Pair;
+import org.llava.F;
+import org.llava.Lambda;
+import org.llava.Pair;
+import org.llava.procedure.GenericProcedure;
+import org.llava.procedure.WrapJavaPrimitive;
+import org.llava.runtime.Engine;
+
+import org.llava.impl.procedure.DI;
 import org.llava.impl.util.List;
-import org.llava.impl.runtime.Engine;
-import org.llava.impl.runtime.FR;
-import org.llava.impl.runtime.procedure.Lambda;
-import org.llava.impl.runtime.procedure.generic.DI;
 
 public class GenericProcedureImpl
     implements
@@ -41,7 +42,7 @@ public class GenericProcedureImpl
     {
 	this.name = name;
 	if (wrapJavaPrimitive == null) {
-	    wrapJavaPrimitive = FR.newWrapJavaPrimitive();
+	    wrapJavaPrimitive = F.newWrapJavaPrimitive();
 	}
     }
 
@@ -82,7 +83,7 @@ public class GenericProcedureImpl
 	    if (getDefaultLambda() != null) {
 		return getDefaultLambda().apply(args, engine);
 	    } else {
-		throw FR.newUndefinedIdException(name); // REVISIT
+		throw F.newUndefinedIdException(name); // REVISIT
 	    }
 	} catch (ThreadDeath td) {
 	    // REVISIT - do not wrap so it shows up in automatic
@@ -109,7 +110,7 @@ public class GenericProcedureImpl
 	if (((n == 0) && (args != null)) ||
 	    ((n != 0) && ((args == null) || (args.length() != n))))
         {
-		throw FR.newWrongNumberOfArgumentsException(getName());
+		throw F.newWrongNumberOfArgumentsException(getName());
 	}
     }
 

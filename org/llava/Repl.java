@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 29 (Wed) 20:09:32 by Harold Carr.
- * Last Modified : 2004 Dec 05 (Sun) 10:39:58 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 18:50:11 by Harold Carr.
  */
 
 package org.llava;
@@ -21,13 +21,13 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 
+import org.llava.LlavaException;
+
+import org.llava.compiler.Compiler;
+
 import org.llava.io.LlavaEOF;
 import org.llava.io.LlavaReader;
 import org.llava.io.LlavaWriter;
-
-import org.llava.lang.exceptions.LlavaException;
-
-import org.llava.compiler.Compiler;
 
 import org.llava.runtime.EnvironmentTopLevel;
 import org.llava.runtime.Evaluator;

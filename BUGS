@@ -8,14 +8,14 @@ or send a letter to
 ------------------------------------------------------------------------------
 
 Created       : 1999 Dec 18 (Sat) 17:14:40 by Harold Carr.
-Last Modified : 2004 Dec 08 (Wed) 17:14:01 by Harold Carr.
+Last Modified : 2004 Dec 08 (Wed) 12:55:03 by Harold Carr.
 
 BUGS:
 
-* DII - NullPointerException when static invoke on dynamic method/class:
-eg: (-si 'getFullNameNamespaceMapKeys 'org.llava.impl.runtime.env.NamespaceImpl)
+* llava is NOT thread-safe (yet).
 
-* reader: "," does unquote
+* for-each with multiple lists broke.  E.g.:
+  (for-each (lambda (x y) (-println (list x y))) '(1 2) '(3 4))
 
 * # reading when not character: e.g., #160 -> 160 #newline -> 'newline
 
@@ -44,6 +44,9 @@ to the list (1 34) but the expander expects two arguments.
 (let ((test -1))
   (define-syntax bar (lambda () foo)))
 (getSavedFrame (getMacroLambda bar))
+
+* DII - NullPointerException when static invoke on dynamic method/class:
+eg: (-si 'getFullNameNamespaceMapKeys 'org.llava.impl.runtime.NamespaceImpl)
 
 ;; End of file.
 

@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 17 (Fri) 20:11:43 by Harold Carr.
- * Last Modified : 2004 Dec 08 (Wed) 08:59:54 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 15:36:54 by Harold Carr.
  */
 
 package org.llava.impl.io;
@@ -98,7 +98,7 @@ public class LlavaWriterImpl
     public Object setVectorPrintLength (int x)
     {
 	vectorPrintLength = x;
-	return x;
+	return new Integer(x);
     }
 
 

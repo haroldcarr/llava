@@ -9,13 +9,12 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 17 (Fri) 19:45:09 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:35:22 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 18:49:40 by Harold Carr.
  */
 
-package org.llava.lang.types;
+package org.llava;
 
 public interface Pair
 {

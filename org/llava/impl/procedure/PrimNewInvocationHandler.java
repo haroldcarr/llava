@@ -9,23 +9,23 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 2000 Feb 10 (Thu) 22:11:38 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:34:13 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 10:25:16 by Harold Carr.
  */
 
-package org.llava.impl.runtime.procedure.primitive.java;
+package org.llava.impl.procedure;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-import org.llava.lang.types.Pair;
+import org.llava.F;
+import org.llava.Lambda;
+import org.llava.Pair;
+import org.llava.runtime.Engine;
+
+import org.llava.impl.procedure.PrimitiveProcedure;
 import org.llava.impl.util.List;
-import org.llava.impl.runtime.Engine;
-import org.llava.impl.runtime.FR;
-import org.llava.impl.runtime.procedure.Lambda;
-import org.llava.impl.runtime.procedure.primitive.PrimitiveProcedure;
 
 // For Java 1.3 beta
 

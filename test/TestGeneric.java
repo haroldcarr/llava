@@ -9,10 +9,9 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 28 (Tue) 05:43:41 by Harold Carr.
- * Last Modified : 2004 Sep 06 (Mon) 00:25:21 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 10:40:05 by Harold Carr.
  */
 
 /*
@@ -50,14 +49,14 @@ Each of these says it takes an int.  Some will also take a long.
 
 package test;
 
-import org.llava.impl.F;
-import org.llava.lang.types.Symbol;
+import org.llava.F;
+import org.llava.Symbol;
+import org.llava.procedure.GenericProcedure;
 import org.llava.runtime.EnvironmentTopLevel;
 import org.llava.runtime.UndefinedIdHandler;
-import org.llava.impl.runtime.FR;
-import org.llava.impl.runtime.env.*;
-import org.llava.impl.runtime.procedure.generic.DI;
-import org.llava.impl.runtime.procedure.generic.GenericProcedure;
+
+import org.llava.impl.runtime.*;
+import org.llava.impl.procedure.DI;
 
 public class TestGeneric
 {
@@ -74,7 +73,7 @@ public class TestGeneric
 	TestCompilerAndEngine.topEnvironment.setUndefinedIdHandler
 	    (new UndefinedIdHandlerImpl() { // REVISIT factory
 		    public Object handle(EnvironmentTopLevel env, Symbol id) {
-			GenericProcedure gp = FR.newGenericProcedure();
+			GenericProcedure gp = F.newGenericProcedure();
 			env.set(id, gp);
 			return gp;
 		    }
@@ -82,7 +81,7 @@ public class TestGeneric
             );
 
 	TestCompilerAndEngine.topEnvironment.set(F.newSymbol("new"),
-						 FR.newPrimNewPrim());
+						 F.newPrimNewPrim());
 
 	Test.check("gen1", 
 		   new Integer(123),

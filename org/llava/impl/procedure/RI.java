@@ -9,13 +9,12 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:33:57 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 18:58:56 by Harold Carr.
  */
 
-package org.llava.impl.runtime.procedure.generic;
+package org.llava.impl.procedure;
 
 import java.lang.reflect.*;
 import java.util.ArrayList;

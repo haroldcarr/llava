@@ -9,16 +9,15 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 25 (Sat) 01:44:42 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:33:30 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 19:32:21 by Harold Carr.
  */
 
-package org.llava.impl.runtime.code;
+package org.llava.impl.runtime;
 
-import org.llava.impl.runtime.env.ActivationFrame;
-import org.llava.impl.runtime.Engine;
+import org.llava.runtime.ActivationFrame;
+import org.llava.runtime.Engine;
 
 public class CodeReference
     extends Code

@@ -9,7 +9,7 @@
 
 #
 # Created       : 1999 Dec 15 (Wed) 16:30:21 by Harold Carr.
-# Last Modified : 2004 Nov 30 (Tue) 22:44:32 by Harold Carr.
+# Last Modified : 2004 Dec 08 (Wed) 10:24:39 by Harold Carr.
 #
 
 TOPDIR		=	../..
@@ -18,12 +18,21 @@ PACKAGE		=	org.llava
 PKGDIR		=	org/llava
 
 FILES_java	= \
+	$(PKGDIR)/F.java \
+	$(PKGDIR)/Llava.java \
+	$(PKGDIR)/LlavaException.java \
 	$(PKGDIR)/LlavaVersion.java \
+	$(PKGDIR)/Pair.java \
+	$(PKGDIR)/Procedure.java \
+	$(PKGDIR)/Symbol.java \
 	$(PKGDIR)/Repl.java \
+	$(PKGDIR)/WrongNumberOfArgumentsException.java \
+	$(PKGDIR)/UndefinedIdException.java
+
 
 all :: classes 
 
-SUBDIRS		=	compiler impl io lang lib runtime
+SUBDIRS		=	compiler derived impl io lib procedure runtime
 
 all optimized debug clean clobber ::
 	@for i in $(SUBDIRS) ; do \

@@ -12,10 +12,10 @@ or send a letter to
 
 /**
  * Created       : 2000 Jan 10 (Mon) 02:06:49 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:34:02 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 18:53:02 by Harold Carr.
  */
 
-package org.llava.impl.runtime.procedure.generic;
+package org.llava.procedure;
 
 public interface WrapJavaPrimitive
 {
@@ -23,3 +23,5 @@ public interface WrapJavaPrimitive
 
     public Object wrapJavaPrimitive (Object x);
 }
+
+// End of file.

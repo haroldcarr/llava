@@ -9,26 +9,25 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 2000 Jan 07 (Fri) 06:39:08 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:35:17 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 10:36:23 by Harold Carr.
  */
 
-package org.llava.impl.runtime.syntax;
+package org.llava.impl.syntax;
 
-import org.llava.lang.types.Pair;
-import org.llava.lang.types.Procedure;
-import org.llava.lang.types.Symbol;
+import org.llava.F;
+import org.llava.Pair;
+import org.llava.Procedure;
+import org.llava.Symbol;
 import org.llava.compiler.Compiler;
-import org.llava.impl.compiler.EnvironmentLexical;
+import org.llava.compiler.EnvironmentLexical;
+import org.llava.runtime.ActivationFrame;
+import org.llava.runtime.Engine;
 import org.llava.runtime.EnvironmentTopLevel;
-import org.llava.impl.runtime.FR;
 import org.llava.runtime.LlavaRuntime;
-import org.llava.impl.runtime.FR;
-import org.llava.impl.runtime.Engine;
-import org.llava.impl.runtime.code.Code;
-import org.llava.impl.runtime.env.ActivationFrame;
+
+import org.llava.impl.runtime.Code;
 
 public class SyntaxDefineSyntax
     extends 
@@ -54,7 +53,7 @@ public class SyntaxDefineSyntax
 
 	// REVISIT - relationship between activation frame and top.
 	ActivationFrame topFrame 
-	    = FR.newActivationFrame(runtime.getEnvironment());
+	    = F.newActivationFrame(runtime.getEnvironment());
 	Procedure  macrolambda = 
 	    (Procedure) ((Engine)runtime.getEvaluator()).run(code, topFrame);
 

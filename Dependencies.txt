@@ -1,6 +1,6 @@
 ;;;;
 ;;;; Created       : 2004 Dec 01 (Wed) 09:08:07 by Harold Carr.
-;;;; Last Modified : 2004 Dec 01 (Wed) 09:13:30 by Harold Carr.
+;;;; Last Modified : 2004 Dec 07 (Tue) 18:21:19 by Harold Carr.
 ;;;;
 
 -------------------------
@@ -15,6 +15,6 @@ file be sure to update NamespaceImpl
 
 -jar llava.jar
 
-depends on: Main-Class: org.llava.impl.Llava
+depends on: Main-Class: org.llava.Llava
 
 ;;; End of file.

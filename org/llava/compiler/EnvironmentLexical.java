@@ -9,16 +9,15 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 21 (Tue) 00:04:24 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:32:57 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 19:57:14 by Harold Carr.
  */
 
-package org.llava.impl.compiler;
+package org.llava.compiler;
 
-import org.llava.lang.types.Pair;
-import org.llava.lang.types.Symbol;
+import org.llava.Pair;
+import org.llava.Symbol;
 
 /**
  * Compiletime lexical environment.
@@ -30,7 +29,7 @@ public abstract class EnvironmentLexical
     {
 	private int level;
 	private int slot;
-	LocalVariable (int level, int slot) {
+	public LocalVariable (int level, int slot) {
 	    this.level = level;
 	    this.slot  = slot;
 	}

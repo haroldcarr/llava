@@ -9,15 +9,15 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 2000 Jan 10 (Mon) 02:06:49 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:34:04 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 19:53:02 by Harold Carr.
  */
 
-package org.llava.impl.runtime.procedure.generic;
+package org.llava.impl.procedure;
 
-import org.llava.impl.F;
+import org.llava.F;
+import org.llava.procedure.WrapJavaPrimitive;
 
 public class WrapJavaPrimitiveImpl
     implements

@@ -9,10 +9,9 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 2000 Jan 19 (Wed) 17:30:46 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:32:27 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 18:49:31 by Harold Carr.
  */
 
 package org.llava;

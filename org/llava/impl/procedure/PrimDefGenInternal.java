@@ -9,23 +9,22 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 2000 Jan 03 (Mon) 21:10:17 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:35:01 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 10:31:38 by Harold Carr.
  */
 
-package org.llava.impl.runtime.procedure.primitive.llava;
+package org.llava.impl.procedure;
 
-import org.llava.impl.F;
-import org.llava.lang.types.Pair;
-import org.llava.lang.types.Symbol;
+import org.llava.F;
+import org.llava.Pair;
+import org.llava.Lambda;
+import org.llava.Symbol;
+import org.llava.runtime.ActivationFrame;
+import org.llava.runtime.Engine;
+
+import org.llava.impl.procedure.PrimitiveProcedure;
 import org.llava.impl.util.List;
-import org.llava.impl.runtime.Engine;
-import org.llava.impl.runtime.FR;
-import org.llava.impl.runtime.procedure.Lambda;
-import org.llava.impl.runtime.env.ActivationFrame;
-import org.llava.impl.runtime.procedure.primitive.PrimitiveProcedure;
 
 public class PrimDefGenInternal
     extends
@@ -50,7 +49,7 @@ public class PrimDefGenInternal
 	    throw F.newLlavaException("_%defGenInternal expected existing value to be a lambda but found: " + currentValue);
 	}
 	return frame.set(identifier, 
-			 FR.newGenericProcedure((Lambda)currentValue));
+			 F.newGenericProcedure((Lambda)currentValue));
     }
 }
 

@@ -9,16 +9,15 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 25 (Sat) 19:08:29 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:35:42 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 18:54:13 by Harold Carr.
  */
 
 package org.llava.runtime;
 
 import org.llava.Repl;
-import org.llava.lang.types.Symbol;
+import org.llava.Symbol;
 
 public interface EnvironmentTopLevel
 {

@@ -9,18 +9,17 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 23 (Thu) 03:37:52 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:32:40 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 18:51:01 by Harold Carr.
  */
 
 package org.llava.compiler;
 
+import org.llava.compiler.EnvironmentLexical; // REVISIT
 import org.llava.runtime.LlavaRuntime; // REVISIT
 
-import org.llava.impl.compiler.EnvironmentLexical; // REVISIT
-import org.llava.impl.runtime.code.Code; // REVISIT
+import org.llava.impl.runtime.Code; // REVISIT
 
 public interface Compiler
 {

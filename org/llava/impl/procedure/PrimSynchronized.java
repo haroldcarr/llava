@@ -9,20 +9,20 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 2000 Jan 16 (Sun) 19:38:28 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:34:18 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 10:25:22 by Harold Carr.
  */
 
-package org.llava.impl.runtime.procedure.primitive.java;
+package org.llava.impl.procedure;
 
-import org.llava.lang.types.Pair;
-import org.llava.lang.types.Procedure;
+import org.llava.F;
+import org.llava.Pair;
+import org.llava.Procedure;
+import org.llava.runtime.Engine;
+
+import org.llava.impl.procedure.PrimitiveProcedure;
 import org.llava.impl.util.List;
-import org.llava.impl.runtime.Engine;
-import org.llava.impl.runtime.FR;
-import org.llava.impl.runtime.procedure.primitive.PrimitiveProcedure;
 
 public class PrimSynchronized
     extends

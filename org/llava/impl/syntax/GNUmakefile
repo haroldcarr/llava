@@ -7,16 +7,15 @@
 #   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
 #-----------------------------------------------------------------------------
 
-
 #
 # Created       : 2000 Jan 07 (Fri) 05:22:51 by Harold Carr.
-# Last Modified : 2004 Sep 03 (Fri) 15:39:46 by Harold Carr.
+# Last Modified : 2004 Dec 07 (Tue) 18:18:41 by Harold Carr.
 #
 
-TOPDIR		=	../../../../..
+TOPDIR		=	../../../..
 
-PACKAGE		=	org.llava.impl.runtime.syntax
-PKGDIR		=	org/llava/impl/runtime/syntax
+PACKAGE		=	org.llava.impl.syntax
+PKGDIR		=	org/llava/impl/syntax
 
 FILES_java	= \
 	$(PKGDIR)/Syntax.java \

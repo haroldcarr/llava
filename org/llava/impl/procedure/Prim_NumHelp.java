@@ -16,10 +16,10 @@ or send a letter to
  * @author Modified by Timothy J. Hickey, http://www.cs.brandeis.edu/~tim
 **/
 
-package org.llava.impl.runtime.procedure.primitive.java;
+package org.llava.impl.procedure;
 
-import org.llava.impl.F;
-import org.llava.lang.types.Pair;
+import org.llava.F;
+import org.llava.Pair;
 
 public class Prim_NumHelp
 {

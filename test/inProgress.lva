@@ -7,7 +7,6 @@
 ;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
 ;;;;---------------------------------------------------------------------------
 
-
 (define l
   '(
     "llava/tt.lva" 
@@ -19,9 +18,9 @@
   (map (lambda (x)
 	 (list
 	  (getResourceAsStream 
-	   (-si 'forName 'java.lang.Class "org.llava.impl.Llava") x)
+	   (-si 'forName 'java.lang.Class "org.llava.Llava") x)
 	  (getResourceAsStream 
-	   (-si 'forName 'java.lang.Class "org.llava.impl.runtime.procedure.primitive.llava.PrimAppend") x)))
+	   (-si 'forName 'java.lang.Class "org.llava.impl.procedure.PrimAppend") x)))
        l))
 
 (define (lc l)

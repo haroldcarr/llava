@@ -9,45 +9,85 @@ or send a letter to
 ------------------------------------------------------------------------------
 
 Created       : 2002 Oct 12 (Sat) 12:05:20 by Harold Carr.
-Last Modified : 2004 Sep 16 (Thu) 23:24:56 by Harold Carr.
+Last Modified : 2004 Dec 08 (Wed) 11:47:48 by Harold Carr.
 
-.llava.org
+org.llava:
+	F
+	Lambda
+	Llava
+	LlavaException
+	LlavaVersion
+	Pair
+	Procedure
+	Repl
+	Symbol
+	UndefinedIdException
+	WrongNumberOfArgumentsException
+	llava.lva
 
-	.generated
-	.system
-		.classes
-		.prenamespace-save
-		COPYRIGHT
-		ChangeLog
-		GNUmakefile
-		TODO
-		VERSION ;; REVISIT - new
-		directoryStructure
-		doc ;; REVISIT - under .templates?
-		hc
-			jdePrj.el
-			pprj.el
-		src/org/llava
-			  GNUmakefile
-			  Version (LlavaVersion)
-			  Repl
-			  /compiler
-			  /impl (llavaProfile)
-			  /io
-			  /lang
-			  /lib
-				/*
-				/cl
-				/java
-				/scm
-			  /runtime
-			  /r5rs
-			  /r5rimpl
-			  /r5rslib
-			  /runtime
-		test
-			
-		
-	.templates
-	* : web site
-	
+	compiler
+		Compiler
+		EnvironmentLexical
+	derived
+	io
+		LlavaEOF
+		LlavaReader
+		LlavaWriter
+	lib
+		/*
+		/cl
+		/java
+		/scm
+	procedure
+		GenericProcedure
+		WrapJavaPrimitive
+	runtime
+		ActivationFrame
+		BacktraceHandler
+		Engine
+		EnvTopLevelInit
+		EnvironmentTopLevel
+		Evaluator
+		LlavaRuntime
+		Namespace
+		UndefinedIdHandler
+	;;syntax
+
+	impl
+		LambdaImpl
+		LlavaVersionImpl
+		PairImpl
+		ReplImpl
+		SymbolImpl
+
+		compiler
+			CompilerImpl
+			EnvironmentLexicalImpl
+		io
+			LlavaEOFImpl
+			LlavaReaderImpl
+			LlavaWriterImpl
+		procedure
+			DI
+			GenericProcedureImpl
+			PrimitiveProcedure
+			WrapJavaPrimitiveImpl
+			Prim* (flatten)
+		runtime
+			ActivationFrameImpl
+			BacktraceHandlerImpl
+			Code*
+			EngineImpl
+			EnvTopLevelInitImpl
+			EnvironmentTopLevelImpl
+			LlavaRuntimeImpl
+			NamespaceImpl
+			UndefinedIdHandlerImpl
+		syntax
+			SyntaxDefineSyntax
+			Syntax
+			UserSyntax
+		util
+			List
+
+;;; End of file.

@@ -9,15 +9,16 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 26 (Sun) 18:03:05 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:35:21 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 19:44:15 by Harold Carr.
  */
 
-package org.llava.lang.exceptions;
+package org.llava;
 
 import java.io.PrintWriter;
+
+import org.llava.runtime.BacktraceHandler;
 
 public class LlavaException
     extends

@@ -7,10 +7,9 @@
 #   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
 #-----------------------------------------------------------------------------
 
-
 #
 # Created       : 1999 Dec 18 (Sat) 16:10:32 by Harold Carr.
-# Last Modified : 2004 Dec 04 (Sat) 11:17:42 by Harold Carr.
+# Last Modified : 2004 Dec 07 (Tue) 16:38:54 by Harold Carr.
 #
 
 TOPDIR		=	../../../..
@@ -19,6 +18,7 @@ PACKAGE		=	org.llava.impl.io
 PKGDIR		=	org/llava/impl/io
 
 FILES_java	= \
+	$(PKGDIR)/LlavaEOFImpl.java \
 	$(PKGDIR)/LlavaReaderImpl.java \
 	$(PKGDIR)/LlavaWriterImpl.java
 

@@ -9,25 +9,24 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 2000 Jan 17 (Mon) 19:58:59 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:33:07 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 10:33:52 by Harold Carr.
  */
 
 package org.llava.impl.runtime;
 
-import org.llava.impl.F;
-import org.llava.lang.exceptions.BacktraceHandler;
-import org.llava.lang.exceptions.LlavaException;
-import org.llava.lang.types.Pair;
-import org.llava.lang.types.Procedure;
+import org.llava.F;
+import org.llava.LlavaException;
+import org.llava.Pair;
+import org.llava.Procedure;
+import org.llava.runtime.ActivationFrame;
+import org.llava.runtime.BacktraceHandler;
 import org.llava.runtime.EnvironmentTopLevel;
 import org.llava.runtime.Evaluator;
+
+import org.llava.impl.runtime.Code;
 import org.llava.impl.runtime.EngineImpl;
-import org.llava.impl.runtime.FR;
-import org.llava.impl.runtime.code.Code;
-import org.llava.impl.runtime.env.ActivationFrame;
 
 public class EngineStepImpl
     extends
@@ -40,7 +39,7 @@ public class EngineStepImpl
     public Evaluator newEvaluator ()
     {
 	EngineStepImpl engineImpl = new EngineStepImpl();
-	engineImpl.backtraceHandler = FR.newBacktraceHandler();
+	engineImpl.backtraceHandler = F.newBacktraceHandler();
 	return engineImpl;
     }
 

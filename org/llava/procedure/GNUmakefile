@@ -7,23 +7,19 @@
 #   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
 #-----------------------------------------------------------------------------
 
-
 #
 # Created       : 1999 Dec 28 (Tue) 04:50:52 by Harold Carr.
-# Last Modified : 2004 Sep 03 (Fri) 15:39:31 by Harold Carr.
+# Last Modified : 2004 Dec 07 (Tue) 18:16:13 by Harold Carr.
 #
 
-TOPDIR		=	../../../../../..
+TOPDIR		=	../../..
 
-PACKAGE		=	org.llava.impl.runtime.procedure.generic
-PKGDIR		=	org/llava/impl/runtime/procedure/generic
+PACKAGE		=	org.llava.procedure
+PKGDIR		=	org/llava/procedure
 
 FILES_java	= \
-	$(PKGDIR)/DI.java \
 	$(PKGDIR)/GenericProcedure.java \
-	$(PKGDIR)/GenericProcedureImpl.java \
-	$(PKGDIR)/WrapJavaPrimitive.java \
-	$(PKGDIR)/WrapJavaPrimitiveImpl.java
+	$(PKGDIR)/WrapJavaPrimitive.java
 
 all :: classes
 

@@ -10,13 +10,12 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 24 (Fri) 19:20:36 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:35:24 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 13:06:03 by Harold Carr.
  */
 
-package org.llava.lang.types;
+package org.llava;
 
 public interface Symbol
 {
@@ -27,10 +26,6 @@ public interface Symbol
     public int getEnvTopLevelIndex ();
 
     public int setEnvTopLevelIndex (int index);
-
-    public boolean isFinal ();
-
-    public boolean setIsFinal (boolean isFinal);
 }
 
 // End of file.

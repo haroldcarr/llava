@@ -9,24 +9,23 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : @author Peter Norvig, Copyright 1998, http://www.norvig.com/license.html 
- * Last Modified : 2004 Dec 01 (Wed) 22:09:11 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 10:36:36 by Harold Carr.
  */
 
-package org.llava.impl.runtime.syntax;
+package org.llava.impl.syntax;
 
-import org.llava.impl.F;
-import org.llava.lang.types.Pair;
-import org.llava.lang.types.Procedure;
-import org.llava.impl.util.List;
+import org.llava.F;
+import org.llava.Pair;
+import org.llava.Procedure;
 import org.llava.compiler.Compiler;
-import org.llava.impl.compiler.EnvironmentLexical;
-import org.llava.impl.runtime.FR;
+import org.llava.compiler.EnvironmentLexical;
 import org.llava.runtime.LlavaRuntime;
-import org.llava.impl.runtime.Engine;
-import org.llava.impl.runtime.code.Code;
+import org.llava.runtime.Engine;
+
+import org.llava.impl.runtime.Code;
+import org.llava.impl.util.List;
 
 public abstract class Syntax
     implements

@@ -9,17 +9,17 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 20 (Mon) 21:37:28 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:35:48 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 10:40:23 by Harold Carr.
  */
 
 package test;
 
-import org.llava.impl.F;
+import org.llava.F;
+import org.llava.Pair;
 import org.llava.io.LlavaReader;
-import org.llava.lang.types.Pair;
+
 import org.llava.impl.util.List;
 
 public class TestReader

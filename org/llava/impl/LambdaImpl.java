@@ -11,19 +11,21 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 23 (Thu) 18:36:42 by Harold Carr.
- * Last Modified : 2004 Dec 06 (Mon) 09:32:09 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 19:51:57 by Harold Carr.
  */
 
-package org.llava.impl.runtime.procedure;
+package org.llava.impl;
 
-import org.llava.impl.F;
-import org.llava.lang.types.Pair;
-import org.llava.impl.util.List;
+import org.llava.F;
+import org.llava.Lambda;
+import org.llava.Pair;
+import org.llava.runtime.ActivationFrame;
+import org.llava.runtime.Engine;
 import org.llava.runtime.EnvironmentTopLevel;
-import org.llava.impl.runtime.code.Code;
-import org.llava.impl.runtime.env.ActivationFrame;
-import org.llava.impl.runtime.env.Namespace;
-import org.llava.impl.runtime.Engine;
+import org.llava.runtime.Namespace;
+
+import org.llava.impl.runtime.Code;
+import org.llava.impl.util.List;
 
 public class LambdaImpl
     implements

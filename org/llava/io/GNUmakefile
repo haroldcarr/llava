@@ -9,7 +9,7 @@
 
 #
 # Created       : 1999 Dec 18 (Sat) 16:10:32 by Harold Carr.
-# Last Modified : 2004 Dec 04 (Sat) 22:31:48 by Harold Carr.
+# Last Modified : 2004 Dec 07 (Tue) 16:38:37 by Harold Carr.
 #
 
 TOPDIR		=	../../..
@@ -19,7 +19,6 @@ PKGDIR		=	org/llava/io
 
 FILES_java	= \
 	$(PKGDIR)/LlavaEOF.java \
-	$(PKGDIR)/LlavaEOFImpl.java \
 	$(PKGDIR)/LlavaReader.java \
 	$(PKGDIR)/LlavaWriter.java
 

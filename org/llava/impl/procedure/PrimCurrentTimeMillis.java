@@ -9,19 +9,18 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:34:49 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 10:31:26 by Harold Carr.
  */
 
-package org.llava.impl.runtime.procedure.primitive.java.opt;
+package org.llava.impl.procedure;
 
-import org.llava.impl.F;
-import org.llava.lang.types.Pair;
-import org.llava.impl.runtime.Engine;
-import org.llava.impl.runtime.FR;
-import org.llava.impl.runtime.procedure.primitive.PrimitiveProcedure;
+import org.llava.F;
+import org.llava.Pair;
+import org.llava.runtime.Engine;
+
+import org.llava.impl.procedure.PrimitiveProcedure;
 
 public class PrimCurrentTimeMillis
     extends

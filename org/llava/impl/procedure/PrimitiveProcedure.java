@@ -9,19 +9,18 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 30 (Thu) 16:16:57 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:34:06 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 10:25:29 by Harold Carr.
  */
 
-package org.llava.impl.runtime.procedure.primitive;
+package org.llava.impl.procedure;
 
-import org.llava.lang.types.Pair;
-import org.llava.lang.types.Procedure;
-import org.llava.lang.types.Symbol;
-import org.llava.impl.runtime.Engine;
-import org.llava.impl.runtime.FR;
+import org.llava.F;
+import org.llava.Pair;
+import org.llava.Procedure;
+import org.llava.Symbol;
+import org.llava.runtime.Engine;
 
 public abstract class PrimitiveProcedure
     implements
@@ -43,7 +42,7 @@ public abstract class PrimitiveProcedure
 	if (((n == 0) && (args != null)) ||
 	    ((n != 0) && ((args == null) || (args.length() != n))))
         {
-		throw FR.newWrongNumberOfArgumentsException(getName());
+		throw F.newWrongNumberOfArgumentsException(getName());
 	}
     }
 

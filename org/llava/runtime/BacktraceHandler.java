@@ -9,13 +9,12 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 2000 Jan 17 (Mon) 02:17:23 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:35:21 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 18:53:44 by Harold Carr.
  */
 
-package org.llava.lang.exceptions;
+package org.llava.runtime;
 
 import java.io.PrintWriter;
 

@@ -239,9 +239,9 @@ chapter llava features
 ;;; to the dispatcher but got
 ;;; llava-> (-jbt)
 ;;; java.lang.Exception: ContinuationException
-;;;	at org.llava.lang.exceptions.LlavaException.<init>(LlavaException.java:41)
-;;;	at org.llava.impl.runtime.procedure.primitive.llava.PrimCallCC$ContinuationException.<init>(PrimCallCC.java:83)
-;;;	at org.llava.impl.runtime.procedure.primitive.llava.PrimCallCC$Continuation.apply(PrimCallCC.java:69)
+;;;	at org.llava.LlavaException.<init>(LlavaException.java:41)
+;;;	at org.llava.impl.procedure.PrimCallCC$ContinuationException.<init>(PrimCallCC.java:83)
+;;;	at org.llava.impl.procedure.PrimCallCC$Continuation.apply(PrimCallCC.java:69)
 ;;;
 ;;; The broken call/cc version is in RCS.
 ;;;

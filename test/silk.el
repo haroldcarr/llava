@@ -7,12 +7,9 @@
 ;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
 ;;;;---------------------------------------------------------------------------
 
-
-
-
 ;;;;
 ;;;; Created       : 2000 Jan 12 (Wed) 05:32:38 by Harold Carr.
-;;;; Last Modified : 2004 Sep 03 (Fri) 15:47:56 by Harold Carr.
+;;;; Last Modified : 2004 Dec 07 (Tue) 20:40:27 by Harold Carr.
 ;;;;
 
 (require 'hcJdeRip)

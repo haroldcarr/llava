@@ -7,10 +7,9 @@
 ;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
 ;;;;---------------------------------------------------------------------------
 
-
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2004 Sep 03 (Fri) 15:47:51 by Harold Carr.
+;;;; Last Modified : 2004 Dec 07 (Tue) 20:39:18 by Harold Carr.
 ;;;;
 
 (import org.llava.lib.cl.Symbols)

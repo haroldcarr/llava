@@ -9,16 +9,15 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 25 (Sat) 19:49:18 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:33:51 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 18:50:36 by Harold Carr.
  */
 
-package org.llava.impl.runtime.exceptions;
+package org.llava;
 
-import org.llava.lang.exceptions.LlavaException;
-import org.llava.lang.types.Symbol;
+import org.llava.LlavaException;
+import org.llava.Symbol;
 
 public class UndefinedIdException
     extends

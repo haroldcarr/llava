@@ -11,15 +11,14 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 30 (Thu) 06:34:36 by Harold Carr.
- * Last Modified : 2004 Dec 08 (Wed) 08:56:20 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 10:34:09 by Harold Carr.
  */
 
 package org.llava.impl.runtime;
 
 import org.llava.F;
-import org.llava.FR;
-import org.llava.Repl;
 import org.llava.Pair; // For derived.
+import org.llava.Repl;
 import org.llava.Symbol;
 import org.llava.compiler.Compiler;
 import org.llava.procedure.GenericProcedure;
@@ -68,7 +67,7 @@ public class EnvTopLevelInitImpl
 	env.setUndefinedIdHandler
 	    (new org.llava.impl.runtime.UndefinedIdHandlerImpl() {// REVISIT factory
 		    public Object handle(EnvironmentTopLevel env, Symbol id) {
-			GenericProcedure gp = FR.newGenericProcedure();
+			GenericProcedure gp = F.newGenericProcedure();
 			// REVISIT - performance?
 			if (env instanceof Namespace &&
 			    // REVISIT: NamespaceImpl
@@ -99,39 +98,39 @@ public class EnvTopLevelInitImpl
 	// Install primitive Java procedures.
 	//
 
-	PrimNewPrim primNewPrim =   FR.newPrimNewPrim();
+	PrimNewPrim primNewPrim =   F.newPrimNewPrim();
 
 	set(env, "_%boot-namespace",env);
 
-	set(env, "_%import",        FR.newPrimImport((Namespace)env));
+	set(env, "_%import",        F.newPrimImport((Namespace)env));
 	set(env, "_%new",           primNewPrim);
-	set(env, "new",            FR.newPrimNew((Namespace)env, primNewPrim));
-	set(env, "_%package",       FR.newPrimPackage((Namespace)env));
+	set(env, "new",            F.newPrimNew((Namespace)env, primNewPrim));
+	set(env, "_%package",       F.newPrimPackage((Namespace)env));
 
-	set(env, "eq?",             FR.newPrimEqP());
-	set(env, "equal?",          FR.newPrimEqualP());
-	set(env, "_%synchronized",  FR.newPrimSynchronized());
-	set(env, "throw",           FR.newPrimThrow());
-	set(env, "_%try",           FR.newPrimTryCatchFinally());
+	set(env, "eq?",             F.newPrimEqP());
+	set(env, "equal?",          F.newPrimEqualP());
+	set(env, "_%synchronized",  F.newPrimSynchronized());
+	set(env, "throw",           F.newPrimThrow());
+	set(env, "_%try",           F.newPrimTryCatchFinally());
 
-	set(env, "&",               FR.newPrim_BitAnd());
-	set(env, "|",               FR.newPrim_BitOr());
-	set(env, "/",               FR.newPrim_Divide());
-	set(env, "=",               FR.newPrim_EQ());
-	set(env, ">=",              FR.newPrim_GE());
-	set(env, ">",               FR.newPrim_GT());
-	set(env, "<",               FR.newPrim_LT());
-	set(env, "<=",              FR.newPrim_LE());
-	set(env, "-",               FR.newPrim_Minus());
-	set(env, "+",               FR.newPrim_Plus());
-	set(env, "*",               FR.newPrim_Times());
-	set(env, "modulo",          FR.newPrim_Modulo());
+	set(env, "&",               F.newPrim_BitAnd());
+	set(env, "|",               F.newPrim_BitOr());
+	set(env, "/",               F.newPrim_Divide());
+	set(env, "=",               F.newPrim_EQ());
+	set(env, ">=",              F.newPrim_GE());
+	set(env, ">",               F.newPrim_GT());
+	set(env, "<",               F.newPrim_LT());
+	set(env, "<=",              F.newPrim_LE());
+	set(env, "-",               F.newPrim_Minus());
+	set(env, "+",               F.newPrim_Plus());
+	set(env, "*",               F.newPrim_Times());
+	set(env, "modulo",          F.newPrim_Modulo());
 
 	// opt (optional or optimized)
 	// REVISIT - put this in different package?
-	set(env, "current-time-millis",FR.newPrimCurrentTimeMillis());
-	set(env, "instanceof",      FR.newPrimInstanceof((Namespace)env));
-	set(env, "not",             FR.newPrimNot());
+	set(env, "current-time-millis",F.newPrimCurrentTimeMillis());
+	set(env, "instanceof",      F.newPrimInstanceof((Namespace)env));
+	set(env, "not",             F.newPrimNot());
 	set(env, "_%reader",        repl.getLlavaReader());
 	set(env, "_%writer",        repl.getLlavaWriter());
 
@@ -139,39 +138,39 @@ public class EnvTopLevelInitImpl
 	// Install primitive Llava procedures.
 	//
 
-	set(env, "append",          FR.newPrimAppend());
-	set(env, "apply",           FR.newPrimApply()); // REVISIT .apply
-	set(env, "call/cc",         FR.newPrimCallCC());
-	set(env, "cons",            FR.newPrimCons());
-	set(env, "_%defGenInternal",FR.newPrimDefGenInternal());
-	set(env, "eval",            FR.newPrimEval(env, 
+	set(env, "append",          F.newPrimAppend());
+	set(env, "apply",           F.newPrimApply()); // REVISIT .apply
+	set(env, "call/cc",         F.newPrimCallCC());
+	set(env, "cons",            F.newPrimCons());
+	set(env, "_%defGenInternal",F.newPrimDefGenInternal());
+	set(env, "eval",            F.newPrimEval(env, 
 						    repl.getEvaluator(),
 						    repl.getCompiler()));
-	set(env, "-f",              FR.newPrimField());
-	set(env, "-i",              FR.newPrimInvoke());
-	set(env, "length",          FR.newPrimLength());
-	set(env, "list",            FR.newPrimList());
-	set(env, "-list",           FR.newPrimList_());
-	set(env, "load",            FR.newPrimLoad(repl));
-	set(env, "new-thread",      FR.newPrimNewThread());
-	set(env, "-sf",             FR.newPrimStaticField());
-	set(env, "-si",             FR.newPrimStaticInvoke());
-	set(env, "string-append",   FR.newPrimStringAppend());
+	set(env, "-f",              F.newPrimField());
+	set(env, "-i",              F.newPrimInvoke());
+	set(env, "length",          F.newPrimLength());
+	set(env, "list",            F.newPrimList());
+	set(env, "-list",           F.newPrimList_());
+	set(env, "load",            F.newPrimLoad(repl));
+	set(env, "new-thread",      F.newPrimNewThread());
+	set(env, "-sf",             F.newPrimStaticField());
+	set(env, "-si",             F.newPrimStaticInvoke());
+	set(env, "string-append",   F.newPrimStringAppend());
 
 	// opt (optional or optimized)
-	set(env, "for-each",        FR.newPrimForEach());
-	set(env, "map",             FR.newPrimMap());
-	set(env, "null?",           FR.newPrimNullP());
-	set(env, "pair?",           FR.newPrimPairP());
-	set(env, "string->symbol",  FR.newPrimString2Symbol());
-	set(env, "symbol?",         FR.newPrimSymbolP());
+	set(env, "for-each",        F.newPrimForEach());
+	set(env, "map",             F.newPrimMap());
+	set(env, "null?",           F.newPrimNullP());
+	set(env, "pair?",           F.newPrimPairP());
+	set(env, "string->symbol",  F.newPrimString2Symbol());
+	set(env, "symbol?",         F.newPrimSymbolP());
 
 
 	//
 	// N.B.: Order is VERY important from here on out.
 	//
 
-	set(env, "define-syntax",   FR.newSyntaxDefineSyntax());
+	set(env, "define-syntax",   F.newSyntaxDefineSyntax());
 
 	//
 	// Seal the root namespace.
@@ -191,23 +190,23 @@ public class EnvTopLevelInitImpl
 	if (false) { // REVISIT - decide from property
 	    // N.B.: This order *MUST* be kept in sync with order in
 	    //       derived/GNUmakefile
-	    loadDerived(repl,          FR.newDerivedJavaFirst());
-	    loadDerived(repl,          FR.newDerivedScmTypeProcs());
-	    loadDerived(repl,          FR.newDerivedLlavaControl());
-	    loadDerived(repl,          FR.newDerivedLlavaConditional());
-	    loadDerived(repl,          FR.newDerivedLlavaQuasiquote());
-	    loadDerived(repl,          FR.newDerivedLlavaBinding());
-	    loadDerived(repl,          FR.newDerivedLlavaCase());
-	    loadDerived(repl,          FR.newDerivedLlavaIteration());
-	    loadDerived(repl,          FR.newDerivedLlavaMember());
-	    loadDerived(repl,          FR.newDerivedJavaTry());
-	    loadDerived(repl,          FR.newDerivedJavaSecond());
-	    loadDerived(repl,          FR.newDerivedLlavaDefineD());
-	    //loadDerived(repl,          FR.newDerivedScmVectors());
-	    loadDerived(repl,          FR.newDerivedTest());
-	    loadDerived(repl,          FR.newImport());
+	    loadDerived(repl,          F.newDerivedJavaFirst());
+	    loadDerived(repl,          F.newDerivedScmTypeProcs());
+	    loadDerived(repl,          F.newDerivedLlavaControl());
+	    loadDerived(repl,          F.newDerivedLlavaConditional());
+	    loadDerived(repl,          F.newDerivedLlavaQuasiquote());
+	    loadDerived(repl,          F.newDerivedLlavaBinding());
+	    loadDerived(repl,          F.newDerivedLlavaCase());
+	    loadDerived(repl,          F.newDerivedLlavaIteration());
+	    loadDerived(repl,          F.newDerivedLlavaMember());
+	    loadDerived(repl,          F.newDerivedJavaTry());
+	    loadDerived(repl,          F.newDerivedJavaSecond());
+	    loadDerived(repl,          F.newDerivedLlavaDefineD());
+	    //loadDerived(repl,          F.newDerivedScmVectors());
+	    loadDerived(repl,          F.newDerivedTest());
+	    loadDerived(repl,          F.newImport());
 	} else {
-	    loadDerived(repl,          FR.newDerivedAll());
+	    loadDerived(repl,          F.newDerivedAll());
 	}
     }
 

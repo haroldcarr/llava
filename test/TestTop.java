@@ -9,10 +9,9 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 2000 Jan 11 (Tue) 21:23:51 by Harold Carr.
- * Last Modified : 2004 Sep 06 (Mon) 00:25:55 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 10:40:39 by Harold Carr.
  */
 
 package test;
@@ -20,12 +19,12 @@ package test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-import org.llava.impl.Llava;
+import org.llava.F;
+import org.llava.Llava;
+import org.llava.LlavaException;
 import org.llava.Repl;
-import org.llava.lang.exceptions.LlavaException;
-import org.llava.lang.types.Symbol;
-import org.llava.impl.runtime.FR;
-import org.llava.impl.runtime.env.Namespace;
+import org.llava.Symbol;
+import org.llava.runtime.Namespace;
 
 public class TestTop
 {

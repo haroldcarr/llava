@@ -11,36 +11,32 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 23 (Thu) 04:54:03 by Harold Carr.
- * Last Modified : 2004 Dec 04 (Sat) 23:43:29 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 10:39:32 by Harold Carr.
  */
 
 package test;
 
-import org.llava.impl.F;
+import org.llava.F;
+import org.llava.LlavaException;
+import org.llava.Repl;
+import org.llava.compiler.Compiler;
 import org.llava.io.LlavaReader;
 import org.llava.io.LlavaWriter;
-import org.llava.lang.exceptions.LlavaException;
-import org.llava.impl.util.List;
-import org.llava.Repl;
-
-import org.llava.compiler.Compiler;
-
 import org.llava.runtime.EnvironmentTopLevel;
 import org.llava.runtime.Evaluator;
 import org.llava.runtime.LlavaRuntime;
 
-import org.llava.impl.compiler.FC;
-import org.llava.impl.runtime.FR;
-import org.llava.impl.runtime.syntax.SyntaxDefineSyntax;
+import org.llava.impl.syntax.SyntaxDefineSyntax;
+import org.llava.impl.util.List;
 
 public class TestCompilerAndEngine
 {
     /* Used by other test files. */
     public static EnvironmentTopLevel topEnvironment =
-	FR.newEnvironmentTopLevel();
-    static Evaluator evaluator  = FR.newEvaluator();
-    static LlavaRuntime runtime = FR.newLlavaRuntime(topEnvironment, evaluator);
-    static Compiler compiler    = FC.newCompiler();
+	F.newEnvironmentTopLevel();
+    static Evaluator evaluator  = F.newEvaluator();
+    static LlavaRuntime runtime = F.newLlavaRuntime(topEnvironment, evaluator);
+    static Compiler compiler    = F.newCompiler();
     static LlavaReader reader   = F.newLlavaReader();
     static LlavaWriter writer   = F.newLlavaWriter();
 
@@ -55,7 +51,7 @@ public class TestCompilerAndEngine
     {
 	Test.dsop("begin: testCompilerAndEngine");
 
-	topEnvironment.set(F.newSymbol("list"), FR.newPrimList());
+	topEnvironment.set(F.newSymbol("list"), F.newPrimList());
 
 	Test.check("eval0", eval("'(1)"), eval("(list 1)"));
 	Test.check("eval1", new Integer(1), eval("(if true 1 0)"));
@@ -64,7 +60,7 @@ public class TestCompilerAndEngine
 	// REVISIT
 	//Test.check("eval4", new Double(0.1), eval("(lambda () 0.2)"));
 	Test.check("eval5", 
-		   "Anonymous lambda with body: {org.llava.impl.runtime.code.CodeLiteral 3}: too many arguments",
+		   "Anonymous lambda with body: 3: too many arguments",
 		   eval("((lambda () 3) 4)"));
 	Test.check("eval6", new Double(5.0), eval("((lambda (x) x) 5.0)"));
 	Test.check("eval6.1", 
@@ -98,10 +94,10 @@ public class TestCompilerAndEngine
 ")"
                        ));
 	Test.check("eval9.1", 
-		   "Anonymous lambda with body: {org.llava.impl.runtime.code.CodeReference y}: not enough arguments",
+		   "Anonymous lambda with body: y: not enough arguments",
 		   eval("((lambda (x y) y) -1)"));
 	Test.check("eval10", 
-		   "Anonymous lambda with body: {org.llava.impl.runtime.code.CodeReference y}: too many arguments",
+		   "Anonymous lambda with body: y: too many arguments",
 		   eval("((lambda (x y) y) 1 2 3)"));
 	/* REVISIT : returns generic undef handler when DI in use.
 	Test.check("eval11", 

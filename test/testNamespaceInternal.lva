@@ -7,7 +7,6 @@
 ;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
 ;;;;---------------------------------------------------------------------------
 
-
 ;;;;
 ;;;; Created       : 2000 Oct 21 (Sat) 10:46:48 by Harold Carr.  
 ;;;; Last Modified : 2004 Dec 22 (Wed) 10:37:38 by Harold Carr.
@@ -55,24 +54,24 @@
   )
 
 (define (extractMessage throwable)
-  (if (instanceof throwable 'org.llava.lang.exceptions.LlavaException)
+  (if (instanceof throwable 'org.llava.LlavaException)
       (getMessage (getThrowable throwable))
       (getMessage throwable)))
 
 (define (initTest)
-  (let* ((newLlava (new 'org.llava.impl.Llava))
+  (let* ((newLlava (new 'org.llava.Llava))
 	 (newEnv  (getEnvironmentTopLevel newLlava)))
 
     (define (userHome) (-si 'getProperty 'java.lang.System "user.home"))
 
     ;; This is used to test everything independently of the built
     ;; in namespace.
-    (set! *newNs* (findNamespace newEnv (-si 'initialReplPackageName 'org.llava.impl.F)))
-    (setIsSealed (findNamespace newEnv (-si 'llavaPackageName 'org.llava.impl.F)) false)
-    (setUndefinedIdHandler newEnv (-si 'newUndefinedIdHandler 'org.llava.impl.runtime.FR))
+    (set! *newNs* (findNamespace newEnv (-si 'initialReplPackageName 'org.llava.F)))
+    (setIsSealed (findNamespace newEnv (-si 'llavaPackageName 'org.llava.F)) false)
+    (setUndefinedIdHandler newEnv (-si 'newUndefinedIdHandler 'org.llava.F))
 
-    (set! *llavaPackage* (-si 'llavaPackageName 'org.llava.impl.F))
-    (set! *replPackage* (-si 'initialReplPackageName 'org.llava.impl.F))
+    (set! *llavaPackage* (-si 'llavaPackageName 'org.llava.F))
+    (set! *replPackage* (-si 'initialReplPackageName 'org.llava.F))
     (set! *testPackage* "org.llava.lib.test.Test") ;; REVISIT name
 
     ;; This one is used for import testing.

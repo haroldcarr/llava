@@ -9,16 +9,15 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 28 (Tue) 03:08:36 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:35:23 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 18:49:49 by Harold Carr.
  */
 
-package org.llava.lang.types;
+package org.llava;
 
-import org.llava.lang.types.Pair;
-import org.llava.impl.runtime.Engine; // REVISIT
+import org.llava.Pair;
+import org.llava.runtime.Engine; // REVISIT
 
 public interface Procedure
 {

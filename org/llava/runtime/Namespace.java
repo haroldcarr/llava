@@ -9,13 +9,12 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 //
 // Created       : 2000 Oct 23 (Mon) 17:35:17 by Harold Carr.
-// Last Modified : 2004 Sep 03 (Fri) 15:33:45 by Harold Carr.
+// Last Modified : 2004 Dec 07 (Tue) 18:54:38 by Harold Carr.
 //
 
-package org.llava.impl.runtime.env;
+package org.llava.runtime;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,8 +22,8 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.llava.lang.types.Pair;
-import org.llava.lang.types.Symbol;
+import org.llava.Pair;
+import org.llava.Symbol;
 
 public interface Namespace
 {

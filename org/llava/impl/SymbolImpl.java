@@ -9,22 +9,25 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 24 (Fri) 19:24:53 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:35:24 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 13:05:49 by Harold Carr.
  */
 
-package org.llava.lang.types;
+package org.llava.impl;
 
 import java.util.HashMap;
 
-import org.llava.lang.types.Symbol;
+import org.llava.Symbol;
 
 public class SymbolImpl
     implements
 	Symbol
 {
+    // NOTE: a static is OK since a Symbol is quasi-atomic.  Thus they
+    // can be shared between independent instances of llava.
+    // quasi-atomic: get/setEnvTopLevelIndex works across llava instances.
+    // See EnvironmenTopLevelImp for why.
     // REVISIT capacity/load factor.
     private static HashMap symbols = new HashMap();
 
@@ -72,31 +75,13 @@ public class SymbolImpl
 	return topLevelIndex = index;
     }
 
-    public boolean isFinal ()
-    {
-	return isFinal;
-    }
-
-    public boolean setIsFinal (boolean isFinal)
-    {
-	return this.isFinal = isFinal;
-    }
-
     public boolean equals (Object x) 
     {
+	// Interned, so simple test.
 	if (x == this) {
 	    return true;
 	}
 	return false;
-	
-	/*
-	if (x == this) {
-	    return true;
-	} else if (!(x instanceof Symbol)) {
-	    return false;
-	}
-	return name.equals(x.toString());
-	*/
     }
 
     public String toString ()

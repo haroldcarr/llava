@@ -8,36 +8,65 @@ or send a letter to
 ------------------------------------------------------------------------------
 
 Created       : 1999 Dec 18 (Sat) 17:14:40 by Harold Carr.
-Last Modified : 2004 Sep 06 (Mon) 01:46:25 by Harold Carr.
+Last Modified : 2004 Dec 08 (Wed) 13:16:05 by Harold Carr.
 
 To do:
 
-* doc embedded and script
+* Find sourceforge like repository but using subversion
+
+* Make scheme IF be default.
+
+* Extend display, write, newline, read to take optional arg of many types.
+
+* eq?, equal?, = : think about it
+
+* Make importing from jars extensible.
+
+* LlavDoc 
+	generate library includes
+	embedded and script
+	lib.llavadoc.LlavaDoc
+	            .*.xslt
+
+* cross references in doc: <ulink url=\"#define\"><code>define</code></ulink>
+
+* prettyprint
+
+* llavadoc "define-syntax"
 
 * Make defmacro builtin.
 
-* Fix reader error: (string-append " (" "3" ")")
+* Macroexpand
+
+* Only one level of macro expansion seems to be happening at read/compile
+  time:
+
+  llava-> (getSource (getCode (lambda (x) (cond ((null? x) x) (else "no")))))
+  (-if (null? x) (begin x) (cond (else "no")))
+
+* Reader e, o, x, etc.
+
+* javadoc llava
 
 * Todo in namespaceimpl.
-
-* Think about built-ins/lib using hypens so no need to be Java/dynamic.
 
 * Need to be able to coerce to short, byte
 	e.g., try creating a org.omg.IOP.Encoding
 
-* Check out how to deal with inner class creation/refer from llava syntax level.
+* Need to be able to emulate casting null: (<some-class>) null
+  So you can get DI to work with null arguments to methods
+  with several methods of same name but different types.
 
-* DII - NullPointerException when static invoke on dynamic method/class:
-eg: (-si 'getFullNameNamespaceMapKeys 'testLlava.proto.NamespaceImpl)
+* How to deal with inner class creation and reference from llava syntax level
 
-------------------------------------------------------------------------------
-Before initial release:
+* Make undefinedIdHandler into two distinct classes rather than anonymous.
 
-* reader: "," does unquote
+* Implement pluggability in factories.
+  Plus, do not create individual type factories until needed.
 
-* # reading when not character: e.g., #160 -> 160 #newline -> 'newline
+* make .print/display/newline use current std out (in repl).
 
-* test load from emacs with (-comment-
+* Check close after load - and check logic of PrimLoad
 
 * checkNumArgs
 
@@ -48,8 +77,9 @@ Before initial release:
   2. Enable auto-generic toggling
 
 * reader: make object eq constants for all tokens.
-
-* Make scheme IF be default.
+  LlavaInteger subtype of Integer which preallocates range: ?-128.
+  LlavaDouble  subtype of Double  which preallocates 0.0, 1.0, ?
+  Note possible: can't subclass Integer or Double.
 
 * lambda, assignment, etc as pluggable syntax rather than built
   into the compiler.
@@ -59,21 +89,9 @@ Before initial release:
 * Make other procedures like c*r as generics off of Pair rather
   than explicit primitives.
 
-* Make undefinedIdHandler into two distinct classes rather than anonymous.
-
 * define-final (use on lambdas, not generics).
 
 * Internally use define and define-final rather than set
-
-* Implement pluggability in factories.
-  Plus, do not create individual type factories until needed.
-
-* Check close after load - and check logic of PrimLoad
-
-* make .print/display/newline use current std out (in repl).
-
-------------------------------------------------------------------------------
-Near term:
 
 * Optimize
 	startup 
@@ -89,27 +107,12 @@ Near term:
 
 * Factor primitive invoke/field methods.
 
-* try code running without compiler or repl
+* Visit "REVISIT" in code.
 
-* javadoc llava
+* REVISIT ThreadDeath in EngineImpl and GenericProcedureImpl.
 
-* LlavaInteger subtype of Integer which preallocates range: ?-128.
-
-* LlavaDouble  subtype of Double  which preallocates 0.0, 1.0, ?
-
-* If you see a message like:
-
-Error: java.lang.Exception: setq: not enough arguments
-
-it means you defined a macro *AFTER* you referenced it.
-Example:
-
-(begin 
-  (require 'org/llava/lib/cl/control/setq)
-  (setq a 34))
-
-That is because Llava is apply the syntax procedure for setq
-to the list (1 34) but the expander expects two arguments.
+* Reconsider undefined turning in GenericProcedure.
+  Obviates define before set!.
 
 ------------------------------------------------------------------------------
 Create classes on the fly:
@@ -145,32 +148,6 @@ Need new support for:
 (new 'MyPair 'a 'b)
 
 ------------------------------------------------------------------------------
-Someday:
-
-* Visit "REVISIT" in code.
-
-* REVISIT ThreadDeath in EngineImpl and GenericProcedureImpl.
-
-* Reconsider undefined turning in GenericProcedure.
-  Obviates define before set!.
-
-* Macro handling - right now it seems they must be defined first.
-
-* Macros lambdas always get top level environment.
-  SHould get current lexical environment.  See SyntaxDefineSyntax.lva
-
-(let ((test -1))
-  (define foo (lambda () foo)))
-(getSavedFrame foo)
-(let ((test -1))
-  (define-syntax bar (lambda () foo)))
-(getSavedFrame (getMacroLambda bar))
-
-* Write Scheme write (i.e., String printing, quotes, characters).
-
-* Macroexpand and prettyprint.
-
-* Llava and Repl should go in libLlava?
 
 * Architecture
 
@@ -182,9 +159,6 @@ Someday:
 	   Compiletime
 		Lexical
 		Macro env ?? (probably should go in top or frame).
-
-* Write R5RS compiler/runtime.
-  Useful and demonstrates plugability/reusablity.
 
 ;; End of file.
 

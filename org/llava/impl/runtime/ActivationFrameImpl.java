@@ -9,20 +9,21 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 21 (Tue) 00:12:36 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:33:41 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 10:25:32 by Harold Carr.
  */
 
-package org.llava.impl.runtime.env;
+package org.llava.impl.runtime;
 
-import org.llava.lang.types.Pair;
-import org.llava.lang.types.Symbol;
-import org.llava.impl.util.List;
+import org.llava.F;
+import org.llava.Pair;
+import org.llava.Symbol;
+import org.llava.runtime.ActivationFrame;
 import org.llava.runtime.EnvironmentTopLevel;
-import org.llava.impl.runtime.FR;
-import org.llava.impl.runtime.env.Namespace;
+import org.llava.runtime.Namespace;
+
+import org.llava.impl.util.List;
 
 public class ActivationFrameImpl 
     implements

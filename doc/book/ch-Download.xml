@@ -1,7 +1,7 @@
 <!--
 //
 // Created       : 1999 Dec 29 (Wed) 14:53:37 by Harold Carr.
-// Last Modified : 2004 Dec 06 (Mon) 12:31:45 by Harold Carr.
+// Last Modified : 2004 Dec 08 (Wed) 11:29:52 by Harold Carr.
 //
 -->
 <chapter id="llava-ch-download">
@@ -36,12 +36,19 @@
       </para></listitem>
 
       <listitem><para>
-      Or: <literal>java -cp llava.jar org.llava.impl.Llava</literal>
+      Or: <literal>java -cp llava.jar org.llava.Llava</literal>
+      </para></listitem>
+
+      <listitem><para>
+      Note, you should start up with the main class,
+      <literal>org.llava.Llava</literal>,
+      if you want to import llava files (i.e., <literal>*.lva</literal>)
+      from locations on your classpath
       </para></listitem>
 
       <listitem><para>
       Examples: check out the libraries in <literal>org.llava.lib</literal>
-      in <literal>llava.jar</literal>.
+      in <literal>llava.jar</literal>
       </para></listitem>
 
       <listitem><para>

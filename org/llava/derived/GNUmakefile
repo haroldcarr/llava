@@ -7,16 +7,15 @@
 #   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
 #-----------------------------------------------------------------------------
 
-
 #
 # Created       : 2000 Jan 18 (Tue) 04:28:19 by Harold Carr.
-# Last Modified : 2004 Nov 26 (Fri) 16:10:12 by Harold Carr.
+# Last Modified : 2004 Dec 07 (Tue) 18:15:14 by Harold Carr.
 #
 
-TOPDIR		=	../../../../..
+TOPDIR		=	../../..
 
-PACKAGE		=	org.llava.impl.runtime.derived
-PKGDIR		=	org/llava/impl/runtime/derived
+PACKAGE		=	org.llava.derived
+PKGDIR		=	org/llava/derived
 
 # N.B.: This order *MUST* be kept in sync with order in
 #       EnvTopLevelInitImpl.

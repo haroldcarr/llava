@@ -9,15 +9,14 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 28 (Tue) 00:27:53 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:35:44 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 18:54:45 by Harold Carr.
  */
 
 package org.llava.runtime;
 
-import org.llava.lang.types.Symbol;
+import org.llava.Symbol;
 
 public interface UndefinedIdHandler
 {

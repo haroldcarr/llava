@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2004 Sep 06 (Mon) 00:08:30 by Harold Carr.
+;;;; Last Modified : 2004 Dec 07 (Tue) 18:28:34 by Harold Carr.
 ;;;;
 
 ;made into primitives for speed
@@ -21,12 +21,12 @@
 ;  (lambda (x) (eq? x null)))
 
 ;(define pair?
-;  (lambda (exp) (instanceof exp 'org.llava.lang.types.Pair)))
+;  (lambda (exp) (instanceof exp 'org.llava.Pair)))
 
 ;(define string->symbol
-;  (lambda (x) (-si 'newSymbol 'org.llava.impl.F x)))
+;  (lambda (x) (-si 'newSymbol 'org.llava.F x)))
 
 ;(define symbol?
-;  (lambda (exp) (instanceof exp 'org.llava.lang.types.Symbol)))
+;  (lambda (exp) (instanceof exp 'org.llava.Symbol)))
 
 ;;; End of file.

@@ -12,15 +12,16 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 23 (Thu) 03:48:44 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:33:04 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 18:53:56 by Harold Carr.
  */
 
-package org.llava.impl.runtime;
+package org.llava.runtime;
 
-import org.llava.lang.types.Pair;
+import org.llava.Pair;
+import org.llava.runtime.ActivationFrame;
 import org.llava.runtime.Evaluator;
-import org.llava.impl.runtime.code.Code;
-import org.llava.impl.runtime.env.ActivationFrame;
+
+import org.llava.impl.runtime.Code;
 
 public interface Engine
     extends

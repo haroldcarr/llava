@@ -9,13 +9,12 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 //
 // Created       : 2000 Oct 21 (Sat) 10:46:48 by Harold Carr.
-// Last Modified : 2004 Nov 30 (Tue) 22:37:10 by Harold Carr.
+// Last Modified : 2004 Dec 08 (Wed) 10:34:57 by Harold Carr.
 //
 
-package org.llava.impl.runtime.env;
+package org.llava.impl.runtime;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,20 +30,16 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-
-import org.llava.impl.F;
+import org.llava.F;
+import org.llava.LlavaException;
+import org.llava.Pair;
 import org.llava.Repl;
-import org.llava.lang.exceptions.LlavaException;
-import org.llava.lang.types.Pair;
-import org.llava.lang.types.Procedure;
-import org.llava.lang.types.Symbol;
-
+import org.llava.Procedure;
+import org.llava.Symbol;
+import org.llava.procedure.GenericProcedure; // REVISIT
 import org.llava.runtime.EnvironmentTopLevel;
-import org.llava.impl.runtime.FR;
+import org.llava.runtime.Namespace;
 import org.llava.runtime.UndefinedIdHandler;
-
-import org.llava.impl.runtime.procedure.generic.GenericProcedure; // REVISIT
-
 
 // TODO:
 //
@@ -163,7 +158,7 @@ public class NamespaceImpl
 
 	Object NULL_VALUE = new Object();
 
-	UndefinedIdHandler undefinedIdHandler = FR.newUndefinedIdHandler();
+	UndefinedIdHandler undefinedIdHandler = F.newUndefinedIdHandler();
 
 	Repl repl;
 

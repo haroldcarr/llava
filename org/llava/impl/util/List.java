@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 22 (Wed) 06:15:52 by Harold Carr.
- * Last Modified : 2004 Dec 08 (Wed) 09:01:11 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 08:29:26 by Harold Carr.
  */
 
 package org.llava.impl.util;

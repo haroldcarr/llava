@@ -9,20 +9,20 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 2001 Mar 05 (Mon) 21:04:59 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:34:12 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 19:04:26 by Harold Carr.
  */
 
-package org.llava.impl.runtime.procedure.primitive.java;
+package org.llava.impl.procedure;
 
-import org.llava.impl.F;
-import org.llava.lang.types.Pair;
-import org.llava.impl.runtime.Engine;
-import org.llava.impl.runtime.env.Namespace;
-import org.llava.impl.runtime.procedure.primitive.java.PrimNewPrim;
-import org.llava.impl.runtime.procedure.primitive.PrimitiveProcedure;
+import org.llava.F;
+import org.llava.Pair;
+import org.llava.runtime.Engine;
+import org.llava.runtime.Namespace;
+
+import org.llava.impl.procedure.PrimNewPrim;
+import org.llava.impl.procedure.PrimitiveProcedure;
 
 public class PrimNew
     extends

@@ -7,10 +7,9 @@
 #   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
 #-----------------------------------------------------------------------------
 
-
 #
 # Created       : 1999 Dec 15 (Wed) 16:30:21 by Harold Carr.
-# Last Modified : 2004 Dec 02 (Thu) 09:05:50 by Harold Carr.
+# Last Modified : 2004 Dec 07 (Tue) 18:43:53 by Harold Carr.
 #
 
 TOPDIR		=	../../..
@@ -19,14 +18,15 @@ PACKAGE		=	org.llava.impl
 PKGDIR		=	org/llava/impl
 
 FILES_java	= \
-	$(PKGDIR)/F.java \
-	$(PKGDIR)/Llava.java \
+	$(PKGDIR)/LambdaImpl.java \
 	$(PKGDIR)/LlavaVersionImpl.java \
-	$(PKGDIR)/ReplImpl.java
+	$(PKGDIR)/PairImpl.java \
+	$(PKGDIR)/ReplImpl.java \
+	$(PKGDIR)/SymbolImpl.java
 
 all :: classes 
 
-SUBDIRS		=	compiler io runtime util
+SUBDIRS		=	compiler io procedure runtime syntax util
 
 all optimized debug clean clobber ::
 	@for i in $(SUBDIRS) ; do \

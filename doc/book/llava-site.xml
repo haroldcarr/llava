@@ -3,35 +3,35 @@
 <!--
 //
 // Created       : 1999 Dec 29 (Wed) 14:53:37 by Harold Carr.
-// Last Modified : 2004 Dec 02 (Thu) 10:16:50 by Harold Carr.
+// Last Modified : 2004 Dec 07 (Tue) 21:15:02 by Harold Carr.
 //
 -->
 
 <!DOCTYPE book SYSTEM "/usr/local/hc/xml/docbook/docbook-xml-4.3/docbookx.dtd"
 [
-<!ENTITY lva-et           SYSTEM "lva-et.xml">
-<!ENTITY lva-te           SYSTEM "lva-te.xml">
-<!ENTITY ap-Motivation    SYSTEM "ap-Motivation.xml">
-<!ENTITY ch-Download      SYSTEM "ch-Download.xml">
-<!ENTITY ch-Libraries     SYSTEM "ch-Libraries.xml">
-<!ENTITY lastModified     SYSTEM "../.generated/LastModified.txt">
-<!ENTITY copyright        SYSTEM "../../COPYRIGHT.txt">
-<!ENTITY license          SYSTEM "../../LICENSE.xml">
-<!ENTITY version          SYSTEM "../../VERSION">
+<!ENTITY lva-et          SYSTEM "lva-et.xml">
+<!ENTITY lva-te          SYSTEM "lva-te.xml">
+<!ENTITY ap-Motivation   SYSTEM "ap-Motivation.xml">
+<!ENTITY ch-Download     SYSTEM "ch-Download.xml">
+<!ENTITY ch-Libraries    SYSTEM "ch-Libraries.xml">
+<!ENTITY lastModified    SYSTEM "../.generated/LastModified.txt">
+<!ENTITY copyright       SYSTEM "../../COPYRIGHT.txt">
+<!ENTITY license         SYSTEM "../../LICENSE.xml">
+<!ENTITY version         SYSTEM "../../VERSION">
 
-<!ENTITY builtins         SYSTEM "../.generated/org/llava/impl/llava.xml">
+<!ENTITY builtins        SYSTEM "../.generated/org/llava/llava.xml">
 
-<!ENTITY  lib-control     SYSTEM "../.generated/org/llava/lib/Control.xml">
-<!ENTITY  lib-exceptions  SYSTEM "../.generated/org/llava/lib/Exceptions.xml">
-<!ENTITY  lib-files       SYSTEM "../.generated/org/llava/lib/Files.xml">
-<!ENTITY  lib-lists       SYSTEM "../.generated/org/llava/lib/Lists.xml">
-<!ENTITY  lib-llava-doc   SYSTEM "../.generated/org/llava/lib/LlavaDoc.xml">
-<!ENTITY  lib-macros      SYSTEM "../.generated/org/llava/lib/Macros.xml">
-<!ENTITY  lib-program     SYSTEM "../.generated/org/llava/lib/Program.xml">
-<!ENTITY  lib-strings     SYSTEM "../.generated/org/llava/lib/Strings.xml">
-<!ENTITY  lib-system      SYSTEM "../.generated/org/llava/lib/System.xml">
-<!ENTITY  lib-threads     SYSTEM "../.generated/org/llava/lib/Threads.xml">
-<!ENTITY  lib-vectors     SYSTEM "../.generated/org/llava/lib/Vectors.xml">
+<!ENTITY lib-control     SYSTEM "../.generated/org/llava/lib/Control.xml">
+<!ENTITY lib-exceptions  SYSTEM "../.generated/org/llava/lib/Exceptions.xml">
+<!ENTITY lib-files       SYSTEM "../.generated/org/llava/lib/Files.xml">
+<!ENTITY lib-lists       SYSTEM "../.generated/org/llava/lib/Lists.xml">
+<!ENTITY lib-llava-doc   SYSTEM "../.generated/org/llava/lib/LlavaDoc.xml">
+<!ENTITY lib-macros      SYSTEM "../.generated/org/llava/lib/Macros.xml">
+<!ENTITY lib-program     SYSTEM "../.generated/org/llava/lib/Program.xml">
+<!ENTITY lib-strings     SYSTEM "../.generated/org/llava/lib/Strings.xml">
+<!ENTITY lib-system      SYSTEM "../.generated/org/llava/lib/System.xml">
+<!ENTITY lib-threads     SYSTEM "../.generated/org/llava/lib/Threads.xml">
+<!ENTITY lib-vectors     SYSTEM "../.generated/org/llava/lib/Vectors.xml">
 
 
 <!ENTITY lib-cl-control SYSTEM "../.generated/org/llava/lib/cl/Control.xml">

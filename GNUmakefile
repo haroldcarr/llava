@@ -9,7 +9,7 @@
 
 #
 # Created       : 1999 Dec 15 (Wed) 16:30:21 by Harold Carr.
-# Last Modified : 2004 Dec 08 (Wed) 17:14:12 by Harold Carr.
+# Last Modified : 2004 Dec 07 (Tue) 21:17:19 by Harold Carr.
 #
 
 TOPDIR		=	.
@@ -78,7 +78,6 @@ release_end : zip_jar
 	date=`$(LLAVAVERSION) dateOnly`; \
 	cp $(JARDIR)/llava.zip $(JARDIR)/llava-$$date.zip; \
 	cp $(JARDIR)/llava.jar $(JARDIR)/llava-$$date.jar; \
-	cp $(JARDIR)/llavalib.zip $(JARDIR)/llava-$$date-lib.zip; \
 	cp $(JARDIR)/llavasrc.zip $(JARDIR)/llava-$$date-src.zip
 	-@echo "Release `cat VERSION` complete."
 
@@ -90,7 +89,7 @@ zip_jar : FORCE
 #
 
 JARDIR		=	$(PWDCOLON)/jars
-MAINCLASS	=	"Main-Class: org.llava.impl.Llava"
+MAINCLASS	=	"Main-Class: org.llava.Llava"
 MAINCLASSTXT	= 	main-class.txt
 
 $(JARDIR) : FORCE
@@ -98,6 +97,7 @@ $(JARDIR) : FORCE
 
 scrub :: FORCE
 	rm -rf $(JARDIR)
+	rm -rf $(DOC_DIR_GENERATED)
 
 # NOTE: the echo MUST add a newline or MAINCLASS is not parsed.
 jar: $(JARDIR)

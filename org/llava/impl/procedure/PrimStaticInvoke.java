@@ -9,22 +9,22 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 30 (Thu) 17:43:07 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:35:08 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 19:06:22 by Harold Carr.
  */
 
-package org.llava.impl.runtime.procedure.primitive.llava;
+package org.llava.impl.procedure;
 
-import org.llava.impl.F;
-import org.llava.lang.types.Pair;
-import org.llava.lang.types.Symbol;
+import org.llava.F;
+import org.llava.Pair;
+import org.llava.Symbol;
+import org.llava.runtime.Engine;
+
+import org.llava.impl.procedure.DI;
+import org.llava.impl.procedure.GenericProcedureImpl; // REVISIT
+import org.llava.impl.procedure.PrimitiveProcedure;
 import org.llava.impl.util.List;
-import org.llava.impl.runtime.Engine;
-import org.llava.impl.runtime.procedure.generic.DI;
-import org.llava.impl.runtime.procedure.generic.GenericProcedureImpl; // REVISIT
-import org.llava.impl.runtime.procedure.primitive.PrimitiveProcedure;
 
 public class PrimStaticInvoke
     extends

@@ -9,18 +9,17 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 21 (Tue) 00:04:24 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:33:40 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 18:53:32 by Harold Carr.
  */
 
-package org.llava.impl.runtime.env;
+package org.llava.runtime;
 
-import org.llava.lang.types.Pair;
-import org.llava.lang.types.Symbol;
+import org.llava.Pair;
+import org.llava.Symbol;
 import org.llava.runtime.EnvironmentTopLevel;
-import org.llava.impl.runtime.env.Namespace;
+import org.llava.runtime.Namespace;
 
 /**
  * Runtime lexical environment.

@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2004 Dec 05 (Sun) 08:17:24 by Harold Carr.
-;;;; Last Modified : 2004 Dec 05 (Sun) 08:42:48 by Harold Carr.
+;;;; Last Modified : 2004 Dec 07 (Tue) 18:23:25 by Harold Carr.
 ;;;;
 
 (defun hcLlavaCmdVmArgsExtras    (ps) 
@@ -19,7 +19,7 @@
    ))
 
 (defun hcLlavaCmdMainClass       (ps) 
-  "org.llava.impl.Llava"
+  "org.llava.Llava"
   ;;"test.Test"
   )
 

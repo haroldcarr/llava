@@ -9,22 +9,21 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 2000 Jan 07 (Fri) 22:40:51 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:35:07 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 10:32:49 by Harold Carr.
  */
 
-package org.llava.impl.runtime.procedure.primitive.llava;
+package org.llava.impl.procedure;
 
-import org.llava.impl.F;
-import org.llava.lang.types.Pair;
+import org.llava.F;
+import org.llava.Lambda;
+import org.llava.Pair;
+import org.llava.UndefinedIdException;
+import org.llava.runtime.Engine;
+
+import org.llava.impl.procedure.PrimitiveProcedure;
 import org.llava.impl.util.List;
-import org.llava.impl.runtime.Engine;
-import org.llava.impl.runtime.FR;
-import org.llava.impl.runtime.exceptions.UndefinedIdException;
-import org.llava.impl.runtime.procedure.Lambda;
-import org.llava.impl.runtime.procedure.primitive.PrimitiveProcedure;
 
 public class PrimNewThread
     extends
@@ -57,7 +56,7 @@ public class PrimNewThread
 	}
 	public void run () { 
 	    // Note: new engine corresponds to new control stack for thread.
-	    ((Engine)FR.newEvaluator()).apply(lambda, null);
+	    ((Engine)F.newEvaluator()).apply(lambda, null);
 	}
     }
 }

@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 1999 Dec 17 (Fri) 21:16:19 by Harold Carr.
-;;;; Last Modified : 2004 Dec 05 (Sun) 08:17:05 by Harold Carr.
+;;;; Last Modified : 2004 Dec 07 (Tue) 18:23:17 by Harold Carr.
 ;;;;
 
 (require 'hcJde)
@@ -30,7 +30,7 @@
 
 (defun s ()
   (interactive)
-  (hcJdeRip-shell "org.llava.impl.Llava" ""))
+  (hcJdeRip-shell "org.llava.Llava" ""))
 
 (defun c ()
   (interactive)

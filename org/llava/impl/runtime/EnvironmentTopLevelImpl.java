@@ -9,20 +9,18 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 25 (Sat) 19:08:58 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:33:43 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 10:34:35 by Harold Carr.
  */
 
-package org.llava.impl.runtime.env;
+package org.llava.impl.runtime;
 
-import org.llava.impl.F;
+import org.llava.F;
+import org.llava.Procedure;
 import org.llava.Repl;
-import org.llava.lang.types.Procedure;
-import org.llava.lang.types.Symbol;
+import org.llava.Symbol;
 import org.llava.runtime.EnvironmentTopLevel;
-import org.llava.impl.runtime.FR;
 import org.llava.runtime.UndefinedIdHandler;
 
 public class EnvironmentTopLevelImpl 
@@ -41,7 +39,7 @@ public class EnvironmentTopLevelImpl
 
     public EnvironmentTopLevelImpl (int size)
     {
-	undefinedIdHandler = FR.newUndefinedIdHandler();
+	undefinedIdHandler = F.newUndefinedIdHandler();
 	values = new Object[size];
 	fillWithUndefined(values, 0, size);
     }

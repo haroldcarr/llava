@@ -9,23 +9,23 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 21 (Tue) 00:12:36 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:32:59 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 20:00:54 by Harold Carr.
  */
 
 package org.llava.impl.compiler;
 
-import org.llava.lang.types.Pair;
-import org.llava.lang.types.Symbol;
+import org.llava.Pair;
+import org.llava.Symbol;
+import org.llava.compiler.EnvironmentLexical;
 
 public class EnvironmentLexicalImpl 
     extends
 	EnvironmentLexical
 {
     private EnvironmentLexicalImpl next = null;
-    private Pair            names;
+    private Pair                   names;
 
     public EnvironmentLexicalImpl ()
     {

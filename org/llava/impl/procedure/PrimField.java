@@ -9,21 +9,21 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 30 (Thu) 18:17:06 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:35:03 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 19:02:08 by Harold Carr.
  */
 
-package org.llava.impl.runtime.procedure.primitive.llava;
+package org.llava.impl.procedure;
 
-import org.llava.impl.F;
-import org.llava.lang.types.Pair;
-import org.llava.lang.types.Symbol;
-import org.llava.impl.runtime.Engine;
-import org.llava.impl.runtime.procedure.generic.DI;
-import org.llava.impl.runtime.procedure.generic.GenericProcedureImpl; // REVISIT
-import org.llava.impl.runtime.procedure.primitive.PrimitiveProcedure;
+import org.llava.F;
+import org.llava.Pair;
+import org.llava.Symbol;
+import org.llava.runtime.Engine;
+
+import org.llava.impl.procedure.DI;
+import org.llava.impl.procedure.GenericProcedureImpl; // REVISIT
+import org.llava.impl.procedure.PrimitiveProcedure;
 
 public class PrimField
     extends

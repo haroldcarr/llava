@@ -1,6 +1,62 @@
+2004-12-08  Harold Carr  <carr@llava.org>
+
+	* Consolidated the three factories: F (top-level), FC (compiler)
+	and FR (runtime) into one: F
+	* Wrote set-vector-print-length! to avoid printing large
+	vectors during debugging.
+
+2004-12-07  Harold Carr  <carr@llava.org>
+
+	* Made package structure simpler (i.e., not so many and not too deep).
+
+2004-12-05  Harold Carr  <carr@llava.org>
+
+	* Wrote Scheme write with optional argument.
+	* Changed ReplImpl to use write.
+	* Added read with optional argument.
+	* Extended newline to take optional argument.
+	* Wrote vector-equal?.
+
+2004-12-02  Harold Carr  <carr@llava.org>
+
+	* Reeabled defining a constructor when importing a Java class.
+	This is necessary because this does not work:
+	(package test)
+	(import java.lang.Integer)
+	(define (f x) (new 'Integer x))
+        (define (g x) (Integer x))
+	(f 3)
+        (g 4)
+	(package ing)
+        (import test)
+	;; (new 'Integer x) called in context of "ing" and
+        ;; java.lang.Integer not in ing's imports
+	(f 5)  ; error
+        ;; But constructor internally calls new with full path so it works:
+        (g 6)  ; => 6
+
+2004-12-01  Harold Carr  <carr@llava.org>
+
+	* Enabled -jar llava.jar startup.
+	* Made lambda, generic and syntax print names shorter.
+
+2004-11-30  Harold Carr  <carr@llava.org>
+
+	* Fixed reader bug: "(" and ")".
+	* Refactored PrimMap to support for-each.
+	* Moved for-each to llava (instead of derived).
+	* Documented -car and -cdr.
+	* Enabled import of org.llava.lib.* files as resources from jar.
+
+2004-11-29  Harold Carr  <carr@llava.org>
+
+	* Made instanceof work with import.  try/catch then works with
+	import since it uses instanceof.
+
 2004-11-26  Harold Carr  <carr@llava.org>
 
 	* Added "define-d" to trace procedure entry and exit.
+	* Added more Scheme vector procedures and made them built in.
 
 2004-09-06  Harold Carr  <carr@llava.org>
 
@@ -383,7 +439,7 @@
 	See k2j.kawa.
 
 Created       : 1999 Dec 15 (Wed) 19:57:16 by Harold Carr.
-Last Modified : 2004 Nov 26 (Fri) 09:21:31 by Harold Carr.
+Last Modified : 2004 Dec 08 (Wed) 10:53:50 by Harold Carr.
 
 Order for presentation:
 

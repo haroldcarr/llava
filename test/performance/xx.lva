@@ -7,10 +7,9 @@
 ;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
 ;;;;---------------------------------------------------------------------------
 
-
 ;;;;
 ;;;; Created       : 2000 Feb 27 (Sun) 07:48:43 by Harold Carr.
-;;;; Last Modified : 2004 Sep 06 (Mon) 00:27:01 by Harold Carr.
+;;;; Last Modified : 2004 Dec 07 (Tue) 20:40:15 by Harold Carr.
 ;;;;
 
 (define build-list
@@ -37,7 +36,7 @@
     (letrec ((build-it (lambda (n acc) 
 			 (if (= n 0) 
 			     acc 
-			     (build-it (- n 1) (-si 'cons 'org.llava.impl.F n acc))))))
+			     (build-it (- n 1) (-si 'cons 'org.llava.F n acc))))))
       (build-it n '()))))
 
 (begin

@@ -28,7 +28,7 @@
 
 (defun repl ()
   (interactive)
-  (hcJdeRip-shell "org.llava.impl.Llava" "dummyArg"))
+  (hcJdeRip-shell "org.llava.Llava" "dummyArg"))
 
 (comment
 (load-file "pprj.el")
@@ -52,7 +52,7 @@
 
  '(jde-run-option-vm-args (quote ("-Duser.home=/export/home/carr")))
  ;'(jde-run-application-class "testLlava.Test")
- '(jde-run-application-class "org.llava.impl.Llava")
+ '(jde-run-application-class "org.llava.Llava")
  '(jde-run-option-application-args (quote ("1" "two")))
 
  )

@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2004 Nov 26 (Fri) 17:23:21 by Harold Carr.
+;;;; Last Modified : 2004 Dec 08 (Wed) 10:26:43 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.Lists)
@@ -62,7 +62,7 @@
 			  result))))
   (build-list terminate? step))")))
 
-(let ((boxer (-si 'newWrapJavaPrimitive 'org.llava.impl.runtime.FR)))
+(let ((boxer (-si 'newWrapJavaPrimitive 'org.llava.F)))
 
   (define build-list 
     (lambda (terminate? step)

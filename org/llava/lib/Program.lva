@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 1998 Dec 05 (Sat) 21:41:11 by Harold Carr.
-;;;; Last Modified : 2004 Sep 09 (Thu) 21:17:09 by Harold Carr.
+;;;; Last Modified : 2004 Dec 07 (Tue) 18:38:21 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.Program)
@@ -112,7 +112,7 @@
       (displayMsg))))
 
 (define (_%make-symbol . args)
-  (-si 'newSymbol 'org.llava.impl.F (apply string-append (map toString args))))
+  (-si 'newSymbol 'org.llava.F (apply string-append (map toString args))))
 
 
 (-comment-
@@ -212,6 +212,6 @@
 	   false))))
 
 (define (_%make-symbol . args)
-  (-si 'newSymbol 'org.llava.impl.F (apply string-append (map toString args))))
+  (-si 'newSymbol 'org.llava.F (apply string-append (map toString args))))
 
 ;;; End of file.

@@ -9,24 +9,24 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 2000 Jan 08 (Sat) 16:45:49 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:35:02 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 10:25:07 by Harold Carr.
  */
 
-package org.llava.impl.runtime.procedure.primitive.llava;
+package org.llava.impl.procedure;
 
-import org.llava.lang.types.Pair;
+import org.llava.F;
+import org.llava.Pair;
+import org.llava.UndefinedIdException;
 import org.llava.compiler.Compiler;
+import org.llava.runtime.ActivationFrame;
+import org.llava.runtime.Engine;
 import org.llava.runtime.EnvironmentTopLevel;
 import org.llava.runtime.Evaluator;
-import org.llava.impl.runtime.FR;
 import org.llava.runtime.LlavaRuntime;
-import org.llava.impl.runtime.Engine;
-import org.llava.impl.runtime.env.ActivationFrame;
-import org.llava.impl.runtime.exceptions.UndefinedIdException;
-import org.llava.impl.runtime.procedure.generic.GenericProcedureImpl;
+
+import org.llava.impl.procedure.GenericProcedureImpl;
 
 public class PrimEval
     extends
@@ -48,7 +48,7 @@ public class PrimEval
 	this.environmentTopLevel = environmentTopLevel;
 	this.evaluator = evaluator;
 	this.compiler = compiler;
-	this.runtime = FR.newLlavaRuntime(environmentTopLevel, evaluator);
+	this.runtime = F.newLlavaRuntime(environmentTopLevel, evaluator);
     }
 
     public PrimEval newPrimEval (EnvironmentTopLevel environmentTopLevel,
@@ -67,7 +67,7 @@ public class PrimEval
 
 	    // REVISIT - explicit environment
 	    if (args == null || (argLen = args.length()) > 2) {
-		throw FR.newWrongNumberOfArgumentsException(name);
+		throw F.newWrongNumberOfArgumentsException(name);
 	    } else if (argLen == 1) {
 		return evaluator.eval(compiler.compile(args.car(), runtime),
 				      environmentTopLevel);

@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2004 Sep 09 (Thu) 19:38:26 by Harold Carr.
+;;;; Last Modified : 2004 Dec 07 (Tue) 18:28:18 by Harold Carr.
 ;;;;
 
 ;;; REVISIT - gensym let vars
@@ -22,7 +22,7 @@
       `(_%try
 	(lambda () ,@tryExprs)
 	(lambda (t)
-	  (let ((g2 (if (instanceof t 'org.llava.lang.exceptions.LlavaException)
+	  (let ((g2 (if (instanceof t 'org.llava.LlavaException)
 			(getThrowable t)
 			t)))
 	    (cond ,@catchClauses

@@ -9,24 +9,24 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 21 (Tue) 20:01:34 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:35:46 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 10:39:43 by Harold Carr.
  */
 
 package test;
 
-import org.llava.impl.F;
-import org.llava.lang.exceptions.LlavaException;
-import org.llava.lang.types.Symbol;
-import org.llava.impl.util.List;
-import org.llava.impl.compiler.*;
-import org.llava.impl.compiler.FC;
+import org.llava.F;
+import org.llava.LlavaException;
+import org.llava.Symbol;
+import org.llava.UndefinedIdException;
+import org.llava.compiler.EnvironmentLexical;
+import org.llava.runtime.ActivationFrame;
 import org.llava.runtime.EnvironmentTopLevel;
-import org.llava.impl.runtime.FR;
-import org.llava.impl.runtime.env.*;
-import org.llava.impl.runtime.exceptions.UndefinedIdException;
+
+import org.llava.impl.compiler.*;
+import org.llava.impl.runtime.*;
+import org.llava.impl.util.List;
 
 public class TestEnv
 {
@@ -41,9 +41,9 @@ public class TestEnv
 
     public static void testActivationFrame ()
     {
-	ActivationFrame frame2 = FR.newActivationFrame(3);
-	ActivationFrame frame1 = frame2.extend(FR.newActivationFrame(2));
-	ActivationFrame frame0 = frame1.extend(FR.newActivationFrame(1));
+	ActivationFrame frame2 = F.newActivationFrame(3);
+	ActivationFrame frame1 = frame2.extend(F.newActivationFrame(2));
+	ActivationFrame frame0 = frame1.extend(F.newActivationFrame(1));
 
 	frame0.set(0, 0, new Double(0.0));
 
@@ -91,7 +91,7 @@ public class TestEnv
 	Symbol TwoTwo  = F.newSymbol("2.2");
 
 	EnvironmentLexical env2 = 
-	    FC.newEnvironmentLexical(List.list(TwoZero, TwoOne, TwoTwo));
+	    F.newEnvironmentLexical(List.list(TwoZero, TwoOne, TwoTwo));
 	EnvironmentLexical env1 = env2.extend(List.list(OneZero, OneOne));
 	EnvironmentLexical env0 = env1.extend(List.list(ZeroZero));
 
@@ -147,7 +147,7 @@ public class TestEnv
 	Symbol three = F.newSymbol("three");
 	Symbol undefinedSymbol = F.newSymbol(undefined);
 
-	EnvironmentTopLevel env = FR.newEnvironmentTopLevel();
+	EnvironmentTopLevel env = F.newEnvironmentTopLevel();
 	Test.dsop(env.toString());
 
 	Test.check("envtl1", undefined, get(env, one));

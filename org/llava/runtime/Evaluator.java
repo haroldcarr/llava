@@ -9,15 +9,14 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 30 (Thu) 00:15:52 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:35:43 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 18:54:19 by Harold Carr.
  */
 
 package org.llava.runtime;
 
-import org.llava.impl.runtime.env.ActivationFrame; // REVISIT
+import org.llava.runtime.ActivationFrame; // REVISIT
 
 public interface Evaluator
 {

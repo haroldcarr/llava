@@ -9,7 +9,7 @@
 
 ;;;
 ;;; Created       : 1999 Dec 25 (Sat) 22:10:35 by Harold Carr.
-;;; Last Modified : 2004 Dec 05 (Sun) 18:32:03 by Harold Carr.
+;;; Last Modified : 2004 Dec 07 (Tue) 20:37:08 by Harold Carr.
 ;;;
 
 (begin
@@ -66,7 +66,7 @@
 
 (-println "field access->:")
 
-(define test (new 'org.llava.impl.runtime.procedure.primitive.java.PrimNew))
+(define test (new 'org.llava.impl.procedure.PrimNew))
 ;; REVISIT - no more singleton field
 ;(check 'fieldGet1 null (-f 'singleton test))
 ;(check 'fieldSet1 test (-f 'singleton test test))
@@ -98,11 +98,11 @@
 
 (check 'wrap1
        true
-       (_%instanceof 'a 'org.llava.lang.types.Symbol))
+       (_%instanceof 'a 'org.llava.Symbol))
 
 (check 'wrap2
        false
-       (_%instanceof 1 'org.llava.lang.types.Symbol))
+       (_%instanceof 1 'org.llava.Symbol))
 
 ;; REVISIT - add more
 
@@ -566,13 +566,13 @@
 ;; revisit
 (check "throw1"
        (-si 'newLlavaException 
-	    'org.llava.impl.F
+	    'org.llava.F
 	    (new 'java.lang.Exception "check-throw1"))
        (throw (new 'java.lang.Exception "check-throw1")))
 
 (check "throw2"
        (-si 'newLlavaException 
-	    'org.llava.impl.F
+	    'org.llava.F
 	    (new 'java.lang.Exception "check-throw2"))
        (throw (new 'java.lang.IllegalArgumentException "check-throw2")))
 )
@@ -586,7 +586,7 @@
   (_%try 
    (lambda () (tryProcedure))
    (lambda (t)
-     (let ((g2 (if (instanceof t 'org.llava.lang.exceptions.LlavaException)
+     (let ((g2 (if (instanceof t 'org.llava.LlavaException)
 		   (getThrowable t)
 		   t)))
        (cond ((instanceof g2 'java.lang.NumberFormatException)
@@ -613,7 +613,7 @@
        'AbstractMethodError
        (test_%try (lambda () 
 		    (dprintln 'try)
-		    (throw (-si 'newLlavaException 'org.llava.impl.F
+		    (throw (-si 'newLlavaException 'org.llava.F
 				(new 'java.lang.AbstractMethodError "ab"))))))
 
 (define (testTry tryProcedure)
@@ -646,7 +646,7 @@
        'AbstractMethodError
        (testTry (lambda () 
 		  (dprintln 'try)
-		  (throw (-si 'newLlavaException 'org.llava.impl.F
+		  (throw (-si 'newLlavaException 'org.llava.F
 			      (new 'java.lang.AbstractMethodError "ab"))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -734,7 +734,8 @@
 ;;; Test threads and synchronization
 
 (-println "threads->:")
-
+(-println "*****DISABLED*****")
+(-comment-
 (import org.llava.lib.Threads)
 
 (define current-time 
@@ -895,14 +896,15 @@
 
 ;;; Wait for child to terminate so we are in a clean state.
 (join child-thread (new 'java.lang.Long (toString INFINITY)))
-
+)
 (-println "threads<-:")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test synchronized
 
 (-println "synchronized->:")
-
+(-println "*****DISABLED*****")
+(-comment-
 (define lock-and-run-child
   (lambda (lock)
     (set! child-end-time -1)
@@ -948,6 +950,7 @@
 
 ;;; Wait for first thread before continuing test.
 (join thread (new 'java.lang.Long (toString INFINITY)))
+)
 (-println "synchronized<-:")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -9,20 +9,20 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 2000 Jan 17 (Mon) 02:47:11 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:33:49 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 19:30:32 by Harold Carr.
  */
 
-package org.llava.impl.runtime.exceptions;
+package org.llava.impl.runtime;
 
 import java.io.PrintWriter;
 
-import org.llava.impl.F;
-import org.llava.lang.exceptions.BacktraceHandler;
-import org.llava.lang.types.Pair;
-import org.llava.impl.runtime.env.ActivationFrameImpl;
+import org.llava.F;
+import org.llava.Pair;
+import org.llava.runtime.BacktraceHandler;
+
+import org.llava.impl.runtime.ActivationFrameImpl;
 
 public class BacktraceHandlerImpl
     implements

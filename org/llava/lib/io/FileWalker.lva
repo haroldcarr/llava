@@ -87,7 +87,7 @@
        (begin
 	 (set! inStream (new 'java.io.InputStreamReader
 			     (new 'java.io.FileInputStream inFileName)))
-	 (set! in (-si 'newLlavaReader 'org.llava.impl.F inStream))
+	 (set! in (-si 'newLlavaReader 'org.llava.F inStream))
 	 (set! out (new 'java.io.PrintWriter
 			(new 'java.io.OutputStreamWriter
 			     (new 'java.io.FileOutputStream outFileName))))
@@ -105,7 +105,7 @@
   (lambda (in out)
     (dprint 'file-walker-streams->)
     (let ((savedOut (file-walker-out))
-	  (EOF      (-si 'newLlavaEOF 'org.llava.impl.F)))
+	  (EOF      (-si 'newLlavaEOF 'org.llava.F)))
       (try
        (begin
 	 (file-walker-out out)

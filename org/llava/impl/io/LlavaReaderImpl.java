@@ -9,10 +9,9 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 17 (Fri) 20:11:43 by Harold Carr.
- * Last Modified : 2004 Nov 30 (Tue) 06:11:22 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 10:30:30 by Harold Carr.
  */
 
 package org.llava.impl.io;
@@ -21,10 +20,12 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.llava.impl.F;
+import org.llava.F;
+import org.llava.Pair;
+import org.llava.Symbol;
 import org.llava.io.LlavaEOF;
 import org.llava.io.LlavaReader;
-import org.llava.lang.types.*;
+
 import org.llava.impl.util.List;
 
 public class LlavaReaderImpl

@@ -9,21 +9,20 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 30 (Thu) 19:28:20 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:35:04 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 10:32:15 by Harold Carr.
  */
 
-package org.llava.impl.runtime.procedure.primitive.llava;
+package org.llava.impl.procedure;
 
-import org.llava.impl.F;
-import org.llava.lang.types.Pair;
+import org.llava.F;
+import org.llava.Pair;
+import org.llava.UndefinedIdException;
+import org.llava.runtime.Engine;
+
+import org.llava.impl.procedure.GenericProcedureImpl;
 import org.llava.impl.util.List;
-import org.llava.impl.runtime.Engine;
-import org.llava.impl.runtime.FR;
-import org.llava.impl.runtime.exceptions.UndefinedIdException;
-import org.llava.impl.runtime.procedure.generic.GenericProcedureImpl;
 
 public class PrimLength
     extends

@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2000 Feb 10 (Thu) 03:17:11 by Harold Carr.
-;;;; Last Modified : 2004 Dec 02 (Thu) 08:45:54 by Harold Carr.
+;;;; Last Modified : 2004 Dec 07 (Tue) 18:38:44 by Harold Carr.
 ;;;;
 
 ;; Core Java 2 V1 p 209-214
@@ -33,7 +33,7 @@
   (lambda (instance-or-class-name)
     (let ((class null))
       (if (or (instanceof instance-or-class-name 'java.lang.String)
-	      (instanceof instance-or-class-name 'org.llava.lang.types.Symbol))
+	      (instanceof instance-or-class-name 'org.llava.Symbol))
 	  (set! class (-si 'forName 'java.lang.Class 
 			   (toString instance-or-class-name)))
 	  (set! class (getClass instance-or-class-name)))
@@ -134,7 +134,7 @@
 
 (define new-invocation-handler
   (lambda (lam)
-    (apply (new 'org.llava.impl.runtime.procedure.primitive.java.PrimNewInvocationHandler)
+    (apply (new 'org.llava.impl.procedure.PrimNewInvocationHandler)
 	   (list lam))))
 
 ;;;

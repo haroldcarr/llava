@@ -9,18 +9,18 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 2001 Jul 21 (Sat) 01:11:16 by Harold Carr.
- * Last Modified : 2001 Jul 21 (Sat) 01:12:57 by Harold Carr.
+ * Last Modified : 2004 Dec 07 (Tue) 19:08:33 by Harold Carr.
  */
 
-package org.llava.impl.runtime.procedure.primitive.java;
+package org.llava.impl.procedure;
 
-import org.llava.impl.F;
-import org.llava.lang.types.Pair;
-import org.llava.impl.runtime.Engine;
-import org.llava.impl.runtime.procedure.primitive.PrimitiveProcedure;
+import org.llava.F;
+import org.llava.Pair;
+import org.llava.runtime.Engine;
+
+import org.llava.impl.procedure.PrimitiveProcedure;
 
 public class Prim_Modulo
     extends
@@ -46,3 +46,4 @@ public class Prim_Modulo
 }
 
 // End of file.
+
