@@ -1,6 +1,6 @@
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2000 Feb 16 (Wed) 19:36:35 by Harold Carr.
+ * Last Modified : 2000 Feb 16 (Wed) 19:45:34 by Harold Carr.
  */
 
 package libLava.r1.procedure.generic;
@@ -81,8 +81,16 @@ public class DI {
     //
     // Existing public API.
     //
+
+    public static Object newInstance (String targetClassName, Object[] args)
+	throws
+	    ClassNotFoundException,
+	    Throwable
+    {
+	return newInstance(Class.forName(targetClassName), args);
+    }
 				  
-    public static Object create (Class targetClass, Object[] args) 
+    public static Object newInstance (Class targetClass, Object[] args) 
 	throws 
 	    Throwable 
     {
