@@ -9,7 +9,7 @@
 
 #
 # Created       : 1999 Dec 15 (Wed) 16:30:21 by Harold Carr.
-# Last Modified : 2004 Dec 08 (Wed) 10:24:39 by Harold Carr.
+# Last Modified : 2005 Mar 12 (Sat) 17:04:20 by Harold Carr.
 #
 
 TOPDIR		=	../..
@@ -24,10 +24,11 @@ FILES_java	= \
 	$(PKGDIR)/LlavaVersion.java \
 	$(PKGDIR)/Pair.java \
 	$(PKGDIR)/Procedure.java \
-	$(PKGDIR)/Symbol.java \
 	$(PKGDIR)/Repl.java \
-	$(PKGDIR)/WrongNumberOfArgumentsException.java \
-	$(PKGDIR)/UndefinedIdException.java
+	$(PKGDIR)/Symbol.java \
+	$(PKGDIR)/Syntax.java \
+	$(PKGDIR)/UndefinedIdException.java \
+	$(PKGDIR)/WrongNumberOfArgumentsException.java
 
 
 all :: classes 
