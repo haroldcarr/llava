@@ -1,7 +1,7 @@
 <!--
 //
 // Created       : 1999 Dec 29 (Wed) 14:53:37 by Harold Carr.
-// Last Modified : 2004 Dec 08 (Wed) 11:29:52 by Harold Carr.
+// Last Modified : 2004 Dec 10 (Fri) 23:12:41 by Harold Carr.
 //
 -->
 <chapter id="llava-ch-download">
@@ -65,6 +65,11 @@
 
       <listitem><para>
       <ulink url="http://llava.org/BUGS">Known bugs</ulink>
+      </para></listitem>
+
+      <listitem><para>
+      For a full list of improvements see the 
+      <ulink url="http://llava.org/TODO">TODO</ulink> list
       </para></listitem>
 
     </itemizedlist>
