@@ -9,7 +9,7 @@
 
 ;;;
 ;;; Created       : 1999 Dec 25 (Sat) 22:10:35 by Harold Carr.
-;;; Last Modified : 2004 Dec 14 (Tue) 12:38:38 by Harold Carr.
+;;; Last Modified : 2004 Dec 19 (Sun) 10:00:30 by Harold Carr.
 ;;;
 
 (package org.llava.lib.test.Test)
@@ -46,7 +46,7 @@
     (-si 'beginTest 'test.Test)))
 
 ;;;
-;;; begin-test
+;;; end-test
 ;;;
 
 (-doc-
@@ -59,6 +59,17 @@
 	 (print (-sf 'out 'java.lang.System) 
 		(string-append (toString (car args)) "<-: ")))
     (-si 'endTest 'test.Test)))
+
+;;;
+;;; end-test
+;;;
+
+(-doc-
+ (name throw-exception-if-failures))
+
+(define throw-exception-if-failures
+  (lambda args
+    (-si 'throwExceptionIfFailures 'test.Test)))
 
 ;;;
 ;;; tprintln
