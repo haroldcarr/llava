@@ -3,7 +3,7 @@
 <!--
 //
 // Created       : 1999 Dec 29 (Wed) 14:53:37 by Harold Carr.
-// Last Modified : 2004 Nov 27 (Sat) 11:07:03 by Harold Carr.
+// Last Modified : 2004 Nov 29 (Mon) 16:09:16 by Harold Carr.
 //
 -->
 
@@ -63,7 +63,7 @@
 ]>
 
   <book id="llava">
-  <!-- <title>&version;</title> -->
+  <title>&version;</title>
   <subtitle> 
   <mediaobject>
     <imageobject>
