@@ -69,7 +69,7 @@ makeVersion : classes
 	`$(LLAVAVERSION) > VERSION`
 	`$(LLAVAVERSION) dateOnly > VERSIONDATEONLY`
 
-release : message clean scrub makeVersion zip-src zip-lib all c jar docs release_end
+release : message clean scrub makeVersion zip-src all c jar docs release_end
 
 message : FORCE
 	-@echo "WARNING: USE J2SE 1.4 or less for RELEASE"
@@ -88,6 +88,8 @@ release_end :
 #
 
 JARDIR		=	$(PWDCOLON)/jars
+MAINCLASS	=	"Main-Class: org.llava.impl.Llava"
+MAINCLASSTXT	= 	main-class.txt
 
 $(JARDIR) : FORCE
 	mkdir -p $@
@@ -95,17 +97,12 @@ $(JARDIR) : FORCE
 scrub :: FORCE
 	rm -rf $(JARDIR)
 
+# NOTE: the echo MUST add a newline or MAINCLASS is not parsed.
 jar: $(JARDIR)
 	cd $(CLASSDESTDIR); \
-	$(JAR) -cvf $(JARDIR)/llava.jar org
-
-zip-lib: $(JARDIR)
-	TMPFILE=/tmp/flist; \
-	rm -f $TMPFILE; \
-	touch $TMPFILE; \
-	find ./org/llava/lib -name "*" -print >> $TMPFILE; \
-	zip -9 $(JARDIR)/llavalib.zip -@ <$TMPFILE; \
-	rm -f $TMPFILE
+	rm -f main-class.txt; \
+	echo $(MAINCLASS) > $(MAINCLASSTXT); \
+	$(JAR) -cvmf $(MAINCLASSTXT) $(JARDIR)/llava.jar org
 
 zip-src: $(JARDIR)
 	TMPFILE=/tmp/flist; \
