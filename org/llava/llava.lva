@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2004 Sep 05 (Sun) 11:27:57 by Harold Carr.
-;;;; Last Modified : 2004 Dec 18 (Sat) 23:57:16 by Harold Carr.
+;;;; Last Modified : 2005 Feb 06 (Sun) 23:40:07 by Harold Carr.
 ;;;;
 
 (-package-
@@ -66,6 +66,7 @@
  (param packagePathAndClassName)
  (param obj)
  (param ...)
+ (category syntax)
  (description
   "Examples:"
   (example
@@ -75,7 +76,21 @@
    the constructor directly:"
   (example
 "(import java.lang.Integer)
-(Integer 3)")))
+(Integer 3)
+
+or you can use new shorthand:
+
+(new 'Integer 3)"
+)))
+
+(-doc-
+ (name new*)
+ (param packagePathAndClassName)
+ (param obj)
+ (param ...)
+ (description
+  "Like syntax new except it is a procedure.  Do not use this
+   in procedure in packages that are used by procedures in other packages."))
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -498,7 +513,7 @@ and
   "llava uses a parenthesized prefix notation for programs and
    (other) data."
 
-  "The <function>read</function> procedure performs syntactic as
+  "The <function>-read</function> procedure performs syntactic as
    well as lexical decomposition of the data it reads."))
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
