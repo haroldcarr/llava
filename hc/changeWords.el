@@ -1,4 +1,4 @@
-g(load "hcChangeWords")
+(load "hcChangeWords")
 (defun is-ignored-p (full-path-and-name)
   (member (file-name-nondirectory full-path-and-name)
 	  '("SCCS" "RCS")))
@@ -21,8 +21,12 @@ g(load "hcChangeWords")
    ("org.llava.lib.scm.Predicates"  . "org.llava.lib.scm.Predicate")
    ("org.llava.lib.scm.Strings"  . "org.llava.lib.scm.String")
   )
-  "~/.sync/.llava.org/.system"
-  "~/.sync/.llava.org/.system"
+ "~/.sync/.esync"
+ "~/.sync/.esync"
  t)
+
+;  "~/.sync/.llava.org/.system"
+;  "~/.sync/.llava.org/.system"
+
 
 ;;; End of file.
