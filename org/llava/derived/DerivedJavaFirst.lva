@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2004 Sep 06 (Mon) 00:01:09 by Harold Carr.
+;;;; Last Modified : 2005 Feb 06 (Sun) 16:09:49 by Harold Carr.
 ;;;;
 
 ;made into primitive for speed
@@ -17,5 +17,14 @@
 ;(define instanceof
 ;  (lambda (obj type)
 ;    (isInstance (-si 'forName 'java.lang.Class (toString type)) obj)))
+
+(define-syntax new
+  (lambda (class-name . args)
+    (set! class-name 
+	  (getFullNameForClass _%boot-namespace (eval class-name)))
+    ;; let and quasiquote are not available yet
+    ;;`(new* ',class-name ,@args))))
+    ;;(-println (cons 'new* (cons (list 'quote class-name) args)))
+    (cons 'new* (cons (list 'quote class-name) args))))
 
 ;;; End of file.
