@@ -1,7 +1,7 @@
 <!--
 //
 // Created       : a long time ago by Harold Carr.
-// Last Modified : 2004 Aug 26 (Thu) 23:08:23 by Harold Carr.
+// Last Modified : 2004 Dec 12 (Sun) 14:40:52 by Harold Carr.
 //
 -->
 <appendix id="llava-ap-motivation">
@@ -9,25 +9,54 @@
   <title>Motivation</title>
 
   <para>
-During the 80s I was involved in designing and building LISP systems
-[cite*****].  When funding for LISP became scarce I switched to
-distributed computing and ended up working for SUN Microsystems on
-CORBA software in C++ [cite*****].  Then Java arrived.  At SUN, our
-group's efforts in C++ were redirected towards Java.
-  </para>
+During the 80s and early 90s I was involved in designing and building
+Lisp systems.
+
+<!-- REVISIT: how to get past the ampersands in the URL?
+(<ulink url="http://portal.acm.org/citation.cfm?id=161270.161285&dl=GUIDE&dl=GUIDE&CFID=33708534&CFTOKEN=68233485">LaSC5</ulink>,
+
+<ulink -->
+<!--url="http://portal.acm.org/citation.cfm?id=83661.83679&coll=GUIDE&dl=GUIDE&CFID=33708534&CFTOKEN=68233485">LaSC3</ulink>)
+-->
+
+When funding for Lisp became scarce I switched to distributed
+computing 
+
+<!--
+(<ulink url="http://portal.acm.org/citation.cfm?id=156702&jmp=indexterms&dl=GUIDE&dl=GUIDE">DC++</ulink>)
+-->
+
+and ended up working for SUN Microsystems on CORBA software
+in C++ 
+
+(<ulink url="http://sunsite.uakom.sk/sunworldonline/swol-10-1995/swol-10-doe.html">DOE/NEO</ulink>).
+
+Then Java arrived.  At SUN, our group's efforts in C++ were redirected
+towards Java.  </para>
 
   <para>
 Immediately, upon first using Java, I was struck by the fact that it
 was fun to program again (vis-a-vis the tedious nature of programming
 in C++).  It was clear that the reason for this joy was Java's higher
-level ala LISP.  However, once I tasted that level again I was soon
-disappointed by Java since it lacked many features of LISP which make
+level ala Lisp.  However, once I tasted that level again I was soon
+disappointed by Java since it lacked many features of Lisp which make
 working at that level fun and productive.
   </para>
 
   <para>
-Then Per Bothner released Kawa [cite*****], a version of Scheme
-[cite*****] in Java.  Using Kawa I was able to program a little more
+Then 
+
+<ulink url="http://www.bothner.com/per/">Per Bothner</ulink>
+
+released
+
+<ulink url="http://www.gnu.org/software/kawa/">Kawa</ulink>,
+
+a version of 
+
+<ulink url="http://schemers.org/">Scheme</ulink>
+
+in Java.  Using Kawa I was able to program a little more
 interactively with Java but I kept running into missing library items.
 I was continually forced to choose between finding versions of btrees,
 hash tables, etc., in public-domain Scheme code, or making
@@ -39,10 +68,13 @@ I ended up doing more of the later.  I automated this with an "import"
 macro which would automatically wrap all or selected methods of
 specified Java classes using Java reflection.  However, I then kept
 running into the need to convert between Kawa/Scheme IO, strings,
-characters, etc., and Java IO, strings, charactes, etc.  When I wanted
+characters, etc., and Java IO, strings, characters, etc.  When I wanted
 to define classes for use in Kawa I either had to write the classes in
-Java which I could import with my macro, or I could use Meroon
-[cite*****] or some other Scheme object system.  However the Scheme
+Java which I could import with my macro, or I could use 
+
+<ulink url="http://www-spi.lip6.fr/~queinnec/WWW/Meroon.html">Meroon</ulink>
+
+or some other Scheme object system.  However the Scheme
 objects did not interoperate with the Java objects so I was back to
 the non-interoperability of Kawa and Java types again.  This lack of
 interoperability just kept cropping up every step of the way,
@@ -53,16 +85,16 @@ great system.)
   </para>
 
   <para>
-That's when I got the idea for LLAVA.
+That's when I got the idea for <emphasis>llava</emphasis>.
   </para>
 
   <para>
-Why not create a version of Java which uses LISP syntax (or, more
-precisely, LISP's lack of syntax) to write Java classes?  Then extend
-that system to include a few special forms (LAMBDA, DEFINE, SET!, IF,
-DEFINE-SNYTAX, *****), and a read-eval-print loop and support for
+Why not create a version of Java which uses Lisp syntax (or, more
+precisely, Lisp's lack of syntax) to write Java classes?  Then extend
+that system to include a few special forms (lambda, set!, if, quote,
+define-syntax), a read-eval-print loop and support for
 incremental (re)definition to support interactive program development.
-In other words, a minimal LISP system with complete interoperability
+In other words, a minimal Lisp system with complete interoperability
 with Java to leverage the Java Virtual Machine and growing Java class
 libraries.
   </para>
@@ -70,7 +102,7 @@ libraries.
   <para>
   Originally my name for llava was JIST: for Java + lIST.  I called it
   JIST (not JISP), to emphasize the combination of Java and lIST
-  capabilities and syntax, rather than give the impression of a LISP
+  capabilities and syntax, rather than give the impression of a Lisp
   system written in Java.
   </para>
 
@@ -82,8 +114,9 @@ libraries.
   </para>
 
   <para>
-  llava is <emphasis>not</emphasis> a LISP/Scheme system written in
-  Java.  The philosophy of llava is: maximum leverage of
+  llava is <emphasis>not</emphasis> a Lisp/Scheme system written in
+  Java.  llava <emphasis>is</emphasis> access to Java via Lisp syntax
+  and features.  The philosophy of llava is: maximum leverage of
   Java&mdash;only add what is missing or cannot be done in Java 
   (e.g., list "syntax" and library, repl, incremental (re)definition,
   macros).
