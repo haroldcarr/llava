@@ -3,7 +3,7 @@
 // Last Modified : 2004 Dec 01 (Wed) 10:15:34 by Harold Carr.
 //
 
-package testLava.proto;
+package libLava.r1.env;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,29 +15,45 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import lava.F;
-import lava.Lava; // REVISIT
+import lava.Repl;
 import lava.lang.exceptions.LavaException;
 import lava.lang.types.Pair;
+import lava.lang.types.Procedure;
 import lava.lang.types.Symbol;
 
 import libLava.rt.EnvironmentTopLevel;
 import libLava.rt.FR;
 import libLava.rt.UndefinedIdHandler;
-import libLava.r1.Engine; // REVISIT
-import libLava.r1.FR1;
-import libLava.r1.procedure.primitive.java.PrimNew; // REVISIT
 
 
 // TODO:
 //
-// - Implement importJavaClassIntoCurrentPackage
+// - Reenable import test in testBuiltIns.
 //
-// - Integrate with Lava.
+// - Reenable/fix selective import
 //
 // - new, ,catch, instanceof should take short names if imported,
 //   long names regardless.
 //
 // - Make thread safe.
+
+// NOTE:
+//
+// - macros imported into root do not work.
+//   if the only namespace is lava.Lava and it is not sealed and you
+//   do:
+//
+// (import test.tt) ;; contains a macro definition of "m".
+// (define (m x) (list x))
+//
+// right at startup then defGenInternal complains that it is
+// expecting a lambda.
+//
+// I have not tracked this down and do not intend to since the root
+// package is now sealed.  It probably has something to do with
+// the root needs to be the last in the refList but if you import
+// then it screws up the order or makes it circular.
+
 
 // Think about:
 //
@@ -52,40 +68,85 @@ public class NamespaceImpl
 	EnvironmentTopLevel,
 	Namespace
 {
+    private String name;
+
+    private Hashtable map;
+
+    private Vector refList;
+
+    // Non-zero if namespace has an associated .lva file.
+    private long fileLastModified;
+
+    // true if namespace has an associated .class file.
+    private boolean classAlreadyImported;
+
+    // true if illegal to import or set values in a namespace.
+    private boolean isSealed;
+
+    private ClassVariables classVariables;
+
+    /**
+     * Variables shared between all class instances whose constructor
+     * is passed an instance of ClassVariables.
+     *
+     * This is so multiple environments can exist independently.
+     */
+    class ClassVariables
+    {
+	// Maps <package>[.<package>]* to its namespace representation.
+	// Used to find existing namespaces.
+
+	Hashtable fullNameNamespaceMap = new Hashtable();
+
+	// The root namespace contains the built-in system procedures.
+	// It MUST start as null so create call will work during
+	// initialization.
+
+	NamespaceImpl rootNamespace;
+
+	// "package" switches the current namespace.
+
+	NamespaceImpl currentNamespace;
+
+	// When "import" finds a .lva file it will then load that file.
+	// The system ensures the package statement in that file is correct.
+
+	String nextPackageShouldBe = null;
+
+	// Marker to return when values not found in map.
+
+	Object NOT_FOUND = new Object();
+
+	// Marker to indicate a null value is stored in the map.
+
+	Object NULL_VALUE = new Object();
+
+	UndefinedIdHandler undefinedIdHandler = FR.newUndefinedIdHandler();
+
+	Repl repl;
+
+	ClassVariables ()
+	{
+	    // N.B.: Each namespace always contains the topLevelNamespace
+	    // at the end of its refList.  During initialization we need to
+	    // explicitly remove this reference - both because it doesn't
+	    // exist so it is null - and if it did exist would cause a circular
+	    // lookup.
+
+	    rootNamespace = createNamespace("lava.Lava", this);
+	    rootNamespace.getRefList().remove(1);
+	    currentNamespace = rootNamespace;
+	}
+    }
+
     //
     // EnvironmentTopLevel interface methods.
     //
 
     public EnvironmentTopLevel newEnvironmentTopLevel ()
     {
-	// REVISIT - wasted space when making factory.
-	EnvironmentTopLevel ns = new NamespaceImpl();
-	ns.initialize();
+	NamespaceImpl ns = new NamespaceImpl(new ClassVariables());
 	return ns;
-    }
-
-    // REVISIT - remove this.  And remove calls to it.
-    public void initialize ()
-    {
-	undefinedIdHandler = FR.newUndefinedIdHandler();
-
-	NOT_FOUND = new Object();
-
-	fullNameNamespaceMap = new Hashtable();
-
-	// N.B.: Each namespace always contains the topLevelNamespace
-	// at the end of its refList.  During initialization we need to
-	// explicitly remove this reference - both because it doesn't
-	// exist so it is null - and if it did exist would cause a circular
-	// lookup.
-
-	rootNamespace = createNamespace("lava.Lava");
-	rootNamespace.getRefList().remove(1);
-
-	// The system starts in the REPL namespace.
-
-	replNamespace = createNamespace("lava.REPL");
-	currentNamespace = replNamespace;
     }
 
     /**
@@ -116,34 +177,60 @@ public class NamespaceImpl
 
     public UndefinedIdHandler getUndefinedIdHandler ()
     {
-	return undefinedIdHandler;
+	return classVariables.undefinedIdHandler;
     }
 
     public UndefinedIdHandler setUndefinedIdHandler (UndefinedIdHandler handler)
     {
-	return undefinedIdHandler = handler;
+	return classVariables.undefinedIdHandler = handler;
     }
 
     //
     // Namespace interface methods.
     //
 
-    public Namespace _package (Object packagePathAndName, Object className)
+    public Namespace _package (Symbol packagePathAndName, Symbol className)
     {
 	String PC = packagePathAndName.toString() + "." + className.toString();
-	if (nextPackageShouldBe != null) {
-	    if (! PC.equals(nextPackageShouldBe)) {
+	if (classVariables.nextPackageShouldBe != null) {
+	    if (! PC.equals(classVariables.nextPackageShouldBe)) {
 		throw F.newLavaException("incorrect package: " + PC + 
-					 " should be: " + nextPackageShouldBe);
+					 " should be: " +
+					 classVariables.nextPackageShouldBe);
 	    }
 	}
-	currentNamespace = findOrCreateNamespace(PC);
-	return currentNamespace;
+	classVariables.currentNamespace = findOrCreateNamespace(PC);
+	return classVariables.currentNamespace;
     }
 
-    public String _import (Object classPathAndName)
+    public String _import (Symbol classPathAndName)
     {
 	return _import(classPathAndName.toString());
+    }
+
+    public boolean setIsSealed (boolean b)
+    {
+	return isSealed = b;
+    }
+
+    public Namespace findNamespace (Symbol name)
+    {
+	return findNamespace(name.toString());
+    }
+
+    public Namespace getCurrentNamespace ()
+    {
+	return classVariables.currentNamespace;
+    }
+
+    public String getName () 
+    {
+	return name; 
+    }
+
+    public String getFullNameForClass (Object x)
+    {
+	return getFullNameForClass(x.toString());
     }
 
     // --------------------------------------------------
@@ -153,56 +240,6 @@ public class NamespaceImpl
     //
 
     //
-    // Class variables.
-    //
-
-    // Maps <package>[.<package>]* to its namespace representation.
-    // Used to find existing namespaces.
-
-    private static Hashtable fullNameNamespaceMap;
-
-    // The root namespace contains the built-in system procedures.
-    // It MUST start as null so create call will work during initialization.
-
-    private static NamespaceImpl rootNamespace;
-
-    // The repl namespace (read/eval/print/loop) namespace is the
-    // default interactive namespace.
-
-    private static NamespaceImpl replNamespace;
-
-    // "package" switches the current namespace.
-
-    private static NamespaceImpl currentNamespace; 
-
-    // When "import" finds a .lva file it will then load that file.
-    // The system ensures the package statement in that file is correct.
-
-    private static String nextPackageShouldBe;
-
-    // Marker to return when values not found in map.
-
-    private static Object NOT_FOUND;
-
-    private static UndefinedIdHandler undefinedIdHandler;
-
-    // -------------------------
-
-    //
-    // Instance variables.
-    //
-
-    private String name;
-    private Hashtable map;
-    private Vector refList;
-    // Non-zero if namespace has an associated .lva file.
-    private long fileLastModified;
-    // true if namespace has an associated .class file.
-    private boolean classAlreadyImported;
-
-    // -------------------------
-
-    //
     // Foundation.
     //
 
@@ -210,38 +247,49 @@ public class NamespaceImpl
     {
     }
 
-    public NamespaceImpl (String name, Namespace root)
+    public NamespaceImpl (ClassVariables classVariables)
+    {
+	this.classVariables = classVariables;
+    }
+
+    public NamespaceImpl (String name, Namespace root, 
+			  ClassVariables classVariables)
     {
 	this.name             = name;
 	this.map              = new Hashtable();
 	this.refList          = new Vector();
 	this.fileLastModified = 0;
 	this.classAlreadyImported = false;
+	this.isSealed         = false;
 
-	refList.add(0, this); // Self at front.
+	this.refList.add(0, this); // Self at front.
 	                      // imports between.
-	refList.add(root);    // root always at end.
+	this.refList.add(root);    // root always at end.
+	this.classVariables   = classVariables;
+    }
+
+    public NamespaceImpl createNamespace (String name, 
+					  ClassVariables classVariables)
+    {
+	// This should not be called if the name exists.
+	// It does not check.  It just overwrites in that case.
+	NamespaceImpl ns = new NamespaceImpl(name, 
+					     classVariables.rootNamespace,
+					     classVariables);
+	classVariables.fullNameNamespaceMap.put(name, ns);
+	return ns;
     }
 
     public NamespaceImpl findNamespace (String name)
     {
-	return (NamespaceImpl) fullNameNamespaceMap.get(name);
-    }
-
-    public NamespaceImpl createNamespace (String name)
-    {
-	// This should not be called if the name exists.
-	// It does not check.  It just overwrites in that case.
-	NamespaceImpl ns = new NamespaceImpl(name, rootNamespace);
-	fullNameNamespaceMap.put(name, ns);
-	return ns;
+	return (NamespaceImpl) classVariables.fullNameNamespaceMap.get(name);
     }
 
     public NamespaceImpl findOrCreateNamespace (String name)
     {
 	NamespaceImpl ns = findNamespace(name);
 	if (ns == null) {
-	    return createNamespace(name);
+	    return createNamespace(name, classVariables);
 	} else {
 	    return ns;
 	}
@@ -284,7 +332,15 @@ else
 
     public String _import (String name)
     {
-	NamespaceImpl current = getCurrentNamespace();
+	NamespaceImpl current = (NamespaceImpl) getCurrentNamespace();
+
+	if (current.isSealed) {
+	    throw F.newLavaException("package: "
+				     + current.getName()
+				     + " is sealed.  Cannot import: "
+				     + name);
+	}
+
 	if (current.alreadyImportedInNamespaceP(name)) {
 	    return current.alreadyImportedInNamespace(name);
 	} else {
@@ -368,9 +424,12 @@ else
 	    try {
 		// No need to check if already imported since this procedure
 		// is only called in that case.
-		System.out.println("here we would import the static methods and fields");
-		getCurrentNamespace().setClassAlreadyImported(true);
-		addToRefList(getCurrentNamespace());
+		String expr = "(_%importAux '" + name + ")";
+		System.out.println(expr); // REVISIT
+		getRepl().readCompileEval(expr);
+		((NamespaceImpl)getCurrentNamespace())
+		    .setClassAlreadyImported(true);
+		addToRefList((NamespaceImpl)getCurrentNamespace());
 	    } finally {
 		setCurrentNamespace(this);
 	    }
@@ -442,27 +501,29 @@ else
 	    (file.lastModified() > fileLastModified))
 	{
 	    try {
-		nextPackageShouldBe = name;
-		// REVISIT - fix how this communicates when integrated.
-		try {
-		    Lava.lava.loadFile(loadPathAndName);
-		} catch (Exception e) {
-		    // REVISIT - should be FileNotFoundException
-		    return null;
-		}
+		classVariables.nextPackageShouldBe = name;
+		getRepl()
+		    .readCompileEval("(load \"" + loadPathAndName + "\")");
 		// We loaded the file, either because it was a new import
 		// or because it had been touched.
+
+		// Make sure it had a correct package definition.
+		if (! name.equals(getCurrentNamespace().getName())) {
+		    throw F.newLavaException(
+                        "Missing or incorrect package statement.  Expecting: "
+			+ name);
+		}
+
 		if (addToRefListP) {
-		    // NOTE:
-		    // Depends on package procedure setting currentNamespace
-		    // during the above load.
-		    addToRefList(getCurrentNamespace());
+		    // NOTE: Depends on package procedure setting
+		    // currentNamespace during the above load.
+		    addToRefList((NamespaceImpl)getCurrentNamespace());
 		}
 		findNamespace(name).setFileLastModified(file.lastModified());
 		return (addToRefListP ? "(re)load: " : "") + loadPathAndName;
 	    } finally {
 		setCurrentNamespace(this);
-		nextPackageShouldBe = null;
+		classVariables.nextPackageShouldBe = null;
 	    }
 	}
 	return "no change: " + loadPathAndName;
@@ -494,7 +555,32 @@ else
 	if (isDottedP(identifier)) {
 	    throw F.newLavaException("setE!: no dots allowed: " + identifier);
 	}
-	getCurrentNamespace().getMap().put(identifier, val);
+
+	NamespaceImpl current = (NamespaceImpl) getCurrentNamespace();
+
+	if (current.isSealed) {
+	    throw F.newLavaException("package: "
+				     + current.getName()
+				     + " is sealed.  Cannot set: "
+				     + identifier
+				     + " to: "
+				     + val);
+	}
+
+
+	Hashtable map = ((NamespaceImpl)getCurrentNamespace()).getMap();
+	// Hashtable does not allow null values to be put.
+	map.put(identifier, 
+		val == null ? classVariables.NULL_VALUE : val);
+	// REVISIT
+	// TestCompilerAndEngine "(list 1)" after setting list to
+	// newPrimList fails - because DI does not throw the right
+	// error.  I think because then name was null until I
+	// added the following code (from EnvironmentTopLevelImpl).
+	if (val != null && val instanceof Procedure) {
+	    ((Procedure)val).setName(identifier);
+	}
+
 	return val;
     }
 
@@ -505,8 +591,8 @@ else
 			     variableOf(identifier),
 			     ignoreUndefined);
 	} else {
-	    return getCurrentNamespace().refNotDotted(identifier, 
-						      ignoreUndefined);
+	    return ((NamespaceImpl)getCurrentNamespace())
+		.refNotDotted(identifier, ignoreUndefined);
 	}
     }
 
@@ -550,15 +636,21 @@ else
 	for (int i = 0; i < size; i++) {
 	    NamespaceImpl current = (NamespaceImpl) refList.elementAt(i);
 	    Hashtable map = current.getMap();
-	    Object result = lookupInMap(map, identifier, NOT_FOUND);
-	    if (result != NOT_FOUND) {
-		return result;
+	    Object result = lookupInMap(map, identifier, 
+					classVariables.NOT_FOUND);
+	    if (result != classVariables.NOT_FOUND) {
+		if (result == classVariables.NULL_VALUE) {
+		    return null;
+		} else {
+		    return result;
+		}
 	    }
 	}
 	return
 	    ignoreUndefined ?
 	    null :
-	    undefinedIdHandler.handle(this, F.newSymbol(identifier));
+	    classVariables.undefinedIdHandler.handle(this, 
+						     F.newSymbol(identifier));
     }
 
     public Object lookupInMap(Hashtable map, String identifier,
@@ -608,55 +700,47 @@ else
 	String originalPC = pc;
 	// Enables .foo shorthand for built-in procedures.
 	pc = (pc.equals("") ? "lava.Lava" : pc);
-	NamespaceImpl ns = getCurrentNamespace().findNamespaceInRefList(pc);
+	NamespaceImpl ns = 
+	    ((NamespaceImpl)getCurrentNamespace()).findNamespaceInRefList(pc);
 	if (ns != null) {
-	    Object result = lookupInMap(ns.getMap(), identifier, NOT_FOUND);
-	    if (result != NOT_FOUND) {
-		return result;
+	    Object result = lookupInMap(ns.getMap(), identifier,
+					classVariables.NOT_FOUND);
+	    if (result != classVariables.NOT_FOUND) {
+		if (result == classVariables.NULL_VALUE) {
+		    return null;
+		} else {
+		    return result;
+		}
 	    }
 	}
 	return
 	    ignoreUndefined ?
 	    null :
-	    undefinedIdHandler.handle(this, 
-				      F.newSymbol(originalPC 
-						  + "." 
-						  + identifier));
+	    classVariables.undefinedIdHandler.handle(
+                this, 
+		F.newSymbol(originalPC 
+			    + "." 
+			    + identifier));
     }
 
     // --------------------------------------------------
 
     //
-    // Support for "new".
+    // Support for "new", "instanceof", "catch".
     //
 
-    public Object newE (Symbol x, Pair args)
-    {
-	return newE (x.toString(), args);
-    }
-
-    public Object newE (String x, Pair args)
+    public String getFullNameForClass (String x)
     {
 	if (isDottedP(x)) {
-	    // REVISIT
-	    PrimNew primNew = FR1.newPrimNew();
-	    return primNew.apply(F.cons(F.newSymbol(x), args),
-				 (Engine)null);
+	    return x;
 	}
-	return newNotDotted(x, args);
-    }
-
-    public Object newNotDotted (String x, Pair args)
-    {
-	NamespaceImpl ns = getCurrentNamespace().findNamespaceInRefList(x);
-	if (ns != null) {
-	    // REVISIT
-	    PrimNew primNew = FR1.newPrimNew();
-	    // REVISIT is newSymbol necessary?
-	    return primNew.apply(F.cons(F.newSymbol(ns.getName()), args),
-				 (Engine) null);
+	NamespaceImpl ns = 
+	    ((NamespaceImpl)getCurrentNamespace()).findNamespaceInRefList(x);
+	if (ns == null) {
+	    throw F.newLavaException("getFullNameForClass: undefined: "
+				     + x);
 	}
-	throw F.newLavaException("Undefined: " + x);
+	return ns.getName();
     }
 
     // --------------------------------------------------
@@ -667,23 +751,23 @@ else
 
     public NamespaceImpl getRootNamespace ()
     {
-	return rootNamespace;
-    }
-
-    public NamespaceImpl getCurrentNamespace ()
-    {
-	return currentNamespace;
+	return classVariables.rootNamespace;
     }
 
     public NamespaceImpl setCurrentNamespace (NamespaceImpl namespace)
     {
-	currentNamespace = namespace;
-	return currentNamespace;
+	classVariables.currentNamespace = namespace;
+	return classVariables.currentNamespace;
     }
 
-    public String getName () 
+    public Repl getRepl ()
     {
-	return name; 
+	return classVariables.repl;
+    }
+
+    public Repl setRepl (Repl repl)
+    {
+	return classVariables.repl = repl;
     }
 
     public Hashtable getMap ()
@@ -744,7 +828,7 @@ else
 
     public Pair getFullNameNamespaceMapKeys ()
     {
-	Enumeration keys = fullNameNamespaceMap.keys();
+	Enumeration keys = classVariables.fullNameNamespaceMap.keys();
 	ArrayList arrayList = new ArrayList();
 	while (keys.hasMoreElements()) {
 	    arrayList.add(keys.nextElement());
