@@ -12,13 +12,15 @@ or send a letter to
 
 //
 // Created       : 2000 Oct 21 (Sat) 10:46:48 by Harold Carr.
-// Last Modified : 2004 Dec 01 (Wed) 10:15:34 by Harold Carr.
+// Last Modified : 2004 Nov 30 (Tue) 22:37:10 by Harold Carr.
 //
 
 package org.llava.impl.runtime.env;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -544,6 +546,14 @@ else
     public String importLlavaFileIntoNamespaceLoop(
        String name, boolean addToRefListP, long fileLastModified)
     {
+	InputStreamReader in = getLlavaFileAsResource(name);
+	//System.out.println(in);
+	if (in != null) {
+	    return loadFileWhichExists(in, (File)null, name, 
+				       "resource: " + name,
+				       addToRefListP, fileLastModified);
+	}
+
 	StringTokenizer pathTokens = getClassPathTokens();
 	String loadName = name.replace('.', '/');
 	while (pathTokens.hasMoreTokens()) {
@@ -573,15 +583,23 @@ else
 	if (! file.exists()) {
 	    return null;
 	}
-	return loadFileWhichExists(file, name, loadPathAndName,
+	return loadFileWhichExists(null, file, name, loadPathAndName,
 				   addToRefListP, fileLastModified);
     }
 
     public String loadFileWhichExists (
+	InputStreamReader in,
         File file, String name, String loadPathAndName,
         boolean addToRefListP, long fileLastModified)
     {
-	if ((fileLastModified == 0) ||
+	/*
+	System.out.println();
+	System.out.println("loadFileWhichExists: " + in + " "
+			   + file + " " + name + " "
+			   + loadPathAndName + " " + addToRefListP + " "
+			   + fileLastModified);
+	*/
+	if ((in != null) || (fileLastModified == 0) ||
 	    (file.lastModified() > fileLastModified))
 	{
 	    if (getLlavaFilesCurrentlyBeingLoaded().contains(loadPathAndName)) {
@@ -595,7 +613,7 @@ else
 	    // Needs to be loaded.
 	    getLlavaFilesCurrentlyBeingLoaded().add(loadPathAndName);
 	    try {
-		return loadFileNewOrTouched(file, name, loadPathAndName, 
+		return loadFileNewOrTouched(in, file, name, loadPathAndName, 
 					    addToRefListP);
 	    } finally {
 		getLlavaFilesCurrentlyBeingLoaded().remove(loadPathAndName);
@@ -610,12 +628,22 @@ else
 	return "no change: " + loadPathAndName;
     }
 
-    public String loadFileNewOrTouched (
+    public String loadFileNewOrTouched (InputStreamReader in,
         File file, String name, String loadPathAndName, boolean addToRefListP)
     {
+	/*
+	System.out.println();
+	System.out.println("loadFileNewOrTouched: " + in + " "
+			   + file + " " + name + " "
+			   + loadPathAndName + " " + addToRefListP);
+	*/
 	try {
 	    classVariables.nextPackageShouldBe = name;
-	    getRepl().readCompileEval("(load \"" + loadPathAndName + "\")");
+	    if (in == null) {
+		getRepl().readCompileEval("(load \""+ loadPathAndName + "\")");
+	    } else {
+		getRepl().readCompileEvalUntilEOF(in);
+	    }
 	    // We loaded the file, either because it was a new
 	    // import or because it had been touched.
 	    // Make sure it had a correct package definition.
@@ -630,12 +658,37 @@ else
 		// currentNamespace during the above load.
 		addToRefList((NamespaceImpl)getCurrentNamespace());
 	    }
-	    findNamespace(name).setFileLastModified(file.lastModified());
+	    if (file != null) {
+		findNamespace(name).setFileLastModified(file.lastModified());
+	    }
 	    return (addToRefListP ? "(re)load: " : "") + loadPathAndName;
 	} finally {
 	    setCurrentNamespace(this);
 	    classVariables.nextPackageShouldBe = null;
 	}
+    }
+
+    // REVISIT: this needs to be extensible so it can find
+    // resources in jar files besides llava.jar
+    public InputStreamReader getLlavaFileAsResource(String name)
+    {
+	if (! name.startsWith("org.llava.lib.")) {
+	    return null;
+	}
+	String loadName = name.replace('.', '/');
+	loadName = loadName.replaceFirst("org/llava/", "");
+	loadName += ".lva";
+	//System.out.print(loadName);
+	try {
+	    Class lclass = Class.forName("org.llava.LlavaVersion");
+	    InputStream in = lclass.getResourceAsStream(loadName);
+	    if (in != null) {
+		return new InputStreamReader(in);
+	    }
+	} catch (ClassNotFoundException e) {
+	    throw F.newLlavaException("SHOULD NOT HAPPEN");
+	}
+	return null;
     }
 
     public void addToRefList (NamespaceImpl reference)
