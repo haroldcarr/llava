@@ -9,13 +9,12 @@
 
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2004 Sep 14 (Tue) 09:44:22 by Harold Carr.
+;;;; Last Modified : 2004 Nov 26 (Fri) 17:23:21 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.Lists)
 
 (import org.llava.lib.Control)
-(import org.llava.lib.scm.Vectors)
 (import org.llava.lib.scm.Strings)
 
 (-package- (description "Useful list utilities."))
