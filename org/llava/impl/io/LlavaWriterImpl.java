@@ -20,10 +20,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import org.llava.impl.F;
+import org.llava.F;
+import org.llava.Pair;
+import org.llava.Symbol;
 import org.llava.io.LlavaWriter;
-import org.llava.lang.types.Pair;
-import org.llava.lang.types.Symbol;
+
 import org.llava.impl.util.List;
 
 public class LlavaWriterImpl
@@ -36,6 +37,7 @@ public class LlavaWriterImpl
     private Symbol UNQUOTE_SPLICING = F.newSymbol("unquote-splicing");
 
     private PrintWriter out;
+    private int vectorPrintLength = Integer.MAX_VALUE;
 
     public LlavaWriterImpl ()
     {
@@ -76,7 +78,7 @@ public class LlavaWriterImpl
 	    emit(x, out);
 	} else if (x.getClass().isArray()) {
 	    emit("#", out);
-	    write(List.vector2list(x), out);
+	    write(List.vector2list(x, vectorPrintLength), out);
 	} else {
 	    emit(x, out);
 	}
@@ -87,6 +89,23 @@ public class LlavaWriterImpl
     {
 	return out;
     }
+
+    public Object setVectorPrintLength (boolean x)
+    {
+	return setVectorPrintLength( (x ? Integer.MAX_VALUE : 0) );
+    }
+
+    public Object setVectorPrintLength (int x)
+    {
+	vectorPrintLength = x;
+	return x;
+    }
+
+
+    //////////////////////////////////////////////////
+    //
+    // Implementation
+    //
 
     private Object writePair(Pair pair, PrintWriter out) 
     {
