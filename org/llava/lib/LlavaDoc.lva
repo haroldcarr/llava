@@ -18,12 +18,122 @@
 (import org.llava.lib.io.FileWalker)
 (import org.llava.lib.scm.Lists)
 
+(-package-
+ (description
+  "Generates package and procedure documentation in DocBook format."))
+
+(-comment-
+-doc- for llavadoc only; handwrite the intro/book
+-package- -> section with title same a (package ...) 
+             or (-package- (location ...))
+-doc-     -> refentry
+
+refentry id must be full path to be unique, 
+But need to strip path and only have name for alpha function list
+
+-package-
+-section-
+-section-end-
+    These are only meant to be used in the builtin file.
+    Therefore they do not have empty macro definitions.
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+Single builtin file:
+
+(-package-
+ (location org.llava)
+ (description "..."))
+
+(-section-
+ (name "Creating a Java Object")
+ (description "..."))
+(-doc-
+ ...)
+(-section-end-)
+
+(-section- 
+ (name "Virtual Method Invocation")
+ (description "..."))
+(-doc-
+ ...)
+(-section-end-)
+
+(-section- (name "Static Field Access"))
+(-doc-
+ ...)
+(-section-end-)
+
+(-section- (name "Procedures"))
+(-section- (name "Numbers"))
+(-doc-
+ ...)
+(-section-end-)
+(-section-end-)
+
+generates:
+
+<section id="org.llava">
+  <title>org.llava</title>
+  ...description...
+  <section id="CreatingAJavaObject">
+    <title>Creating a Java Object</title>
+    <refentry>...</refentry>
+  </section>
+  <section id="VirtualMethodInvocation">
+    <title>Virtual Method Invocation</title>
+    <refentry>...</refentry>
+  </section>
+  <section id="StaticFieldAccess">
+    <title>Static Field Access</title>
+    <refentry>...</refentry>
+  </section>
+  <section id="Procedures">
+    <title>Procedures</title>
+    <section id="Numbers">
+      <title>Numbers</title>
+    </section>
+  </section>
+</section>
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+Library file:
+
+(package org.foo.Lists)
+
+(-package-
+ (description "..."))
+
+(-doc-
+ ...)
+
+generates:
+
+<section id="org.foo.Lists">
+  <title>org.foo.Lists</title>
+  ...description...
+  <refentry>...</refentry>
+</section>
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+Site:
+
+chapter Download
+chapter llava features
+ &org.llava;
+)
+
+;;lisa 486-0624 noon friday
+
 ;;;;
 ;;;; TODO
 ;;;;
 ;;;; Replace s+ idiom with FileWalker indent print.
 ;;;; Make file-walker-dispatcher and friends safe for concurrency.
 ;;;; Make file-walker-files work without output file.
+;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
@@ -31,6 +141,7 @@
 ;;;;
 
 (define *current-doc-package* 'nothing)
+(define *current-builtin-package* 'nothing)
 (define *llava-suffix* ".lva")
 (define *doc-suffix* ".xml")
 (define *tmp-contains-llava-doc?-file* "/tmp/junk-contains-llava-doc")
@@ -38,8 +149,16 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
-;;;; First you parse the you format.
+;;;; First you parse then you format.
 ;;;;
+
+(define _%-package-
+  (lambda (doc)
+    (file-walker-newline)
+    (file-walker-print
+     (format-package
+      (set! *current-builtin-package* (parse-location doc))
+      (parse-description doc)))))
 
 (define _%-doc-
   (lambda (doc)
@@ -53,6 +172,22 @@
       (parse-result doc)
       (parse-throws doc)
       (parse-description doc)))))
+
+;;; The following only used for documenting builtin syntax and procedures.
+
+(define _%-section-
+  (lambda (doc)
+    (file-walker-newline)
+    (file-walker-print
+     (format-section
+      (parse-name doc)
+      (parse-description doc)))))
+
+(define _%-section-end-
+  (lambda ()
+    (file-walker-newline)
+    (file-walker-print "</section>
+")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
@@ -165,9 +300,12 @@
   (lambda (sexpr indent)
     (cond ((pair? sexpr)
 	   (case (car sexpr)
-	     ((package) (set! *current-doc-package* (cadr sexpr)))
-	     ((-doc-)   (_%-doc- (cdr sexpr)))
-	     (else      null))))))
+	     ((package)       (set! *current-doc-package* (cadr sexpr)))
+	     ((-package-)     (_%-package- (cdr sexpr)))
+	     ((-section-)     (_%-section- (cdr sexpr)))
+	     ((-section-end-) (_%-section-end-))
+	     ((-doc-)         (_%-doc- (cdr sexpr)))
+	     (else            null))))))
 
 (define extract-doc-print-header
   (lambda (out inFileName outFileName)
@@ -182,6 +320,7 @@
 
 (define extract-doc-print-footer
   (lambda (out inFileName outFileName)
+    (println out (format-package-end)) ;; REVISIT - kludge
     (println out)
     (println out "<!-- End of file. -->")))
 
@@ -190,11 +329,25 @@
 ;;;; format to DocBook
 ;;;;
 
+(define format-package
+  (lambda (location description)
+    (-dprint (list 'format-package location description))
+    (s+
+     (format-package-begin location)
+     (format-description description))))
+
+(define format-section
+  (lambda (name description)
+    (-dprint (list 'format-section location description))
+    (s+
+     (format-package-begin name)  ;; REVISIT
+     (format-description description))))
+
 (define format-entry
   (lambda (name category location params result throws description)
-    ;(-println (list name category location params result throws description))
+    (-dprint (list 'format-entry name category location params result throws description))
     (s+
-     (format-refentry-begin name)
+     (format-refentry-begin location name)
      (format-index category name)
      (format-refentry1-begin)
      (format-template name params)
@@ -203,11 +356,25 @@
      (format-refentry1-end)
      (format-refentry-end))))
 
+(define format-package-begin
+  (lambda (location)
+    (set! location (strip-import location))
+    (s+
+"<!-- ===================================================================== -->
+<!-- ===================================================================== -->
+<section id=\"" location "\">
+  <title>" location "</title>
+")))
+
+(define format-package-end
+  (lambda ()
+    "</section>"))
+
 (define format-refentry-begin
-  (lambda (name)
+  (lambda (location name)
     (s+
 "<!-- ================================================== -->
-<refentry id=\"" (toString name) "\">
+<refentry id=\"" (s+ (strip-import location) "." (toString name)) "\">
 ")))
 
 (define (format-index category name)
@@ -350,6 +517,17 @@
 	     false)
 	(eq? x d))))
 
+(define strip-import
+  (lambda (location)
+    (replaceAll (replaceAll (toString location) "\\(import " "" )
+		"\\)" "" )))
+
+(define -dprint
+  (lambda (msg)
+    ;(-println msg)
+    null
+    ))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;
 ;;;; Test
@@ -359,7 +537,9 @@
 ;; cd .system
 (import org.llava.lib.LlavaDoc)
 (llava-doc "./org" "./doc/.generated")
+(extract-doc-files (s+ (llava-dir) "/org/llava/impl/llava.lva") "/tmp/junk.xml")
 (extract-doc-files (s+ (llava-dir) "/org/llava/lib/scm/Lists.lva") "/tmp/junk.xml")
+(extract-doc-files (s+ (llava-dir) "/org/llava/lib/LlavaDoc.lva") "/tmp/junk.xml")
 (extract-doc
  '((package foo)
    (-doc-
