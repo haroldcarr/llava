@@ -1,4 +1,4 @@
-package hc.tmp;
+package hc.lava;
 
 public interface Wombat
 {

@@ -1,4 +1,4 @@
-package hc.util;
+package hc.lava;
 
 import com.ibm.jikes.skij.*;
 

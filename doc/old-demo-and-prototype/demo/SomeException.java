@@ -1,3 +1,3 @@
-package hc.tmp;
+package hc.lava;
 
 public class SomeException extends Exception {}
