@@ -1,13 +1,48 @@
+/*
+                           Terms and Conditions 
+            
+             LLAVA COPYRIGHT AND PERMISSION NOTICE Version 1.0
+
+Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002 Harold Carr
+All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, and/or sell copies of the Software, and to permit persons
+to whom the Software is furnished to do so, provided that the above
+copyright notice(s) and this permission notice appear in all copies of
+the Software and that both the above copyright notice(s) and this
+permission notice appear in supporting documentation.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR ANY CLAIM, OR ANY
+SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER
+RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF
+CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+Except as contained in this notice, the name of a copyright holder
+shall not be used in advertising or otherwise to promote the sale, use
+or other dealings in this Software without prior written authorization
+of the copyright holder.
+*/
+
+
 /** A primitive is a procedure that is defined as part of the Scheme report,
  * and is implemented in Java code. 
  * @author Peter Norvig, Copyright 1998, http://www.norvig.com/license.html 
  * @author Modified by Timothy J. Hickey, http://www.cs.brandeis.edu/~tim
 **/
 
-package lavaProfile.runtime.procedure.primitive.java;
+package org.llava.impl.runtime.procedure.primitive.java;
 
-import lavaProfile.F;
-import lava.lang.types.Pair;
+import org.llava.impl.F;
+import org.llava.lang.types.Pair;
 
 public class Prim_NumHelp
 {
@@ -62,7 +97,7 @@ public class Prim_NumHelp
 	    }
 	    break;
 	default:
-	    throw F.newLavaException("internal error: unrecognized op: " + op);
+	    throw F.newLlavaException("internal error: unrecognized op: " + op);
 	}
 	// If overflow ints, move to doubles
 	return 
@@ -96,7 +131,7 @@ public class Prim_NumHelp
 	case TIMES:  x *= y; break;
 	case DIVIDE: x /= y; break;
 	default:     
-	    throw F.newLavaException("internal error: unrecognized op: " + op);
+	    throw F.newLlavaException("internal error: unrecognized op: " + op);
 	}
 	return doOp(op, x, (Pair)args.rest());
     }
@@ -130,7 +165,7 @@ public class Prim_NumHelp
 	if (x instanceof Number) {
 	    return ((Number)x).doubleValue();
 	}
-	throw F.newLavaException("expected a number, got: " +  x.toString());
+	throw F.newLlavaException("expected a number, got: " +  x.toString());
     }
 
     public static int numI (Object x) 
@@ -138,7 +173,7 @@ public class Prim_NumHelp
 	if (x instanceof Number) {
 	    return ((Number)x).intValue();
 	}
-	throw F.newLavaException("expected an number, got: " + x.toString());
+	throw F.newLlavaException("expected an number, got: " + x.toString());
     }
 
     public static long numL (Object x) 
@@ -146,7 +181,7 @@ public class Prim_NumHelp
 	if (x instanceof Number) {
 	    return ((Number)x).longValue();
 	}
-	throw F.newLavaException("expected an number, got: " + x.toString());
+	throw F.newLlavaException("expected an number, got: " + x.toString());
     }
 
     static final int DIVIDE =  0;
