@@ -9,10 +9,9 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 23 (Thu) 18:36:42 by Harold Carr.
- * Last Modified : 2004 Dec 01 (Wed) 21:58:34 by Harold Carr.
+ * Last Modified : 2004 Dec 06 (Mon) 09:32:09 by Harold Carr.
  */
 
 package org.llava.impl.runtime.procedure;
@@ -133,7 +132,7 @@ public class LambdaImpl
     private String makeErrorMessage(String specific)
     {
 	String generic = 
-	    name == "" ? "Anonymous lambda with body: " + code.toString()
+	    name == "" ? "Anonymous lambda with body: " + code.getSource().toString()
 	               : name;
 	return generic + ": " + specific;
     }
