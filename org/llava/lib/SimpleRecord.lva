@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2004 Nov 24 (Wed) 07:42:48 by Harold Carr.
-;;;; Last Modified : 2004 Nov 30 (Tue) 06:27:30 by Harold Carr.
+;;;; Last Modified : 2004 Dec 14 (Tue) 10:35:05 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.SimpleRecord)
@@ -32,10 +32,10 @@
    N arguments, where N is the number of <slot-name>s.  For each
    argument it initializes the slot in that position or null if no
    corresponding argument."
-  "For each <slot-name> it defines: get-<slot-name> and set-<slot-name>!"))
 
-(-comment-
-  "The representation is:  #(record <record-name> <slot-name> ...)")
+  "For each <slot-name> it defines: get-<slot-name> and set-<slot-name>!"
+
+  "The representation is a vector:  #(record <record-name> <slot-name> ...)"))
 
 (define-syntax define-simple-record
   (lambda (record-name . slot-names)
@@ -79,31 +79,29 @@
 	 ,@getters
 	 ',record-name))))
 
-(define display-simple-record
-  (lambda (r)
-    (-print "#(" )
-    (do ((len (-si 'getLength 'java.lang.reflect.Array r))
-	 (i 0 (+ i 1)))
-	((>= i len))
-      (-print (-si 'get 'java.lang.reflect.Array r i))
-      (if (not (>= (+ i 1) len))
-	  (-print " ")))
-    (-println ")")
-    null
-    ))
-
 (-comment-
 (import org.llava.lib.SimpleRecord)
 (define-simple-record r x y z)
 (set! r (make-r))
-(display-simple-record r)
+r
 (set-y! r 2)
-(display-simple-record r)
+r
 (set! r (make-r 1 2 3))
-(display-simple-record r)
+r
 (get-z r)
 (set-z! r 'vv)
-(display-simple-record r)
+r
+
+(package foo)
+(import org.llava.lib.SimpleRecord)
+(define-simple-record r x y z)
+(make-r)
+(package bar)
+(import foo)
+(define (test) (make-r))
+(package baz)
+(import bar)
+(test)
 )
 
 ;;; End of file.
