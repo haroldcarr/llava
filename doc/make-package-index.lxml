@@ -1,0 +1,29 @@
+(? xml (version "1.0") (encoding "UTF-8"))
+
+(!-- "
+Created       : 2004 Sep 10 (Fri) 22:41:59 by Harold Carr.
+Last Modified : 2004 Nov 26 (Fri) 09:30:05 by Harold Carr.
+")
+
+(!DOCTYPE xsl:transform)
+(xsl:transform (@ (xmlns:xsl "http://www.w3.org/1999/XSL/Transform")
+		  (xmlns:hc "http://haroldcarr.org/") 
+		  (version "1.0"))
+
+ (xsl:template (@ (match "/")) 
+  (html 
+   (head (title "index"))
+   (body
+    (xsl:for-each (@ (select "//section/@package"))
+        (xsl:sort (@ (order "ascending")
+		     (select "../@package")))
+	(xsl:element (@ (name "a"))
+	   (xsl:attribute (@ (name "target")) main)
+	   (xsl:attribute (@ (name "href")) 
+               ./llava-site.html#(xsl:value-of (@ (select "../@package"))))
+           (xsl:value-of (@ (select "../@package"))))
+	(br)))))
+
+)
+
+(!-- "End of file.")
