@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 30 (Thu) 06:34:36 by Harold Carr.
- * Last Modified : 2004 Dec 10 (Fri) 19:57:03 by Harold Carr.
+ * Last Modified : 2004 Dec 22 (Wed) 15:54:49 by Harold Carr.
  */
 
 package org.llava.impl.runtime;
@@ -21,7 +21,6 @@ import org.llava.Pair; // For derived.
 import org.llava.Repl;
 import org.llava.Symbol;
 import org.llava.compiler.Compiler;
-import org.llava.procedure.GenericProcedure;
 import org.llava.runtime.EnvironmentTopLevel;
 import org.llava.runtime.EnvTopLevelInit;
 import org.llava.runtime.EnvironmentTopLevel;
@@ -29,9 +28,6 @@ import org.llava.runtime.Evaluator;
 import org.llava.runtime.Namespace;
 
 import org.llava.impl.procedure.PrimNewPrim;
-import org.llava.impl.runtime.NamespaceImpl; // REVISIT - move into interface
-import org.llava.impl.runtime.UndefinedIdHandlerImpl; // REVISIT
-
 
 public class EnvTopLevelInitImpl
     implements
@@ -60,39 +56,11 @@ public class EnvTopLevelInitImpl
 	env.setRepl(repl);
 
 	//
-	// All unbound top level variables become (lazy) generic.
+	// Note: the default undefined id handler causes all
+	// all unbound top level variables become generic.
 	//
 
-	// REVISIT - via Factory
-	env.setUndefinedIdHandler
-	    (new org.llava.impl.runtime.UndefinedIdHandlerImpl() {// REVISIT factory
-		    public Object handle(EnvironmentTopLevel env, Symbol id) {
-			GenericProcedure gp = F.newGenericProcedure();
-			// REVISIT - performance?
-			if (env instanceof Namespace &&
-			    // REVISIT: NamespaceImpl
-			    ((NamespaceImpl)env).isDottedP(id.toString())) 
-			{
-			    ;
-			} else {
-			    // REVISIT - maybe do not set
-
-			    // REVISIT - cannot set when using package
-			    // system.  Setting causes slots to have
-			    // values in packages rather than being
-			    // undefined so it falls through to
-			    // next package of ref list.
-
-			    // REVISIT - but if you do not set
-			    // it breaks - still need to investigate.
-			    // For now there is a workaround in
-			    // NamespaceImpl.  See WORKAROUND/SET/UNDEFINED.
-			    env.set(id, gp);
-			}
-			return gp;
-		    }
-		}
-	     );
+	env.setUndefinedIdHandler(F.newUndefinedIdHandler());
 
 	//
 	// Install primitive Java procedures.

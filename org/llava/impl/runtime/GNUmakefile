@@ -9,7 +9,7 @@
 
 #
 # Created       : 1999 Dec 15 (Wed) 16:30:21 by Harold Carr.
-# Last Modified : 2004 Dec 07 (Tue) 20:08:47 by Harold Carr.
+# Last Modified : 2004 Dec 22 (Wed) 15:49:56 by Harold Carr.
 #
 
 TOPDIR		=	../../../..
@@ -42,6 +42,7 @@ FILES_java	= \
 	$(PKGDIR)/LlavaRuntimeImpl.java \
 	$(PKGDIR)/NamespaceImpl.java \
 	$(PKGDIR)/UndefinedIdHandlerImpl.java \
+	$(PKGDIR)/UndefinedIdHandlerGenericImpl.java
 
 all :: classes
 
