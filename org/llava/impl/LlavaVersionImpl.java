@@ -9,10 +9,9 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 2000 Jan 19 (Wed) 17:30:46 by Harold Carr.
- * Last Modified : 2004 Nov 26 (Fri) 09:54:02 by Harold Carr.
+ * Last Modified : 2004 Dec 05 (Sun) 12:33:07 by Harold Carr.
  */
 
 package org.llava.impl;
@@ -36,9 +35,9 @@ public class LlavaVersionImpl
 
     public String getYear    ()  { return "2004"; }
 
-    public String getMonth   ()  { return "11"; }
+    public String getMonth   ()  { return "12"; }
     
-    public String getDay     ()  { return "26"; }
+    public String getDay     ()  { return "05"; }
 
     public String getOptional()  { return "alpha"; }
 
