@@ -1,7 +1,7 @@
 <!--
 //
 // Created       : 1999 Dec 29 (Wed) 14:53:37 by Harold Carr.
-// Last Modified : 2004 Nov 30 (Tue) 08:48:19 by Harold Carr.
+// Last Modified : 2004 Dec 01 (Wed) 09:23:51 by Harold Carr.
 //
 -->
 <chapter id="llava-ch-download">
@@ -32,19 +32,11 @@
       </para></listitem>
 
       <listitem><para>
-      Put <literal>llava.jar</literal> in your <literal>CLASSPATH</literal>
+      Startup: <literal>java -jar llava.jar</literal>
       </para></listitem>
 
       <listitem><para>
-      Download <ulink url="http://llava.org/llavalib.zip">llavalib.zip</ulink>
-      </para></listitem>
-
-      <listitem><para>
-      Unzip it into your <literal>CLASSPATH</literal>
-      </para></listitem>
-
-      <listitem><para>
-      Start up main class: <literal>org.llava.impl.Llava</literal>
+      Or: <literal>java -cp llava.jar org.llava.impl.Llava</literal>
       </para></listitem>
 
       <listitem><para>
