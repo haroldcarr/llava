@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2004 Nov 24 (Wed) 07:42:48 by Harold Carr.
-;;;; Last Modified : 2004 Nov 24 (Wed) 09:23:19 by Harold Carr.
+;;;; Last Modified : 2004 Nov 30 (Tue) 06:27:30 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.SimpleRecord)
@@ -88,7 +88,7 @@
       (-print (-si 'get 'java.lang.reflect.Array r i))
       (if (not (>= (+ i 1) len))
 	  (-print " ")))
-    (-println ") " ) ;;; REVISIT - reader bug
+    (-println ")")
     null
     ))
 
