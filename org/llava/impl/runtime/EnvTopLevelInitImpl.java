@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 30 (Thu) 06:34:36 by Harold Carr.
- * Last Modified : 2004 Dec 08 (Wed) 10:34:09 by Harold Carr.
+ * Last Modified : 2004 Dec 10 (Fri) 19:57:03 by Harold Carr.
  */
 
 package org.llava.impl.runtime;
@@ -186,28 +186,7 @@ public class EnvTopLevelInitImpl
     public void loadDerived ()
     {
 	installMiscDerived(repl);
-
-	if (false) { // REVISIT - decide from property
-	    // N.B.: This order *MUST* be kept in sync with order in
-	    //       derived/GNUmakefile
-	    loadDerived(repl,          F.newDerivedJavaFirst());
-	    loadDerived(repl,          F.newDerivedScmTypeProcs());
-	    loadDerived(repl,          F.newDerivedLlavaControl());
-	    loadDerived(repl,          F.newDerivedLlavaConditional());
-	    loadDerived(repl,          F.newDerivedLlavaQuasiquote());
-	    loadDerived(repl,          F.newDerivedLlavaBinding());
-	    loadDerived(repl,          F.newDerivedLlavaCase());
-	    loadDerived(repl,          F.newDerivedLlavaIteration());
-	    loadDerived(repl,          F.newDerivedLlavaMember());
-	    loadDerived(repl,          F.newDerivedJavaTry());
-	    loadDerived(repl,          F.newDerivedJavaSecond());
-	    loadDerived(repl,          F.newDerivedLlavaDefineD());
-	    //loadDerived(repl,          F.newDerivedScmVectors());
-	    loadDerived(repl,          F.newDerivedTest());
-	    loadDerived(repl,          F.newImport());
-	} else {
-	    loadDerived(repl,          F.newDerivedAll());
-	}
+	loadDerived(repl,          F.newDerivedAll());
     }
 
     private void set(EnvironmentTopLevel env, String name, Object value)
@@ -233,58 +212,6 @@ public class EnvTopLevelInitImpl
 	    repl.readCompileEval(
 "(define (error msg)" +
 "  (throw (-si 'newLlavaException 'org.llava.F msg)))"
-                                );
-
-
-	    repl.readCompileEval(
-"(define (display msg . out)" +
-"  (set! msg (if (null? msg) \"null\" msg))" +
-"  (if (null? out)" +
-"      (print (getPrintWriter _%writer) msg)" +
-"      (print (car out) msg))" +
-"  null)"
-                                );
-
-	    repl.readCompileEval(
-"(define (write msg . out)" +
-"  (if (null? out)" +
-"      (write _%writer msg)" +
-"      (write _%writer msg (car out)))" +
-"  null)"
-                                );
-
-	    repl.readCompileEval(
-"(define (newline . out)" +
-"  (println (if (null? out) (getPrintWriter _%writer) (car out)))" +
-"  null)"
-                                );
-
-	    repl.readCompileEval(
-"(define set-vector-print-length!" +
-"  (lambda (x)" +
-"    (setVectorPrintLength _%writer x)))"
-                                );
-
-	    repl.readCompileEval(
-"(define llava-read" +
-"  (lambda in" +
-"    (if (null? in)" +
-"        (read _%reader)" +
-"        (read _%reader (car in)))))"
-                                );
-
-	    repl.readCompileEval(
-"(define -println" +
-"  (lambda (x)" +
-"    (println (-sf 'out 'java.lang.System) (if (null? x) \"null\" x))" +
-"    x))"
-                                );
-
-	    repl.readCompileEval(
-"(define -print" +
-"  (lambda (x)" +
-"    (print (-sf 'out 'java.lang.System) (if (null? x) \"null\" x))" +
-"    x))"
                                 );
 
 	    repl.readCompileEval(
