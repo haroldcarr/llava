@@ -9,7 +9,7 @@
 
 ;;;
 ;;; Created       : 1999 Dec 25 (Sat) 22:10:35 by Harold Carr.
-;;; Last Modified : 2004 Dec 07 (Tue) 20:37:08 by Harold Carr.
+;;; Last Modified : 2004 Dec 08 (Wed) 17:42:05 by Harold Carr.
 ;;;
 
 (begin
@@ -734,8 +734,12 @@
 ;;; Test threads and synchronization
 
 (-println "threads->:")
-(-println "*****DISABLED*****")
-(-comment-
+
+(cond ((equal? (getHostName (-si 'getLocalHost 'java.net.InetAddress))
+	       "legolas")
+       (-println "*****DISABLED*****"))
+      (else
+       
 (import org.llava.lib.Threads)
 
 (define current-time 
@@ -896,15 +900,20 @@
 
 ;;; Wait for child to terminate so we are in a clean state.
 (join child-thread (new 'java.lang.Long (toString INFINITY)))
-)
+))
+
 (-println "threads<-:")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test synchronized
 
 (-println "synchronized->:")
-(-println "*****DISABLED*****")
-(-comment-
+
+(cond ((equal? (getHostName (-si 'getLocalHost 'java.net.InetAddress))
+	       "legolas")
+       (-println "*****DISABLED*****"))
+      (else
+
 (define lock-and-run-child
   (lambda (lock)
     (set! child-end-time -1)
@@ -950,7 +959,8 @@
 
 ;;; Wait for first thread before continuing test.
 (join thread (new 'java.lang.Long (toString INFINITY)))
-)
+))
+
 (-println "synchronized<-:")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
