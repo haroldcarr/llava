@@ -9,12 +9,12 @@
 
 ;;;;
 ;;;; Created       : 2001 Mar 06 (Tue) 15:09:50 by Harold Carr.
-;;;; Last Modified : 2005 Feb 16 (Wed) 14:48:18 by Harold Carr.
+;;;; Last Modified : 2005 Feb 16 (Wed) 14:08:06 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.io.FileWalker)
 
-(import org.llava.lib.Program)    ; define-with-setter, ...
+(import org.llava.lib.SimpleRecord)
 (import org.llava.lib.cl.Control) ; dotimes
 (import org.llava.lib.cl.Symbols) ; gensym
 
@@ -26,39 +26,41 @@
 ;;; (and optionally the header/footer printers.
 ;;;
 
-(define-with-setter (file-walker-dispatcher sexpr indent)
-  (error "You must set-file-walker-dispatcher!"))
-(define-with-setter (file-walker-print-header out inFileName outFilename)
-  null)
-(define-with-setter (file-walker-print-footer out inFileName outFilename)
-  null)
+(define-simple-record state
+  dispatcher 
+  print-header
+  print-footer
+  out
+  newline?
+  indent?)
 
-;;;
-;;; Control formatting.
-;;;
-
-(define-indirect-variable file-walker-out (-sf 'out 'java.lang.System))
-(define-indirect-variable file-walker-newline? true)
-(define-indirect-variable file-walker-indent? true)
+(define new-FileWalker
+  (lambda ()
+    (make-state
+     (lambda (fw sexpr indent) (error "You must set-file-walker-dispatcher!"))
+     (lambda (fw out inFileName outFilename) null)
+     (lambda (fw out inFileName outFilename) null)
+     (-sf 'out 'java.lang.System)
+     true
+     true)))
 
 (define file-walker-with-indent
-  (lambda (sexprs indent)
-    (for-each (lambda (sexpr) (file-walker-dispatcher sexpr indent))
-	      sexprs)
-    null))
+  (lambda (fw sexprs indent)
+    (for-each (lambda (sexpr) ((get-dispatcher fw) fw sexpr indent))
+	      sexprs)))
 
 (define file-walker-string
-  (lambda (sexprs)
+  (lambda (fw sexprs)
     (let* ((sw (new 'java.io.StringWriter))
 	   (pw (new 'java.io.PrintWriter sw))
-	   (savedOut (file-walker-out)))
+	   (savedOut (get-out fw)))
       (try
        (begin
-	 (file-walker-out pw)
-	 (file-walker-with-indent sexprs 0)
+	 (set-out! fw pw)
+	 (file-walker-with-indent fw sexprs 0)
 	 (toString sw))
        (finally
-	(file-walker-out savedOut))))))
+	(set-out! fw savedOut))))))
 
 ;;;
 ;;; file-walker-files
@@ -71,7 +73,7 @@
  (description "..."))
 
 (define file-walker-files
-  (lambda (inFileName outFileName)
+  (lambda (fw inFileName outFileName)
     (let ((inStream null)
 	  (in null)
 	  (out null))
@@ -83,46 +85,43 @@
 	 (set! out (new 'java.io.PrintWriter
 			(new 'java.io.OutputStreamWriter
 			     (new 'java.io.FileOutputStream outFileName))))
-	 (file-walker-print-header out inFileName outFileName)
-	 (file-walker-streams in out)
-	 (file-walker-print-footer out inFileName outFileName))
-       (catch (java.lang.Throwable t)
-	      (throw t))
+	 ((get-print-header fw) fw out inFileName outFileName)
+	 (file-walker-streams fw in out)
+	 ((get-print-footer fw) fw out inFileName outFileName))
        (finally
 	(close inStream)
 	(close out))))
     'done))
 
 (define file-walker-streams
-  (lambda (in out)
-    (let ((savedOut (file-walker-out))
-	  (EOF      (-si 'newLlavaEOF 'org.llava.F)))
+  (lambda (fw in out)
+    (let ((savedOut (get-out fw)))
       (try
        (begin
-	 (file-walker-out out)
-	 (file-walker-streams-aux in EOF))
+	 (set-out! fw out)
+	 (file-walker-streams-aux fw in))
        (finally
-	(file-walker-out savedOut))))))
+	(set-out! fw savedOut))))))
 
 (define file-walker-streams-aux
-  (lambda (in EOF)
+  (lambda (fw in)
     (let ((sexpr (read in)))
-      (cond ((not (equals EOF sexpr))
-	     (file-walker-dispatcher sexpr 0)
-	     (file-walker-streams-aux in EOF))))))
+      (cond ((not (eof-object? sexpr))
+	     ((get-dispatcher fw) fw sexpr 0)
+	     (file-walker-streams-aux fw in))))))
 
 (define file-walker-indent
-  (lambda (indent)
-    (if (file-walker-indent?)
-	(dotimes (i indent) (file-walker-print " ")))))
+  (lambda (fw indent)
+    (if (get-indent? fw)
+	(dotimes (i indent) (file-walker-print fw " ")))))
 
 (define file-walker-print
-  (lambda (x)
-    (print (file-walker-out) x)))
+  (lambda (fw x)
+    (print (get-out fw) x)))
 
 (define file-walker-newline
-  (lambda ()
-    (if (file-walker-newline?)
-	(println (file-walker-out)))))
+  (lambda (fw)
+    (if (get-newline? fw)
+	(println (get-out fw)))))
 
 ;;; End of file.
