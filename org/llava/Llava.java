@@ -9,10 +9,9 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /**
  * Created       : 1999 Dec 30 (Thu) 04:18:02 by Harold Carr.
- * Last Modified : 2004 Sep 03 (Fri) 15:32:44 by Harold Carr.
+ * Last Modified : 2004 Dec 05 (Sun) 09:25:08 by Harold Carr.
  */
 
 package org.llava.impl;
@@ -41,9 +40,9 @@ public class Llava
 
     public static void main (String[] av)
     {
-	long start = System.currentTimeMillis();
-	Llava llava  = new Llava();
-	long end   = System.currentTimeMillis();
+	long start  = System.currentTimeMillis();
+	Llava llava = new Llava();
+	long end    = System.currentTimeMillis();
 
 	llava.getRepl().outputVersionMessage(end - start);
 
@@ -88,12 +87,12 @@ public class Llava
 	return null; // For javac.
     }
 
-    public Compiler    getCompiler  ()         { return repl.getCompiler(); }
+    public Compiler     getCompiler ()        { return repl.getCompiler(); }
     public EnvironmentTopLevel 
             getEnvironmentTopLevel () { return repl.getEnvironmentTopLevel(); }
-    public Evaluator   getEvaluator ()         { return repl.getEvaluator(); }
-    public LlavaRuntime getLlavaRuntime ()       { return repl.getLlavaRuntime();}
-    public Repl        getRepl ()              { return repl; }
+    public Evaluator    getEvaluator ()       { return repl.getEvaluator(); }
+    public LlavaRuntime getLlavaRuntime ()    { return repl.getLlavaRuntime();}
+    public Repl         getRepl ()            { return repl; }
 
     public static Thread newReplOnPort (int port)
     {
