@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2004 Sep 05 (Sun) 11:27:57 by Harold Carr.
-;;;; Last Modified : 2004 Dec 08 (Wed) 08:47:51 by Harold Carr.
+;;;; Last Modified : 2004 Dec 10 (Fri) 22:25:01 by Harold Carr.
 ;;;;
 
 (-package-
@@ -1149,10 +1149,27 @@ share the static factory methods).
 (-section- (name "Input and Output"))
 
 (-doc-
- (name llava-read)
+ (name read)
+ (location org.llava)
+ (description
+  "Reader that understands llava data types.  Reads from <code>stdin</code>."))
+
+(-doc-
+ (name -read)
  (param " . ")
  (param optional-java.io.Reader)
- (location org.llava))
+ (location org.llava)
+ (description
+  "Alias for <code>read</code> but also accepts optional <code>Reader</code>
+   argument."))
+
+(-doc-
+ (name eof-object?)
+ (param obj)
+ (location org.llava)
+ (description
+  "Returns <code>true</code> if given an end-of-file read by 
+   <code>read</code>."))
 
 (-doc-
  (name write)
@@ -1168,6 +1185,33 @@ share the static factory methods).
   (example "(write '(\"foo\" #\\c #(1 2))) prints (\"foo\" #\\c #(1 2))")))
 
 (-doc-
+ (name -write)
+ (param obj)
+ (param " . ")
+ (param optional-java.io.PrinterWriter)
+ (location org.llava)
+ (description
+  "Alias for <code>write</code>."))
+
+(-doc-
+ (name -writeln)
+ (param obj)
+ (param " . ")
+ (param optional-java.io.PrinterWriter)
+ (location org.llava)
+ (description
+  "Equivalent to <code>-write</code> followed by <code>newline</code>."))
+
+(-doc-
+ (name set-vector-print-length!)
+ (param booleanOrInteger)
+ (location org.llava)
+ (description 
+  "Controls the number of vector elements printed.
+  <code>true</code> means all.
+  <code>false</code> means 0."))
+
+(-doc-
  (name display)
  (param obj)
  (param " . ")
@@ -1179,31 +1223,28 @@ share the static factory methods).
   (example "(display '(\"foo\" #\\c #(1 2))) prints (foo c [Ljava.lang.Object;@988707)")))
 
 (-doc-
- (name newline)
+ (name -print)
+ (param obj)
  (param " . ")
  (param optional-java.io.PrinterWriter)
- (location org.llava))
+ (location org.llava)
+ (description 
+  "Alias for <code>display</code>."))
 
 (-doc-
  (name -println)
  (param obj)
- (location org.llava)
- (description "Prints <parameter>obj</parameter> to <code>System.out</code>."))
-
-(-doc-
- (name -print)
- (param obj)
- (location org.llava)
- (description "Prints <parameter>obj</parameter> to <code>System.out</code>."))
-
-(-doc-
- (name set-vector-print-length!)
- (param booleanOrInteger)
+ (param " . ")
+ (param optional-java.io.PrinterWriter)
  (location org.llava)
  (description 
-  "Controls the number of vector elements printed.
-  <code>true</code> means all.
-  <code>false</code> means 0."))
+  "Equivalent to <code>-print</code> followed by <code>newline</code>."))
+
+(-doc-
+ (name newline)
+ (param " . ")
+ (param optional-java.io.PrinterWriter)
+ (location org.llava))
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
