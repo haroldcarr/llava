@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 1999 Dec 17 (Fri) 21:16:19 by Harold Carr.
-;;;; Last Modified : 2005 Mar 14 (Mon) 18:19:14 by Harold Carr.
+;;;; Last Modified : 2005 Mar 15 (Tue) 13:30:11 by Harold Carr.
 ;;;;
 
 (require 'hcJde)
@@ -27,9 +27,13 @@
 	      (concat baseDir "/.classes")
 	      (concat baseDir "/lib") ;; Necessary for libs
 	      ))
-
+(comment
 (defun hcLlavaCmdVmArgsExtras (hcPathSep)
   " -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=y ")
+
+(defun hcLlavaCmdVmArgsExtras (hcPathSep)
+  " ")
+)
 
 (defun s ()
   (interactive)
