@@ -1,25 +1,37 @@
+/*
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+------------------------------------------------------------------------------
+*/
+
+
 /**
  * Created       : 1999 Dec 30 (Thu) 06:34:36 by Harold Carr.
  * Last Modified : 2004 Dec 08 (Wed) 08:56:20 by Harold Carr.
  */
 
-package lavaProfile.runtime;
+package org.llava.impl.runtime;
 
-import lavaProfile.F;
-import lava.Repl;
-import lava.lang.types.Pair; // For derived.
-import lava.lang.types.Symbol;
-import lava.compiler.Compiler;
-import lava.runtime.EnvironmentTopLevel;
-import lava.runtime.EnvTopLevelInit;
-import lava.runtime.EnvironmentTopLevel;
-import lava.runtime.Evaluator;
-import lavaProfile.runtime.FR;
-import lavaProfile.runtime.env.Namespace;
-import lavaProfile.runtime.env.NamespaceImpl; // REVISIT - move into interface
-import lavaProfile.runtime.env.UndefinedIdHandlerImpl; // REVISIT
-import lavaProfile.runtime.procedure.generic.GenericProcedure;
-import lavaProfile.runtime.procedure.primitive.java.PrimNewPrim;
+import org.llava.impl.F;
+import org.llava.Repl;
+import org.llava.lang.types.Pair; // For derived.
+import org.llava.lang.types.Symbol;
+import org.llava.compiler.Compiler;
+import org.llava.runtime.EnvironmentTopLevel;
+import org.llava.runtime.EnvTopLevelInit;
+import org.llava.runtime.EnvironmentTopLevel;
+import org.llava.runtime.Evaluator;
+import org.llava.impl.runtime.FR;
+import org.llava.impl.runtime.env.Namespace;
+import org.llava.impl.runtime.env.NamespaceImpl; // REVISIT - move into interface
+import org.llava.impl.runtime.env.UndefinedIdHandlerImpl; // REVISIT
+import org.llava.impl.runtime.procedure.generic.GenericProcedure;
+import org.llava.impl.runtime.procedure.primitive.java.PrimNewPrim;
 
 
 public class EnvTopLevelInitImpl
@@ -54,7 +66,7 @@ public class EnvTopLevelInitImpl
 
 	// REVISIT - via Factory
 	env.setUndefinedIdHandler
-	    (new lavaProfile.runtime.env.UndefinedIdHandlerImpl() {// REVISIT factory
+	    (new org.llava.impl.runtime.env.UndefinedIdHandlerImpl() {// REVISIT factory
 		    public Object handle(EnvironmentTopLevel env, Symbol id) {
 			GenericProcedure gp = FR.newGenericProcedure();
 			// REVISIT - performance?
@@ -104,6 +116,8 @@ public class EnvTopLevelInitImpl
 	set(env, "throw",           FR.newPrimThrow());
 	set(env, "_%try",           FR.newPrimTryCatchFinally());
 
+	set(env, "&",               FR.newPrim_BitAnd());
+	set(env, "|",               FR.newPrim_BitOr());
 	set(env, "/",               FR.newPrim_Divide());
 	set(env, "=",               FR.newPrim_EQ());
 	set(env, ">=",              FR.newPrim_GE());
@@ -117,12 +131,12 @@ public class EnvTopLevelInitImpl
 
 	// opt (optional or optimized)
 	// REVISIT - put this in different package?
-	set(env, "currentTimeMillis",FR.newPrimCurrentTimeMillis());
+	set(env, "current-time-millis",FR.newPrimCurrentTimeMillis());
 	set(env, "instanceof",      FR.newPrimInstanceof());
 	set(env, "not",             FR.newPrimNot());
 
 	//
-	// Install primitive Lava procedures.
+	// Install primitive Llava procedures.
 	//
 
 	set(env, "append",          FR.newPrimAppend());
@@ -133,15 +147,15 @@ public class EnvTopLevelInitImpl
 	set(env, "eval",            FR.newPrimEval(env, 
 						    repl.getEvaluator(),
 						    repl.getCompiler()));
-	set(env, "_f",              FR.newPrimField());
-	set(env, "_i",              FR.newPrimInvoke());
+	set(env, "-f",              FR.newPrimField());
+	set(env, "-i",              FR.newPrimInvoke());
 	set(env, "length",          FR.newPrimLength());
 	set(env, "list",            FR.newPrimList());
-	set(env, "_list",           FR.newPrimList_());
+	set(env, "-list",           FR.newPrimList_());
 	set(env, "load",            FR.newPrimLoad(repl));
 	set(env, "new-thread",      FR.newPrimNewThread());
-	set(env, "_sf",             FR.newPrimStaticField());
-	set(env, "_si",             FR.newPrimStaticInvoke());
+	set(env, "-sf",             FR.newPrimStaticField());
+	set(env, "-si",             FR.newPrimStaticInvoke());
 	set(env, "string-append",   FR.newPrimStringAppend());
 
 	// opt (optional or optimized)
@@ -162,7 +176,7 @@ public class EnvTopLevelInitImpl
 	// Seal the root namespace.
 	//
 
-	/* REVISIT - this is put in Lava.main for now.
+	/* REVISIT - this is put in Llava.main for now.
 	if (env instanceof Namespace) {
 	    ((Namespace)env).setIsSealed(true);
 	}
@@ -178,13 +192,13 @@ public class EnvTopLevelInitImpl
 	    //       derived/GNUmakefile
 	    loadDerived(repl,          FR.newDerivedJavaFirst());
 	    loadDerived(repl,          FR.newDerivedScmTypeProcs());
-	    loadDerived(repl,          FR.newDerivedLavaControl());
-	    loadDerived(repl,          FR.newDerivedLavaConditional());
-	    loadDerived(repl,          FR.newDerivedLavaQuasiquote());
-	    loadDerived(repl,          FR.newDerivedLavaBinding());
-	    loadDerived(repl,          FR.newDerivedLavaCase());
-	    loadDerived(repl,          FR.newDerivedLavaIteration());
-	    loadDerived(repl,          FR.newDerivedLavaMember());
+	    loadDerived(repl,          FR.newDerivedLlavaControl());
+	    loadDerived(repl,          FR.newDerivedLlavaConditional());
+	    loadDerived(repl,          FR.newDerivedLlavaQuasiquote());
+	    loadDerived(repl,          FR.newDerivedLlavaBinding());
+	    loadDerived(repl,          FR.newDerivedLlavaCase());
+	    loadDerived(repl,          FR.newDerivedLlavaIteration());
+	    loadDerived(repl,          FR.newDerivedLlavaMember());
 	    loadDerived(repl,          FR.newDerivedJavaTry());
 	    loadDerived(repl,          FR.newDerivedJavaSecond());
 	    loadDerived(repl,          FR.newRequireProvide());
@@ -217,13 +231,13 @@ public class EnvTopLevelInitImpl
 
 	    repl.readCompileEval(
 "(define (error msg)" +
-"  (throw (_si 'newLavaException 'lavaProfile.F msg)))"
+"  (throw (-si 'newLlavaException 'org.llava.impl.F msg)))"
                                 );
 
 
 	    repl.readCompileEval(
 "(define (display msg)" +
-"  (print (_sf 'out 'java.lang.System) " +
+"  (print (-sf 'out 'java.lang.System) " +
 "	 (if (null? msg)" +
 "	     \"null\"" +
 "	     (toString msg)))" +
@@ -233,29 +247,39 @@ public class EnvTopLevelInitImpl
 
 	    repl.readCompileEval(
 "(define (newline)" +
-"  (println (_sf 'out 'java.lang.System))" +
+"  (println (-sf 'out 'java.lang.System))" +
 "  null)"
                                 );
 
 
 	    repl.readCompileEval(
-"(define _println" +
+"(define -println" +
 "  (lambda (x)" +
-"    (println (_sf 'out 'java.lang.System) (if (null? x) \"null\" x))" +
+"    (println (-sf 'out 'java.lang.System) (if (null? x) \"null\" x))" +
 "    x))"
                                 );
 
 
 	    repl.readCompileEval(
-"(define _print" +
+"(define -print" +
 "  (lambda (x)" +
-"    (print (_sf 'out 'java.lang.System) (if (null? x) \"null\" x))" +
+"    (print (-sf 'out 'java.lang.System) (if (null? x) \"null\" x))" +
 "    x))"
                                 );
 
 
 	    repl.readCompileEval(
-"(define-syntax _comment" +
+"(define-syntax -comment-" +
+"  (lambda args '()))"
+                                );
+
+	    repl.readCompileEval(
+"(define-syntax -doc-" +
+"  (lambda args '()))"
+                                );
+
+	    repl.readCompileEval(
+"(define-syntax -package-" +
 "  (lambda args '()))"
                                 );
 
@@ -274,7 +298,6 @@ public class EnvTopLevelInitImpl
 "  (lambda args" +
 "    (apply string-append (map toString args))))"
                                 );
-
 
 	} catch (Throwable t) {
 	    System.err.println("This should never happen.");
