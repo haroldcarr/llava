@@ -1,0 +1,37 @@
+(? xml (version "1.0") (encoding "UTF-8"))
+(!DOCTYPE xsl:transform)
+(xsl:transform (@ (xmlns:xsl "http://www.w3.org/1999/XSL/Transform")
+		  (xmlns:hc "http://haroldcarr.org/") 
+		  (version "1.0"))
+
+ (xsl:template (@ (match "/")) 
+  (html 
+   (head (title "index"))
+   (body
+    (xsl:for-each (@ (select "//refentry"))
+        (xsl:sort (@ (order "ascending")
+		     (select "@id")))
+	(xsl:call-template (@ (name "lastIndexOf"))
+            (xsl:with-param (@ (name "string")
+			       (select "@id")))
+	    (xsl:with-param (@ (name "char")
+                               (select "'.'"))))
+	(br)))))
+
+<!-- lastIndexOf  -->
+
+ (xsl:template (@ (name "lastIndexOf"))
+    (xsl:param (@ (name "string")))
+    (xsl:param (@ (name "char")))
+    (xsl:choose
+      (xsl:when (@ (test "contains($string, $char)"))
+         (xsl:call-template (@ (name "lastIndexOf"))
+            (xsl:with-param (@ (name "string")
+                               (select "substring-after($string, $char)")))
+            (xsl:with-param (@ (name "char") (select "$char")))))
+      (xsl:otherwise
+         (xsl:value-of (@ (select "$string"))))))
+
+)
+
+(!-- "End of file.")
