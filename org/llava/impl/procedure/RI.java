@@ -1,6 +1,6 @@
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2000 Feb 17 (Thu) 00:22:28 by Harold Carr.
+ * Last Modified : 2000 Feb 18 (Fri) 06:12:16 by Harold Carr.
  */
 
 package libLava.r1.procedure.generic;
@@ -161,7 +161,7 @@ public class DI {
 	try {
 	    return constructor.newInstance(args);
 	} catch (InvocationTargetException e) {
-	    throw(e.getTargetException()); 
+	    throw e.getTargetException(); 
 	}
     }
 
@@ -182,7 +182,7 @@ public class DI {
 	try {
 	    return method.invoke(targetObject, args); 
 	} catch (InvocationTargetException e) {
-	    throw(e.getTargetException()); 
+	    throw e.getTargetException(); 
 	}
     }
 
@@ -192,7 +192,9 @@ public class DI {
 	throws
 	    NoSuchMethodException
     {
-	// synchronized because the key is reused.
+	// REVISIT - rewrite so cache and keys are its own
+	// class which encapsulate concurrency so synchronized
+	// may be removed here.
 	MethodKey key = MethodKey.newMethodKey(methodName, targetClass, argTypes);
 	Method method = (Method) cachedMethods.get(key);
 	if (method != null) {
@@ -377,7 +379,7 @@ public class DI {
 
     private static boolean isMoreSpecific (Method m1, Method m2) 
     {
-	// True IFF m11 is more specific than m2
+	// True IFF m1 is more specific than m2
 	if (! equalType(m2.getDeclaringClass(), m1.getDeclaringClass())) {
 	    return false;
 	}
@@ -427,7 +429,6 @@ public class DI {
 	try {
 	    field = targetClass.getField(fieldName);	   
 	} catch (NoSuchFieldException e) {
-	    // Either it is non-public, in a super, or it does not exist.
 	    field = findFieldNonPublicAndSupers(fieldName, targetClass);
 	}
 	field.setAccessible(true);
@@ -532,25 +533,28 @@ public class DI {
     {
 	Class[] classes = new Class[args.length];
 	for (int i = 0; i < args.length; i = i + 1) {
-	    classes[i] = ((args[i] == null) ? NullClass : args[i].getClass());
+	    classes[i] =
+		args[i] == null ? NullClass : args[i].getClass();
 	}
 	return classes; 
     }
 
     private static Class wrapPrim (Class cl) 
     {
-	if (cl.isPrimitive()) {
-	    if (cl == booleanClass)   return BooleanClass;
-	    if (cl == integerClass)   return IntegerClass;
-	    if (cl == characterClass) return CharacterClass;
-	    if (cl == byteClass)      return ByteClass;
-	    if (cl == shortClass)     return ShortClass;
-	    if (cl == longClass)      return LongClass;
-	    if (cl == floatClass)     return FloatClass;
-	    if (cl == doubleClass)    return DoubleClass;
-	    throw new Error("DI.wrapPrim: unknown type" + cl);
+	if (! cl.isPrimitive()) {
+	    return cl;
 	}
-	return cl;
+
+	if (cl == booleanClass)   return BooleanClass;
+	if (cl == integerClass)   return IntegerClass;
+	if (cl == characterClass) return CharacterClass;
+	if (cl == byteClass)      return ByteClass;
+	if (cl == shortClass)     return ShortClass;
+	if (cl == longClass)      return LongClass;
+	if (cl == floatClass)     return FloatClass;
+	if (cl == doubleClass)    return DoubleClass;
+
+	throw new Error("DI.wrapPrim: unknown type" + cl);
     }
 
     //
