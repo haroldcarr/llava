@@ -9,21 +9,21 @@
 
 ;;;;
 ;;;; Created       : 2004 Aug 27 (Fri) 18:33:43 by Harold Carr.
-;;;; Last Modified : 2004 Dec 03 (Fri) 13:56:21 by Harold Carr.
+;;;; Last Modified : 2004 Dec 03 (Fri) 13:52:29 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.reflect.Namespace)
+
+;;; Bootstrap - need to get a namespace object.
+;;; Do not want to change namespace so just use this one.
+
+(set! _%boot (package org.llava.lib.reflect.Namespace))
 
 (import org.llava.lib.Lists) ; for build-list
 
 (-package- 
  (description 
   "Procedures for looking at package namespaces and their contents."))
-
-
-;;; Bootstrap - need to get a namespace object.
-;;; Do not want to change namespace so just use this one.
-(set! _%boot (package org.llava.lib.NamespaceUtil))
 
 ;;;
 ;;; list-packages
