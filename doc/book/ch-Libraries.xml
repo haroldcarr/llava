@@ -1,7 +1,7 @@
 <!--
 //
 // Created       : 2004 Sep 05 (Sun) 22:19:59 by Harold Carr.
-// Last Modified : 2004 Dec 02 (Thu) 09:42:45 by Harold Carr.
+// Last Modified : 2005 Feb 08 (Tue) 09:59:10 by Harold Carr.
 //
 -->
 <chapter id="llava-ch-libraries">
@@ -28,8 +28,6 @@
   &lib-io-filewalker;
 
   &lib-java-lang;
-  &lib-java-corba-cosnaming;
-  &lib-java-corba-orb;
 
   &lib-reflect-namespace;
   &lib-reflect-reflect;
