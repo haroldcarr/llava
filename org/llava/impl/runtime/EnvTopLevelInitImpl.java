@@ -157,6 +157,7 @@ public class EnvTopLevelInitImpl
 	set(env, "string-append",   FR.newPrimStringAppend());
 
 	// opt (optional or optimized)
+	set(env, "for-each",        FR.newPrimForEach());
 	set(env, "map",             FR.newPrimMap());
 	set(env, "null?",           FR.newPrimNullP());
 	set(env, "pair?",           FR.newPrimPairP());
