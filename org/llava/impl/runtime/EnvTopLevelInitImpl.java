@@ -16,21 +16,22 @@ or send a letter to
 
 package org.llava.impl.runtime;
 
-import org.llava.impl.F;
+import org.llava.F;
+import org.llava.FR;
 import org.llava.Repl;
-import org.llava.lang.types.Pair; // For derived.
-import org.llava.lang.types.Symbol;
+import org.llava.Pair; // For derived.
+import org.llava.Symbol;
 import org.llava.compiler.Compiler;
+import org.llava.procedure.GenericProcedure;
 import org.llava.runtime.EnvironmentTopLevel;
 import org.llava.runtime.EnvTopLevelInit;
 import org.llava.runtime.EnvironmentTopLevel;
 import org.llava.runtime.Evaluator;
-import org.llava.impl.runtime.FR;
-import org.llava.impl.runtime.env.Namespace;
-import org.llava.impl.runtime.env.NamespaceImpl; // REVISIT - move into interface
-import org.llava.impl.runtime.env.UndefinedIdHandlerImpl; // REVISIT
-import org.llava.impl.runtime.procedure.generic.GenericProcedure;
-import org.llava.impl.runtime.procedure.primitive.java.PrimNewPrim;
+import org.llava.runtime.Namespace;
+
+import org.llava.impl.procedure.PrimNewPrim;
+import org.llava.impl.runtime.NamespaceImpl; // REVISIT - move into interface
+import org.llava.impl.runtime.UndefinedIdHandlerImpl; // REVISIT
 
 
 public class EnvTopLevelInitImpl
@@ -65,7 +66,7 @@ public class EnvTopLevelInitImpl
 
 	// REVISIT - via Factory
 	env.setUndefinedIdHandler
-	    (new org.llava.impl.runtime.env.UndefinedIdHandlerImpl() {// REVISIT factory
+	    (new org.llava.impl.runtime.UndefinedIdHandlerImpl() {// REVISIT factory
 		    public Object handle(EnvironmentTopLevel env, Symbol id) {
 			GenericProcedure gp = FR.newGenericProcedure();
 			// REVISIT - performance?
@@ -232,7 +233,7 @@ public class EnvTopLevelInitImpl
 
 	    repl.readCompileEval(
 "(define (error msg)" +
-"  (throw (-si 'newLlavaException 'org.llava.impl.F msg)))"
+"  (throw (-si 'newLlavaException 'org.llava.F msg)))"
                                 );
 
 
@@ -257,6 +258,12 @@ public class EnvTopLevelInitImpl
 "(define (newline . out)" +
 "  (println (if (null? out) (getPrintWriter _%writer) (car out)))" +
 "  null)"
+                                );
+
+	    repl.readCompileEval(
+"(define set-vector-print-length!" +
+"  (lambda (x)" +
+"    (setVectorPrintLength _%writer x)))"
                                 );
 
 	    repl.readCompileEval(
