@@ -8,10 +8,18 @@
 
 (hcChangeWords
  '(
-   ("org.llava.F" . "org.llava.F")
+   ("(display " . "(-print ")
+   ("(read "    . "(-read ")
+   ("(write "   . "(-write ")
+   ("(writeln " . "(-writeln ")
+   ("(println " . "(-println ")
+   ("(print "   . "(-print ")
+   ("(newline"  . "(-newline")
   )
   "~/.sync/.llava.org/.system"
   "~/.sync/.llava.org/.system"
  t)
+
+
 
 ;;; End of file.
