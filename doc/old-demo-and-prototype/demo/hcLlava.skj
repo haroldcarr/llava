@@ -1,0 +1,28 @@
+;;;;
+;;;; Created       : 1999 Jun 10 (Thu) 20:56:18 by Harold Carr.
+;;;; Last Modified : 1999 Jun 11 (Fri) 00:04:52 by Harold Carr.
+;;;;
+
+;;; ToDo: write a parser.
+
+(defmacro (comment . rest) #t)
+
+(define (define-java-class def)
+  (print (define-java-class-file def))
+  (print (define-java-skj-file def)))
+
+(define (define-java-class-file def)
+  def)
+
+(define (define-java-skj-file def)
+  def)
+
+(comment
+(define-java-class
+  '(public class Baz implements (Foo)
+	   (public static Object (bar (Object x)
+				      (list 'public 'static 'Object 'bar x)))
+	   (public Object (baz (Object x)
+			       (list 'public 'static 'Object 'baz x)))))
+)
+		  
