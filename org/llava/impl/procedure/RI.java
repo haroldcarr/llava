@@ -1,6 +1,6 @@
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2000 Feb 16 (Wed) 20:50:15 by Harold Carr.
+ * Last Modified : 2000 Feb 16 (Wed) 21:27:57 by Harold Carr.
  */
 
 package libLava.r1.procedure.generic;
@@ -28,6 +28,129 @@ public class DI {
     }
 				  
     public static Object newInstance (Class targetClass, Object[] args) 
+	throws 
+	    Throwable 
+    {
+	return newInstanceInternal(targetClass, args);
+    }
+
+    //
+    // Method invocation.
+    //
+
+    public static Object invoke (String methodName, 
+				 Object targetObject,
+				 Object[] args) 
+	throws 
+	    NoSuchMethodException, 
+	    Throwable 
+    {
+	return invokeInternal(methodName,
+			      targetObject.getClass(),
+			      targetObject, 
+			      args); 
+    }
+
+    public static Object invokeStatic (String methodName, 
+				       String targetClassName,
+				       Object[] args) 
+	throws 
+	    ClassNotFoundException,
+	    NoSuchMethodException, 
+	    Throwable 
+    {
+	return invokeStatic(methodName, Class.forName(targetClassName), args);
+    }
+
+    public static Object invokeStatic (String methodName, 
+				       Class targetClass,
+				       Object[] args) 
+	throws 
+	    NoSuchMethodException, 
+	    Throwable 
+    {
+	return invokeInternal(methodName, targetClass, null, args); 
+    }
+
+    //
+    // Field access.
+    //
+
+    public static Object fieldRef (String fieldName, Object targetObject)
+	throws 
+	    IllegalAccessException,
+	    NoSuchFieldException 
+    {
+	return internalFieldRef(fieldName,
+				targetObject.getClass(),
+				targetObject);
+    }
+
+    public static Object staticFieldRef (String fieldName, String className)
+	throws 
+	    ClassNotFoundException,
+	    IllegalAccessException,
+	    NoSuchFieldException 
+    {
+	return staticFieldRef(fieldName, Class.forName(className));
+    }
+
+
+    public static Object staticFieldRef (String fieldName, Class targetClass)
+	throws 
+	    IllegalAccessException,
+	    NoSuchFieldException 
+    {
+	return internalFieldRef(fieldName, targetClass, null);
+    }
+
+    public static Object fieldSet (String fieldName,
+				   Object targetObject,
+				   Object value)
+	throws 
+	    IllegalAccessException, 
+	    NoSuchFieldException 
+    {
+	return internalFieldSet(fieldName, 
+				targetObject.getClass(),
+				targetObject,
+				value); 
+    }
+
+    public static Object staticFieldSet (String fieldName,
+					 String className,
+					 Object value)
+	throws 
+	    ClassNotFoundException,
+	    IllegalAccessException, 
+	    NoSuchFieldException 
+    {
+	return staticFieldSet(fieldName,
+			      Class.forName(className),
+			      value);
+    }
+
+    public static Object staticFieldSet (String fieldName,
+					 Class targetClass,
+					 Object value)
+	throws 
+	    IllegalAccessException, 
+	    NoSuchFieldException 
+    {
+	return internalFieldSet(fieldName, targetClass, null, value);
+    }
+
+    //
+    // Implementation.
+    //
+
+    //
+    // Instance creation.
+    //
+
+    // This only exists to improve readability of public API.
+    private static Object newInstanceInternal (Class targetClass,
+					       Object[] args) 
 	throws 
 	    Throwable 
     {
@@ -62,87 +185,6 @@ public class DI {
     // Method invocation.
     //
 
-    public static Object invoke (String methodName, 
-				 Object targetObject,
-				 Object[] args) 
-	throws 
-	    NoSuchMethodException, 
-	    Throwable 
-    {
-	return invokeInternal(methodName,
-			      targetObject.getClass(),
-			      targetObject, 
-			      args); 
-    }
-
-    public static Object invokeStatic (String methodName, 
-				       String targetClassName,
-				       Object[] args) 
-	throws 
-	    NoSuchMethodException, 
-	    Throwable 
-    {
-	return invokeStatic(methodName, Class.forName(targetClassName), args);
-    }
-
-    public static Object invokeStatic (String methodName, 
-				       Class targetClass,
-				       Object[] args) 
-	throws 
-	    NoSuchMethodException, 
-	    Throwable 
-    {
-	return invokeInternal(methodName, targetClass, null, args); 
-    }
-
-    //
-    // Field access.
-    //
-
-    public static void setField (Object targetObject,
-				 String fieldName,
-				 Object value)
-	throws 
-	    IllegalAccessException, 
-	    NoSuchFieldException 
-    {
-	setField(targetObject.getClass(), targetObject, fieldName, value); 
-    }
-
-
-    public static void setField (Class targetClass,
-				 Object targetObject,
-				 String fieldName,
-				 Object value)
-	throws
-	    IllegalAccessException, 
-	    NoSuchFieldException 
-    {
-	findField(targetClass, fieldName).set(targetObject, value); 
-    }
-
-    public static Object getField (Object targetObject, String fieldName) 
-	throws 
-	    IllegalAccessException,
-	    NoSuchFieldException 
-    {
-	return getField(targetObject.getClass(), targetObject, fieldName);
-    }
-
-    public static Object getField (Class targetClass,
-				   Object targetObject,
-				   String fieldName) 
-	throws
-	    IllegalAccessException,
-	    NoSuchFieldException 
-    {
-	return findField(targetClass, fieldName).get(targetObject);
-    }
-
-    //
-    // Implementation.
-    //
-
     private static Object invokeInternal (String methodName,
 					  Class targetClass,
 					  Object targetObject,
@@ -163,10 +205,6 @@ public class DI {
 	    throw(e.getTargetException()); 
 	}
     }
-
-    //
-    // Methods.
-    //
 
     private static synchronized Method findMethod (Class target, 
 						   String name, 
@@ -256,10 +294,33 @@ public class DI {
     }
 
     //
-    // Fields.
+    // Field access.
     //
 
-    static Field findField (Class targetClass, String fieldName) 
+    private static Object internalFieldRef (String fieldName,
+					    Class targetClass,
+					    Object targetObject)
+					    
+	throws
+	    IllegalAccessException,
+	    NoSuchFieldException 
+    {
+	return findField(targetClass, fieldName).get(targetObject);
+    }
+
+    private static Object internalFieldSet (String fieldName,
+					    Class targetClass,
+					    Object targetObject,
+					    Object value)
+	throws
+	    IllegalAccessException, 
+	    NoSuchFieldException 
+    {
+	findField(targetClass, fieldName).set(targetObject, value); 
+	return value;
+    }
+
+    private static Field findField (Class targetClass, String fieldName) 
 	throws
 	    NoSuchFieldException 
     {
@@ -274,8 +335,8 @@ public class DI {
 	return field;
     }
 
-    static Field findFieldNonPublicAndSupers (Class targetClass,
-					      String fieldName) 
+    private static Field findFieldNonPublicAndSupers (Class targetClass,
+						      String fieldName) 
 	throws
 	    NoSuchFieldException 
     {
@@ -331,7 +392,6 @@ public class DI {
 	    argType == NullClass;
     }
 
-
     // parmType is a primitive Class, argType is a wrapper Class
     // Assumes parmType and argType are not "identical" (modulo wrapping).
     // see Widening Primitve Conversions in JLS 5.1.2.
@@ -370,7 +430,7 @@ public class DI {
     // Picking most specific constructors/methods from similar candidates.
     //
 
-    static Constructor mostSpecificConstructor (Vector constructors) 
+    private static Constructor mostSpecificConstructor (Vector constructors) 
 	throws
 	    Throwable 
     {
@@ -481,28 +541,27 @@ public class DI {
     //
   
     // REVISIT - use weak references
-    static Hashtable cachedMethods = new Hashtable();
+    private static Hashtable cachedMethods = new Hashtable();
 
-    static Class NullClass;
-    static Class nullClass;
-    static Class BooleanClass;
-    static Class booleanClass;
-    static Class CharacterClass;
-    static Class characterClass;
-    static Class ByteClass;
-    static Class byteClass;
-    static Class ShortClass;
-    static Class shortClass;
-    static Class IntegerClass;
-    static Class integerClass;
-    static Class LongClass;
-    static Class longClass;
-    static Class FloatClass;
-    static Class floatClass;
-    static Class DoubleClass;
-    static Class doubleClass;
+    private static Class NullClass;
+    private static Class nullClass;
+    private static Class BooleanClass;
+    private static Class booleanClass;
+    private static Class CharacterClass;
+    private static Class characterClass;
+    private static Class ByteClass;
+    private static Class byteClass;
+    private static Class ShortClass;
+    private static Class shortClass;
+    private static Class IntegerClass;
+    private static Class integerClass;
+    private static Class LongClass;
+    private static Class longClass;
+    private static Class FloatClass;
+    private static Class floatClass;
+    private static Class DoubleClass;
+    private static Class doubleClass;
 
-    // have to use static initializer because of exceptions
     static {
 	try {
 	    nullClass      = Void.TYPE;
