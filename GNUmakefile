@@ -74,14 +74,16 @@ release : message clean scrub makeVersion zip-src all c jar docs release_end
 message : FORCE
 	-@echo "WARNING: USE J2SE 1.4 or less for RELEASE"
 
-release_end :
+release_end : zip_jar
 	date=`$(LLAVAVERSION) dateOnly`; \
-	zip -9 $(JARDIR)/llava.zip $(JARDIR)/llava.jar; \
 	cp $(JARDIR)/llava.zip $(JARDIR)/llava-$$date.zip; \
 	cp $(JARDIR)/llava.jar $(JARDIR)/llava-$$date.jar; \
 	cp $(JARDIR)/llavalib.zip $(JARDIR)/llava-$$date-lib.zip; \
 	cp $(JARDIR)/llavasrc.zip $(JARDIR)/llava-$$date-src.zip
 	-@echo "Release `cat VERSION` complete."
+
+zip_jar : FORCE
+	(cd $(JARDIR); zip -9 llava.zip llava.jar)
 
 #
 # Create jar files.
