@@ -1,0 +1,96 @@
+;;;;
+;;;; Created       : 2004 Nov 25 (Thu) 14:56:00 by Harold Carr.
+;;;; Last Modified : 2004 Dec 07 (Tue) 22:05:52 by Harold Carr.
+;;;;
+
+(define-syntax define-d
+  (lambda (a b . body)
+    (cond ((symbol? a)
+	   (cond ((and (pair? b) (eq? (first b) 'lambda))
+		  `(define ,a 
+		      (lambda ,(second b)
+			,(wrap-body a (second b) (cddr b))))) ;; @
+		 (else
+		  `'(define ,a ,b))))
+	  (else
+	   `(define ,a ,(wrap-body (first a) (rest a) (cons b body)))))))
+
+(define wrap-body
+  (lambda (name args body)
+    ;;(-println (list 'wrap-body name args body))
+    `(let ((_%result%_ null)
+	   (_%error%_ false))
+       (try
+	(begin
+	  (print-enter ',name ,@args)
+	  (set! _%result_% (begin ,@body)))
+	(catch (java.lang.Throwable t)
+	 (set! _%error%_ t)
+	 (throw t))
+	(finally
+	 (print-exit _%error%_ _%result_% ',name ,@args))))))
+
+(define print-enter
+  (lambda (name . args)
+    (print-indent 'enter)
+    (-print "->" )
+    (print-common name args)
+    (-println "" )))
+
+(define print-exit
+  (lambda (error result name . args)
+    (print-indent 'exit)
+    (-print "<" )
+    (-if error (-print "E") (-print "-"))
+    (print-common name args)
+    (-print "= " )
+    (-if error (-println error) (-println result))))
+
+
+(let ((current-indent 0)
+      (indent 1))
+
+  (define set-define-d-indent!
+    (lambda (x) (set! indent x)))
+
+  (define print-indent
+    (lambda (direction)
+      (cond (indent
+	     (if (eq? direction 'exit) 
+		 (set! current-indent (- current-indent indent)))
+	     (do ((i current-indent (- i 1)))
+		 ((<= i 0))
+	       (-print " "))
+	     (if (eq? direction 'enter) 
+		 (set! current-indent (+ current-indent indent)))))))
+
+)
+
+(define print-common
+  (lambda (name args)
+    (-print " (" ) ;; READER BUG: "("
+    (-print name)
+    (for-each (lambda (a) (-print " " ) (-print a)) args)
+    (-print ") " ))) ;; READER BUG: ")"
+
+(-comment-
+(import  org.llava.lib.Define-d)
+(define-d a 3)
+(define-d (fact n)
+  (cond ((<= n 0)
+	 (error (s+ "fact: illegal argument: " n)))
+	((= n 1) 1)
+	((= n 7) (error "XXX"))
+	(else
+	 (* n (fact (- n 1))))))
+(fact 5)
+(fact 10)
+(fact -1)
+(set-define-d-indent! false)
+(set-define-d-indent! 3)
+(set-define-d-indent! 1)
+
+)
+
+
+;;; End of file.
