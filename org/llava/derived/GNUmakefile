@@ -9,7 +9,7 @@
 
 #
 # Created       : 2000 Jan 18 (Tue) 04:28:19 by Harold Carr.
-# Last Modified : 2004 Dec 07 (Tue) 18:15:14 by Harold Carr.
+# Last Modified : 2004 Dec 10 (Fri) 21:07:44 by Harold Carr.
 #
 
 TOPDIR		=	../../..
@@ -17,8 +17,8 @@ TOPDIR		=	../../..
 PACKAGE		=	org.llava.derived
 PKGDIR		=	org/llava/derived
 
-# N.B.: This order *MUST* be kept in sync with order in
-#       EnvTopLevelInitImpl.
+# Note: Anything that uses let, let* or letrec MUST
+# come AFTER DerivedLlavaBinding.
 
 RESOURCE_FILES	= \
 	$(PKGDIR)/DerivedJavaFirst.lva \
@@ -27,6 +27,7 @@ RESOURCE_FILES	= \
 	$(PKGDIR)/DerivedLlavaConditional.lva \
 	$(PKGDIR)/DerivedLlavaQuasiquote.lva \
 	$(PKGDIR)/DerivedLlavaBinding.lva \
+	$(PKGDIR)/DerivedLlavaIO.lva \
 	$(PKGDIR)/DerivedLlavaCase.lva \
 	$(PKGDIR)/DerivedLlavaIteration.lva \
 	$(PKGDIR)/DerivedLlavaMember.lva \
