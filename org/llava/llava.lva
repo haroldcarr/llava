@@ -70,7 +70,13 @@
   "Examples:"
   (example
 "(new 'java.util.Date)
-(new 'java.lang.Integer 3)")))
+(new 'java.lang.Integer 3)")
+  "Note: if the class has been imported then it is not necessary to give
+   the full classpath:"
+  (example
+"(import java.lang.Integer)
+(new 'Integer 3)")))
+
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -122,15 +128,17 @@
  (description
   "Examples:"
 
-  (example "(-si 'parseInt 'java.lang.Integer \"ff\" 16)")
+  (example
+"(-si 'parseInt 'java.lang.Integer \"ff\" 16)")
 
   "Note, static methods may be called directly after their
-   class has been imported.  The above example can then be witten
-   as:"
-  
+   class has been imported.  The above example can then be written:"
+
   (example
 "(import java.lang.Integer)
-(parseInt \"ff\" 16)")))
+(parseInt \"ff\" 16)
+or
+(Integer.parseInt \"ff\" 16)")))
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -183,7 +191,11 @@
   (example
 "(import java.lang.System)
 (out)
-(out! 0)")))
+(out! 0)
+
+or, preferred
+
+(System.out)")))
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -299,7 +311,10 @@
 
 (demo) &lva-et; (Normal result is:  2)
 (demo) &lva-et; (Arithmetic:  java.lang.ArithmeticException: / by zero)
-(demo) &lva-et; (Exception:  java.lang.RuntimeException: Give up!)")))
+(demo) &lva-et; (Exception:  java.lang.RuntimeException: Give up!)")
+
+   "Note, it is not necessary to give the full classpath in the catch
+    clause if the class has been imported."))
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -373,13 +388,22 @@
 
   (example
 "(import java.lang.System)
+then
 (java.lang.System.out)
+and
+(System.out)
 	equivalent to (-sf 'out 'java.lang.System)
 
 (import java.lang.Integer)
+then
 (java.lang.Integer.TYPE)
+and
+(Integer.TYPE)
 	equivalent to (-sf 'TYPE 'java.lang.Integer)
+
 (java.lang.Integer.parseInt \"ff\" 16)
+and
+(Integer.parseInt \"ff\" 16)
         equivalent to (-si 'parseInt 'java.lang.Integer \"ff\" 16)")
 
   "Note: these definitions take places in the current
@@ -397,7 +421,17 @@
 (-doc-
  (name instanceof)
  (param obj)
- (param symbol-or-string))
+ (param symbol-or-string)
+ (description
+  "Example:"
+  (example
+   "(instanceof (new 'java.util.Hashtable) 'java.util.Hashtable) &lva-et; true")
+  "Note, like <code>new</code>, the full classpath is not necessary if
+  the class has been imported:"
+
+  (example
+   "(import java.util.Hashtable)
+(instanceof (new 'Hashtable) 'Hashtable) &lva-et; true")))
 
 (-doc-
  (name current-time-millis))
@@ -447,11 +481,6 @@
 (-section-
  (name "Planned Improvements")
  (description
-  "Integrate <function>new</function>,
-   <function>catch</function>, <function>instanceof</function> with
-   namespaces.  Currently, even if a namespace has been imported, it
-   is necessary to give the fullpath classname."
-
   "Integrate the library in llavalib.zip in llava.jar so it is
    not necessary to separately download and unzip llavalib.zip into
    your CLASSPATH."
