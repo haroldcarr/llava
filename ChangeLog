@@ -1,8 +1,56 @@
+2004-11-26  Harold Carr  <carr@llava.org>
+
+	* Added "define-d" to trace procedure entry and exit.
+
+2004-09-06  Harold Carr  <carr@llava.org>
+
+	* Released llava version 2004-09-06-alpha
+	* Changed top-level package from "org.llava.Llava" to "org.llava"
+	* Changed initial REPL package from "org.llava.Repl" to "llava-"
+	* Changed "_comment" to "-comment-"
+	* Changed "_namespace" to "package"
+	* Changed "_bt" and "_jbt" to "-bt" and "-jbt"
+	* Changed all public names which start with "_" to start with "-"
+	  "-i" "-si" "-f" "-sf" "-println" "-print" "-if" "-list"
+	* Removed require/provide system (replaced by import/package)
+	* Changed license to Creative Common Attribution
+	* Wrote assoc and assq in org.llava.lib.scm.Lists
+	* Wrote documentation in DocBook format
+	* Created org.llava.lib.LlavaDoc to extract and format
+	  "-doc-" from *.lva source.
+
+2002-11-07  Harold Carr  <carr@cs.utah.edu>
+
+	* Released llava version 2002-11-07-alpha
+	* Changed versioning scheme.  After seeing James Clark's
+	versioning scheme for XT, XP, etc., I feel it better serves the
+	nature of how I work on llava - whenever I can.  Sometimes big
+	changes, sometimes small - regardless, the version number just
+	bumps to the latest date.  I have added an optional field after
+	the date to indicate things like "beta", "alpha", etc.  I only
+	include the last two digits of the year.  If llava lives past the
+	21st century then I made a mistake.
+
+2002-10-25  Harold Carr  <carr@cs.utah.edu>
+	
+	* Added bitwise or (Prim_BitOr, "|").  (Did not bump version.)
+
+2002-10-20  Harold Carr  <carr@cs.utah.edu>
+
+	* First public release on llava.org: Version 0.49.beta1.
+
+2002-10-12  Harold Carr  <carr@cs.utah.edu>
+
+	* Changed name to llava.
+	* Added X11 style copyright.
+	* Put in org.llava package.
+	* Moved lib and impl directories.
+
 2001-03-26  Harold Carr  <carr@cs.utah.edu>
 
 	* Repartitioned large-grained package structure such
 	that the core just contains interfaces (and some default
-	implementations) while language profiles (only Lava for now, but
+	implementations) while language profiles (only Llava for now, but
 	r5rs later?) contain the actual implementation.
 
 2001-03-14  Harold Carr  <carr@cs.utah.edu>
@@ -18,7 +66,7 @@
 
 2001-03-05  Harold Carr  <carr@cs.utah.edu>
 
-	* Began integrating package system into Lava as a pluggable
+	* Began integrating package system into Llava as a pluggable
 	  EnvironmentTopLevel.  Tests work with either environment 
 	  implementation.
 
@@ -50,7 +98,7 @@
 
 	* Changed some derived to primitives (for speed):
 	- eg: not, map, null?, pair? 
-	  in primitive/java/opt and primitive/lava/opt
+	  in primitive/java/opt and primitive/llava/opt
 
 2000-02-10  Harold Carr  <carr@cs.utah.edu>
 
@@ -64,7 +112,7 @@
 
 2000-01-27  Harold Carr  <carr@cs.utah.edu>
 
-	* Wrote Lava.newReplOnPort.   Starts a repl on the given port.
+	* Wrote Llava.newReplOnPort.   Starts a repl on the given port.
 	  Useful for looking inside a running program (if you have
 	  provided yourself with roots).
 
@@ -87,7 +135,7 @@
 
 2000-01-22  Harold Carr  <carr@cs.utah.edu>
 
-	* Wrote PrimNewThread and LavaRunnable to enable thunks
+	* Wrote PrimNewThread and LlavaRunnable to enable thunks
 	  to run in a new thread.
 
 2000-01-21  Harold Carr  <carr@cs.utah.edu>
@@ -96,12 +144,12 @@
 
 2000-01-19  Harold Carr  <carr@cs.utah.edu>
 
-	* Wrote LavaVersion.
+	* Wrote LlavaVersion.
 
 2000-01-18  Harold Carr  <carr@cs.utah.edu>
 
 	* Wrote require/provide.
-	* Wrote .lavarc init file reading on startup.
+	* Wrote .llavarc init file reading on startup.
 	* Made primitive procedures which may be names of Java methods
 	  into generics (e.g., append, apply, cons, eval, list, load, ...).
 
@@ -111,26 +159,26 @@
 	  get a file list rather than (<java.io.File>)).
 	* Added #t, #f, #\space, #\newliine, #\<char> reading.
 	* Experimented with EngineStepImpl.
-	* Made derived (Lava source) into resources that are
+	* Made derived (Llava source) into resources that are
           loaded at init time (pluggable too).
 
 2000-01-16  Harold Carr  <carr@cs.utah.edu>
 
 	* Modified the "import" I wrote for kawa and then skij two years
-	  ago to work with Lava.
+	  ago to work with Llava.
 	* Wrote PrimThrow.
 	* Wrote PrimTryCatchFinally.
 	* Adapted my try macro I wrote for kawa and then skij two years
-	  ago to work with Lava.
+	  ago to work with Llava.
 
 2000-01-15  Harold Carr  <carr@cs.utah.edu>
 
-	* Removed LavaIOException.
-	* Made LavaReaderImpl makes all exceptions LavaException.
-	* Split LavaException into abstract and impl.
-	  Needs more work since now the reader (or the lava type factory)
+	* Removed LlavaIOException.
+	* Made LlavaReaderImpl makes all exceptions LlavaException.
+	* Split LlavaException into abstract and impl.
+	  Needs more work since now the reader (or the llava type factory)
 	  needs knowledge of rt1.
-	* Add Java and Lava backtrace control to Repl.
+	* Add Java and Llava backtrace control to Repl.
 	* Removed PrimThisEnvironment.
 	* Added member, do, case, etc.
 	* Wrote PrimStringAppend.
@@ -151,7 +199,7 @@
 2000-01-11  Harold Carr  <carr@cs.utah.edu>
 
 	* Wrote PrimLoad.
-	* Wrote LavaEOF.
+	* Wrote LlavaEOF.
 	* Added parsing and returning String.
 
 2000-01-09  Harold Carr  <carr@cs.utah.edu>
@@ -166,7 +214,7 @@
 
 2000-01-07  Harold Carr  <carr@cs.utah.edu>
 
-	* Wrote LavaRuntime and changed compiler to take it rather
+	* Wrote LlavaRuntime and changed compiler to take it rather
 	  than an Evaluator (which is an Engine).
 	* Wrote Syntax, UserSyntax, SyntaxDefineSyntax.
 	* Milestone: macros work.
@@ -177,8 +225,8 @@
 
 2000-01-04  Harold Carr  <carr@cs.utah.edu>
 
-	* Wrote LavaIOException.
-	* Changed LavaReaderImpl to throw LavaIOException.
+	* Wrote LlavaIOException.
+	* Changed LlavaReaderImpl to throw LlavaIOException.
 	* Removed Util (only contained error and warning used by reader).
 
 2000-01-03  Harold Carr  <carr@cs.utah.edu>
@@ -191,7 +239,7 @@
 
 2000-01-02  Harold Carr  <carr@cs.utah.edu>
 
-	* Extended LavaException to support backtrace.
+	* Extended LlavaException to support backtrace.
 
 1999-12-30  Harold Carr  <carr@cs.utah.edu>
 
@@ -206,7 +254,7 @@
 	* Installed "'" shorthand for quote.
 	* Give Procedures names when bound to top level variables.
 	* Wrote EnvTopLevelInit.
-	* Wrote Lava (i.e., main).
+	* Wrote Llava (i.e., main).
 
 1999-12-28  Harold Carr  <carr@cs.utah.edu>
 
@@ -232,7 +280,7 @@
 
 	* Wrote CodeAssignmentTopLevel.
 	* Wrote CodeReferenceTopLevel.
-	* Wrote LavaException.
+	* Wrote LlavaException.
 	* Wrote WrongNumberOfArgumentsException.
 
 1999-12-25  Harold Carr  <carr@cs.utah.edu>
@@ -275,8 +323,8 @@
 
 	- All functions generic.
 	- Everything pluggable.
-	- Only necessary stuff in lava.* (src: lava/lava/*)
-	- Extras in libLava.* (src: lava/libLava/*)
+	- Only necessary stuff in llava.* (src: llava/llava/*)
+	- Extras in libLlava.* (src: llava/libLlava/*)
 	- Only Java types/operators 
 	  + Pair
 	  + Procedure (i.e., Lambda)
@@ -284,11 +332,11 @@
 	  + Macros, ...)
 	
 	* Wrote Pair.
-	* Wrote LavaReader (of lists, symbols, Integer and Double).
+	* Wrote LlavaReader (of lists, symbols, Integer and Double).
 
 1999-12-15  Harold Carr  <carr@cs.utah.edu>
 
-	* Start of scaled-down lava: no class definition.
+	* Start of scaled-down llava: no class definition.
 	* Obtained/installed GJ.
 	* Updated generic makes to provide GJ compiler.
 
@@ -298,15 +346,15 @@
 
 	* Converted Elisp Java class generator to Scheme/Skij.
 
-	See doc/LAVA/hcLava.skj.
+	See doc/LLAVA/hcLlava.skj.
 
 1999-06-10 Harold Carr.
 
-	* Elisp code to take Lava (with class definitions) and
+	* Elisp code to take Llava (with class definitions) and
 	generate Java code for class calling back into Skij code
 	for method bodies.
 
-	See doc/LAVA/RCS/hcLava.skj.
+	See doc/LLAVA/RCS/hcLlava.skj.
 
 1999-summer Harold Carr.
 
@@ -316,34 +364,34 @@
 
 1998-12-13 Harold Carr	
 
-	* Emulation of Lava (without class definition ability) on Skij.
+	* Emulation of Llava (without class definition ability) on Skij.
 
 	See importJava.skj.
 
 1998-Spring  Harold Carr
 
-	* Prototyping of full-featured Lava.
+	* Prototyping of full-featured Llava.
 	The idea is to be able to incrementally/dynamically
 	(re)define Java classes.
 
-	See doc/LAVA.
+	See doc/LLAVA.
 
 1997-11-17 Harold Carr	
 
-	* Emulation of Lava (without class definition ability) on Kawa.
+	* Emulation of Llava (without class definition ability) on Kawa.
 
 	See k2j.kawa.
 
 Created       : 1999 Dec 15 (Wed) 19:57:16 by Harold Carr.
-Last Modified : 2001 Mar 26 (Mon) 16:12:31 by Harold Carr.
+Last Modified : 2004 Nov 26 (Fri) 09:21:31 by Harold Carr.
 
 Order for presentation:
 
 	- Factory
 	- Pair
-	- Lava (i.e., main)
+	- Llava (i.e., main)
 	- Repl
-	- LavaException
+	- LlavaException
 	- Reader (lists, symbols (as String), Integer, Double)
 	- Evaluator. Engine. Code. 
 	- Compiler.
@@ -369,6 +417,16 @@ Order for presentation:
 	- call/cc.
 	- import.
 	- PrimThrow, PrimTryCatchFinally.
+
+------------------------------------------------------------------------------
+
+Copyright (c) 1997 - 2004 Harold Carr
+
+This work is licensed under the Creative Commons Attribution License.
+To view a copy of this license, visit 
+  http://creativecommons.org/licenses/by/2.0/
+or send a letter to
+  Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
 	
 ;;; End of file.
 
