@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 30 (Thu) 06:34:36 by Harold Carr.
- * Last Modified : 2005 Feb 06 (Sun) 15:56:11 by Harold Carr.
+ * Last Modified : 2005 Feb 07 (Mon) 09:48:46 by Harold Carr.
  */
 
 package org.llava.impl.runtime;
@@ -60,7 +60,7 @@ public class EnvTopLevelInitImpl
 	set(env, "_%boot-namespace",env);
 
 	set(env, "_%import",        F.newPrimImport((Namespace)env));
-	set(env, "new*",            F.newPrimNew((Namespace)env));
+	set(env, "new*",            F.newPrimNew());
 	set(env, "_%package",       F.newPrimPackage((Namespace)env));
 
 	set(env, "eq?",             F.newPrimEqP());
