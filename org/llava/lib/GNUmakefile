@@ -35,8 +35,6 @@ RESOURCE_FILES	= \
 	$(PKGDIR)/cl/Symbols.lva \
 	$(PKGDIR)/io/FileWalker.lva \
 	$(PKGDIR)/java/Lang.lva \
-	$(PKGDIR)/java/corba/CosNaming.lva \
-	$(PKGDIR)/java/corba/Orb.lva \
 	$(PKGDIR)/reflect/Namespace.lva \
 	$(PKGDIR)/reflect/Reflect.lva \
 	$(PKGDIR)/scm/Lists.lva \
