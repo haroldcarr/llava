@@ -24,9 +24,7 @@ RESOURCE_FILES	= \
 	$(PKGDIR)/Lists.lva \
 	$(PKGDIR)/LlavaDoc.lva \
 	$(PKGDIR)/Macros.lva \
-	$(PKGDIR)/NamespaceUtil.lva \
 	$(PKGDIR)/Program.lva \
-	$(PKGDIR)/Reflect.lva \
 	$(PKGDIR)/SimpleRecord.lva \
 	$(PKGDIR)/Strings.lva \
 	$(PKGDIR)/System.lva \
@@ -40,6 +38,8 @@ RESOURCE_FILES	= \
 	$(PKGDIR)/java/Lang.lva \
 	$(PKGDIR)/java/corba/CosNaming.lva \
 	$(PKGDIR)/java/corba/Orb.lva \
+	$(PKGDIR)/reflect/Namespace.lva \
+	$(PKGDIR)/reflect/Reflect.lva \
 	$(PKGDIR)/scm/Lists.lva \
 	$(PKGDIR)/scm/Predicates.lva \
 	$(PKGDIR)/scm/Strings.lva \

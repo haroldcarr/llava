@@ -1,7 +1,7 @@
 <!--
 //
 // Created       : 2004 Sep 05 (Sun) 22:19:59 by Harold Carr.
-// Last Modified : 2004 Nov 27 (Sat) 09:32:55 by Harold Carr.
+// Last Modified : 2004 Dec 02 (Thu) 09:42:45 by Harold Carr.
 //
 -->
 <chapter id="llava-ch-libraries">
@@ -14,9 +14,7 @@
   &lib-lists;
   &lib-llava-doc;
   &lib-macros;
-  &lib-namespace-util;
   &lib-program;
-  &lib-reflect;
   &lib-strings;
   &lib-system;
   &lib-threads;
@@ -32,6 +30,9 @@
   &lib-java-lang;
   &lib-java-corba-cosnaming;
   &lib-java-corba-orb;
+
+  &lib-reflect-namespace;
+  &lib-reflect-reflect;
 
   &lib-scm-lists;
   &lib-scm-predicates;

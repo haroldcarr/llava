@@ -3,7 +3,7 @@
 <!--
 //
 // Created       : 1999 Dec 29 (Wed) 14:53:37 by Harold Carr.
-// Last Modified : 2004 Nov 29 (Mon) 16:09:16 by Harold Carr.
+// Last Modified : 2004 Dec 02 (Thu) 09:23:06 by Harold Carr.
 //
 -->
 
@@ -27,9 +27,7 @@
 <!ENTITY  lib-lists       SYSTEM "../.generated/org/llava/lib/Lists.xml">
 <!ENTITY  lib-llava-doc   SYSTEM "../.generated/org/llava/lib/LlavaDoc.xml">
 <!ENTITY  lib-macros      SYSTEM "../.generated/org/llava/lib/Macros.xml">
-<!ENTITY  lib-namespace-util SYSTEM "../.generated/org/llava/lib/NamespaceUtil.xml">
 <!ENTITY  lib-program     SYSTEM "../.generated/org/llava/lib/Program.xml">
-<!ENTITY  lib-reflect     SYSTEM "../.generated/org/llava/lib/Reflect.xml">
 <!ENTITY  lib-strings     SYSTEM "../.generated/org/llava/lib/Strings.xml">
 <!ENTITY  lib-system      SYSTEM "../.generated/org/llava/lib/System.xml">
 <!ENTITY  lib-threads     SYSTEM "../.generated/org/llava/lib/Threads.xml">
@@ -48,6 +46,9 @@
 <!ENTITY lib-java-lang SYSTEM "../.generated/org/llava/lib/java/Lang.xml">
 <!ENTITY lib-java-corba-cosnaming SYSTEM "../.generated/org/llava/lib/java/corba/CosNaming.xml">
 <!ENTITY lib-java-corba-orb SYSTEM "../.generated/org/llava/lib/java/corba/Orb.xml">
+
+<!ENTITY  lib-reflect-namespace SYSTEM "../.generated/org/llava/lib/reflect/Namespace.xml">
+<!ENTITY  lib-reflect-reflect SYSTEM "../.generated/org/llava/lib/reflect/Reflect.xml">
 
 
 <!ENTITY lib-scm-lists SYSTEM "../.generated/org/llava/lib/scm/Lists.xml">
