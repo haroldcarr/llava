@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 28 (Tue) 00:27:53 by Harold Carr.
- * Last Modified : 2004 Dec 22 (Wed) 15:52:24 by Harold Carr.
+ * Last Modified : 2004 Dec 22 (Wed) 17:21:43 by Harold Carr.
  */
 
 package org.llava.impl.runtime;
@@ -46,29 +46,8 @@ public class UndefinedIdHandlerGenericImpl
 
     public Object handle (EnvironmentTopLevel env, Symbol identifier)
     {
-	GenericProcedure gp = F.newGenericProcedure();
-	// REVISIT - performance?
-	if (env instanceof Namespace &&
-	    // REVISIT: NamespaceImpl
-	    ((NamespaceImpl)env).isDottedP(identifier.toString())) 
-	{
-	    ;
-	} else {
-	    // REVISIT - maybe do not set
-	    
-	    // REVISIT - cannot set when using package
-	    // system.  Setting causes slots to have
-	    // values in packages rather than being
-	    // undefined so it falls through to
-	    // next package of ref list.
-	    
-	    // REVISIT - but if you do not set
-	    // it breaks - still need to investigate.
-	    // For now there is a workaround in
-	    // NamespaceImpl.  See WORKAROUND/SET/UNDEFINED.
-	    env.set(identifier, gp);
-	}
-	return gp;
+	// You MUST set the name - it is used by DI as the method name.
+	return F.newGenericProcedure(identifier.toString());
     }
 }
 
