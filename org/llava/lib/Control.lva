@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
-;;;; Last Modified : 2004 Sep 11 (Sat) 23:23:15 by Harold Carr.
+;;;; Last Modified : 2004 Dec 01 (Wed) 10:12:40 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.Control)
@@ -114,13 +114,13 @@
 		  (cons
 		   (fn curr prev next)
 		   (if (not (null? left))
-		       (rec (_%scar left)
+		       (rec (-car left)
 			    curr
-			    (_%scar (_%scdr left))
-			    (_%scdr left))
+			    (-car (-cdr left))
+			    (-cdr left))
 		       '())))))
     (if (not (null? lst))
-	(rec (car lst) '() (_%scar (cdr lst)) (cdr lst)))))
+	(rec (car lst) '() (-car (cdr lst)) (cdr lst)))))
 
 ;;;
 ;;; for-each3
@@ -136,13 +136,13 @@
   (letrec ((rec (lambda (curr prev next left)
 		   (fn curr prev next)
 		   (if (not (null? left))
-		       (rec (_%scar left)
+		       (rec (-car left)
 			    curr
-			    (_%scar (_%scdr left))
-			    (_%scdr left))
+			    (-car (-cdr left))
+			    (-cdr left))
 		       '()))))
     (if (not (null? lst))
-	(rec (car lst) '() (_%scar (cdr lst)) (cdr lst)))))
+	(rec (car lst) '() (-car (cdr lst)) (cdr lst)))))
 
 ;;;
 ;;; tlet*
