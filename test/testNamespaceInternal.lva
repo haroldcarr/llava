@@ -22,7 +22,7 @@
   (new 'java.util.Hashtable))
 
 (define (createNamespace x)
-  (let ((ns (new 'testLava.Namespace x *topLevelNamespace*)))
+  (let ((ns (new 'testLava.proto.Namespace x *topLevelNamespace*)))
     (put *fullNameNamespaceMap* x ns)
     ns))
 
@@ -55,7 +55,7 @@
 		 (- i 1)))
 	((= i -1) result))))
 
-(.comment
+(_comment
 (begin
 (load "ns.lva")
 (begin-test)
@@ -98,7 +98,7 @@
 				  *nextPackageShouldBe*))))
     (set! *currentNamespace* (findOrCreateNamespace PC))))
 
-(.comment
+(_comment
 (begin
 (load "ns.lva")
 (begin-test)
@@ -147,10 +147,19 @@
   (let ((loadName (replace name #\. #\/)))
     (if (not (eq? (member name (getRefListNames *currentNamespace*))
 		  false))
-	true ;; but load it if touched since load time to pick up changes
-	     ;; but that doesn't handle erasures.
+	true ;; This case is more efficient and stops
+             ;; infinite loading for packages which import each other.
+             ;; Note: Load if touched since load time to pick up changes
+	     ;; (doesn't handle erasures).
 	(try
 	 (begin
+	   ;; REVISIT - not in ref list - maybe see if already loaded
+	   ;; in system.  If so then load/add it if touched, else
+	   ;; just add to refList.  This is useful so one can
+	   ;; interactively create packages and have them import each
+	   ;; other.
+	   ;;
+           ;; After that:
 	   ;; Try a file load first.
 	   (importXAux 
 	    name
@@ -159,7 +168,7 @@
 	      (require loadName)))) 
 	 (catch (java.lang.Exception ex)
 		;; If that does not work try to "load" the class.
-		(.print (list 'Exception ex))
+		(_print (list 'Exception ex))
 		;; This statement will need a try/catch to reset current.
 		(set! *currentNameSpace* (findOrCreateNamespace name))
 		;; If class and already loaded do nothing
@@ -167,7 +176,7 @@
 		(importXAux 
 		 name
 		 (lambda ()
-		   (.print "need to importX")
+		   (_print "need to importX")
 		   (throw 
 		    (new 'java.lang.Exception
 			 "static loading not implemented")))))))))
@@ -186,7 +195,7 @@
       (set! *currentNamespace* savedPackage)
       (set! *nextPackageShouldBe* '())))))
   
-(.comment
+(_comment
 (begin
 (load "ns.lva")
 (begin-test)
@@ -195,26 +204,26 @@
 (check 2
        '("lava.REPL" "lava.Lava")
        (getRefListNames *currentNamespace*))
-(importX 'testLava.ns.one.One)
+(importX 'testLava.proto.ns.one.One)
 *fullNameNamespaceMap*
 (check 3 4 (size *fullNameNamespaceMap*))
 (check 4
-       '("lava.REPL" "testLava.ns.one.One" "lava.Lava")
+       '("lava.REPL" "testLava.proto.ns.one.One" "lava.Lava")
        (getRefListNames *currentNamespace*))
 (check 5
-       '("testLava.ns.one.One" "testLava.ns.two.Two" "lava.Lava")
-       (getRefListNames (findNamespace "testLava.ns.one.One")))
+       '("testLava.proto.ns.one.One" "testLava.proto.ns.two.Two" "lava.Lava")
+       (getRefListNames (findNamespace "testLava.proto.ns.one.One")))
 (check 6
-       '("testLava.ns.two.Two" "lava.Lava")
-       (getRefListNames (findNamespace "testLava.ns.two.Two")))
+       '("testLava.proto.ns.two.Two" "lava.Lava")
+       (getRefListNames (findNamespace "testLava.proto.ns.two.Two")))
 
-(importX 'testLava.ns.two.Two)
+(importX 'testLava.proto.ns.two.Two)
 (check 7
-       '("lava.REPL" "testLava.ns.one.One" "testLava.ns.two.Two" "lava.Lava")
+       '("lava.REPL" "testLava.proto.ns.one.One" "testLava.proto.ns.two.Two" "lava.Lava")
        (getRefListNames *currentNamespace*))
-(importX 'testLava.ns.two.Two)
+(importX 'testLava.proto.ns.two.Two)
 (check 8
-       '("lava.REPL" "testLava.ns.one.One" "testLava.ns.two.Two" "lava.Lava")
+       '("lava.REPL" "testLava.proto.ns.one.One" "testLava.proto.ns.two.Two" "lava.Lava")
        (getRefListNames *currentNamespace*))
 (end-test)
 )
@@ -264,121 +273,147 @@
 ;;;    This most closely resembles static class methods/fields accessed.
 ;;;    But it is inconvenient in terms of Lisp.
 ;;; 3. Go through refList until found or undefined.
-;;;    
+;;;    We choose this one.
+;;;
 
-(define (refNotDotted x)
-  (.print (list 'refNotDotted x))
-  (cond (;; #1 and 2
-	 (containsKey (getMap *currentNamespace*) x)
-	 (get (getMap *currentNamespace*) x))
-	;;(;; #2
-	;; (containsKey (getMap *topLevelNamespace*) x)
-	;; (get (getMap *topLevelNamespace*) x))
-	(;; #3
-	 (let ((refList (getRefList *currentNamespace*)))
-	   (call/cc
-	    (lambda (return)
-	      (do ((i 0 (+ i 1)))
-		  ((= i (size refList)) false)
-		(cond ((containsKey (getMap (elementAt refList i)) x)
-		       (.print (list 'foundIn
-				     (getName (elementAt refList i))
-				     (get (getMap (elementAt refList i)) x)))
-		       (return (get (getMap (elementAt refList i)) x)))))))))
-	(else
-	 (error (string-append "undefined: " x)))))
+(define (refNotDotted v)
+  (_print (list 'refNotDotted v))
+  (let ((refList (getRefList *currentNamespace*)))
+    (call/cc
+     (lambda (return)
+       (do ((i 0 (+ i 1)))
+	   ((= i (size refList)) (error (string-append "undefined: " v)))
+	 (cond ((containsKey (getMap (elementAt refList i)) v)
+		(_print (list 'foundIn
+			      (getName (elementAt refList i))
+			      (get (getMap (elementAt refList i)) v)))
+		(return (get (getMap (elementAt refList i)) v)))))))))
 
 (define (classNameOf x)
   (variableOf x))
 
-(define (endsWithMatch ns x)
+(define (findMatch ns pc)
   (let ((refList (getRefList ns)))
     (call/cc
      (lambda (return)
-       (do ((i (- (size refList) 1) (- i 1)))
-	   ((= i -1) false)
-	 (if (equals x (classNameOf (getName (elementAt refList i))))
+       (do ((i 0 (+ i 1)))
+	   ((= i (size refList)) false)
+	 (if (or (equals pc              (getName (elementAt refList i)))
+		 (equals pc (classNameOf (getName (elementAt refList i)))))
 	     (return (elementAt refList i))))))))
 
 (define (refDotted pc m)
-  (.print (list 'refDotted pc m))
-  ;; REVISIT - only allow abbreviated or full refs to names in refList
-  ;; instead of global as is done here.
-  (cond ((containsKey *fullNameNamespaceMap* pc)
-	 (lookup (get *fullNameNamespaceMap* pc) m))
-	((hasMultipleDots? pc) (error (string-append "undefined: " m)))
-	((let ((ns (endsWithMatch *currentNamespace* pc)))
-	   (.print (list "NS" ns m))
-	   (if (and (not (eq? ns false))
-		    (containsKey (getMap ns) m))
-	       (lookup ns m)
-	       (error (string-append "refDotted: undefined: " 
-				     pc "." m)))))))
+  (_print (list 'refDotted pc m))
+  (let* ((originalPC pc)
+	 (pc (if (equals pc "") "lava.Lava" pc))
+	 (ns (findMatch *currentNamespace* pc)))
+    (_print (list "NS" ns m))
+    (if (and (not (eq? ns false))
+	     (containsKey (getMap ns) m))
+	(lookup ns m)
+	(error (string-append "refDotted: undefined: " originalPC "." m)))))
 
-(define (lookup namespace x)
+(define (lookup namespace v)
   (let ((savedNamespace *currentNamespace*))
     (try 
      (begin
        (set! *currentNamespace* namespace)
-       (refNotDotted x))
+       (refNotDotted v))
      (finally
       (set! *currentNamespace* savedNamespace)))))
 
 
-(.comment
+(_comment
 (begin
 (load "ns.lva")
 (begin-test)
+
+(package 'lava 'Lava)
+(check 0 '("lava.Lava") (getRefListNames *currentNamespace*))
+(setE! 'a 'Lava-a)
+(check 0 'Lava-a (refE 'a))
+(check 0 'Lava-a (refE '.a))
+(check 0 'Lava-a (refE 'Lava.a))
+(check 0 'Lava-a (refE 'lava.Lava.a))
+
+(package 'lava 'REPL)
+(check 0 "lava.REPL" (getName *currentNamespace*))
+(check 0 '("lava.REPL" "lava.Lava") (getRefListNames *currentNamespace*))
+(check 0 'Lava-a (refE 'a))
 (check 1 'REPL-a (setE! 'a 'REPL-a))
 (check 2 'REPL-a (refE 'a))
-(check 3
-       '("lava.REPL" "lava.Lava")
-       (getRefListNames *currentNamespace*))
+(check 2 'Lava-a (refE '.a))
+(check 2 'Lava-a (refE 'Lava.a))
+(check 2 'REPL-a (refE 'REPL.a))
+(check 2 'Lava-a (refE 'Lava.a))
+(check 2 'REPL-a (refE 'lava.REPL.a))
+(check 2 'Lava-a (refE 'lava.Lava.a))
+
 (package 'foo.bar 'Baz)
 (check 3
        '("foo.bar.Baz" "lava.Lava")
        (getRefListNames *currentNamespace*))
+(check 3 'Lava-a (refE 'a))
 (setE! 'a 'Baz-a)
 (check 2 'Baz-a (refE 'a))
+(check 2 'Baz-a (refE 'Baz.a))
+(check 2 'Lava-a (refE '.a))
+(check 2 'Lava-a (refE 'Lava.a))
 (check 2 'Baz-a (refE 'foo.bar.Baz.a))
+(check 2 'Lava-a (refE 'lava.Lava.a))
 (check 2
        "refDotted: undefined: REPL.a" 
-       (try (refE 'REPL.a) (catch (java.lang.Exception e) (getMessage e))))
-(importX 'testLava.ns.one.One)
+       (try (refE 'REPL.a) 
+	    (catch (java.lang.Exception e) (getMessage e))))
+(check 2
+       "refDotted: undefined: lava.REPL.a" 
+       (try (refE 'lava.REPL.a) 
+	    (catch (java.lang.Exception e) (getMessage e))))
+(importX 'testLava.proto.ns.one.One)
 (check 3
-       '("foo.bar.Baz" "testLava.ns.one.One" "lava.Lava")
+       '("foo.bar.Baz" "testLava.proto.ns.one.One" "lava.Lava")
        (getRefListNames *currentNamespace*))
-(package 'testLava.ns.one 'One)
-(check 4 "testLava.ns.one.One" (getName *currentNamespace*))
+(check 4 'Baz-a (refE 'a))
+(check 4 'Lava-a (refE 'Lava.a))
+(check 4 'Lava-a (refE '.a))
+
+(package 'testLava.proto.ns.one 'One)
+(check 4 "testLava.proto.ns.one.One" (getName *currentNamespace*))
+(check 4 'Lava-a (refE 'a))
+(check 4 'Lava-a (refE '.a))
 (setE! 'a 'One-a)
+
 (package 'foo.bar 'Baz)
 (check 4 "foo.bar.Baz" (getName *currentNamespace*))
-(check 0 'One-a (refE 'One.a))
-
-;; *****
-(set! *currentNamespace* (findNamespace "lava.Lava"))
-(setE! 'a 'Lava-a)
-(check 0 'Lava-a (refE 'a))
-(check 0 
-       '"refDotted: undefined: .a"
-       (try (refE '.a) (catch (java.lang.Exception e) (getMessage e))))
-(check 0 'Lava-a (refE 'lava.Lava.a))
-(package 'foo.bar 'Baz)
 (check 3
-       '("foo.bar.Baz" "testLava.ns.one.One" "lava.Lava")
+       '("foo.bar.Baz" "testLava.proto.ns.one.One" "lava.Lava")
        (getRefListNames *currentNamespace*))
 (check 0 'Baz-a (refE 'a))
-(check 0 
-       '"refDotted: undefined: .a"
-       (try (refE '.a) (catch (java.lang.Exception e) (getMessage e))))
+(check 0 'Lava-a (refE '.a))
+(check 4 'Baz-a (refE 'a))
 (check 0 'One-a (refE 'One.a))
-(check 0 'One-a (refE 'testLava.ns.one.One.a))
-(check 0 'REPL-a (refE 'lava.REPL.a))
+(check 0 'Lava-a (refE 'Lava.a))
+(check 0 'One-a (refE 'testLava.proto.ns.one.One.a))
+
+(package 'lava 'Lava)
+(check 0 '("lava.Lava") (getRefListNames *currentNamespace*))
+(check 0 'Lava-a (refE 'a))
+(check 0 'Lava-a (refE '.a))
+(check 0 'Lava-a (refE 'lava.Lava.a))
+(check 2
+       "refDotted: undefined: One.a" 
+       (try (refE 'One.a) 
+	    (catch (java.lang.Exception e) (getMessage e))))
+(check 2
+       "refDotted: undefined: testLava.proto.ns.one.One.a"
+       (try (refE 'testLava.proto.ns.one.One.a) 
+	    (catch (java.lang.Exception e) (getMessage e))))
+
 (package "" 'Only)
 (setE! 'a 'Only-a)
 (check 0 'Only-a (refE 'a))
 (check 0 'Only-a (refE 'Only.a))
-(check 0 'Lava-a (refE '.a))
+;(check 0 'Lava-a (refE '.a))
 (end-test)
 )
 )
@@ -392,12 +427,12 @@
 	(newNotDotted xAsString args))))
 
 (define (newNotDotted x args)
-  (let ((ns (endsWithMatch *currentNamespace* x)))
+  (let ((ns (findMatch *currentNamespace* x)))
     (if (not (eq? ns false))
 	(apply new (cons (string->symbol (getName ns)) args))
 	(else (error (string-append "Undefined: " x))))))
 
-(.comment
+(_comment
 (begin
 (begin-test)
 (load "ns.lva")

@@ -3,7 +3,7 @@
 // Last Modified : 2004 Dec 01 (Wed) 10:15:34 by Harold Carr.
 //
 
-package testLava;
+package testLava.proto;
 
 import java.util.Hashtable;
 import java.util.Vector;
