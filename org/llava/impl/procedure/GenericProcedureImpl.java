@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 28 (Tue) 03:42:27 by Harold Carr.
- * Last Modified : 2004 Dec 22 (Wed) 17:41:28 by Harold Carr.
+ * Last Modified : 2005 Mar 12 (Sat) 17:32:08 by Harold Carr.
  */
 
 package org.llava.impl.procedure;
@@ -137,7 +137,7 @@ public class GenericProcedureImpl
 
     public String toString ()
     {
-	// REVISIT: duplicated in GenericProcedureImpl, LambdaImpl, Syntax
+	// REVISIT: duplicated in GenericProcedureImpl, LambdaImpl, SyntaxImpl
 	String result = 
 	    "{generic " 
 	    + ((getDefaultLambda() != null) ? getDefaultLambda().toString()
