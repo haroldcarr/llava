@@ -63,7 +63,7 @@
 
 (-doc-
  (name new)
- (param className)
+ (param packagePathAndClassName)
  (param obj)
  (param ...)
  (description
@@ -71,11 +71,11 @@
   (example
 "(new 'java.util.Date)
 (new 'java.lang.Integer 3)")
-  "Note: if the class has been imported then it is not necessary to give
-   the full classpath:"
+  "Note: if the class has been imported then you can call
+   the constructor directly:"
   (example
 "(import java.lang.Integer)
-(new 'Integer 3)")))
+(Integer 3)")))
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
