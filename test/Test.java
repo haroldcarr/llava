@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 20 (Mon) 00:07:05 by Harold Carr.
- * Last Modified : 2004 Dec 14 (Tue) 12:20:03 by Harold Carr.
+ * Last Modified : 2004 Dec 19 (Sun) 09:53:46 by Harold Carr.
  */
 
 package test;
@@ -56,6 +56,14 @@ public class Test {
 	    sop("PASSED");
 	} else {
 	    sop(numberOfFailures + " tests failed.");
+	}
+    }
+
+    public static void throwExceptionIfFailures()
+	throws Exception
+    {
+	if (numberOfFailures > 0) {
+	    throw new Exception("numberOfFailures = " + numberOfFailures);
 	}
     }
 
