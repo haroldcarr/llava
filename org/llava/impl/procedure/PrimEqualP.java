@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 23 (Thu) 18:36:42 by Harold Carr.
- * Last Modified : 2004 Dec 07 (Tue) 19:01:19 by Harold Carr.
+ * Last Modified : 2004 Dec 14 (Tue) 11:48:47 by Harold Carr.
  */
 
 package org.llava.impl.procedure;
@@ -19,6 +19,8 @@ package org.llava.impl.procedure;
 import org.llava.F;
 import org.llava.Pair;
 import org.llava.runtime.Engine;
+
+import org.llava.impl.util.List;
 
 import org.llava.impl.procedure.PrimitiveProcedure;
 
@@ -43,10 +45,7 @@ public class PrimEqualP
 	}
 	Object first = args.first();
 	Object second = args.second();
-	if (first == second) {
-	    return F.newBoolean(true);
-	}
-	return F.newBoolean(first == null ? false : first.equals(second));
+	return List.equalp(first, second);
     }
 }
 
