@@ -1,7 +1,7 @@
 <!--
 //
 // Created       : 1999 Dec 29 (Wed) 14:53:37 by Harold Carr.
-// Last Modified : 2004 Dec 10 (Fri) 23:12:41 by Harold Carr.
+// Last Modified : 2004 Dec 11 (Sat) 21:44:09 by Harold Carr.
 //
 -->
 <chapter id="llava-ch-download">
@@ -70,6 +70,10 @@
       <listitem><para>
       For a full list of improvements see the 
       <ulink url="http://llava.org/TODO">TODO</ulink> list
+      </para></listitem>
+
+      <listitem><para>
+      <ulink url="http://llava.org/archive">Previous versions</ulink>
       </para></listitem>
 
     </itemizedlist>
