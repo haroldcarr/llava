@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 29 (Wed) 20:09:32 by Harold Carr.
- * Last Modified : 2004 Dec 08 (Wed) 17:18:05 by Harold Carr.
+ * Last Modified : 2004 Dec 08 (Wed) 10:29:08 by Harold Carr.
  */
 
 package org.llava.impl;
@@ -23,8 +23,6 @@ import java.io.PrintWriter;
 import java.io.Reader;
 
 import org.llava.F;
-import org.llava.FC;
-import org.llava.FR;
 import org.llava.LlavaException;
 import org.llava.Pair;
 import org.llava.Procedure;
@@ -50,7 +48,7 @@ public class ReplImpl
 {
     private LlavaReader         reader;
     private LlavaWriter         writer;
-    private LlavaWriter         errWriter;
+    private LlavaWriter         errWriter; // NOT USED - all out goes to writer
     private LlavaRuntime        runtime;
     private EnvironmentTopLevel env;
     private Evaluator           evaluator;
@@ -101,10 +99,10 @@ public class ReplImpl
 	this.reader    = F.newLlavaReader(new InputStreamReader(in));
 	this.writer    = F.newLlavaWriter(new PrintWriter(out));
 	this.errWriter = F.newLlavaWriter(new PrintWriter(err));
-	this.compiler  = FC.newCompiler();
-	this.env       = FR.newEnvironmentTopLevel();
-	this.evaluator = FR.newEvaluator();
-	this.runtime   = FR.newLlavaRuntime(env, evaluator);
+	this.compiler  = F.newCompiler();
+	this.env       = F.newEnvironmentTopLevel();
+	this.evaluator = F.newEvaluator();
+	this.runtime   = F.newLlavaRuntime(env, evaluator);
 	this.EOF       = F.newLlavaEOF();
 
 	init();
@@ -112,11 +110,11 @@ public class ReplImpl
 
     private void init ()
     {
-	EnvTopLevelInit init = FR.newEnvTopLevelInit(this);
+	EnvTopLevelInit init = F.newEnvTopLevelInit(this);
 	init.init();
 	init.loadDerived();
 
-	backtraceHandler = FR.newBacktraceHandler(); // REVISIT
+	backtraceHandler = F.newBacktraceHandler(); // REVISIT
 	env.set(F.newSymbol("-jbt"), new JavaBacktrace());
 	env.set(F.newSymbol("-bt"), new LlavaBacktrace());
 
@@ -275,8 +273,8 @@ public class ReplImpl
     public void informAboutException ()
     {
 	Throwable t = lastException.getThrowable();
-	errWriter.getPrintWriter().println("Error: " + t.toString());
-	errWriter.getPrintWriter().flush();
+	writer.getPrintWriter().println("Error: " + t.toString());
+	writer.getPrintWriter().flush();
     }
 
     public LlavaException getLastException ()
@@ -318,8 +316,8 @@ public class ReplImpl
 	{
 	    if (getLastException() != null) {
 		getLastException().getThrowable()
-		    .printStackTrace(errWriter.getPrintWriter());
-		errWriter.getPrintWriter().flush();
+		    .printStackTrace(writer.getPrintWriter());
+		writer.getPrintWriter().flush();
 	    }
 	    return null;
 	}
@@ -335,8 +333,8 @@ public class ReplImpl
 	{
 	    if (getLastException() != null) {
 		getLastException().printBacktrace(backtraceHandler, 
-						  errWriter.getPrintWriter());
-		errWriter.getPrintWriter().flush();
+						  writer.getPrintWriter());
+		writer.getPrintWriter().flush();
 	    }
 	    return null;
 	}
