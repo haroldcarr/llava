@@ -1,0 +1,53 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+;;;;
+;;;; Created       : 2004 Jan 13 (Tue) 20:37:33 by Harold Carr.
+;;;; Last Modified : 2004 Nov 27 (Sat) 09:31:58 by Harold Carr.
+;;;;
+
+(package org.llava.lib.cl.Sequences)
+
+(-package- (description "Common LISP sequence procedures."))
+
+(-doc-
+ (name remove)
+ (param obj)
+ (param list)
+ (description "Uses <code>equal?</code> for comparison."))
+
+(define (remove this lst)
+  (let ((result (list '_%dummy%_)))
+    (do ((rptr result 
+	       (cond ((equal? this (car l))   rptr)
+		     (else
+		      (setCdr rptr (cons (car l) '()))
+		      (cdr rptr))))
+	 (l lst (cdr l)))
+	((null? l) (cdr result)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(-doc-
+ (name remove-duplicates)
+ (param list)
+ (description "Uses <code>equal?</code> for comparison."))
+
+(define remove-duplicates
+  (lambda (lis)
+    (let ((result (list '_%dummy%_)))
+      (do ((rptr result 
+		 (cond ((not (member (car l) result))
+			(setCdr rptr (cons (car l) '()))
+			(cdr rptr))
+		       (else rprt)))
+	   (l lis (cdr l)))
+	  ((null? l) (cdr result))))))
+
+;;; End of file.
