@@ -27,7 +27,6 @@ RESOURCE_FILES	= \
 	$(PKGDIR)/Program.lva \
 	$(PKGDIR)/SimpleRecord.lva \
 	$(PKGDIR)/Strings.lva \
-	$(PKGDIR)/System.lva \
 	$(PKGDIR)/Threads.lva \
 	$(PKGDIR)/Vectors.lva \
 	$(PKGDIR)/cl/Control.lva \
