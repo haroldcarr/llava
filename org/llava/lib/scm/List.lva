@@ -1,0 +1,51 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+;;;;
+;;;; Created       : 2004 Sep 03 (Fri) 21:11:19 by Harold Carr.
+;;;; Last Modified : 2004 Nov 26 (Fri) 09:46:35 by Harold Carr.
+;;;;
+
+(package org.llava.lib.scm.Lists)
+
+(-doc-
+ (name assoc)
+ (param obj)
+ (param alist)
+ (description 
+  "Uses <function>equals</function> for comparison."
+  (example "(assoc '(1) '(((1) 1) (((2) 2)))) &lva-et; ((1) 1)"
+	   "(assoc '(3) '(((1) 1) (((2) 2)))) &lva-et; false")))
+
+(define (assoc this that)
+  (cond ((null? that)
+	 false)
+	((equals this (caar that))
+	 (car that))
+	(else
+	 (assoc this (cdr that)))))
+
+(-doc-
+ (name assq)
+ (param obj)
+ (param alist)
+ (description
+  "Uses <function>eq?</function> for comparison."
+  (example "(assq 'a '((a 1) (b 2))) &lva-et; (a 1)"
+	   "(assq 'c '((a 1) (b 2))) &lva-et; false")))
+
+(define (assq this that)
+  (cond ((null? that)
+	 false)
+	((eq? this (caar that))
+	 (car that))
+	(else
+	 (assoc this (cdr that)))))
+
+;;; End of file.

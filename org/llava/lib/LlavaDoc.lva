@@ -1,0 +1,253 @@
+;;;;
+;;;; Created       : 2004 Sep 03 (Fri) 18:32:41 by Harold Carr.
+;;;; Last Modified : 2005 Feb 16 (Wed) 14:47:30 by Harold Carr.
+;;;;
+
+(package org.llava.lib.LlavaDoc)
+
+(import org.llava.lib.io.FileWalker)
+(import org.llava.lib.scm.Lists)
+
+;;;;
+;;;; TODO
+;;;;
+;;;; Replace s+ idiom with FileWalker indent print.
+;;;;
+
+(define extract-doc-files 
+  (lambda (inFileName outFileName)
+    (file-walker-files inFileName outFileName)))
+
+(define extract-doc
+  (lambda (forms)
+    (file-walker-with-indent forms 0)))
+
+(define extract-doc-dispatch
+  (lambda (sexpr indent)
+    (cond ((pair? sexpr)
+	   (case (car sexpr)
+	     ((package) (set! current-doc-package (cadr sexpr)))
+	     ((-doc-)   (_%-doc- (cdr sexpr)))
+	     (else      null))))))
+
+(set-file-walker-dispatcher! extract-doc-dispatch)
+
+(set-file-walker-print-header!
+  (lambda (out inFileName outFileName)
+    (println out "<!--")
+    (print out " Extracted on ")
+    (println out (toString (new 'java.util.Date)))
+    (print out " Extracted from ")
+    (println out inFileName)
+    (print out " Extracted to   ")
+    (println out outFileName)
+    (println out "-->")))
+
+(set-file-walker-print-footer!
+  (lambda (out inFileName outFileName)
+    (println out)
+    (println out "<!-- End of file. -->")))
+ 
+;;;;;;;;
+
+(define current-doc-package 'nothing)
+
+(define _%-doc-
+  (lambda (doc)
+    (file-walker-newline)
+    (file-walker-print
+     (format-entry
+      (parse-name doc)
+      (parse-category doc)
+      (parse-location doc)
+      (parse-params doc)
+      (parse-result doc)
+      (parse-throws doc)
+      (parse-description doc)))))
+
+;;;;
+;;;; format to DocBook
+;;;;
+
+(define format-entry
+  (lambda (name category location params result throws description)
+    ;(_println (list name category location params result throws description))
+    (s+
+     (format-refentry-begin name)
+     (format-index category name)
+     (format-refentry1-begin)
+     (format-template name params)
+     (format-category-and-location category location)
+     (format-description description)
+     (format-refentry1-end)
+     (format-refentry-end))))
+
+(define format-refentry-begin
+  (lambda (name)
+    (s+
+"<!-- ================================================== -->
+<refentry id=\"" (toString name) "\">
+")))
+
+(define (format-index category name)
+  (s+
+   "  <indexterm><primary>" (toString category) "</primary>
+       <secondary>" (toString name) "</secondary></indexterm>
+"))
+
+(define format-refentry1-begin
+  (lambda ()
+    "  <refsect1>
+"))
+
+(define (format-template name params)
+  (s+
+"    <para><phrase id=\"template\">
+      (<function>" (toString name) "</function>"
+   (let ((result ""))
+     (for-each (lambda (x)
+		 (set! result (s+ result 
+				  " <parameter>" 
+				  (toString (second x))
+				  "</parameter>")))
+	       params)
+     result)
+")
+    </phrase></para>
+"))
+
+(define format-category-and-location
+  (lambda (category location)
+    (s+
+"    <para>
+      <phrase id=\"category\">
+        -- " (toString category) "
+      </phrase>
+      <phrase id=\"location\">
+        -- <code>" (toString location) "</code>
+      </phrase>
+    </para>
+")))
+
+(define format-description
+  (lambda (description)
+    (let ((result ""))
+      (for-each (lambda (x)
+		  (set! result (s+ result (format-text-or-example x))))
+		description)
+      result)))
+
+(define format-text-or-example
+  (lambda (x)
+    (cond ((and (pair? x) (eq? (car x) 'example))
+	   (format-example (cdr x)))
+	  ((pair? x)
+	   (error "expected example"))
+	  (else ;; REVISIT - check for string? - but make predicates builtin
+	   (s+ "    <para>" x "</para>
+")))))
+
+(define format-example
+  (lambda (example)
+    (let ((result "
+    <screen>
+"))
+      (for-each (lambda (x)
+		  (set! result (s+ result x "
+")))
+		example)
+      (s+ result "</screen>
+"))))
+
+(define format-refentry1-end
+  (lambda () "  </refsect1>
+"))
+
+(define format-refentry-end
+  (lambda () "</refentry>
+"))
+
+;;;;
+;;;; Parsing -doc-
+;;;;
+
+(define parse-name
+  (lambda (doc) (second (assq 'name doc))))
+
+(define parse-category
+  (lambda (doc)
+    (let ((category (assq 'category doc)))
+      (_if category
+	   (second category)
+	   'procedure))))
+
+(define parse-location
+  (lambda (doc) 
+    (let ((location (assq 'location doc)))
+      (_if location
+	   (second location)
+	   (list 'import current-doc-package)))))
+
+(define parse-params
+  (lambda (doc) (collect 'param doc)))
+
+(define parse-result
+  (lambda (doc) (collect 'result doc)))
+
+(define parse-throws
+  (lambda (doc) (collect 'throws doc)))
+
+(define parse-description
+  (lambda (doc) 
+    (let ((description (assq 'description doc)))
+      (_if description
+	   (cdr description)
+	   ""))))
+
+;;;;
+;;;; Implementation
+;;;;
+
+(define (collect x doc)
+  (let ((result '(dummy)))
+    (do ((d doc (cdr d))
+	 (rptr result 
+	       (if (collect-match (caar d) x)
+		   (begin
+		     (setCdr rptr (cons (car d) '()))
+		     (cdr rptr))
+		   rptr)))
+	((null? d) (cdr result)))))
+
+(define collect-match
+  (lambda (d x)
+    (if (pair? x)
+	(_if (memq d x)
+	     true
+	     false)
+	(eq? x d))))
+
+;;;;
+;;;; Test
+;;;;
+
+(-comment-
+(import org.llava.lib.LlavaDoc)
+(extract-doc-files (s+ (llava-dir) "/org/llava/lib/scm/Lists.lva") "/tmp/junk.xml")
+(extract-doc
+ '((package org.foo)
+   (-doc-
+    (name apply-fail-on-false)
+    (param procedure "...")
+    (param args "list")
+    (result obj "like (<function>apply</function> <parameter>procedure</parameter> <parameter>args</parameter>)")
+    (throws LlavaException "If result is false.")
+    (description 
+     "Identical to <function>apply</function> except it raises an
+      exception if the result is false."
+     (example "(apply (lambda (x) (pair? x)) '((1 . 2))) &lva-et; true")
+     (example "(apply (lambda (x) (pair? x)) '(1)) &lva-te;")
+    ))))
+)
+
+;;; End of file.
