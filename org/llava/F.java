@@ -9,7 +9,6 @@ or send a letter to
 ------------------------------------------------------------------------------
 */
 
-
 /** 
  * Created       : 1999 Dec 22 (Wed) 05:25:06 by Harold Carr.
  * Last Modified : 2000 Jan 25 (Tue) 17:15:16 by Harold Carr. 
@@ -21,6 +20,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.Writer;
 
 import org.llava.LlavaVersion;
 import org.llava.impl.LlavaVersionImpl;
@@ -33,6 +33,8 @@ import org.llava.io.LlavaEOF;
 import org.llava.io.LlavaEOFImpl;
 import org.llava.io.LlavaReader;
 import org.llava.impl.io.LlavaReaderImpl;
+import org.llava.io.LlavaWriter;
+import org.llava.impl.io.LlavaWriterImpl;
 
 import org.llava.lang.exceptions.LlavaException;
 import org.llava.lang.exceptions.BacktraceHandler;
@@ -122,6 +124,17 @@ public class F {
         return llavaReaderFactory.newLlavaReader(in);
     }
 
+    // LlavaWriter
+    private static LlavaWriter llavaWriterFactory = new LlavaWriterImpl();
+
+    public static LlavaWriter newLlavaWriter() {
+        return llavaWriterFactory.newLlavaWriter();
+    }
+
+    public static LlavaWriter newLlavaWriter(PrintWriter out) {
+        return llavaWriterFactory.newLlavaWriter(out);
+    }
+
     // LlavaVersion
     private static LlavaVersion llavaVersionFactory = new LlavaVersionImpl();
 
@@ -133,11 +146,11 @@ public class F {
     private static Pair pairFactory = new PairImpl();
 
     public static Pair newPair(Object car, Object cdr) {
-	return new PairImpl(car, cdr);
 	// REVISIT - somehow, pairFactory is null when this is
 	// called from 	org.llava.impl.io.LlavaReaderImpl.<init>
 	// during startup to create the STRING field.
         // return pairFactory.newPair(car, cdr);
+	return new PairImpl(car, cdr);
     }
 
     public static Pair cons(Object car, Object cdr) {
@@ -155,7 +168,7 @@ public class F {
 	return replFactory.newRepl(in, out, err);
     }
 
-    public static Repl newRepl(LlavaReader reader, PrintWriter out, PrintWriter err, LlavaRuntime runtime, Compiler compiler) {
+    public static Repl newRepl(LlavaReader reader, LlavaWriter out, LlavaWriter err, LlavaRuntime runtime, Compiler compiler) {
         return replFactory.newRepl(reader, out, err, runtime, compiler);
     }
 
@@ -163,6 +176,12 @@ public class F {
     private static Symbol symbolFactory = new SymbolImpl();
 
     public static Symbol newSymbol(String name) {
+	// REVISIT - somehow, symbolFactory is null when this is
+	// called from org.llava.impl.io.LlavaWriterImpl.<init>
+	// during startup to create the SYMBOL fields.
+	if (symbolFactory == null) {
+	    symbolFactory = new SymbolImpl();
+	}
         return symbolFactory.newSymbol(name);
     }
 
