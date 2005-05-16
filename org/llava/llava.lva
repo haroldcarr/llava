@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2004 Sep 05 (Sun) 11:27:57 by Harold Carr.
-;;;; Last Modified : 2005 Mar 16 (Wed) 12:44:26 by Harold Carr.
+;;;; Last Modified : 2005 May 16 (Mon) 14:05:36 by Harold Carr.
 ;;;;
 
 (-package-
@@ -790,9 +790,9 @@ share the static factory methods).
 "(try
  (/ 1 0)
  (catch (java.lang.Throwble t)
-   (display (s+ \"Caught: \" (toString t))))
+   (-print (s+ \"Caught: \" (toString t))))
  (finally
-   (display \"finally\")))")))
+   (-print \"finally\")))")))
 
 (-section-end-)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1272,7 +1272,7 @@ share the static factory methods).
  (description 
   "Equivalent to Java <code>print</code>"
   "Examples:"
-  (example "(display '(\"foo\" #\\c #(1 2))) prints (foo c [Ljava.lang.Object;@988707)")))
+  (example "(-print '(\"foo\" #\\c #(1 2))) prints (foo c [Ljava.lang.Object;@988707)")))
 
 (-doc-
  (name -println)
