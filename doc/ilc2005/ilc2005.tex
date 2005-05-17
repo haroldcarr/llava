@@ -86,7 +86,10 @@ The rest of this version of this paper is an extended abstract.
 %\keywords{Middleware, Adaptive, RPC, RMI, Messaging, IIOP, SOAP}
 
 %======================================================================
-\section{Motivation}
+\section{Overview}
+
+%======================================================================
+\subsection{Motivation}
 
 I once built Lisp systems \cite{LaSC5,LaSC3}.  Then funding caused me
 to do C++ \cite{DC++}.  Then Java arrived and programming felt fun
@@ -109,13 +112,13 @@ The philosophy of {\tt llava} is: maximum leverage of Java---only add
 what is missing or cannot be done in Java.
 
 %======================================================================
-\section{The llava Language}
+\subsection{The llava Language}
 
 {\tt llava} is a prefix version of Java expressed in list structure.
 As such, it is \emph{not} a version of Scheme with special notation to
 access Java (like Jscheme \cite{jscheme}) or a version of Common Lisp
 with a foreign-function interface to Java (like ArmedBear Common Lisp
-(ABCL) \cite{abcl}).  Table \ref{j-l-j-a} compares language features
+(ABCL) \cite{abcl}).  Table~\ref{j-l-j-a} compares language features
 between Java, {\tt llava} and these other languages.  The table should
 make it clear that {\tt llava} is a more direct prefix/list notation
 of Java - {\tt llava}'s primary goal.
@@ -166,11 +169,11 @@ Java		&	{\tt llava}	&	jscheme	& abcl \\ \hline
 \end{table*}
 
 
-Jscheme uses ``dot'' notation.  This seems to have one advantage
-over {\tt llava}: accessing a static field can be accessed as a
-variable reference, whereas {\tt llava} chooses to represent this as a
-procedure call (perhaps not as ``direct'' a represent).  Table
-\ref{j-l-j} shows this (along with virtual field access).
+Jscheme uses ``dot'' notation.  This seems to have one advantage over
+{\tt llava}: accessing a static field can be accessed as a variable
+reference, whereas {\tt llava} chooses to represent this as a
+procedure call (perhaps not as ``direct'' a represent).
+Table~\ref{j-l-j} shows this (along with virtual field access).
 
 \begin{table*}
 \centering
@@ -234,10 +237,10 @@ way:
 \normalsize
 
 %======================================================================
-\section{Implementation}
+\subsection{Implementation}
 
 %==================================================
-\subsection{Reflective Invocation}
+\subsubsection{Reflective Invocation}
 
 {\tt llava}'s Reflective Invocation (RI) system enables access to Java
 without special syntax or explicit foreign-function interfaces.  Once
@@ -261,7 +264,7 @@ overload resolution, caching techniques and handling overloaded
 methods when {\tt null} arguments are given.
 
 %==================================================
-\subsection{llava procedures viz Java method calls}
+\subsubsection{llava procedures viz Java method calls}
 
 A {\tt llava} procedure with the same name as a method of the first
 argument (and matching argument types) will be invoked if defined:
@@ -304,7 +307,7 @@ does not find a method then {\tt llava} will throw a {\tt
 LlavaException} indicating an {\tt undefined top-level variable}.
 
 %==================================================
-\subsection{package/import system}
+\subsubsection{package/import system}
 
 Like Java, {\tt llava}'s {\tt import} enables ``short''-form access to
 constructors and static methods and fields.  Unlike Java, {\tt llava
@@ -355,7 +358,7 @@ classpath}, the file system, and the REPL.
 
 
 %==================================================
-\subsection{Compiler and Runtime system}
+\subsubsection{Compiler and Runtime system}
 
 {\tt llava} is compiled to a few special forms: application, {\tt
 begin}, {\tt if}, {\tt lambda}, literal, ref, {\tt set!}.  Those forms
@@ -368,19 +371,39 @@ interface to Java properly tail-recursive.  More details on the
 engine-based runtime are given in the full paper.  The engine
 evaluator is similar to one used in older versions of Jscheme.
 
-%======================================================================
-\section{Full Paper}
+%==================================================
+\subsection{Outline}
 
 The main point of {\tt llava} is that it is Java in Lisp syntax rather
 than another language written in Java.  It extends Java by providing
-macros, procedures, lists, and symbols.  Its core feature is Reflective
-Invocation enabling method calls on Java objects without special
-syntax.
+macros, procedures, lists, and symbols.  Its core feature is
+Reflective Invocation enabling method calls on Java objects without
+special syntax.  The remainder of this paper gives more details on the
+design of the language, implemenation techniques and performance.
 
-The full paper gives more details on the features and techniques
-discussed above and performance results of Reflective Invocation;
-lookups in the {\tt package} {\tt import} system; and the Engine-based
-runtime.
+%======================================================================
+\section{The {\tt llava} Language}
+
+{\tt
+\begin{table*}
+\centering
+\caption{Notation Comparisons}
+\begin{tabular}{|l|l|} \hline
+Java                                              & {\tt llava} \\ \hline
+
+package org.openhc.llavademo.cp;                  & (package org.openhc.llavademo.cp) \\
+
+import org.openhc.llavademo.pb.PointBase;         & (import org.openhc.llavademo.pb.PointBase) \\
+
+public abstract class ColoredPointBase            & (abstract class ColoredPointBase extends PointBase \\
+    extends PointBase                             &   (protected String color)) \\
+\{                                                & \\
+    protected String color;                       & \\
+\}                                                & \\
+\end{tabular}
+\label{point}
+\end{table*}
+}
 
 \begin{thebibliography}{1}
 
