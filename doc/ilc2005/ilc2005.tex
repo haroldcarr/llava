@@ -2,6 +2,7 @@
 %! iTeXMac(mark): ADDED
 
 \documentclass{acm-final/sig-alternate-modified}
+\usepackage{parallel}
 
 \newif\ifpdf
 \ifx\pdfoutput\undefined
@@ -384,26 +385,66 @@ design of the language, implemenation techniques and performance.
 %======================================================================
 \section{The {\tt llava} Language}
 
-{\tt
+\begin{table*}
+\centering
+\caption{Notation Comparisons}
+\begin{tabular}{|l|} \hline
+
+
+\begin{Parallel}[v]{0.4\textwidth}{0.51\textwidth}
+  \tolerance=1000
+  \ParallelLText{Itemque ipsa adiutoria distinguenda sunt. Aliud est
+    adiutorium sine quo aliquid non fit, et aliud est adiutorium quo
+    aliquid fit.  \ldots}
+  \ParallelRText{Und ebenso mu\ss\ man die Gnadenhilfen selbst
+    unterscheiden. Etwas anderes ist eine Hilfe, ohne die etwas nicht
+    geschieht, und etwas anderes eine Hilfe, durch die etwas
+    geschieht.\ldots}
+  \ParallelPar
+  \ParallelLText{Primo itaque homini, qui in eo bono quo factus fuerat
+    rectus acceperat posse non peccare, posse non mori, posse ipsum bonum
+    non deserere, datum est adiutorium perseverantiae, non quo fieret ut
+    perseveraret, sed sine quo per liberum arbitrium perseverare non
+    posset. Nunc vero sanctis in regnum Dei per gratiam Dei praedestinatis
+    non tale adiutorium perseverantiae datur, sed tale ut eis perseverantia
+    ipsa donetur; non solum ut sine isto dono perseverantes esse non
+    possint, verum etiam ut per hoc donum non nisi perseverantes sunt.}
+  \ParallelRText{Dem ersten Menschen, der in dem Gute, worin er gerecht
+    erschaffen war, die F\"ahigkeit empfangen hatte, nicht zu s\"undigen,
+    nicht zu sterben und vom Guten selbst nicht ab\-zufallen, ist demnach
+    die Gnade der Beharrlichkeit verliehen worden, nicht jene, wo\-durch
+    seine Beharrlichkeit bewirkt worden w\"are, sondern jene, ohne die er
+    nicht imstande gewesen w\"are, mit seinem freien Willen auszuharren.
+    Jetzt aber wird den Heiligen, die durch die Gnade Gottes f\"ur das Reich
+    Gottes vorher\-bestimmt sind, nicht eine solche Gnade der Beharrlichkeit
+    gegeben, sondern eine derartige, da\ss\ ihnen die Beharrlichkeit selbst
+    geschenkt wird; daher sind sie ohne dieses Gnadengeschenk nicht nur
+    unf\"ahig zur Beharrlichkeit, sondern sind auch durch dieses Geschenk
+    Nurbeharrende.}
+\end{Parallel}
+\end{tabular}
+\label{point}
+\end{table*}
+
+
 \begin{table*}
 \centering
 \caption{Notation Comparisons}
 \begin{tabular}{|l|l|} \hline
 Java                                              & {\tt llava} \\ \hline
 
-package org.openhc.llavademo.cp;                  & (package org.openhc.llavademo.cp) \\
+{\stt package org.openhc.llavademo.cp;}           & {\stt (package org.openhc.llavademo.cp)} \\
 
-import org.openhc.llavademo.pb.PointBase;         & (import org.openhc.llavademo.pb.PointBase) \\
+{\stt import org.openhc.llavademo.pb.PointBase;}  & {\stt (import org.openhc.llavademo.pb.PointBase)} \\
 
-public abstract class ColoredPointBase            & (abstract class ColoredPointBase extends PointBase \\
-    extends PointBase                             &   (protected String color)) \\
-\{                                                & \\
-    protected String color;                       & \\
-\}                                                & \\
+{\stt public abstract class ColoredPointBase}     & {\stt (abstract class ColoredPointBase extends PointBase} \\
+{\stt    extends PointBase}                       & {\stt   (protected String color))} \\
+{\stt \{}                                         & \\
+{\stt    protected String color;}                 & \\
+{\stt \}}                                         & \\
 \end{tabular}
 \label{point}
 \end{table*}
-}
 
 \begin{thebibliography}{1}
 
