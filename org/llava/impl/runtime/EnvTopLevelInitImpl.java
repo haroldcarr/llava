@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 30 (Thu) 06:34:36 by Harold Carr.
- * Last Modified : 2005 Feb 07 (Mon) 09:48:46 by Harold Carr.
+ * Last Modified : 2005 May 19 (Thu) 14:05:26 by Harold Carr.
  */
 
 package org.llava.impl.runtime;
@@ -86,7 +86,8 @@ public class EnvTopLevelInitImpl
 	// REVISIT - put this in different package?
 	set(env, "current-time-millis",F.newPrimCurrentTimeMillis());
 	set(env, "instanceof",      F.newPrimInstanceof((Namespace)env));
-	set(env, "not",             F.newPrimNot());
+	set(env, "!",               F.newPrimNot());
+	set(env, "not",             F.newGenNot());
 	set(env, "_%reader",        repl.getLlavaReader());
 	set(env, "_%writer",        repl.getLlavaWriter());
 
@@ -97,6 +98,8 @@ public class EnvTopLevelInitImpl
 	set(env, "append",          F.newPrimAppend());
 	set(env, "apply",           F.newPrimApply()); // REVISIT .apply
 	set(env, "call/cc",         F.newPrimCallCC());
+	set(env, "call-with-current-continuation",
+	    F.newPrimCallCC()); // REVISIT - use exact object as call/cc.
 	set(env, "cons",            F.newPrimCons());
 	set(env, "_%defGenInternal",F.newPrimDefGenInternal());
 	set(env, "eval",            F.newPrimEval(env, 
