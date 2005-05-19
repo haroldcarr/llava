@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 23 (Thu) 18:36:42 by Harold Carr.
- * Last Modified : 2004 Dec 07 (Tue) 19:17:31 by Harold Carr.
+ * Last Modified : 2005 May 19 (Thu) 06:21:01 by Harold Carr.
  */
 
 package org.llava.impl.procedure;
@@ -23,17 +23,17 @@ import org.llava.runtime.Engine;
 
 import org.llava.impl.procedure.GenericProcedureImpl;
 
-public class PrimNot
+public class GenNot
     extends
 	GenericProcedureImpl
 {
-    public PrimNot ()
+    public GenNot ()
     {
     }
 
-    public PrimNot newPrimNot ()
+    public GenNot newGenNot ()
     {
-	return new PrimNot();
+	return new GenNot();
     }
 
     public Object apply (Pair args, Engine engine)
