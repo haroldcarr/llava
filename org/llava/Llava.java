@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 30 (Thu) 04:18:02 by Harold Carr.
- * Last Modified : 2004 Dec 08 (Wed) 10:28:33 by Harold Carr.
+ * Last Modified : 2005 May 14 (Sat) 14:04:07 by Harold Carr.
  */
 
 package org.llava;
@@ -39,6 +39,7 @@ public class Llava
     {
 	long start  = System.currentTimeMillis();
 	Llava llava = new Llava();
+	F.setLlava(llava); // REVISIT - experiment
 	long end    = System.currentTimeMillis();
 
 	llava.getRepl().outputVersionMessage(end - start);
