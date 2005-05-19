@@ -24,6 +24,7 @@ import java.io.Writer;
 
 import org.llava.Lambda;
 import org.llava.impl.LambdaImpl;
+import org.llava.Llava;
 import org.llava.LlavaException;
 import org.llava.LlavaVersion;
 import org.llava.impl.LlavaVersionImpl;
@@ -100,6 +101,7 @@ import org.llava.impl.procedure.Prim_Times;
 
 import org.llava.impl.procedure.PrimCurrentTimeMillis;
 import org.llava.impl.procedure.PrimInstanceof;
+import org.llava.impl.procedure.GenNot;
 import org.llava.impl.procedure.PrimNot;
 
 import org.llava.impl.procedure.PrimAppend;
@@ -170,6 +172,30 @@ public class F {
 	    System.exit(-1);
 	}
 	return object;
+    }
+
+    ////////////////////////////////////////////////////////////////////////
+    //
+    // A global llava instance (REVISIT - global LLAVA - bad)
+    // 
+    // This was used for class compilation simulation experiment for
+    // ilc2005 paper.  NOT USED otherwise.
+    //
+    ////////////////////////////////////////////////////////////////////////
+
+    private static Llava llava;
+    public static void setLlava(Llava x) {
+	llava = x;
+    }
+    public static Llava getLlava() {
+	return llava;
+    }
+    public static Object rce(String o) {
+	return llava.getRepl().readCompileEval(o);
+    }
+    public static Object ce(Pair o) {
+	Object x = llava.getRepl().compile(o);
+	return llava.getRepl().eval(x);
     }
 
     ////////////////////////////////////////////////////////////////////////
@@ -792,6 +818,16 @@ public class F {
     public static PrimInstanceof newPrimInstanceof (Namespace namespace)
     {
 	return primInstanceofFactory.newPrimInstanceof(namespace);
+    }
+
+    // GenNot
+
+    private static GenNot genNotFactory =
+	new GenNot();
+    
+    public static GenNot newGenNot ()
+    {
+	return genNotFactory.newGenNot();
     }
 
     // PrimNot
