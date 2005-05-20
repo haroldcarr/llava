@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 28 (Tue) 03:42:27 by Harold Carr.
- * Last Modified : 2005 Mar 12 (Sat) 17:32:08 by Harold Carr.
+ * Last Modified : 2005 May 20 (Fri) 13:50:55 by Harold Carr.
  */
 
 package org.llava.impl.procedure;
@@ -23,7 +23,7 @@ import org.llava.procedure.GenericProcedure;
 import org.llava.procedure.WrapJavaPrimitive;
 import org.llava.runtime.Engine;
 
-import org.llava.impl.procedure.DI;
+import org.llava.impl.procedure.RI;
 import org.llava.impl.util.List;
 
 public class GenericProcedureImpl
@@ -82,7 +82,7 @@ public class GenericProcedureImpl
 	try {
 	    Object[] methodArgs = List.toArray((Pair)args.cdr());
 	    Object result = 
-		DI.invoke(name, targetObject, methodArgs);
+		RI.invoke(name, targetObject, methodArgs);
 	    return wrapJavaPrimitive.wrapJavaPrimitive(result);
 	} catch (NoSuchMethodException e) {
 	    return tryDefaultLambdaOrUndefined(args, engine);

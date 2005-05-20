@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2004 Dec 07 (Tue) 18:58:56 by Harold Carr.
+ * Last Modified : 2005 May 20 (Fri) 13:49:48 by Harold Carr.
  */
 
 package org.llava.impl.procedure;
@@ -22,8 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DI {
-
+public class RI
+{
     //
     // Instance creation.
     //
