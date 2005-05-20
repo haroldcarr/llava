@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 30 (Thu) 17:43:07 by Harold Carr.
- * Last Modified : 2004 Dec 07 (Tue) 19:06:22 by Harold Carr.
+ * Last Modified : 2005 May 20 (Fri) 13:37:49 by Harold Carr.
  */
 
 package org.llava.impl.procedure;
@@ -21,7 +21,7 @@ import org.llava.Pair;
 import org.llava.Symbol;
 import org.llava.runtime.Engine;
 
-import org.llava.impl.procedure.DI;
+import org.llava.impl.procedure.RI;
 import org.llava.impl.procedure.GenericProcedureImpl; // REVISIT
 import org.llava.impl.procedure.PrimitiveProcedure;
 import org.llava.impl.util.List;
@@ -48,11 +48,11 @@ public class PrimStaticInvoke
 	try {
 	    Object result;
 	    if (classOrClassName instanceof Symbol) {
-		result = DI.invokeStatic(methodName,
+		result = RI.invokeStatic(methodName,
 					 ((Symbol)classOrClassName).toString(),
 					 methodArgs);
 	    } else {
-		result = DI.invokeStatic(methodName,
+		result = RI.invokeStatic(methodName,
 					 (Class)classOrClassName,
 					 methodArgs);
 	    }

@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 2001 Mar 05 (Mon) 21:04:59 by Harold Carr.
- * Last Modified : 2005 Feb 07 (Mon) 09:42:14 by Harold Carr.
+ * Last Modified : 2005 May 20 (Fri) 13:37:16 by Harold Carr.
  */
 
 package org.llava.impl.procedure;
@@ -20,7 +20,7 @@ import org.llava.F;
 import org.llava.Pair;
 import org.llava.runtime.Engine;
 
-import org.llava.impl.procedure.DI;
+import org.llava.impl.procedure.RI;
 import org.llava.impl.procedure.PrimitiveProcedure;
 import org.llava.impl.util.List;
 
@@ -41,7 +41,7 @@ public class PrimNew
     {
 	String className = args.car().toString();
 	try {
-	    return DI.newInstance(className, List.toArray((Pair)args.cdr()));
+	    return RI.newInstance(className, List.toArray((Pair)args.cdr()));
 	} catch (Throwable t) {
 	    throw F.newLlavaException(t);
 	}

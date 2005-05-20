@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 30 (Thu) 18:17:06 by Harold Carr.
- * Last Modified : 2004 Dec 07 (Tue) 19:06:03 by Harold Carr.
+ * Last Modified : 2005 May 20 (Fri) 13:37:33 by Harold Carr.
  */
 
 package org.llava.impl.procedure;
@@ -21,7 +21,7 @@ import org.llava.Pair;
 import org.llava.Symbol;
 import org.llava.runtime.Engine;
 
-import org.llava.impl.procedure.DI;
+import org.llava.impl.procedure.RI;
 import org.llava.impl.procedure.GenericProcedureImpl; // REVISIT
 import org.llava.impl.procedure.PrimitiveProcedure;
 
@@ -57,9 +57,9 @@ public class PrimStaticField
 	try {
 	    if (fieldArg != null) {
 		Object value = ((Pair)fieldArg).car();
-		return DI.staticFieldSet(fieldName, targetClass, value);
+		return RI.staticFieldSet(fieldName, targetClass, value);
 	    }
-	    Object result = DI.staticFieldRef(fieldName, targetClass);
+	    Object result = RI.staticFieldRef(fieldName, targetClass);
 	    return GenericProcedureImpl.getWrapJavaPrimitive().wrapJavaPrimitive(result);
 	} catch (Throwable t) {
 	    throw F.newLlavaException(t);

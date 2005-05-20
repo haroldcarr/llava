@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 2000 Jan 17 (Mon) 17:21:01 by Harold Carr.
- * Last Modified : 2004 Dec 07 (Tue) 19:17:24 by Harold Carr.
+ * Last Modified : 2005 May 20 (Fri) 13:37:05 by Harold Carr.
  */
 
 package org.llava.impl.procedure;
@@ -21,7 +21,7 @@ import org.llava.Pair;
 import org.llava.Symbol;
 import org.llava.runtime.Engine;
 
-import org.llava.impl.procedure.DI;
+import org.llava.impl.procedure.RI;
 import org.llava.impl.procedure.GenericProcedureImpl; // REVISIT
 import org.llava.impl.procedure.PrimitiveProcedure;
 import org.llava.impl.util.List;
@@ -46,7 +46,7 @@ public class PrimInvoke
 	Object[] methodArgs = List.toArray((Pair)args.cddr());
 
 	try {
-	    Object result = DI.invoke(methodName, instance, methodArgs);
+	    Object result = RI.invoke(methodName, instance, methodArgs);
 
 	    return GenericProcedureImpl.getWrapJavaPrimitive().wrapJavaPrimitive(result);
 	} catch (Throwable t) {

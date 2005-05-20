@@ -9,7 +9,7 @@
 
 #
 # Created       : 1999 Dec 28 (Tue) 04:50:52 by Harold Carr.
-# Last Modified : 2005 May 19 (Thu) 06:22:56 by Harold Carr.
+# Last Modified : 2005 May 20 (Fri) 13:34:28 by Harold Carr.
 #
 
 TOPDIR		=	../../../..
@@ -18,7 +18,7 @@ PACKAGE		=	org.llava.impl.procedure
 PKGDIR		=	org/llava/impl/procedure
 
 FILES_java	= \
-	$(PKGDIR)/DI.java \
+	$(PKGDIR)/RI.java \
 	$(PKGDIR)/GenericProcedureImpl.java \
 	$(PKGDIR)/PrimAppend.java \
 	$(PKGDIR)/PrimApply.java \

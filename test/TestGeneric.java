@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 28 (Tue) 05:43:41 by Harold Carr.
- * Last Modified : 2005 Feb 06 (Sun) 11:57:09 by Harold Carr.
+ * Last Modified : 2005 May 20 (Fri) 13:42:17 by Harold Carr.
  */
 
 /*
@@ -56,7 +56,7 @@ import org.llava.runtime.EnvironmentTopLevel;
 import org.llava.runtime.UndefinedIdHandler;
 
 import org.llava.impl.runtime.*;
-import org.llava.impl.procedure.DI;
+import org.llava.impl.procedure.RI;
 
 // Imports used by PrimNewPrim at bottom.
 
@@ -71,7 +71,7 @@ public class TestGeneric
     public static void testGeneric ()
     {
 	Test.dsop("begin: testGeneric");
-	testDI();
+	testRI();
 	testGenericProcedure();
 	Test.dsop("end: testGeneric");
     }
@@ -106,25 +106,25 @@ public class TestGeneric
 	return TestCompilerAndEngine.eval(s);
     }
 
-    public static void testDI ()
+    public static void testRI ()
     {
 	try {
 	    Object v;
-	    v = DI.newInstance(Integer.class, new Object[] { "123" });
+	    v = RI.newInstance(Integer.class, new Object[] { "123" });
 	    Test.check("dyn1", new Integer(123), v);
 
-	    v = DI.invoke("equals",
+	    v = RI.invoke("equals",
 			  v,
 			  new Object[] { new Integer("123") });
 	    Test.check("dyn2", new Boolean(true), v);
 
-	    v = DI.invokeStatic("parseInt",
+	    v = RI.invokeStatic("parseInt",
 				Integer.class,
 				new Object[] { "F", new Integer(16) });
 	    Test.check("dyn3", new Integer(15), v);
 
 	    try {
-		 v = DI.invokeStatic("test_i_iill",
+		 v = RI.invokeStatic("test_i_iill",
 				     test.TestGeneric.class,
 				     new Object[]{new Integer(1),new Long(2),
 						  new Integer(3),new Long(4)});
@@ -133,7 +133,7 @@ public class TestGeneric
 	    } catch (NoSuchMethodException e) {
 	    }
 
-	    v = DI.invokeStatic("test_l_iill",
+	    v = RI.invokeStatic("test_l_iill",
 				test.TestGeneric.class,
 				new Object[]{new Integer(1),new Integer(2),
 					     new Long(3),   new Long(4) });
@@ -170,7 +170,7 @@ class PrimNewPrim
 	try {
 	    // REVISIT - no Symbol type checking (i.e., cast)
 	    // because also used from PrimNew which sends it a String.
-	    return DI.newInstance(args.car().toString(),
+	    return RI.newInstance(args.car().toString(),
 				  List.toArray((Pair)args.cdr()));
 	} catch (Throwable t) {
 	    throw F.newLlavaException(t);
