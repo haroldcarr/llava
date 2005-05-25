@@ -52,26 +52,16 @@
 %======================================================================
 \begin{abstract}
 
-{\tt llava} is Java in Lisp (lack of) syntax (rather than a Lisp or
-Scheme written in Java).  {\tt llava} does not contain special syntax
-or functions to call Java methods nor does it define an orthogonal set
-of types (such as Scheme strings or Common Lisp arrays).  Instead,
-{\tt llava} is Java expressed in typical prefix list syntax with all
-data being native Java data types (e.g., instances of Java classes).
-{\tt llava} adds additional types (e.g., {\tt Pair}, {\tt Procedure},
-{\tt Symbol} and {\tt Syntax}) to enable one to work with lists and to
-define procedures and macros.
-
-This paper discusses the motivation for Java, presents how it differs
-from similar efforts, and describes its implementation: the
-Reflective Invocation system that is the core of enabling {\tt llava}
-to provide a prefix notation for Java method calls; how {\tt llava}
-procedures (e.g., lambda) are integrated with Java such that method
-invocations on Java objects take precedence over {\tt llava}
-procedures; and extending {\tt package} and {\tt import} to work with
-both Java class files and {\tt llava} procedures and files; and
-finally, the {\tt llava} compilation strategy and the ``engine''-based
-runtime.
+{\tt llava} is Java in Lisp syntax (rather than Lisp or Scheme written
+in Java).  {\tt llava} does not contain special syntax or functions to
+call Java methods nor does it define an orthogonal set of types (e.g.,
+Scheme strings, Common Lisp arrays).  Instead, {\tt llava} is Java
+expressed in prefix list syntax with all data being instances of Java
+classes.  {\tt llava} adds additional types (e.g., {\tt Pair}, {\tt
+Procedure}, {\tt Symbol} and {\tt Syntax}) to enable one to work with
+lists and to define procedures and macros.  The paper describes {\tt
+llava} language design and implementation, focusing on its transparent
+reflective invocation system and its package/import system.
 
 \end{abstract}
 
@@ -86,6 +76,16 @@ runtime.
 
 %======================================================================
 \section{Overview}
+
+This paper discusses the motivation for Java, presents how it differs
+from similar efforts, and describes its implementation: the Reflective
+Invocation system that is the core of enabling {\tt llava} to provide
+a prefix notation for Java method calls; how {\tt llava} procedures
+are integrated with Java such that method invocations on Java objects
+take precedence over {\tt llava} procedures; extending {\tt package}
+and {\tt import} to work with both Java class files and {\tt llava}
+procedures and files; and, finally, the {\tt llava} compilation
+strategy and ``engine''-based runtime.
 
 %======================================================================
 \subsection{Motivation}
@@ -103,7 +103,7 @@ didn't want Lisp/Scheme in Java.
 That's when I got the idea for {\tt llava}.  Why not create a version
 of Java that uses Lisp syntax to write Java classes?  Then extend that
 system to include a few special forms (e.g., {\tt lambda}, {\tt set!},
-{\tt if}, {\tt quote}, {\tt define-syntax}), pairs and symbols, a REPL
+{\tt if}, {\tt quote}, {\tt defmacro}), pairs and symbols, a REPL
 and support for incremental (re)definition.
 
 {\tt llava} \emph{is} access to Java via Lisp syntax and features.
@@ -304,8 +304,8 @@ regardless of the argument types.  If lookup finds a procedure defined
 attempt an RI invocation.  If RI finds a method, it will invoke the
 method and return the results.  If RI does not find a method then the
 {\tt llava} procedure will be invoked.  If lookup does not find either
-type of {\tt llava} procedure then {\tt llava} will throw a {\tt
-LlavaException} indicating an undefined top-level variable.
+type of {\tt llava} procedure then {\tt llava} will throw an exception
+indicating an undefined top-level variable.
 
 %==================================================
 \subsubsection{package/import system}
@@ -612,6 +612,7 @@ a choice has been made in representing fields and methods.  The field:
 \end{verbatim}
 \normalsize
 
+\noindent
 could have been represented in many ways.  The final two candidates
 were:
 
@@ -622,6 +623,7 @@ were:
 \end{verbatim}
 \normalsize
 
+\noindent
 The first form was initially considered since type declarations are
 not necessary in {\tt llava}.  However, if methods on classes defined
 in {\tt llava} are to be called from Java then it is useful to have
@@ -654,13 +656,13 @@ and methods when parsing class defined in {\tt llava}.
 The previous sentence points out conflicting constraints in the design
 of {\tt llava}: stay close to a prefix version of Java while borrowing
 features from Lisp (i.e., Scheme).  To settle a design issue it is
-useful to keep in mind the target user of {\tt llava} (besides the
-author).  Perhaps a prefix version of Java will hit a sweet spot,
-resulting in bringing programmers to Lisp, much in the same way Java's
-similarity with C/C++ enabled C/C++ programmers to more easily migrate
-to Java.  But programmers fluent in Lisp may prefer to have well-known
-Lisp patterns available.  The tension of these conflicting constraints
-is seen at every step in the design of the {\tt llava} language.
+useful to keep in mind the target user of {\tt llava}.  Perhaps a
+prefix version of Java will hit a sweet spot, resulting in bringing
+programmers to Lisp, much in the same way Java's similarity with C/C++
+enabled C/C++ programmers to more easily migrate to Java.  But
+programmers fluent in Lisp may prefer to have well-known Lisp patterns
+available.  The tension of these conflicting constraints is seen at
+every step in the design of the {\tt llava} language.
 
 %=================================
 \subsubsection{Lexical structure}
@@ -769,11 +771,10 @@ to avoid shadowing valid method names such as {\tt and} and {\tt not}.
 %=================================
 \subsubsection{Types, values and variables}
 
-{\tt llava}'s RI system does autoboxing of primitive types.  Variables
-in {\tt llava} interfaces and classes can have modifiers and/or types.
-Table~\ref{definingClasses} shows modified and typed fields and return
-types of methods.  {\tt llava} also supports specifying the types of
-method parameters:
+Variables in {\tt llava} interfaces and classes can have modifiers
+and/or types.  Table~\ref{definingClasses} shows modified and typed
+fields and return types of methods.  {\tt llava} also supports
+specifying the types of method parameters:
 
 \small
 \begin{verbatim}
@@ -827,6 +828,7 @@ as:
 \end{verbatim}
 \normalsize
 
+\noindent
 However, for consistency, that would require changing the notation for
 inheritance in Table~\ref{definingClasses} to:
 
@@ -837,6 +839,7 @@ inheritance in Table~\ref{definingClasses} to:
 \end{verbatim}
 \normalsize
 
+\noindent
 {\tt llava} currently supports the non-parenthesized version.
 
 %=================================
@@ -844,7 +847,7 @@ inheritance in Table~\ref{definingClasses} to:
 
 Local variables and blocks are introduced with {\tt let} and {\tt
 begin}.  As shown in a previous example
-(Section~\ref{the-llava-language}, {\tt llava} provides {\tt
+(Section~\ref{the-llava-language}), {\tt llava} provides {\tt
 try/catch/finally}.  All {\tt llava} statements are expressions that
 return values.
 
@@ -888,7 +891,7 @@ anonymous definition from its execution in this context.
 %======================================================================
 \section{Implementation}
 
-The section shows details of {\tt llava}'s Reflective Invocation
+This section shows details of {\tt llava}'s Reflective Invocation
 system, the {\tt package/import} system and the compiler/runtime
 system.
 
@@ -900,8 +903,20 @@ implementation to Skij's {\tt invoke} \cite{skij1,skij2,skij3} and an
 older Jscheme reflection system \cite{JschemeReflection}.  The main
 difference is in how {\tt llava} uses RI.  Instead of an explicit
 interface, as in Skij's {\tt invoke} or Jscheme's dot-notation, RI is
-part of {\tt llava}'s variable lookup algorithm.  Consider the code
-written in {\tt llava} and Skij shown in Table~\ref{llavaSkij}.
+part of {\tt llava}'s variable lookup algorithm.
+
+Consider the code written in {\tt llava} and Skij shown in
+Table~\ref{llavaSkij}.  In {\tt llava}, a Java call {\tt o.m(a1, a2)}
+simply becomes a prefix call {\tt (m o a1 a2)}---no need to explicitly
+invoke Java.  This is accomplished with two techniques:
+
+\begin{itemize}
+\item {\tt llava}'s undefined identifier handler calls the RI system.
+\item ``generic'' procedure definitions that use the RI system.
+\end{itemize}
+
+
+
 
 \begin{table*}
 \caption{Implicit viz-a-viz explicit RI usage}
@@ -956,15 +971,6 @@ written in {\tt llava} and Skij shown in Table~\ref{llavaSkij}.
 \label{llavaSkij}
 \end{table*}
 
-
-In {\tt llava}, a Java call {\tt o.m(a1, a2)} simply becomes a prefix
-call {\tt (m o a1 a2)}---no need to explicitly invoke Java.  This is
-accomplished with two techniques:
-
-\begin{itemize}
-\item {\tt llava}'s undefined identifier handler calls the RI system.
-\item ``generic'' procedure definitions that use the RI system.
-\end{itemize}
 
 \subsubsection{Undefined identifier handler}
 
@@ -1147,7 +1153,7 @@ packages exist as files.
 \begin{verbatim}
 if alreadyImportedInPackage?
     loadLlavaFileIfTouched
-else existsInPackageNameMap
+else if existsInPackageNameMap
     addToCurrentPackageImportList
     loadLlavaFileIfTouched
 else if java class exists
@@ -1172,21 +1178,21 @@ When {\tt a.A} is imported it is {\em not} already in the {\tt
 llava-} package imports list.
 It is {\em not} in the full package name map.
 It is {\em not} a Java class file in the classpath.
+Therefore directories and jars on classpath are searched.
 
-Therefore search directory and jars on classpath are searched.
-When it is found it is loaded.  When {\tt a.A} is loaded the {\tt package}
-declaration in its file causes a package object to be created and the
-current package to be set to {\tt a.A} while stacking the previous
-package (i.e., {\tt llava-}).
+{\tt a.A} is found and loaded.  When {\tt a.A} is loaded the {\tt
+package} declaration in its file causes a package object to be created
+and the current package to be set to {\tt a.A} while stacking the
+previous package (i.e., {\tt llava-}).
 
 For a moment assume {\tt a.A} does not contain {\tt import}
 statements.  In that case the rest of {\tt a.A} is read.  That causes
 bindings to be entered for top-level variables in the current package
 that happens to be {\tt a.A}.  When loading completes the ``package
 load stack'' is popped causing the current package to revert back to
-{\tt llava-}.  Then the last statement of the import algorithm is
-executed causing {\tt a.A} to be pushed onto the front of {\tt
-llava-}'s import list.
+{\tt llava-}.  Then the last statement of the import algorithm
+classpath loop is executed causing {\tt a.A} to be pushed onto the
+front of {\tt llava-}'s import list.
 
 But {\tt a.A} does contain {\tt import} statements.  When {\tt (import
 c.C)} is read while loading {\tt a.A} it causes the import algorithm
@@ -1236,7 +1242,7 @@ the Java class has the created package added to its imports list.
 
 If a package X imports a package Y that is not yet in
 the X's import list but Y already has a package object (i.e. {\tt
-existsInPackageNameMap} then Y is added to X's imports list.  Further,
+existsInPackageNameMap}) then Y is added to X's imports list.  Further,
 if the file has been touched since it was last loaded then load it
 again.
 
@@ -1264,12 +1270,6 @@ if not classAlreadyImported
 \end{verbatim}
 \normalsize
 
-The loading algorithm shows that {\tt llava} does not support
-reloading Java classes that have already been imported.  It does
-support reloading packages that contain class definitions written in
-{\tt llava}.  In that case a new {\tt ClassLoader} is used to contain
-the dynamically generated code (discussed later).
-
 When a package is created interactively its package object contains a
 {\tt lastModified} field set to 0.  When a file is later found for
 that package then the file is loaded and the {\tt lastModified} field
@@ -1283,6 +1283,12 @@ new one created, or should bindings be entered in the existing
 package?  If the former (recreating) then any bindings entered in the
 REPL are lost.  If the later (use existing) then an erasures are not
 seen.  {\tt llava} does recreation.
+
+The loading algorithm shows that {\tt llava} does not support
+reloading Java classes that have already been imported.  It does
+support reloading packages that contain class definitions written in
+{\tt llava}.  In that case a new {\tt ClassLoader} is used to contain
+the dynamically generated code (discussed later).
 
 \subsubsection{Loading reachable touched files}
 
@@ -1413,7 +1419,8 @@ continue in its loop evaluating further code by calling {\tt
 tailCall}.  {\tt tailCall} sets the {\tt Code} to be executed and the
 current activation frame in the {\tt Engine} then returns the {\tt
 Engine} itself.  Therefore {\tt Engine.run} will continue its loop.
-This engine technique was used in older versions of Jscheme.
+This engine technique was used in older versions of Jscheme
+\cite{JschemeEngine}.
 
 \subsubsection{Byte code generation}
 
@@ -1514,9 +1521,8 @@ time when {\tt llava} wrote the procedure packages to disk.
 When calling methods in the generated code, control is transferred to
 the corresponding {\tt llava} procedure.  This is done by creating a
 Lisp list of the procedure's identifier followed by the methods
-(boxed) arguments.  This list is then given to {\tt F.ce}, that is
-shorthand for ``compile-then-evaluate'' ({\tt F} is a static
-factory.)
+(boxed) arguments.  This list is then given to {\tt F.ce} ({\tt ce} is
+shorthand for ``compile-then-evaluate,'' {\tt F} is a static factory).
 
 The evaluation part of {\tt F.ce} causes the method's corresponding
 procedure to be invoked.  The result of the procedure is the result
@@ -1613,7 +1619,7 @@ from Java 5 features and speed.  It is clear from the performance
 figures that the implementation can use extensive optimizations or
 alternatives.
 
-The RI need optimization.  The first, already mentioned, is to report
+The RI needs optimization.  The first, already mentioned, is to report
 failure by {\tt return} rather than by {\tt throw}.  Better caching of
 previously found methods could improve performance.
 
@@ -1640,7 +1646,7 @@ Thanks to Per Bothner, Michael Travers, Peter Norvig, Ken Anderson and
 Tim Hickey for their implementations of Scheme in Java.  {\tt llava}
 uses ideas or implementation techniques from their systems.  Thanks to
 Ken Cavanaugh and Tim Hickey for their comments on the final draft of
-this paper.  And thanks to Gilad Bracha for encouragement.
+this paper.
 
 
 
@@ -1667,7 +1673,8 @@ H.~Carr, R.~Kessler, and M.~Swanson.
 
 \bibitem{kawa}
 Per Bothner
-\newblock kawa
+\newblock Kawa: Compiling Scheme to Java
+\newblock in LUGM'98: The 40th Anniversary of LISP: Lisp in the Mainstream, Nov. 1998, Berkeley, CA.
 \newblock http://www.gnu.org/software/kawa/
 
 \bibitem{JschemeDot}
