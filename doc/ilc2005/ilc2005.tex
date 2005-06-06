@@ -1116,8 +1116,9 @@ still necessary to search the transitive closure of its import list
 for any package files that may have changed.
 \item Packages can mutually reference each other so load loops must be
 detected.
-\item New packages automatically import {\tt java.lang.*} and {\tt
-org.llava}.
+\item New packages automatically import {\tt java.lang.*} and 
+\newline
+{\tt org.llava}.
 \end{itemize}
 
 When {\tt llava} starts up it creates a {\tt org.llava} package object
@@ -1143,11 +1144,15 @@ shown).
 \label{NamespaceABCOrgLLava}
 \end{figure}
 
+\vfill\eject
+
+
 \subsubsection{The import algorithm}
 
 The algorithm for importing {\tt llava} files and Java classes into
 other packages is shown below.  The discussion assumes the example
-packages exist as files.
+packages exist as files.  (The discussion begins at the ``bottom'' of
+the algorithm and works its way up.)
 
 \small
 \begin{verbatim}
@@ -1178,7 +1183,8 @@ When {\tt a.A} is imported it is {\em not} already in the {\tt
 llava-} package imports list.
 It is {\em not} in the full package name map.
 It is {\em not} a Java class file in the classpath.
-Therefore directories and jars on classpath are searched.
+Therefore directories and jars on classpath are searched (the final
+{\tt else} in the algorithm).
 
 {\tt a.A} is found and loaded.  When {\tt a.A} is loaded the {\tt
 package} declaration in its file causes a package object to be created
@@ -1230,26 +1236,26 @@ is already in the process of being loaded.
 
 \subsubsection{Importing a Java class}
 
-When a Java class is imported, {\tt llava} creates a package object
-with variables bound to procedures for public constructors, public
-static methods and public virtual and static fields in the class.
-{\tt llava} does not need to define procedures for public virtual
-methods since they are handled automatically by the RI system.  The
-imports list of the created package is empty.  The package importing
-the Java class has the created package added to its imports list.
+{\tt if java class exists}: When a Java class is imported, {\tt llava}
+creates a package object with variables bound to procedures for public
+constructors, public static methods and public virtual and static
+fields in the class.  {\tt llava} does not need to define procedures
+for public virtual methods since they are handled automatically by the
+RI system.  The imports list of the created package is empty.  The
+package importing the Java class has the created package added to its
+imports list.
 
 \subsubsection{Importing existing packages}
 
-If a package X imports a package Y that is not yet in
-the X's import list but Y already has a package object (i.e. {\tt
-existsInPackageNameMap}) then Y is added to X's imports list.  Further,
-if the file has been touched since it was last loaded then load it
-again.
+{\tt if existsInPackageNameMap}: If a package X imports a package Y
+that is not yet in the X's import list but Y already has a package
+object, then Y is added to X's imports list.  Further, if the file has
+been touched since it was last loaded then load it again.
 
-The final (top) part of the import algorithm covers the case where package X
-imports package Y but Y is already in X's imports list.  In this case
-the only thing that needs to happen is loading the package if it has
-been touched.
+{\tt if alreadyImportedInPackage?}: The final (top) part of the import
+algorithm covers the case where package X imports package Y but Y is
+already in X's imports list.  In this case the only thing that needs
+to happen is loading the package if it has been touched.
 
 \subsubsection{Loading touched files}
 
@@ -1647,6 +1653,9 @@ Tim Hickey for their implementations of Scheme in Java.  {\tt llava}
 uses ideas or implementation techniques from their systems.  Thanks to
 Ken Cavanaugh and Tim Hickey for their comments on the final draft of
 this paper.
+
+
+\vfill\eject
 
 
 
