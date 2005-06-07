@@ -1,7 +1,7 @@
 %!iTeXMac(project): pdflatex
 %! iTeXMac(mark): ADDED
 
-\documentclass{acm-final/sig-alternate-modified}
+\documentclass[final]{ieee}
 \usepackage{parallel}
 
 \newif\ifpdf
@@ -31,21 +31,17 @@
 
 \begin{document}
 
+\pagestyle{empty}
+
 %\conferenceinfo{ICSOC'04,} {November 15--19, 2004, New York, New York, USA.}  
 %\CopyrightYear{2004}  
 %\crdata{1-58113-871-7/04/0011}
 
 
-\title{llava - Java in Lisp Syntax}
+\title[llava - Java in Lisp Syntax]{llava - Java in Lisp Syntax}
 
-\numberofauthors{1}
-
-\author{
-\alignauthor Harold Carr \\
-       \email{carr@llava.org}
-}
-
-\toappearbox{Submitted to the International Lisp Conference 2005}
+\author[CARR]{Harold Carr \\
+       {\tt carr@llava.org}}
 
 \maketitle
 
@@ -72,12 +68,16 @@ reflective invocation system and its package/import system.
 
 %\terms{Design}
 
-\keywords{Lisp, Scheme, Java, Reflection, Modules}
+\begin{keywords}
+Lisp, Scheme, Java, Reflection, Modules
+\end{keywords}
+
+\thispagestyle{empty}
 
 %======================================================================
 \section{Overview}
 
-This paper discusses the motivation for Java, presents how it differs
+\PARstart This paper discusses the motivation for Java, presents how it differs
 from similar efforts, and describes its implementation: the Reflective
 Invocation system that is the core of enabling {\tt llava} to provide
 a prefix notation for Java method calls; how {\tt llava} procedures
@@ -342,7 +342,6 @@ expanded to the full package name.
 \small
 \begin{verbatim}
 (package org.example)
-
 (define (whatZone x)
   (let* ((tz (getTimeZone x))
          (n  (getDisplayName tz)))
@@ -411,7 +410,7 @@ required to move between Java or {\tt llava} syntax is reduced.
 %\footnotesize
 %\small
 %\normalsize
-{\footnotesize
+{\scriptsize
 
 \begin{Parallel}{0.4\textwidth}{0.4\textwidth}
 
@@ -423,7 +422,6 @@ required to move between Java or {\tt llava} syntax is reduced.
 
   \ParallelPar
   \ParallelLText{\begin{verbatim}
-
 package org.llava.pb;
 
 import java.util.LinkedList;
@@ -924,7 +922,6 @@ invoke Java.  This is accomplished with two techniques:
 \begin{Parallel}{0.4\textwidth}{0.4\textwidth}
 
   \ParallelLText{\begin{verbatim}
-
 ;;; llava
 
 (import java.io.File)
@@ -1144,8 +1141,6 @@ shown).
 \label{NamespaceABCOrgLLava}
 \end{figure}
 
-\vfill\eject
-
 
 \subsubsection{The import algorithm}
 
@@ -1153,6 +1148,9 @@ The algorithm for importing {\tt llava} files and Java classes into
 other packages is shown below.  The discussion assumes the example
 packages exist as files.  (The discussion begins at the ``bottom'' of
 the algorithm and works its way up.)
+
+\vfill\eject
+
 
 \small
 \begin{verbatim}
@@ -1449,7 +1447,6 @@ Table~\ref{classCompilation}.
 
   \ParallelPar
   \ParallelLText{\begin{verbatim}
-
 package org.openhc.llavademo.pb;
 
 import java.util.LinkedList;
@@ -1612,7 +1609,7 @@ time spent in the evaluators is minimal).
 {\tt llava} is an idea and an implementation.  It is clear that the
 implementation needs improvement.  But, more important at this time,
 is the idea: Java in Lisp syntax extended with procedures and macros.
-{\tt llava} brings the Lisp's adaptability to Java.
+{\tt llava} brings Lisp's adaptability to Java.
 
 The main future work is continued {\tt llava} language design to bring
 it on par with Java 5.  Of course, even if and when Java 5 parity is
@@ -1655,7 +1652,7 @@ Ken Cavanaugh and Tim Hickey for their comments on the final draft of
 this paper.
 
 
-\vfill\eject
+%\vfill\eject
 
 
 
