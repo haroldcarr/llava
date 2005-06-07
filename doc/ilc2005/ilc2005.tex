@@ -1145,13 +1145,12 @@ shown).
 \subsubsection{The import algorithm}
 
 The algorithm for importing {\tt llava} files and Java classes into
-other packages is shown below.  The discussion assumes the example
-packages exist as files.  (The discussion begins at the ``bottom'' of
-the algorithm and works its way up.)
+other packages is shown in Figure~\ref{import-algorithm}.  The
+discussion assumes the example packages exist as files.  (The
+discussion begins at the ``bottom'' of the algorithm and works its way
+up.)
 
-\vfill\eject
-
-
+\begin{figure}[htb]
 \small
 \begin{verbatim}
 if alreadyImportedInPackage?
@@ -1171,9 +1170,12 @@ else
             break
     if file not found in classpath
         throw FileNotFoundException
-
 \end{verbatim}
 \normalsize
+\caption{{\bf Import algorithm}}
+\label{import-algorithm}
+\end{figure}
+
 
 \subsubsection{Importing llava files}
 
