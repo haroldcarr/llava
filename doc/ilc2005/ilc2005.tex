@@ -1,38 +1,42 @@
 %!iTeXMac(project): pdflatex
 %! iTeXMac(mark): ADDED
 
-\documentclass{acm-final/sig-alternate-modified}
+%% \documentclass{acm-final/sig-alternate-modified}
+%% \documentclass{acm_proc_article-sp}
+\documentclass{acm_proc_article-sp-modified}
 \usepackage{parallel}
 
-\newif\ifpdf
-\ifx\pdfoutput\undefined
-\pdffalse % we are not running PDFLaTeX
-\else
-\pdfoutput=1 % we are running PDFLaTeX
-\pdftrue
-\fi
+%% \newif\ifpdf
+%% \ifx\pdfoutput\undefined
+%% \pdffalse % we are not running PDFLaTeX
+%% \else
+%% \pdfoutput=1 % we are running PDFLaTeX
+%% \pdftrue
+%% \fi
 
-\ifpdf
-\usepackage[pdftex]{graphicx}
-\else
+%% \ifpdf
+%% \usepackage[pdftex]{graphicx}
+%% \else
 \usepackage{graphicx}
-\fi
+%% \fi
 
 % HC - Always use the EPS version
 %\DeclareGraphicsExtensions{.eps}
 
-\ifpdf
-\DeclareGraphicsExtensions{.pdf, .jpg}
-\else
+%% \ifpdf
+%% \DeclareGraphicsExtensions{.pdf, .jpg}
+%% \else
 \DeclareGraphicsExtensions{.eps, .jpg}
-\fi
+%% \fi
+
+\DeclareGraphicsRule{.jpg}{eps}{.bb}{`bmeps #1}
 
 \newcommand{\stt}[1]{\scriptsize {\tt #1}}
 
 \begin{document}
 
-%\conferenceinfo{ICSOC'04,} {November 15--19, 2004, New York, New York, USA.}  
-%\CopyrightYear{2004}  
+%\conferenceinfo{ICSOC'04,} {November 15--19, 2004, New York, New York, USA.}
+%\CopyrightYear{2004}
 %\crdata{1-58113-871-7/04/0011}
 
 
@@ -127,7 +131,7 @@ of Java - {\tt llava}'s primary goal.
 \begin{tabular}{|l|l|l|l|} \hline
 Java		&	{\tt llava}	&	jscheme	& abcl \\ \hline
 
-{\bf new} & & & \\ 
+{\bf new} & & & \\
 
 {\stt import java.util.Hashtable;}
                 &{\stt (import java.util.Hashtable)}
@@ -409,7 +413,7 @@ required to move between Java or {\tt llava} syntax is reduced.
 %\footnotesize
 %\small
 %\normalsize
-{\footnotesize
+{\scriptsize
 
 \begin{Parallel}{0.4\textwidth}{0.4\textwidth}
 
@@ -481,7 +485,7 @@ public abstract class PointBase {
 
 import org.llava.pb.PointBase;
 
-public abstract class ColoredPointBase 
+public abstract class ColoredPointBase
     extends PointBase {
     protected String color;
 }\end{verbatim}}
@@ -489,7 +493,7 @@ public abstract class ColoredPointBase
 
 (import org.llava.pb.PointBase)
 
-(public abstract class ColoredPointBase 
+(public abstract class ColoredPointBase
   extends PointBase
   (protected String color))\end{verbatim}}
 
@@ -528,7 +532,7 @@ public class Point extends PointBase {
 
 import org.llava.cp.ColoredPointBase;
 
-public class ColoredPoint 
+public class ColoredPoint
     extends ColoredPointBase {
     public ColoredPoint(String color) {
         this.color = color;
@@ -542,7 +546,7 @@ public class ColoredPoint
 
 (import org.llava.cp.ColoredPointBase)
 
-(public class ColoredPoint 
+(public class ColoredPoint
   extends ColoredPointBase
   (public (ColoredPoint (String c))
     (= color c))
@@ -793,7 +797,7 @@ specifying the types of method parameters:
   (public void (put (String key) (int value))
     (put table key value))
 
-  (public int (get (String key)) 
+  (public int (get (String key))
       throws NoSuchElementException
              MinusOneException
     (let ((v (get table key)))
@@ -819,7 +823,7 @@ as:
 
 \small
 \begin{verbatim}
-  (public int (get (String key)) 
+  (public int (get (String key))
       (throws NoSuchElementException
               MinusOneException)
     ...)
@@ -952,7 +956,7 @@ invoke Java.  This is accomplished with two techniques:
 (define (lastMod name)
   (let ((f (new 'java.io.File name)))
     (if (invoke f 'exists)
-        (new 'java.util.Date 
+        (new 'java.util.Date
              (invoke f 'lastModified)))))
 
 (define (sep)
@@ -1004,7 +1008,7 @@ definitions:
 (floatValue 's) => (floatValue s)
 (floatValue 10) => 10.0
 
-(define floatValue 
+(define floatValue
   (lambda (x)
     (list 'floatValue x)))
 
@@ -1114,7 +1118,7 @@ still necessary to search the transitive closure of its import list
 for any package files that may have changed.
 \item Packages can mutually reference each other so load loops must be
 detected.
-\item New packages automatically import {\tt java.lang.*} and 
+\item New packages automatically import {\tt java.lang.*} and
 \newline
 {\tt org.llava}.
 \end{itemize}
@@ -1246,6 +1250,7 @@ RI system.  The imports list of the created package is empty.  The
 package importing the Java class has the created package added to its
 imports list.
 
+\vfill\eject
 \subsubsection{Importing existing packages}
 
 {\tt if existsInPackageNameMap}: If a package X imports a package Y
@@ -1407,7 +1412,7 @@ public class CodeIf extends Code {
     }
     public Object run (ActivationFrame frame,
                        Engine engine) {
-        Boolean test = 
+        Boolean test =
             (Boolean) engine.run(testCode, frame);
         if (test.booleanValue() == true) {
             return engine.tailCall(thenCode, frame);
@@ -1460,7 +1465,7 @@ import org.llava.Pair;
 import org.llava.impl.util.List;
 
 public abstract class PointBase {
-    static { 
+    static {
         F.rce("(import org.openhc.llavademo.pb.PointBase-LLAVA)");
     }
 
@@ -1492,7 +1497,7 @@ public abstract class PointBase {
     (-f 'x this)))
 
 ...
-(define PointBase-LLAVA-move 
+(define PointBase-LLAVA-move
   (lambda (this dx dy)
     (-f 'x this (+ (-f 'x this) dx))
     (-f 'y this (+ (-f 'y this) dy))
@@ -1633,7 +1638,7 @@ previously found methods could improve performance.
 The Engine-based compiler and runtime system could be replaced by byte
 code generation.  Once that is done then {\tt llava}'s current class
 compilation technique can be replaced with direct compilation of the
-method bodies inline.  
+method bodies inline.
 
 The {\tt llava} implementation has been written such
 that multiple versions of {\tt llava} can exist independently in the
