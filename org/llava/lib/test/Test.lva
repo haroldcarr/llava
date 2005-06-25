@@ -9,7 +9,7 @@
 
 ;;;
 ;;; Created       : 1999 Dec 25 (Sat) 22:10:35 by Harold Carr.
-;;; Last Modified : 2004 Dec 19 (Sun) 10:00:30 by Harold Carr.
+;;; Last Modified : 2005 Jun 25 (Sat) 14:46:02 by Harold Carr.
 ;;;
 
 (package org.llava.lib.test.Test)
@@ -61,13 +61,24 @@
     (-si 'endTest 'test.Test)))
 
 ;;;
-;;; end-test
+;;; throw-exception-if-failures
 ;;;
 
 (-doc-
  (name throw-exception-if-failures))
 
 (define throw-exception-if-failures
+  (lambda args
+    (-si 'throwExceptionIfFailures 'test.Test)))
+
+;;;
+;;; exit-if-failures
+;;;
+
+(-doc-
+ (name exit-if-failures))
+
+(define exit-if-failures
   (lambda args
     (-si 'throwExceptionIfFailures 'test.Test)))
 
