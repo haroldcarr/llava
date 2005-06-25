@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 20 (Mon) 00:07:05 by Harold Carr.
- * Last Modified : 2004 Dec 19 (Sun) 09:53:46 by Harold Carr.
+ * Last Modified : 2005 Jun 25 (Sat) 14:42:44 by Harold Carr.
  */
 
 package test;
@@ -64,6 +64,13 @@ public class Test {
     {
 	if (numberOfFailures > 0) {
 	    throw new Exception("numberOfFailures = " + numberOfFailures);
+	}
+    }
+
+    public static void exitIfFailures()
+    {
+	if (numberOfFailures > 0) {
+	    System.exit(1);
 	}
     }
 
