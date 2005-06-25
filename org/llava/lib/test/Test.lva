@@ -9,7 +9,7 @@
 
 ;;;
 ;;; Created       : 1999 Dec 25 (Sat) 22:10:35 by Harold Carr.
-;;; Last Modified : 2005 Jun 25 (Sat) 14:46:02 by Harold Carr.
+;;; Last Modified : 2005 Jun 25 (Sat) 14:55:03 by Harold Carr.
 ;;;
 
 (package org.llava.lib.test.Test)
@@ -80,7 +80,7 @@
 
 (define exit-if-failures
   (lambda args
-    (-si 'throwExceptionIfFailures 'test.Test)))
+    (-si 'exitIfFailures 'test.Test)))
 
 ;;;
 ;;; tprintln
