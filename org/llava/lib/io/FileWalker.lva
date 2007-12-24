@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2001 Mar 06 (Tue) 15:09:50 by Harold Carr.
-;;;; Last Modified : 2005 Feb 21 (Mon) 16:58:32 by Harold Carr.
+;;;; Last Modified : 2007 May 28 (Mon) 17:28:52 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.io.FileWalker)
@@ -32,7 +32,11 @@
   print-footer
   out
   newline?
-  indent?)
+  indent?
+  readLine?
+  properties  ;; KLUDGE - so another user can add stuff
+  in
+)
 
 (define new-FileWalker
   (lambda ()
@@ -42,7 +46,9 @@
      (lambda (fw out inFileName outFilename) null)
      (new 'java.io.PrintWriter (-sf 'out 'java.lang.System))
      true
-     true)))
+     true
+     false
+     (new 'java.util.Properties))))
 
 (define file-walker-with-indent
   (lambda (fw sexprs indent)
@@ -81,7 +87,10 @@
        (begin
 	 (set! inStream (new 'java.io.InputStreamReader
 			     (new 'java.io.FileInputStream inFileName)))
-	 (set! in (-si 'newLlavaReader 'org.llava.F inStream))
+	 (set! in (if (get-readLine? fw)
+		      (new 'java.io.BufferedReader inStream)
+		      (-si 'newLlavaReader 'org.llava.F inStream)))
+	 (set-in! fw in)
 	 (set! out (new 'java.io.PrintWriter
 			(new 'java.io.OutputStreamWriter
 			     (new 'java.io.FileOutputStream outFileName))))
@@ -92,6 +101,16 @@
 	(close inStream)
 	(close out))))
     'done))
+
+(define file-walker-read
+  (lambda (fw in)
+    ((if (get-readLine? fw) readLine read) in)))
+
+(define file-walker-eof? 
+  (lambda (fw x)
+    (if (get-readLine? fw)
+	(null? x)
+	(eof-object? x))))
 
 (define file-walker-streams
   (lambda (fw in out)
@@ -105,8 +124,8 @@
 
 (define file-walker-streams-aux
   (lambda (fw in)
-    (let ((sexpr (read in)))
-      (cond ((not (eof-object? sexpr))
+    (let ((sexpr (file-walker-read fw in)))
+      (cond ((not (file-walker-eof? fw sexpr))
 	     ((get-dispatcher fw) fw sexpr 0)
 	     (file-walker-streams-aux fw in))))))
 
