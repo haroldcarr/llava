@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2001 Mar 06 (Tue) 15:09:50 by Harold Carr.
-;;;; Last Modified : 2007 May 28 (Mon) 17:28:52 by Harold Carr.
+;;;; Last Modified : 2007 Dec 24 (Mon) 15:07:00 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.io.FileWalker)
@@ -48,7 +48,7 @@
      true
      true
      false
-     (new 'java.util.Properties))))
+     (new 'java.util.HashMap))))
 
 (define file-walker-with-indent
   (lambda (fw sexprs indent)
