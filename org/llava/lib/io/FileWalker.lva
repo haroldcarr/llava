@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2001 Mar 06 (Tue) 15:09:50 by Harold Carr.
-;;;; Last Modified : 2007 Dec 24 (Mon) 15:07:00 by Harold Carr.
+;;;; Last Modified : 2007 Dec 25 (Tue) 09:57:58 by Harold Carr.
 ;;;;
 
 (package org.llava.lib.io.FileWalker)
@@ -94,6 +94,9 @@
 	 (set! out (new 'java.io.PrintWriter
 			(new 'java.io.OutputStreamWriter
 			     (new 'java.io.FileOutputStream outFileName))))
+	 ;; TODO: How does this interact with save/restore in f*-w*-streams?
+	 ;; Necessary here so available in header/footer via state.
+	 (set-out! fw out) 
 	 ((get-print-header fw) fw out inFileName outFileName)
 	 (file-walker-streams fw in out)
 	 ((get-print-footer fw) fw out inFileName outFileName))
