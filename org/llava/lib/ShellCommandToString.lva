@@ -1,0 +1,29 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+;;;;
+;;;; Created       : 2008 Jan 11 (Fri) 18:30:33 by Harold Carr.
+;;;; Last Modified : 2008 Jan 11 (Fri) 18:38:30 by Harold Carr.
+;;;;
+
+(package org.llava.lib.ShellCommandToString)
+
+(define shell-command-to-string
+  (lambda (command)
+    (let* ((runtime (-si 'getRuntime 'java.lang.Runtime))
+	   (process (exec runtime (toString command)))
+	   (stream (new 'java.io.BufferedReader 
+			(new 'java.io.InputStreamReader 
+			     (getInputStream process))))
+	   (dummy  (waitFor process))
+	   (result (readLine stream)))
+      (destroy process)
+      result)))
+
+;;; End of file.
