@@ -1,3 +1,56 @@
+2005-03-14  Harold Carr  <carr@llava.org>
+
+	* Removed vestigial code (EngineStepImpl - it never worked).
+
+2005-03-12  Harold Carr  <carr@llava.org>
+
+	* Made Syntax reside at org.llava package (same place as
+	Lambda, Pair, Procedure and Symbol) - where it should have been.
+
+2005-02-21  Harold Carr  <carr@llava.org>
+
+	* llava.lib:  Plural to Singular:
+	e.g., Lists -> List, Sequences -> Sequence
+
+2005-02-07  Harold Carr  <carr@llava.org>
+
+	* Start of interface from Java to Llava.
+
+2005-02-06  Harold Carr  <carr@llava.org>
+
+	* Moved PrimNewPrim core functionality into PrimNew.
+	* Bound PrimNew to new*.
+	* Wrote "new" macro that finds full path name from package
+	  of definition (rather than of use - which may not be in path).
+
+2004-12-22  Harold Carr  <carr@llava.org>
+
+	* Removed workaround and fixed bug in generic undefined id
+	handler.  The bug caused undefined variables to be SET! with
+	an unnamed GenericProcedure.  This procedure could then shadow
+	similarly named procedures in imported packages.  It also caused
+	the undefined message to not name the variable.
+
+2004-12-18  Harold Carr  <carr@llava.org>
+
+	* Added I/O -flush
+
+2004-12-14  Harold Carr  <carr@llava.org>
+
+	* Extended equal? to handle vectors.
+	* Fixed bug in SimpleRecord.
+
+2004-12-12  Harold Carr  <carr@llava.org>
+
+	* Renamed/restricted I/O procedures to: -read, eof-object?, load,
+	-write,-writeln, set-vector-print-length!,
+	-print, -println, -newline,
+
+2004-12-10  Harold Carr  <carr@llava.org>
+
+	* Extended or added: read, -read, eof-object?, write, -write, -writeln,
+	set-vector-print-length!, display, -print, -println, newline
+
 2004-12-08  Harold Carr  <carr@llava.org>
 
 	* Consolidated the three factories: F (top-level), FC (compiler)
@@ -70,7 +123,7 @@
 	  "-i" "-si" "-f" "-sf" "-println" "-print" "-if" "-list"
 	* Removed require/provide system (replaced by import/package)
 	* Changed license to Creative Common Attribution
-	* Wrote assoc and assq in org.llava.lib.scm.Lists
+	* Wrote assoc and assq in org.llava.lib.scm.List
 	* Wrote documentation in DocBook format
 	* Created org.llava.lib.LlavaDoc to extract and format
 	  "-doc-" from *.lva source.
@@ -439,7 +492,7 @@
 	See k2j.kawa.
 
 Created       : 1999 Dec 15 (Wed) 19:57:16 by Harold Carr.
-Last Modified : 2004 Dec 08 (Wed) 10:53:50 by Harold Carr.
+Last Modified : 2005 Mar 14 (Mon) 19:13:56 by Harold Carr.
 
 Order for presentation:
 

@@ -9,7 +9,7 @@
 
 #
 # Created       : 1999 Dec 15 (Wed) 16:30:21 by Harold Carr.
-# Last Modified : 2004 Dec 07 (Tue) 21:17:19 by Harold Carr.
+# Last Modified : 2005 Aug 05 (Fri) 11:17:32 by Harold Carr.
 #
 
 TOPDIR		=	.
@@ -40,17 +40,18 @@ c :
 site : copy-to-local-mirror upload
 
 copy-to-local-mirror :
-	cp -p ChangeLog $(SITE_DIR)
+	cp -p BUGS $(SITE_DIR)
 	cp -p COPYRIGHT.txt $(SITE_DIR)
+	cp -p ChangeLog $(SITE_DIR)
+	rm -f $(SITE_DIR)/LICENSE.*
+	cp -p LICENSE.* $(SITE_DIR)
+	cp -p TODO $(SITE_DIR)
+	cp -p VERSION $(SITE_DIR)
+	cp -p $(DOC_DIR)/ilc2005/ilc2005.pdf $(SITE_DIR)/ilc2005.pdf
 	cp -p $(DOC_DIR)/index.html $(SITE_DIR)/index.html
 	cp -p $(DOC_DIR_GENERATED)/llava-site.html $(SITE_DIR)/llava-site.html
 	cp -p $(DOC_DIR_GENERATED)/package-index.html $(SITE_DIR)/package-index.html
 	cp -p $(DOC_DIR_GENERATED)/procedure-index.html $(SITE_DIR)/procedure-index.html
-	rm -f $(SITE_DIR)/LICENSE.*
-	cp -p LICENSE.* $(SITE_DIR)
-	cp -p BUGS $(SITE_DIR)
-	cp -p TODO $(SITE_DIR)
-	cp -p VERSION $(SITE_DIR)
 	cp -p $(JARDIR)/llava-*    $(SITE_DIR)/archive
 	cp -p $(JARDIR)/llava[!-]* $(SITE_DIR)
 

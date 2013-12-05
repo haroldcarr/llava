@@ -8,13 +8,30 @@ or send a letter to
 ------------------------------------------------------------------------------
 
 Created       : 1999 Dec 18 (Sat) 17:14:40 by Harold Carr.
-Last Modified : 2004 Dec 12 (Sun) 14:55:57 by Harold Carr.
+Last Modified : 2005 Mar 15 (Tue) 13:44:12 by Harold Carr.
 
 To do:
 
-* Make procedures in llavalib.scm.Predicates built-in.
+* Make new/new* start-new-thread/start-new-thread* etc., consistent.
+
+* -println flushing?
+
+* llava.org doc: replace link to try as derived conditional to
+  the larger try/catch/finally section.
+
+* Fix incorrect LOCATION in LlavaDoc output (workaround is explicit location)
+
+* Make procedures in llavalib.scm.Predicate built-in.
+
+* Ant build of llavalib, *.class, *.jar
 
 * Find sourceforge like repository but using subversion
+
+* Have (-bt) use -write: need to change toStringForBacktrace to write
+  instead of collect.
+
+* Change: Error: java.lang.Exception: expected a number, got: a
+  to use write.
 
 * Reader e, o, x, etc.
 
