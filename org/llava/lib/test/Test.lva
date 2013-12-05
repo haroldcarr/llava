@@ -9,7 +9,7 @@
 
 ;;;
 ;;; Created       : 1999 Dec 25 (Sat) 22:10:35 by Harold Carr.
-;;; Last Modified : 2005 Jun 25 (Sat) 14:55:03 by Harold Carr.
+;;; Last Modified : 2011 Jan 04 (Tue) 12:29:21 by carr.
 ;;;
 
 (package org.llava.lib.test.Test)
@@ -28,6 +28,10 @@
 
 (define (check msg shouldBe is)
   (-si 'check 'test.Test (toString msg) shouldBe is)
+  'ok)
+
+(define (checkSE msg shouldBe is)
+  (-si 'check 'test.Test (toString msg) (set-equal? shouldBe is) shouldBe is)
   'ok)
 
 ;;;
@@ -137,5 +141,21 @@
 
 ;(toggle-print-results)
 ;(toggle-print-progress)
+
+;;;
+;;; set-equal
+;;;
+
+(define set-equal?
+  (lambda (a b)
+    (call/cc 
+     (lambda (return)
+       (let ((s-eq (lambda (x y)
+                     (for-each
+                      (lambda (e) (if (not (member e y)) (return false)))
+                      x))))
+         (s-eq a b)
+         (s-eq b a)
+         (return true))))))
 
 ;;; End of file.

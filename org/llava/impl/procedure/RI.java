@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 2000 Jan 26 (Wed) 17:08:19 by Harold Carr.
- * Last Modified : 2005 May 20 (Fri) 13:49:48 by Harold Carr.
+ * Last Modified : 2005 May 24 (Tue) 15:34:54 by Harold Carr.
  */
 
 package org.llava.impl.procedure;
@@ -24,6 +24,9 @@ import java.util.Map;
 
 public class RI
 {
+    public static final Method NoSuchMethod =
+	ArrayList.class.getDeclaredMethods()[0];
+
     //
     // Instance creation.
     //
@@ -51,7 +54,7 @@ public class RI
 				 Object targetObject,
 				 Object[] args) 
 	throws 
-	    NoSuchMethodException, 
+	    //NoSuchMethodException, 
 	    Throwable 
     {
 	return invokeInternal(methodName,
@@ -181,13 +184,14 @@ public class RI
 					  Object targetObject,
 					  Object[] args) 
 	throws 
-	    NoSuchMethodException,
+	    //NoSuchMethodException,
 	    Throwable 
     {
 	Method method = findMethod(methodName, targetClass, getClasses(args));
 
 	if (method == null) {
-	    throw new NoSuchMethodException(methodName);
+	    //throw new NoSuchMethodException(methodName);
+	    return NoSuchMethod;
 	}
 
 	try {
@@ -200,8 +204,8 @@ public class RI
     private static synchronized Method findMethod (String methodName, 
 						   Class targetClass, 
 						   Class[] argTypes) 
-	throws
-	    NoSuchMethodException
+	//	throws
+	//	    NoSuchMethodException
     {
 	Key key = Key.initReusableKey(methodName, targetClass, argTypes);
 	Method method = (Method) cachedMethods.get(key);
@@ -222,8 +226,8 @@ public class RI
     private static Method findMethodFromScratch (String methodName,
 						 Class targetClass,
 						 Class[] argTypes) 
-	throws 
-	    NoSuchMethodException 
+	//	throws 
+	//	    NoSuchMethodException 
     {
 	try {
 	    Method m = targetClass.getMethod(methodName, argTypes); 
@@ -238,8 +242,8 @@ public class RI
     private static Method findMethodInSupers (String methodName,
 					      Class targetClass,
 					      Class[] argTypes) 
-	throws 
-	    NoSuchMethodException 
+	//	throws 
+	//	    NoSuchMethodException 
     {
 	List candidates = collectCandidateMethodsFromSupers(methodName,
 							    targetClass,
@@ -299,8 +303,8 @@ public class RI
     private static List collectCandidateMethodsFromSupers(String methodName,
 							  Class targetClass,
 							  Class[] argTypes)
-	throws
-	    NoSuchMethodException
+	//	throws
+	//	    NoSuchMethodException
     {
 	List candidates = new ArrayList();
 
@@ -347,8 +351,8 @@ public class RI
     }
 
     private static Method mostSpecificMethod (List methods) 
-	throws
-	    NoSuchMethodException 
+	//	throws
+	//	    NoSuchMethodException 
     {
 	for (int i = 0; i < methods.size(); i++) {
 	    for (int j = 0; j < methods.size(); j++) {
@@ -367,7 +371,8 @@ public class RI
 	if (methods.size() == 1) {
 	    return (Method)methods.get(0);
 	}
-	throw new NoSuchMethodException("more than one most specific method");
+	//throw new NoSuchMethodException("more than one most specific method");
+	return NoSuchMethod;
     }
 
     private static boolean isMoreSpecific (Constructor c1, Constructor c2) 

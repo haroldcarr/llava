@@ -24,6 +24,7 @@ RESOURCE_FILES	= \
 	$(PKGDIR)/LlavaDoc.lva \
 	$(PKGDIR)/Macro.lva \
 	$(PKGDIR)/Program.lva \
+        $(PKGDIR)/ShellCommandToString.lva \
 	$(PKGDIR)/SimpleRecord.lva \
 	$(PKGDIR)/String.lva \
 	$(PKGDIR)/Thread.lva \

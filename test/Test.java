@@ -11,7 +11,7 @@ or send a letter to
 
 /**
  * Created       : 1999 Dec 20 (Mon) 00:07:05 by Harold Carr.
- * Last Modified : 2005 Jun 25 (Sat) 14:42:44 by Harold Carr.
+ * Last Modified : 2011 Jan 04 (Tue) 12:49:27 by carr.
  */
 
 package test;
@@ -83,13 +83,24 @@ public class Test {
 	}
     }
 
+    public static void check (String msg, Object trueOrFalse, Object shouldBe, Object is)
+    {
+	if (TRUE.equals(trueOrFalse)) {
+	    psop(msg + " : " + is);
+	} else {
+	    bad(msg, shouldBe, is);
+	}
+    }
+
     public static void bad (String msg, Object shouldBe, Object is)
     {
 	numberOfFailures++;
 	System.err.println("**BAD*******************************************");
-	System.err.println(msg + " :" +
-			   " should be: " + shouldBe + 
-			   " but got : "  + is);
+	System.err.println(msg + " :\n" +
+			   "    should be :\n" + 
+                           "\t\t" + shouldBe + "\n" +
+			   "    but got :\n" +
+                           "\t\t" + is);
 	System.err.println("************************************************");
     }
 

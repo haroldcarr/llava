@@ -9,7 +9,7 @@
 
 ;;;;
 ;;;; Created       : 2001 Mar 06 (Tue) 15:09:50 by Harold Carr.
-;;;; Last Modified : 2007 Dec 25 (Tue) 09:57:58 by Harold Carr.
+;;;; Last Modified : 2009 Sep 15 (Tue) 15:02:11 by carr.
 ;;;;
 
 (package org.llava.lib.io.FileWalker)
@@ -34,6 +34,7 @@
   newline?
   indent?
   readLine?
+  stop-walking?
   properties  ;; KLUDGE - so another user can add stuff
   in
 )
@@ -42,13 +43,14 @@
   (lambda ()
     (make-state
      (lambda (fw sexpr indent) (error "You must set-file-walker-dispatcher!"))
-     (lambda (fw out inFileName outFilename) null)
-     (lambda (fw out inFileName outFilename) null)
-     (new 'java.io.PrintWriter (-sf 'out 'java.lang.System))
-     true
-     true
-     false
-     (new 'java.util.HashMap))))
+     (lambda (fw out inFileName outFilename) null)  ; header
+     (lambda (fw out inFileName outFilename) null)  ; footer
+     (new 'java.io.PrintWriter (-sf 'out 'java.lang.System)) ; out
+     true                        ; newline?
+     true                        ; indent?
+     false                       ; readLine?
+     false                       ; stop-walking?
+     (new 'java.util.HashMap)))) ; properties
 
 (define file-walker-with-indent
   (lambda (fw sexprs indent)
@@ -101,8 +103,10 @@
 	 (file-walker-streams fw in out)
 	 ((get-print-footer fw) fw out inFileName outFileName))
        (finally
-	(close inStream)
-	(close out))))
+	(try (close inStream) (catch (java.lang.Throwable t) 
+                                     (-println (s+ "Ignoring: " t))))
+	(try (close out)  (catch (java.lang.Throwable t) 
+                                     (-println (s+ "Ignoring: " t)))))))
     'done))
 
 (define file-walker-read
@@ -111,9 +115,12 @@
 
 (define file-walker-eof? 
   (lambda (fw x)
-    (if (get-readLine? fw)
-	(null? x)
-	(eof-object? x))))
+    (cond ((get-stop-walking? fw)
+	   true)
+	  ((get-readLine? fw)
+	   (null? x))
+	  (else
+	   (eof-object? x)))))
 
 (define file-walker-streams
   (lambda (fw in out)
@@ -140,6 +147,10 @@
 (define file-walker-print
   (lambda (fw x)
     (print (get-out fw) x)))
+
+(define file-walker-println
+  (lambda (fw x)
+    (println (get-out fw) x)))
 
 (define file-walker-newline
   (lambda (fw)
