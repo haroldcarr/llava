@@ -1,0 +1,20 @@
+This is a Lisp in Java system I built on-and-off from 1997 until 2005.  llava's documentation is available at:
+
+- [[http://llava.org/]]
+
+In 2005 I gave a talk on the system at
+
+- [[http://www.international-lisp-conference.org/2005/speakers.html#harold_carr][The International Lisp Conference]]
+
+In the process of writing the paper:
+
+- [[http://llava.org/ilc2005.pdf][llava - Java in Lisp Syntax]]
+
+I came to the conclusion that a complete rewrite was in order,
+generating to byte-code (rather than llava's
+threaded-compiler/interpreter).  But about that time [[http://clojure.org/][clojure]] came into
+existence, which obviated any further work on llava.
+
+I have not done any development of llava in a long time.  However, I
+still have lots of personal projects written in llava and I start it
+up occasionally to try quick experiments involving Java.
