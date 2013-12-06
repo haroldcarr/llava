@@ -1,0 +1,64 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+(package m.M)
+
+(define-syntax m
+  (lambda (x) `(list ',x)))
+
+(m m)
+
+(package t.T)
+
+(import m.M)
+
+(m m)
+
+(define (m x) (list x))
+
+(m m)
+
+(m.M.m x)
+
+(package m.M)
+
+(define (m x) (list x))
+
+(m.M.m x)
+
+;;;;;;;;;;;;;;;;;;;;;;
+
+;; From startup.
+
+;;;;;;;;;;;;;;;;;;;;;
+
+;; From startup
+
+(package foo.Bar)
+
+(import test.tt)
+
+(define (m x) (list x))
+
+(m a)
+(test.tt.m a)
+
+;;;;;;;;;;;;
+
+(begin
+  (-println (import org.llava.lib.cl.Symbol.gensym))
+  (-println (gensym))
+  (-println (cl.symbols.gensym))
+)
+
+
+(findNamespace (package org.llava.lib.Repl) 'cl.symbols)
+(import org.llava.lib.cl.Symbol.gensym)
+(findNamespace (package org.llava.lib.Repl) 'cl.symbols)
+(findNamespace (package org.llava.lib.Repl) 'cl.symbols.gensym)

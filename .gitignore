@@ -1,0 +1,30 @@
+# Created       : 2013 Dec 05 (Thu) 18:03:59 by carr.
+# Last Modified : 2013 Dec 05 (Thu) 18:24:01 by carr.
+
+*.aux
+.classes
+.classes.list
+*.dvi
+*.log
+*.ps
+RCS
+
+doc/generated
+
+doc/ilc2005/*.bb
+doc/ilc2005/*.cls
+doc/ilc2005/*.eps
+doc/ilc2005/*.jpg
+doc/ilc2005/*.html
+doc/ilc2005/*.log
+doc/ilc2005/*.sxi
+doc/ilc2005/*.tif
+doc/ilc2005/*.vthought
+doc/ilc2005/acm-final
+doc/ilc2005/acm_proc_article-sp*
+doc/ilc2005/ia.tex
+doc/lispAbstract2003.txt
+doc/ilc2005/mailAndNotes/
+doc/ilc2005/parallel.sty
+doc/ilc2005/parallel
+

@@ -1,39 +1,75 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
 ;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2000 Oct 29 (Sun) 21:53:11 by .
+;;;; Last Modified : 2005 Feb 06 (Sun) 16:09:49 by Harold Carr.
 ;;;;
 
 ;made into primitive for speed
 
 ;(define instanceof
 ;  (lambda (obj type)
-;    (isInstance (_si 'forName 'java.lang.Class (toString type)) obj)))
+;    (isInstance (-si 'forName 'java.lang.Class (toString type)) obj)))
 
-;;; End of file.;;;;
+(define-syntax new
+  (lambda (class-name . args)
+    (set! class-name 
+	  (getFullNameForClass _%boot-namespace (eval class-name)))
+    ;; let and quasiquote are not available yet
+    ;;`(new* ',class-name ,@args))))
+    ;;(-println (cons 'new* (cons (list 'quote class-name) args)))
+    (cons 'new* (cons (list 'quote class-name) args))))
+
+;;; End of file.;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2001 Mar 26 (Mon) 15:18:30 by Harold Carr.
+;;;; Last Modified : 2004 Dec 07 (Tue) 18:28:34 by Harold Carr.
 ;;;;
 
 ;made into primitives for speed
 
 ;(define not
-;  (lambda (x) (_if x false true)))
+;  (lambda (x) (-if x false true)))
 
 ;(define null?
 ;  (lambda (x) (eq? x null)))
 
 ;(define pair?
-;  (lambda (exp) (instanceof exp 'lava.lang.types.Pair)))
+;  (lambda (exp) (instanceof exp 'org.llava.Pair)))
 
 ;(define string->symbol
-;  (lambda (x) (_si 'newSymbol 'lavaProfile.F x)))
+;  (lambda (x) (-si 'newSymbol 'org.llava.F x)))
 
 ;(define symbol?
-;  (lambda (exp) (instanceof exp 'lava.lang.types.Symbol)))
+;  (lambda (exp) (instanceof exp 'org.llava.Symbol)))
 
-;;; End of file.;;;;
+;;; End of file.;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2000 Oct 29 (Sun) 21:55:03 by .
+;;;; Last Modified : 2004 Nov 30 (Tue) 06:51:21 by Harold Carr.
 ;;;;
 
 ;; map made into primitive for speed.
@@ -60,20 +96,29 @@
 ;	      (_%mapmany f (_%mapone cdr xs))))))
 ;
 
-;;; REVISIT
+;; for-each factored into map implementation.
 
-(define for-each map)
+;(define for-each map)
 
 ;;;; End of file.
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
 ;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2000 Oct 29 (Sun) 21:54:49 by .
+;;;; Last Modified : 2004 Nov 30 (Tue) 10:22:58 by Harold Carr.
 ;;;;
 
 ;;; Safe car and cdr.
 
-(define _%scar (lambda (x) (if (null? x) '() (car x))))
-(define _%scdr (lambda (x) (if (null? x) '() (cdr x))))
+(define -car (lambda (x) (if (null? x) '() (car x))))
+(define -cdr (lambda (x) (if (null? x) '() (cdr x))))
 
 ;; REVISIT  handling of ==>
 ;; REVISIT collapse cadr s
@@ -82,20 +127,20 @@
   (lambda args  
     (if (null? args) 
 	false 
-	(if (equal? (_%scar (_%scar args)) 'else) 
-	    (cons 'begin (_%scdr (_%scar args))) 
-	    (if (equal? (_%scar (_%scdr (_%scar args))) '=>) 
-		(list '(lambda (x e c) (_if x (e x) (c))) 
-		      (_%scar (_%scar args)) 
-		      (_%scar (_%scdr (_%scdr (_%scar args)))) 
-		      (cons 'lambda (list () (cons 'cond (_%scdr args))))) 
-		(if (null? (_%scdr (_%scar args))) 
-		    (list '(lambda (x c) (_if x x (c))) 
-			  (_%scar (_%scar args)) 
-			  (cons 'lambda (list () (cons 'cond (_%scdr args))))) 
-		    (list '_if (_%scar (_%scar args)) 
-			  (cons 'begin (_%scdr (_%scar args))) 
-			  (cons 'cond (_%scdr args)))))))))
+	(if (equal? (-car (-car args)) 'else) 
+	    (cons 'begin (-cdr (-car args))) 
+	    (if (equal? (-car (-cdr (-car args))) '=>) 
+		(list '(lambda (x e c) (-if x (e x) (c))) 
+		      (-car (-car args)) 
+		      (-car (-cdr (-cdr (-car args)))) 
+		      (cons 'lambda (list () (cons 'cond (-cdr args))))) 
+		(if (null? (-cdr (-car args))) 
+		    (list '(lambda (x c) (-if x x (c))) 
+			  (-car (-car args)) 
+			  (cons 'lambda (list () (cons 'cond (-cdr args))))) 
+		    (list '-if (-car (-car args)) 
+			  (cons 'begin (-cdr (-car args))) 
+			  (cons 'cond (-cdr args)))))))))
 
 (define-syntax or
   (lambda args
@@ -107,13 +152,22 @@
   (lambda args
     (cond ((null? args) true)
 	  ((null? (cdr args)) (car args))
-	  (else (list '_if (car args) (cons 'and (cdr args)) false)))))
+	  (else (list '-if (car args) (cons 'and (cdr args)) false)))))
 
 ;;; End of file.
 
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
 ;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2001 Mar 07 (Wed) 14:54:17 by Harold Carr.
+;;;; Last Modified : 2004 Sep 06 (Mon) 01:25:02 by Harold Carr.
 ;;;;
 
 (define-syntax quasiquote
@@ -124,48 +178,48 @@
   (lambda (exp nesting)
     (cond
      ((not (pair? exp))
-      ;;(_println 1)
+      ;;(-println 1)
       (if (_%constant? exp) 
 	  (begin 
-	    ;;(_println 1.1)
+	    ;;(-println 1.1)
 	    exp)
 	  (begin 
-	    ;;(_println 1.2)
-	    (_list 'quote exp))))
+	    ;;(-println 1.2)
+	    (-list 'quote exp))))
      ((and (eq? (car exp) 'unquote) 
 	   (equal? (length exp) 2))
-      ;;(_println 2)
+      ;;(-println 2)
       (if (equal? nesting 0)
 	  (begin 
-	    ;;(_println 2.1)
+	    ;;(-println 2.1)
 	    (car (cdr exp)))
 	  (begin
-	    ;;(_println 2.2)
+	    ;;(-println 2.2)
 	    (_%combine-skeletons ''unquote
 			       (_%expand-quasiquote (cdr exp) (- nesting 1))
 			       exp))))
      ((and (eq? (car exp) 'quasiquote)
 	   (equal? (length exp) 2))
-      ;;(_println 3)
+      ;;(-println 3)
       (_%combine-skeletons ''quasiquote
 			 (_%expand-quasiquote (cdr exp) (+ nesting 1))
 			 exp))
      ((and (pair? (car exp))
 	   (eq? (car (car exp)) 'unquote-splicing)
 	   (equal? (length (car exp)) 2))
-      ;;(_println 4)
+      ;;(-println 4)
       (if (equal? nesting 0)
 	  (begin
-	    ;;(_println 4.1)
-	    (_list 'append (car (cdr (car exp)))
+	    ;;(-println 4.1)
+	    (-list 'append (car (cdr (car exp)))
 		  (_%expand-quasiquote (cdr exp) nesting)))
 	  (begin
-	    ;;(_println 4.2)
+	    ;;(-println 4.2)
 	    (_%combine-skeletons (_%expand-quasiquote (car exp) (- nesting 1))
 			       (_%expand-quasiquote (cdr exp) nesting)
 			       exp))))
      (else 
-      ;;(_println 5)
+      ;;(-println 5)
       (_%combine-skeletons (_%expand-quasiquote (car exp) nesting)
 			 (_%expand-quasiquote (cdr exp) nesting)
 			 exp)))))
@@ -180,29 +234,38 @@
   (lambda (left right exp)
     (cond
      ((and (_%constant? left) (_%constant? right))
-      ;; (_println'cb1)
+      ;; (-println'cb1)
       (if (and (equal? (eval left ) (car exp))
 	       (equal? (eval right) (cdr exp)))
 	  (begin 
-	    ;;(_println 'cb1.1)
-	    (_list 'quote exp))
+	    ;;(-println 'cb1.1)
+	    (-list 'quote exp))
 	  (begin 
-	    ;;(_println 'cb1.2) 
-	    (_list 'quote (cons (eval left )
+	    ;;(-println 'cb1.2) 
+	    (-list 'quote (cons (eval left )
 			       (eval right))))))
      ((null? right)
-      ;;(_println 'cb2)
-      (_list '_list left))
-     ((and (pair? right) (eq? (car right) '_list))
-      ;;(_println 'cb3)
-      (cons '_list (cons left (cdr right))))
+      ;;(-println 'cb2)
+      (-list '-list left))
+     ((and (pair? right) (eq? (car right) '-list))
+      ;;(-println 'cb3)
+      (cons '-list (cons left (cdr right))))
      (else 
-      ;;(_println 'cb4)
-      (_list 'cons left right)))))
+      ;;(-println 'cb4)
+      (-list 'cons left right)))))
 
-;;; End of file.;;;;
+;;; End of file.;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2000 Jan 21 (Fri) 20:42:59 by Harold Carr.
+;;;; Last Modified : 2004 Sep 09 (Thu) 19:41:41 by Harold Carr.
 ;;;;
 
 ;; REVISIT - add named-let
@@ -226,8 +289,103 @@
 	 . ,body))))
 
 ;;; End of file.;;;;
+;;;; Created       : 1999 Dec 18 (Sat) 17:14:40 by Harold Carr.
+;;;; Last Modified : 2005 Feb 19 (Sat) 12:18:10 by Harold Carr.
+;;;;
+
+(define -read
+  (lambda in
+    (if (null? in)
+        (-i 'read _%reader)
+        (-i 'read _%reader (car in)))))
+
+(define eof-object?
+  (lambda (x)
+    (equals (-i 'getEOFObject _%reader) x)))
+
+(define -write
+  (lambda (msg . out)
+    (cond ((null? out)
+	   (-i 'write _%writer msg)
+	   (-flush))
+	  (else
+	   (-i 'write _%writer msg (car out))
+	   (-flush (car out))))
+    msg))
+
+(define -writeln
+  (lambda (msg . out)
+    (cond ((null? out)
+	   (-i 'write _%writer msg)
+	   (-newline)
+	   (-flush))
+	  (else
+	   (-i 'write _%writer msg (car out))
+	   (-newline (car out))
+	   (-flush (car out))))
+    msg))
+
+(define set-vector-print-length!
+  (lambda (x)
+    (-i 'setVectorPrintLength _%writer x)))
+
+(define -print
+  (lambda (msg . out)
+    (let ((n-msg (if (null? msg) "null" msg)))
+      (cond ((null? out)
+	     (-i 'print (getPrintWriter _%writer) n-msg)
+	     (-flush))
+	    (else
+	     (-i 'print (car out) n-msg)
+	     (-flush (car out)))))
+    msg))
+
+(define -println
+  (lambda msg-and-out
+    (let* ((no-args? (null? msg-and-out))
+	   (n-msg (if (not no-args?) 
+		      (if (null? (first msg-and-out))
+			  "null"
+			  (first msg-and-out))
+		      null))
+	   (out (if (and (not no-args?) (pair? (rest msg-and-out)))
+		    (second msg-and-out)
+		    null)))
+      (if no-args?
+	  (-newline)
+	  (cond ((null? out)
+		 (-i 'print (getPrintWriter _%writer) n-msg)
+		 (-newline)
+		 (-flush))
+		(else
+		 (-i 'print out n-msg)
+		 (-newline out)
+		 (-flush out)))))
+    (if (pair? msg-and-out) (first msg-and-out) null)))
+
+(define -newline 
+  (lambda out
+    (-i 'println (if (null? out) (getPrintWriter _%writer) (car out)))
+    null))
+
+(define -flush
+  (lambda out
+    (-i 'flush (if (null? out) (getPrintWriter _%writer) (car out)))
+    null))
+
+;;; End of file.
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 05:58:33 by Harold Carr.
-;;;; Last Modified : 2000 Oct 29 (Sun) 21:53:45 by .
+;;;; Last Modified : 2004 Sep 09 (Thu) 19:40:29 by Harold Carr.
 ;;;;
 
 (define _%do-case 
@@ -241,9 +399,18 @@
     `(let ((__exp__ ,exp)) (cond . ,(map _%do-case cases)))))
 
 ;;; End of file.
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
 ;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 05:58:33 by Harold Carr.
-;;;; Last Modified : 2000 Jan 21 (Fri) 20:43:10 by Harold Carr.
+;;;; Last Modified : 2004 Nov 21 (Sun) 08:59:39 by Harold Carr.
 ;;;;
 
 (define-syntax do
@@ -259,7 +426,7 @@
           (result (rest test-and-result)))
       `(letrec ((__loop__
                  (lambda ,variables
-                   (if ,test
+                   (-if ,test
                        (begin . ,result)
                        (begin
                          ,@body
@@ -267,15 +434,24 @@
          (__loop__ . ,inits)))))
 
 ;;; End of file.
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
 ;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2000 Feb 21 (Mon) 02:14:06 by Harold Carr.
+;;;; Last Modified : 2004 Sep 09 (Thu) 19:44:40 by Harold Carr.
 ;;;;
 
 (define (memq this that)
   (cond ((null? that) false)
 	((eq? this (car that)) that)
-	(else (member this (cdr that)))))
+	(else (memq this (cdr that)))))
 
 (define (member this that)
   (cond ((null? that) false)
@@ -284,9 +460,18 @@
 
 ;;; End of file.
 
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
 ;;;;
 ;;;; Created       : 2000 Jan 18 (Tue) 04:24:10 by Harold Carr.
-;;;; Last Modified : 2000 Oct 29 (Sun) 21:53:38 by .
+;;;; Last Modified : 2004 Dec 07 (Tue) 18:28:18 by Harold Carr.
 ;;;;
 
 ;;; REVISIT - gensym let vars
@@ -299,7 +484,7 @@
       `(_%try
 	(lambda () ,@tryExprs)
 	(lambda (t)
-	  (let ((g2 (if (instanceof t 'lava.lang.exceptions.LavaException)
+	  (let ((g2 (if (instanceof t 'org.llava.LlavaException)
 			(getThrowable t)
 			t)))
 	    (cond ,@catchClauses
@@ -337,9 +522,18 @@
 
 ;;; End of file.
 
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
 ;;;;
 ;;;; Created       : 2000 Jan 24 (Mon) 20:42:21 by Harold Carr.
-;;;; Last Modified : 2001 Mar 10 (Sat) 19:52:20 by Harold Carr.
+;;;; Last Modified : 2004 Sep 05 (Sun) 14:25:13 by Harold Carr.
 ;;;;
 
 (define-syntax synchronized
@@ -351,120 +545,244 @@
     `(_%import ',classPathAndName)))
 
 (define-syntax package
-  (lambda (packagePathAndName className)
-    `(_%package ',packagePathAndName ',className)))
+  (lambda (namespacePathAndClassName)
+    `(_%package ',namespacePathAndClassName)))
 
-;;; End of file.;;;;
-;;;; Created       : 1999 Feb 10 (Wed) 21:35:48 by Harold Carr.
-;;;; Last Modified : 2001 Mar 26 (Mon) 15:36:55 by Harold Carr.
+;;; End of file.;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+;;;;
+;;;; Created       : 2004 Nov 25 (Thu) 14:56:00 by Harold Carr.
+;;;; Last Modified : 2004 Dec 22 (Wed) 06:47:12 by Harold Carr.
 ;;;;
 
-;;;
-;;; Very simple require/provide.
-;;;
+(define-syntax define-d
+  (lambda (a b . body)
+    (cond ((symbol? a)
+	   (cond ((and (pair? b) (eq? (first b) 'lambda))
+		  `(define ,a 
+		      (lambda ,(second b)
+			,(wrap-body a (second b) (cddr b))))) ;; @
+		 (else
+		  `(define ,a ,b))))
+	  (else
+	   `(define ,a ,(wrap-body (first a) (rest a) (cons b body)))))))
 
-;; REVISIT - make recursive calls to provide report correct
-;; file not found error.
+(define wrap-body
+  (lambda (name args body)
+    ;;(-println (list 'wrap-body name args body))
+    `(let ((_%result%_ null)
+	   (_%error%_ false))
+       (try
+	(begin
+	  (print-enter ',name ,@(process-args args))
+	  (set! _%result_% (begin ,@body)))
+	(catch (java.lang.Throwable t)
+	 (set! _%error%_ t)
+	 (throw t))
+	(finally
+	 (print-exit _%error%_ _%result_% ',name ,@(process-args args)))))))
 
-;;; This is the most interesting part.
-;;; It dynamically figures out where the */lib directory is located.
+(define process-args
+  (lambda (args) 
+    (let ((result '(_%dummy%_)))
+      (do ((a args (cdr a))
+	   (rptr result (begin (setCdr rptr (cons (car a) '()))
+			       (cdr rptr))))
+	  ((not (pair? a))
+	   (if (not (null? a))
+	       (setCdr rptr (cons a '())))
+	   (cdr result))))))
 
-(define _%getLibPath
-  (lambda ()
-    (let* ((LavaPath
-	    ;; getResource returns either "file:<path>" or "jar:file:<path>"
-	    ;; getFile returns either "<path>" or "file:<path>"
-	    (getFile (getResource (_si 'forName 'java.lang.Class "lavaProfile.Lava")
-				  "Lava.class")))
-	   (i -1))
-      (cond ((not (equal? (set! i (indexOf LavaPath "lava/.classes")) -1))
-	     (string-append (substring LavaPath 0 i) "lava/lib"))
-	    ((not (equal? (set! i (indexOf LavaPath "lava/jars/lava.jar!")) -1))
-	     ;; 6 skips the "file:"
-	     ;; i removes the !.
-	     (string-append (substring LavaPath 6 i) "lava/lib"))
-	    (else
-	     ;; REVISIT
-	     (_println (list "Cannot initialize require path." LavaPath)))))))
+(define print-enter
+  (lambda (name . args)
+    (print-indent 'enter)
+    (-print "->" )
+    (print-common name args)
+    (-newline)
+    (-flush)))
 
-(let ((load-path    (list (_%getLibPath)))
-      (provided '()))
+(define print-exit
+  (lambda (error result name . args)
+    (print-indent 'exit)
+    (-print "<" )
+    (-if error (-print "E") (-print "-"))
+    (print-common name args)
+    (-print "= " )
+    (-if error 
+	 (-writeln error)
+	 (-writeln result))
+    (-flush)))
 
-  (define load-path
-    (lambda () load-path))
 
-  (define (provided) provided)
+(let ((current-indent 0)
+      (indent 1))
 
-  (define reset-provided
-    (lambda () (set! provided '())))
+  (define set-define-d-indent!
+    (lambda (x) (set! indent x)))
 
-  (define push-on-load-path
-    (lambda (name)
-      (set! load-path 
-	    (if (pair? name)
-		(append (map toString name) load-path)
-		;; Assume it is a string or symbol.
-		(cons (toString name) load-path)))))
-
-  (define append-to-load-path
-    (lambda (name)
-      (set! load-path 
-	    (append load-path 
-		    (if (pair? name)
-			(map toString name)
-			(list (toString name)))))))
-
-  (define provided?
-    (lambda (name)
-      (_if (member (toString name) provided) #t #f)))
-
-  (define (provide name)
-    (let ((sname (toString name)))
-      (if (not (provided? name))
-	  (set! provided (cons sname provided)))
-      name))
-
-  (define (require name)
-    (_%require (toString name) load-path))
-
-  (define load-library
-    (lambda (name)
-      (_%load-library (toString name) load-path)))
-
-  (define _%require
-    (lambda (name loadPath)
-      (if (not (provided? name))
-	  (_%load-library name loadPath))))
-
-  (define _%load-library
-    (lambda (name loadPath)
-      (call/cc
-       (lambda (return)
-	 (for-each
-	  (lambda (path)
-	    (let ((pathAndName (string-append path "/" name ".lva")))
-	      (try 
-	       (load pathAndName)
-	       (return pathAndName)
-	       (catch (java.io.FileNotFoundException e)
-		      'ignore))))
-	  loadPath)
-	 (throw (new 'java.io.FileNotFoundException name))))))
+  (define print-indent
+    (lambda (direction)
+      (cond (indent
+	     (if (eq? direction 'exit) 
+		 (set! current-indent (- current-indent indent)))
+	     (do ((i current-indent (- i 1)))
+		 ((<= i 0))
+	       (-print " "))
+	     (if (eq? direction 'enter) 
+		 (set! current-indent (+ current-indent indent)))))))
 
 )
 
-(_comment
-(load "RequireProvide.lva")
-provided
-(require "foo")
-(provided? 'foo)
-(require 'import)
+(define print-common
+  (lambda (name args)
+    (-print "(" )
+    (-print name)
+    (for-each (lambda (a) (-print " " ) (-write a)) args)
+    (-print ") ")))
+
+(-comment-
+(load (s+ (user-home) "/.sync/.llava.org/.system/org/llava/derived/DerivedLlavaDefineD.lva"))
+(define-d (f a n) n)
+(define-d (f a . n) n)
+(define-d a 3)
+(define-d test (lambda (a . opt) (list a opt)))
+(define-d (fact n)
+  (cond ((<= n 0)
+	 (error (s+ "fact: illegal argument: " n)))
+	((= n 1) 1)
+	((= n 7) (error "XXX"))
+	(else
+	 (* n (fact (- n 1))))))
+(fact 5)
+(fact 10)
+(fact -1)
+(set-define-d-indent! false)
+(set-define-d-indent! 3)
+(set-define-d-indent! 1)
+
+(define-d (a n . acc)
+  (if (= n 0)
+      acc
+      (a (- n 1) 
+	 (+ n (first acc))
+	 (* n (second acc)))))
+(a 10 0 1)
+
+(define-d b
+  (lambda args
+    (if (= (first args) 0)
+	(rest args)
+	(b (- (first args) 1)
+	   (+ (first args) (second args))
+	   (* (first args) (third args))))))
+(b 10 0 1)
+
+(define-d v
+  (lambda (vec)
+    (cond ((= (vector-ref vec 0) 0) "done")
+	  ((= (vector-ref vec 0) -1) (new 'java.lang.Exception "BAD"))
+	  (else
+	   (vector-set! vec 0 (- (vector-ref vec 0) 1))
+	   (v vec)))))
+(v #(10 3))
+(v #(-1))
+
 )
 
 ;;; End of file.
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+;;;;
+;;;; Created       : 1998 Dec 06 (Sun) 09:29:56 by Harold Carr.
+;;;; Last Modified : 2004 Nov 27 (Sat) 07:50:40 by Harold Carr.
+;;;;
+
+(define vector?
+  (lambda (x) 
+      (if (null? x)
+	  false
+	  (isArray (getClass x)))))
+
+(define make-vector
+  (lambda (k . fill)
+    (let ((v (-si 'newInstance 'java.lang.reflect.Array 
+		  (-si 'forName 'java.lang.Class "java.lang.Object")
+		  k)))
+      (if (not (null? fill))
+	  (do ((i 0 (+ i 1)))
+	      ((>= i k))
+	    (vector-set! v i (car fill))))
+      v)))
+
+(define (vector . values)
+  (let* ((len  (length values))
+	 (vect (make-vector len)))
+    (do ((v values (cdr v))
+	 (i 0 (+ i 1)))
+	((null? v))
+      (vector-set! vect i (car v)))
+    vect))
+
+(define vector-length
+  (lambda (v) (-si 'getLength 'java.lang.reflect.Array v)))
+
+(define vector-ref
+  (lambda (v i) (-si 'get 'java.lang.reflect.Array v i)))
+
+(define vector-set!
+  (lambda (v i x) 
+    (-si 'set 'java.lang.reflect.Array v i x)
+    x))
+
+(define vector->list
+  (lambda (v)
+    (let ((result '(_%dummy%_)))
+      (do ((len (-si 'getLength 'java.lang.reflect.Array v))
+	   (i 0 (+ i 1))
+	   (rptr result 
+		 (begin 
+		   (setCdr rptr 
+			   (cons (-si 'get 'java.lang.reflect.Array v i) '()))
+		   (cdr rptr))))
+	  ((>= i len) (cdr result))))))
+
+(define list->vector
+  (lambda (l)
+    (-si 'toArray 'org.llava.impl.util.List l)))
+
+(-comment-
+(isArray (getClass (listFiles (new 'java.io.File "."))))
+(vector->list (list->vector '(1 2 3)))
+)
+
+;;; End of file.
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+
 ;;;;
 ;;;; Created       : 2000 Jan 23 (Sun) 17:28:32 by Harold Carr.
-;;;; Last Modified : 2000 Jan 23 (Sun) 19:20:55 by Harold Carr.
+;;;; Last Modified : 2004 Sep 03 (Fri) 15:46:33 by Harold Carr.
 ;;;;
 
 ;; This file is a convenient place to put definitions
@@ -474,9 +792,19 @@ provided
 ;; Intentionally blank.
 
 ;;; End of file.
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+
 ;;;;
 ;;;; Created       : 1998 Dec 13 (Sun) 09:18:12 by Harold Carr.
-;;;; Last Modified : 2001 Mar 08 (Thu) 21:01:07 by Harold Carr.
+;;;; Last Modified : 2005 Feb 06 (Sun) 16:03:53 by Harold Carr.
 ;;;;
 ;;;; Provides import
 ;;;;
@@ -512,23 +840,23 @@ provided
 (define _%java_lang_Class_forName 
   (lambda (className)
     (if (symbol? className) (set! className (toString className)))  
-    (_si 'forName 'java.lang.Class className)))
+    (-si 'forName 'java.lang.Class className)))
 
 (define _%java_lang_reflect_Modifier_isPublic 
   (lambda (int)
-    (_si 'isPublic 'java.lang.reflect.Modifier int)))
+    (-si 'isPublic 'java.lang.reflect.Modifier int)))
 
 (define _%java_lang_reflect_Modifier_isStatic
   (lambda (int)
-    (_si 'isStatic 'java.lang.reflect.Modifier int)))
+    (-si 'isStatic 'java.lang.reflect.Modifier int)))
 
 (define _%java_lang_reflect_Array_get
   (lambda (o i)
-    (_si 'get 'java.lang.reflect.Array o i)))
+    (-si 'get 'java.lang.reflect.Array o i)))
 
 (define _%java_lang_reflect_Array_getLength 
   (lambda (o)
-    (_si 'getLength 'java.lang.reflect.Array o)))
+    (-si 'getLength 'java.lang.reflect.Array o)))
 
 ;;;
 ;;; _%isPublic? _%isStatic?
@@ -581,7 +909,7 @@ provided
 ;;;
 
 (define *_%evalDefineCMF* 'eval)
-(define _%evalDefineCMFWrite (lambda (form) (_println form) form))
+(define _%evalDefineCMFWrite (lambda (form) (-println form) form))
 (define _%evalDefineCMFEval  (lambda (form) (eval form)))
 
 (define _%evalDefineCMF
@@ -595,7 +923,7 @@ provided
 				  (toString form)))))))
 
 ; Uncomment for debug.
-(set! *_%evalDefineCMF* 'writeEval)
+;(set! *_%evalDefineCMF* 'writeEval)
 ;(set! *_%evalDefineCMF* 'write)
 
 ;;;
@@ -672,23 +1000,24 @@ provided
 
 (define _%defineC
   (lambda (className class constructors)
-    "Use new"))
-(_comment
-    (if (and (not (equal? 0
-			  (_%java_lang_reflect_Array_getLength constructors)))
-	     (not (equal? 0 
-			  (length (apply 
-				   append
-				   (_%mapJavaArray
-				    (lambda (x)
-				      (if (_%isPublic? x) '(true) '()))
-				    constructors))))))
-	(_%evalDefineCMF
-	 `(define (,className . args) (apply new (cons ',className args))))
-	(error 
-	 (string-append "No constructor for class: " (toString className))))
-)
-
+    (let* ((cnStr (toString className))
+	   ;; foo.bar.baz -> baz;  baz -> baz
+	   (baseName (_%makeSymOrStr 
+		      'symbol(substring cnStr (+ 1 (lastIndexOf cnStr "."))))))
+      (if (and 
+	   (not (equal? 0
+			(_%java_lang_reflect_Array_getLength constructors)))
+	   (not (equal? 0 
+			(length (apply 
+				 append
+				 (_%mapJavaArray
+				  (lambda (x)
+				    (if (_%isPublic? x) '(true) '()))
+				  constructors))))))
+	  (_%evalDefineCMF
+	   `(define (,baseName . args) (apply new* (cons ',className args))))
+	  (error 
+	   (s+ "No constructor for class: " (toString className)))))))
 
 ;; Define an individual method or field.
 
@@ -721,7 +1050,7 @@ provided
 	(_%evalDefineCMF
 	 ;; REVISIT - no need to use apply? - maybe to get value of methodName
 	 `(define (,methodName . args)
-	    (apply _si (cons ',methodName (cons ',className args)))))
+	    (apply -si (cons ',methodName (cons ',className args)))))
 	(if _%showVirtual?
 	    (_%evalDefineCMF methodName)))))
 
@@ -741,13 +1070,13 @@ provided
       (_%evalDefineCMF
        `(define ,andArg
 	  ,(if isStatic
-	       `(_sf ',fieldName ',className)
-	       `(_f  ',fieldName o))))
+	       `(-sf ',fieldName ',className)
+	       `(-f  ',fieldName o))))
       (_%evalDefineCMF
        `(define ,andVal!
 	  ,(if isStatic
-	       `(_sf ',fieldName ',className v)
-	       `(_f  ',fieldName o           v)))))))
+	       `(-sf ',fieldName ',className v)
+	       `(-f  ',fieldName o           v)))))))
 
 ; Define procedures for all public constructors, methods and fields.
 
@@ -763,7 +1092,7 @@ provided
 		      methodAndFieldNames))))
       (apply _%importAux importArgs))))
       
-(_comment
+(-comment-
 
 (load "import.lva")
 ;(set! *_%evalDefineCMF* 'write)

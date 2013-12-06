@@ -1,0 +1,64 @@
+;;;; Copyright (c) 1997 - 2004 Harold Carr
+;;;;
+;;;; This work is licensed under the Creative Commons Attribution License.
+;;;; To view a copy of this license, visit 
+;;;;   http://creativecommons.org/licenses/by/2.0/
+;;;; or send a letter to
+;;;;   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA
+;;;;---------------------------------------------------------------------------
+
+;;;;
+;;;; Created       : 2004 Nov 24 (Wed) 07:42:48 by Harold Carr.
+;;;; Last Modified : 2004 Dec 14 (Tue) 11:55:49 by Harold Carr.
+;;;;
+
+(import org.llava.lib.test.Test)
+(import org.llava.lib.SimpleRecord)
+
+(begin-test 'SimpleRecord)
+
+(check "1"
+       'r
+       (define-simple-record r x y z))
+(check "2"
+       #(record r null null null)
+       (set! r (make-r)))
+(check "3"
+       2
+       (set-y! r 2))
+(check "4"
+       #(record r null 2 null)
+       r)
+(check "5"
+       #(record r 1 2 3)
+       (set! r (make-r 1 2 3)))
+(check "6"
+       3
+       (get-z r))
+(check "7"
+       'vv
+       (set-z! r 'vv))
+(check "8"
+       #(record r 1 2 vv)
+       r)
+
+;;; This tests that constructor works even when called 
+;;; package baz -> bar -> foo - foo defines the constructor
+;;; and baz does not import foo
+
+(package foo)
+(import org.llava.lib.SimpleRecord)
+(define-simple-record r x y z)
+(package bar)
+(import foo)
+(define (test) (make-r))
+(package baz)
+(import bar)
+(import org.llava.lib.test.Test)
+(check "9"
+       #(record r null null null)
+       (test))
+
+(end-test 'SimpleRecord)
+
+;;; End of file.
